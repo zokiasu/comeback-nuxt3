@@ -6,6 +6,11 @@ import {
   doc,
   setDoc,
   updateDoc,
+  Timestamp,
+  query,
+  where,
+  orderBy,
+  limit
 } from "firebase/firestore";
 
 export const queryByCollection = async (col: string) => {
@@ -24,6 +29,23 @@ export const queryByCollection = async (col: string) => {
 
   return docs;
 };
+
+export const fetchNews = async (startDate: Timestamp) => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  const colRef = query(collection($firestore, 'news'), where('date', '>=', startDate), orderBy('date', 'asc'), limit(7));
+  
+  const snapshot = await getDocs(colRef);
+
+  const docs = Array.from(snapshot.docs).map((doc) => {
+    return {
+      ...doc.data(),
+      taskID : doc.id
+    };
+  });
+
+  return docs;
+}
 
 export const set = async (col: string, document: Object) => {
   const {$firestore} = useNuxtApp();
