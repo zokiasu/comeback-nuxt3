@@ -10,10 +10,10 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <card name="Comeback reported">
+  <CardDefault name="Comeback reported">
     <div class="space-y-3 p-5 grid grid-cols-1">
-      <NewsCard v-for="newsT in newsT" :key="newsT.id" :message="newsT.message" :date="newsT.date"
+      <CardNews v-for="newsT in newsT" :key="newsT.id" :message="newsT.message" :date="newsT.date"
         :artist="newsT.artist" />
     </div>
-  </card>
+  </CardDefault>
 </template>
