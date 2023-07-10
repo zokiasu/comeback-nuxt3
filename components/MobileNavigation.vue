@@ -8,8 +8,8 @@
         class="text-center w-full py-2 hover:bg-zinc-500/50 transition-all ease-in-out duration-500">C</NuxtLink>
       <NuxtLink :to="`/artist`"
         class="text-center w-full py-2 hover:bg-zinc-500/50 transition-all ease-in-out duration-500">A</NuxtLink>
-      <NuxtLink :to="`/`" class="text-center w-full py-2 hover:bg-zinc-500/50 transition-all ease-in-out duration-500">P
-      </NuxtLink>
+      <!-- <NuxtLink :to="`/`" class="text-center w-full py-2 hover:bg-zinc-500/50 transition-all ease-in-out duration-500">P
+      </NuxtLink> -->
       <NuxtLink :to="`/dashboard`"
         class="text-center w-full py-2 hover:bg-zinc-500/50 transition-all ease-in-out duration-500">D</NuxtLink>
     </div>

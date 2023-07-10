@@ -30,10 +30,27 @@ export const queryByCollection = async (col: string) => {
   return docs;
 };
 
-export const fetchNews = async (startDate: Timestamp) => {
+export const fetchNews = async (startDate: Timestamp, limitNumber: Number) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
-  const colRef = query(collection($firestore, 'news'), where('date', '>=', startDate), orderBy('date', 'asc'), limit(7));
+  const colRef = query(collection($firestore, 'news'), where('date', '>=', startDate), orderBy('date', 'asc'), limit(limitNumber));
+  
+  const snapshot = await getDocs(colRef);
+
+  const docs = Array.from(snapshot.docs).map((doc) => {
+    return {
+      ...doc.data(),
+      taskID : doc.id
+    };
+  });
+
+  return docs;
+}
+
+export const fetchReleases = async (startDate: Timestamp, limitNumber: Number) => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  const colRef = query(collection($firestore, 'releases'), where('date', '>=', startDate), orderBy('date', 'desc'), limit(limitNumber));
   
   const snapshot = await getDocs(colRef);
 

@@ -32,9 +32,9 @@ onMounted(() => {
         <NuxtLink :to="`/artist`" :class="routeN.name === 'artist' ? 'text-white' : 'text-zinc-500'">
           Artists
         </NuxtLink>
-        <NuxtLink :to="`/`" :class="routeN.name === 'index' ? 'text-white' : 'text-zinc-500'">
+        <!-- <NuxtLink :to="`/`" :class="routeN.name === 'index' ? 'text-white' : 'text-zinc-500'">
           Profil
-        </NuxtLink>
+        </NuxtLink> -->
         <NuxtLink :to="`/dashboard`" :class="routeN.name === 'dashboard' ? 'text-white' : 'text-zinc-500'">
           Dashboard
         </NuxtLink>
