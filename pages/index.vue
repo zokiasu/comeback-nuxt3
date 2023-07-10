@@ -33,6 +33,7 @@ const signOut = async () => {
       <div class="rounded-lg space-y-8">
         <LazyComebackReported class="rounded-lg animate__animated animate__fadeInUp" />
         <LazyRecentReleases class="rounded-lg animate__animated animate__fadeInUp" />
+        <LazyArtistAdded class="rounded-lg animate__animated animate__fadeInUp" />
       </div>
     </div>
   </div>

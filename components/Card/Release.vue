@@ -36,13 +36,12 @@ const { id, image, date, name, type, artistsId, artistsName, displayDate } = def
 </script>
 
 <template>
-  <div class="min-w-[3rem] max-w-[8rem] space-y-2">
+  <div class="min-w-[3rem] max-w-[8rem] space-y-2 mx-auto">
     <NuxtLink :to="`/release/${id}`">
       <div class="group relative">
-        <div class="rounded bg-quinary">
-          <nuxt-img :src="image" :alt="name" quality="80" loading="lazy"
-            class="aspect-square max-h-[8rem] min-h-[3rem] w-full rounded object-cover drop-shadow-2xl" />
-        </div>
+        <nuxt-img :src="image" :alt="name" quality="80" loading="lazy"
+          class="aspect-square max-h-[8rem] min-h-[3rem] w-full rounded object-cover drop-shadow-2xl" />
+
         <div v-if="displayDate"
           class="invisible absolute top-2 right-1.5 rounded bg-quinary bg-opacity-80 px-2 py-0.5 group-hover:visible">
           <p class="text-center text-xs">
@@ -61,7 +60,7 @@ const { id, image, date, name, type, artistsId, artistsName, displayDate } = def
       <p class="truncate font-bold text-xs">{{ name }}</p>
       <div v-if="artistsId && artistsName" class="text-xs">
         <NuxtLink :to="`/artist/${artistsId}`" class="mt-1">
-          <p v-if="artistsName" class="hover-underline-animation truncate">
+          <p v-if="artistsName" class="hover-underline-animation truncate hover-underline-animation">
             {{ artistsName }}
           </p>
         </NuxtLink>
