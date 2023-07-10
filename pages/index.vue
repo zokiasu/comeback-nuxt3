@@ -1,5 +1,3 @@
-
-
 <script setup>
 const user = useCurrentUser();
 const signIn = async () => {
@@ -14,11 +12,6 @@ const signOut = async () => {
   const context = await signOutApp()
   console.log(context)
 }
-
-onMounted(async () => {
-  // const releases = await queryByCollection('releases');
-  // console.log(releases)
-})
 </script>
 
 <template>
@@ -36,23 +29,12 @@ onMounted(async () => {
         <!-- <icons-arrow-down class="animate-bounce w-5 h-5 mx-auto" /> -->
       </p>
     </section>
-    <div class="bg-red-500 min-h-screen sm:min-h-[calc(100vh-60px)]">
-      Hello World {{ user }}
-      <button @click="signIn" class="p-2">Sign In</button>
-      <button @click="signOut" class="p-2">Sign Out</button>
-      <button @click="signUp" class="p-2">Sign Up</button>
-    </div>
-    <div class="bg-green-500 min-h-screen sm:min-h-[calc(100vh-60px)]">
-      Hello World {{ user }}
-      <button @click="signIn" class="p-2">Sign In</button>
-      <button @click="signOut" class="p-2">Sign Out</button>
-      <button @click="signUp" class="p-2">Sign Up</button>
-    </div>
-    <div class="bg-blue-500 min-h-screen sm:min-h-[calc(100vh-60px)]">
-      Hello World {{ user }}
-      <button @click="signIn" class="p-2">Sign In</button>
-      <button @click="signOut" class="p-2">Sign Out</button>
-      <button @click="signUp" class="p-2">Sign Up</button>
+    <div class="container mx-auto p-5 min-h-screen">
+      <div class="rounded-lg space-y-8">
+        <LazyComebackReported class="rounded-lg animate__animated animate__fadeInUp" />
+        <LazyRecentReleases class="rounded-lg animate__animated animate__fadeInUp" />
+        <LazyArtistAdded class="rounded-lg animate__animated animate__fadeInUp" />
+      </div>
     </div>
   </div>
 </template>
