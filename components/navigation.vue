@@ -20,7 +20,7 @@ onMounted(() => {
 <template>
   <div class="sticky top-0 py-2 px-3 xl:py-3 z-50 transition-all duration-500 ease-in-out">
     <div ref="navbar"
-      class="animate__animated animate__fadeInDown px-5 xl:p-0 rounded-full transition-all duration-500 ease-in-out">
+      class="animate__animated animate__fadeInDown px-5 rounded-full transition-all duration-500 ease-in-out">
       <div class="mx-auto flex justify-between py-3 2xl:container">
         <img class="block h-8 w-auto" src="~/assets/image/logo.png" alt="Comeback" />
         <nav class="flex items-center justify-center text-sm space-x-5">
