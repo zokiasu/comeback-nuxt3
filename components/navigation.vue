@@ -1,5 +1,5 @@
 <script setup>
-import { Modal } from '@kouts/vue-modal'
+// import { Modal } from '@kouts/vue-modal'
 const routeN = useRoute()
 const navbar = ref(null)
 const showModal = ref(false)
@@ -45,12 +45,12 @@ onMounted(() => {
           </button>
         </nav>
       </div>
-      <Modal v-model="showModal" title="Add a News" wrapper-class="animate__animated modal-wrapper"
+      <!-- <Modal v-model="showModal" title="Add a News" wrapper-class="animate__animated modal-wrapper"
         :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
         :in-class="`animate__fadeInDown`" :out-class="`animate__bounceOut`" bg-class="animate__animated"
         :bg-in-class="`animate__fadeInUp`" :bg-out-class="`animate__fadeOutDown`">
         <p>Modal content goes here...</p>
-      </Modal>
+      </Modal> -->
     </div>
   </div>
 </template>
