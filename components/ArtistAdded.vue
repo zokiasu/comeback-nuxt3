@@ -6,7 +6,7 @@ onMounted(async () => {
   const today = new Date()
   today.setDate(today.getDate())
   const todayTimestamp = Timestamp.fromDate(today)
-  artists.value = await fetchArtists(todayTimestamp, 8)
+  artists.value = await fetchArtistsWithLimit(todayTimestamp, 8)
 })
 </script>
 <template>

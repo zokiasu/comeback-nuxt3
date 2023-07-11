@@ -1,24 +1,47 @@
+<script setup>
+const artistFetch = ref(null)
+onMounted(async () => {
+  artistFetch.value = await fetchArtists()
+})
+
+// function filteredArtistList computed
+const search = ref('')
+const filteredArtistList = computed(() => {
+  if (!search.value) return artistFetch.value
+  return artistFetch.value.filter((artist) => {
+    return artist.name.toLowerCase().includes(search.value.toLowerCase())
+  })
+})
+</script>
+
 <template>
-  <div>
-    Hello Artist {{ user  }}
-    <button @click="signIn" class="p-2">Sign In</button>
-    <button @click="signOut" class="p-2">Sign Out</button>
-    <button @click="signUp" class="p-2">Sign Up</button>
+  <div class="container mx-auto p-5 space-y-5">
+    <div id="searchbar" class="flex w-full justify-start">
+      <input id="search-input" v-model="search" type="text" placeholder="Search"
+        class="w-full rounded-full border-none bg-quinary py-2 px-5 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none" />
+    </div>
+    <transition-group id="artist-list" name="list-complete" tag="div"
+      class="transition-all ease-in-out duration-300 grid grid-cols-2 items-center justify-center gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-8">
+      <LazyCardArtist v-for="artist in filteredArtistList" :key="artist.id" :id="artist.id" :image="artist.image"
+        :name="artist.name" :type="artist.type" :artistsId="artist.artistsId" :artistsName="artist.artistsName"
+        :displayDate="true" class="list-complete-item" />
+    </transition-group>
   </div>
 </template>
 
-<script setup>
-const user = useCurrentUser();
-const signIn = async () => {
-  const context = await signInWithEAndP('zokiasu@gmail.com', 'salimonou')
-  console.log(context)
+<style scoped>
+.list-complete-item {
+  transition: all 0.7s;
+  display: inline-block;
 }
-const signUp = async () => {
-  const context = await signUpWithEAndP('pierrick.tly@gmail.com', 'salimonou')
-  console.log(context)
+
+.list-complete-enter {
+  opacity: 0;
+  transform: translateY(50px);
 }
-const signOut = async () => {
-  const context = await signOutApp()
-  console.log(context)
+
+.list-complete-leave-active {
+  opacity: 0;
+  transform: translateX(-30px);
 }
-</script>
+</style>

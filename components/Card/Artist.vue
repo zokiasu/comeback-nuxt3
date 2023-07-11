@@ -24,8 +24,8 @@ const { id, image, name, dimension } = defineProps({
   <div class="space-y-2">
     <NuxtLink :to="`/artist/${id}`">
       <div>
-        <nuxt-img :src="image" :alt="name" loading="lazy" class="mx-auto aspect-square rounded-full object-cover"
-          :class="dimension" />
+        <nuxt-img :src="image" :alt="name" loading="lazy"
+          class="bg-red-500 mx-auto aspect-square rounded-full object-cover" :class="dimension" />
       </div>
     </NuxtLink>
     <div v-if="name" class="text-xs flex justify-center">

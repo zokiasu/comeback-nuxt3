@@ -23,7 +23,7 @@ watch([currentYear, currentMonth], async () => {
 </script>
 
 <template>
-  <div class="container mx-auto py-5 space-y-5">
+  <div class="container mx-auto min-h-screen p-5 space-y-5">
     <div class="md:flex md:justify-between">
       <p class="text-lg font-semibold uppercase">Released in {{ monthNames[currentMonth] }} {{ currentYear }}</p>
       <div class="flex items-center divide-x space-x-2 divide-zinc-500 pt-1">
@@ -49,7 +49,7 @@ watch([currentYear, currentMonth], async () => {
         </div>
       </div>
     </div>
-    <div class="flex flex-wrap gap-5 items-start justify-start">
+    <div class="flex flex-wrap gap-5">
       <LazyCardRelease v-for="release in releases" :key="release.id" :id="release.id" :image="release.image"
         :date="release.date" :name="release.name" :type="release.type" :artistsId="release.artistsId"
         :artistsName="release.artistsName" :displayDate="true" />
