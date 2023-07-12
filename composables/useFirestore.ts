@@ -84,20 +84,20 @@ export const fetchReleasesByMonth = async (startDate: Timestamp, endDate: Timest
 export const fetchReleaseById = async (idRelease: String) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
-  const colRef = query(collection($firestore, 'releases'), where('id', '==', idRelease));
-  const colRef2 = query(collection($firestore, 'releases', idRelease, 'musics'));
+  const colRelease = query(collection($firestore, 'releases'), where('id', '==', idRelease));
+  const colMusic = query(collection($firestore, 'releases', idRelease, 'musics'));
   
-  const snapshot = await getDocs(colRef);
-  const snapshot2 = await getDocs(colRef2);
+  const snapshotRelease = await getDocs(colRelease);
+  const snapshotMusic = await getDocs(colMusic);
 
-  const docs = Array.from(snapshot.docs).map((doc) => {
+  const docs = Array.from(snapshotRelease.docs).map((doc) => {
     return {
       ...doc.data(),
       taskID : doc.id
     };
   });
 
-  docs[0].musics = Array.from(snapshot2.docs).map((doc) => {
+  docs[0].musics = Array.from(snapshotMusic.docs).map((doc) => {
     return {
       ...doc.data(),
       taskID : doc.id
@@ -107,14 +107,14 @@ export const fetchReleaseById = async (idRelease: String) => {
   return docs[0];
 }
 
-export const fetchArtistsWithLimit = async (startDate: Timestamp, limitNumber: Number) => {
+export const fetchReleaseByArtistId = async (idArtist: String) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
-  const colRef = query(collection($firestore, 'artists'), where('createdAt', '<=', startDate), orderBy('createdAt', 'desc'), limit(limitNumber));
+  const colRelease = query(collection($firestore, 'releases'), where('artistsId', '==', idArtist));
   
-  const snapshot = await getDocs(colRef);
+  const snapshotRelease = await getDocs(colRelease);
 
-  const docs = Array.from(snapshot.docs).map((doc) => {
+  const docs = Array.from(snapshotRelease.docs).map((doc) => {
     return {
       ...doc.data(),
       taskID : doc.id
@@ -139,6 +139,70 @@ export const fetchArtists = async () => {
   });
 
   return docs;
+}
+
+export const fetchArtistsWithLimit = async (startDate: Timestamp, limitNumber: Number) => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  const colRef = query(collection($firestore, 'artists'), where('createdAt', '<=', startDate), orderBy('createdAt', 'desc'), limit(limitNumber));
+  
+  const snapshot = await getDocs(colRef);
+
+  const docs = Array.from(snapshot.docs).map((doc) => {
+    return {
+      ...doc.data(),
+      taskID : doc.id
+    };
+  });
+
+  return docs;
+}
+
+export const fetchArtistInfoById = async (idArtist: String) => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  const colArtist = query(collection($firestore, 'artists'), where('id', '==', idArtist));
+  // @ts-ignore
+  const colGroup = query(collection($firestore, 'artists', idArtist, 'groups'));
+  // @ts-ignore
+  const colMember = query(collection($firestore, 'artists', idArtist, 'members'));
+  // @ts-ignore
+  const colRelease = query(collection($firestore, 'releases'), where('artistsId', '==', idArtist));
+  
+  const snapshot = await getDocs(colArtist);
+
+  const docs = Array.from(snapshot.docs).map((doc) => {
+    return {
+      ...doc.data(),
+      taskID : doc.id
+    };
+  });
+
+  // @ts-ignore
+  docs[0].groups = Array.from((await getDocs(colGroup)).docs).map((doc) => {
+    return {
+      ...doc.data(),
+      taskID : doc.id
+    };
+  });
+
+  // @ts-ignore
+  docs[0].members = Array.from((await getDocs(colMember)).docs).map((doc) => {
+    return {
+      ...doc.data(),
+      taskID : doc.id
+    };
+  });
+
+  // @ts-ignore
+  docs[0].releases = Array.from((await getDocs(colRelease)).docs).map((doc) => {
+    return {
+      ...doc.data(),
+      taskID : doc.id
+    };
+  });
+
+  return docs[0];
 }
 
 export const set = async (col: string, document: Object) => {

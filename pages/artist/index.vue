@@ -28,20 +28,3 @@ const filteredArtistList = computed(() => {
     </transition-group>
   </div>
 </template>
-
-<style scoped>
-.list-complete-item {
-  transition: all 0.7s;
-  display: inline-block;
-}
-
-.list-complete-enter {
-  opacity: 0;
-  transform: translateY(50px);
-}
-
-.list-complete-leave-active {
-  opacity: 0;
-  transform: translateX(-30px);
-}
-</style>

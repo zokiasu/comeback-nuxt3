@@ -6,7 +6,7 @@ const release = ref(null)
 onMounted(async () => {
   const route = useRoute()
   release.value = await fetchReleaseById(route.params.id)
-  title.value = release.value.type + ': ' + release.value.name + ' by ' + release.value.artistsName
+  title.value = release.value.name + ' by ' + release.value.artistsName
   description.value = release.value.name + ' by ' + release.value.artistsName
 })
 

@@ -36,7 +36,7 @@ const { id, image, date, name, type, artistsId, artistsName, displayDate } = def
 </script>
 
 <template>
-  <div class="min-w-[8rem] max-w-[8rem] space-y-2 mx-auto">
+  <div class="min-w-[8rem] max-w-[8rem] space-y-2">
     <NuxtLink :to="`/release/${id}`">
       <div class="group relative">
         <nuxt-img :src="image" :alt="name" quality="80" loading="lazy"
