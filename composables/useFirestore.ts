@@ -81,6 +81,32 @@ export const fetchReleasesByMonth = async (startDate: Timestamp, endDate: Timest
   return docs;
 }
 
+export const fetchReleaseById = async (idRelease: String) => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  const colRef = query(collection($firestore, 'releases'), where('id', '==', idRelease));
+  const colRef2 = query(collection($firestore, 'releases', idRelease, 'musics'));
+  
+  const snapshot = await getDocs(colRef);
+  const snapshot2 = await getDocs(colRef2);
+
+  const docs = Array.from(snapshot.docs).map((doc) => {
+    return {
+      ...doc.data(),
+      taskID : doc.id
+    };
+  });
+
+  docs[0].musics = Array.from(snapshot2.docs).map((doc) => {
+    return {
+      ...doc.data(),
+      taskID : doc.id
+    };
+  });
+
+  return docs[0];
+}
+
 export const fetchArtistsWithLimit = async (startDate: Timestamp, limitNumber: Number) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
