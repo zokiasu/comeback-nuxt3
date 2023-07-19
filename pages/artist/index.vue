@@ -15,7 +15,7 @@ const filteredArtistList = computed(() => {
 </script>
 
 <template>
-  <div class="container mx-auto p-5 space-y-5">
+  <div class="container mx-auto min-h-screen p-5 space-y-5">
     <div id="searchbar" class="flex w-full justify-start">
       <input id="search-input" v-model="search" type="text" placeholder="Search"
         class="w-full rounded-full border-none bg-quinary py-2 px-5 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none" />

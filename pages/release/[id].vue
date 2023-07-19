@@ -45,8 +45,8 @@ useHead({
         </div>
         <div class="overflow-hidden pr-5 pb-2 lg:h-[34rem] lg:w-[30rem]">
           <ul class="space-y-5">
-            <a v-for="music in release.musics" :key="music.id" :href="`https://youtu.be/${music.videoId}`" target="_blank"
-              class="flex items-center justify-between gap-5">
+            <a v-for="music in release.musics.slice().reverse()" :key="music.id"
+              :href="`https://youtu.be/${music.videoId}`" target="_blank" class="flex items-center justify-between gap-5">
               <h3 class="font-semibold text-xl">{{ music.name }}</h3>
               <a :href="`https://youtu.be/${music.videoId}`" target="_blank">
                 <icon-youtube class="h-8 w-8" />

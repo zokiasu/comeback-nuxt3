@@ -9,7 +9,7 @@ const { name } = defineProps({
 </script>
 
 <template>
-  <div class="rounded-lg spacey-10 p-3">
+  <div class="rounded-lg spacey-10">
     <p class="text-sm font-semibold uppercase border-b border-zinc-800 pb-1">{{ name }}</p>
     <slot />
   </div>

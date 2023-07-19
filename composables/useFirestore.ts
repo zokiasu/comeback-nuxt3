@@ -158,7 +158,7 @@ export const fetchArtistsWithLimit = async (startDate: Timestamp, limitNumber: N
   return docs;
 }
 
-export const fetchArtistInfoById = async (idArtist: String) => {
+export const fetchArtistFullInfoById = async (idArtist: String) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
   const colArtist = query(collection($firestore, 'artists'), where('id', '==', idArtist));
@@ -196,6 +196,43 @@ export const fetchArtistInfoById = async (idArtist: String) => {
 
   // @ts-ignore
   docs[0].releases = Array.from((await getDocs(colRelease)).docs).map((doc) => {
+    return {
+      ...doc.data(),
+      taskID : doc.id
+    };
+  });
+
+  return docs[0];
+}
+
+export const fetchArtistBasicInfoById = async (idArtist: String) => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  const colArtist = query(collection($firestore, 'artists'), where('id', '==', idArtist));
+  // @ts-ignore
+  const colGroup = query(collection($firestore, 'artists', idArtist, 'groups'));
+  // @ts-ignore
+  const colMember = query(collection($firestore, 'artists', idArtist, 'members'));
+  
+  const snapshot = await getDocs(colArtist);
+
+  const docs = Array.from(snapshot.docs).map((doc) => {
+    return {
+      ...doc.data(),
+      taskID : doc.id
+    };
+  });
+
+  // @ts-ignore
+  docs[0].groups = Array.from((await getDocs(colGroup)).docs).map((doc) => {
+    return {
+      ...doc.data(),
+      taskID : doc.id
+    };
+  });
+
+  // @ts-ignore
+  docs[0].members = Array.from((await getDocs(colMember)).docs).map((doc) => {
     return {
       ...doc.data(),
       taskID : doc.id

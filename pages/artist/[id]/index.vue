@@ -6,7 +6,7 @@ const imageBackground = ref(null)
 
 onMounted(async () => {
   const route = useRoute()
-  artist.value = await fetchArtistInfoById(route.params.id)
+  artist.value = await fetchArtistFullInfoById(route.params.id)
   imageBackground.value = artist.value.image
   title.value = artist.value.name
   description.value = artist.value.description
@@ -31,7 +31,7 @@ useHead({
 </script>
 
 <template>
-  <div v-if="artist" class="min-h-[calc(100vh-60px)]">
+  <div v-if="artist">
     <section
       class="background-top relative h-[20vh] overflow-hidden bg-cover bg-no-repeat md:h-[30vh] lg:h-[40vh] xl:h-[50vh] 2xl:h-[70vh]">
       <nuxt-img :src="imageBackground" :alt="artist.name" class="absolute inset-0 h-full w-full object-cover" />
@@ -56,38 +56,42 @@ useHead({
       </div>
     </section>
 
-    <section class="container mx-auto p-5 space-y-5">
+    <section class="container mx-auto p-5 space-y-8">
       <p v-if="artist.description" class="whitespace-pre-line">
         {{ artist.description }}
       </p>
-      <div v-if="soloMembers?.length" class="space-y-2.5">
-        <h2 class="text-xl font-semibold">Members</h2>
-        <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
-          <LazyCardArtist v-for="soloMember in soloMembers" :id="soloMember.id" :key="soloMember.id"
-            :image="soloMember.image" :name="soloMember.name" />
-        </transition-group>
+      <div v-if="soloMembers?.length">
+        <CardDefault name="Members" class="space-y-3">
+          <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
+            <LazyCardArtist v-for="soloMember in soloMembers" :id="soloMember.id" :key="soloMember.id"
+              :image="soloMember.image" :name="soloMember.name" />
+          </transition-group>
+        </CardDefault>
       </div>
-      <div v-if="artist.releases?.length" class="space-y-2.5">
-        <h2 class="text-xl font-semibold">Release</h2>
-        <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
-          <LazyCardRelease v-for="release in artist.releases" :key="release.id" :id="release.id" :image="release.image"
-            :date="release.date" :name="release.name" :type="release.type" :artistsId="release.artistsId"
-            :artistsName="release.artistsName" :displayDate="true" />
-        </transition-group>
+      <div v-if="artist.releases?.length">
+        <CardDefault name="Releases" class="space-y-3">
+          <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
+            <LazyCardRelease v-for="release in artist.releases" :key="release.id" :id="release.id" :image="release.image"
+              :date="release.date" :name="release.name" :type="release.type" :artistsId="release.artistsId"
+              :artistsName="release.artistsName" :displayDate="true" />
+          </transition-group>
+        </CardDefault>
       </div>
-      <div v-if="groupMembers?.length" class="space-y-2.5">
-        <h2 class="text-xl font-semibold">Subunit</h2>
-        <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
-          <LazyCardArtist v-for="groupMember in groupMembers" :id="groupMember.id" :key="groupMember.id"
-            :image="groupMember.image" :name="groupMember.name" />
-        </transition-group>
+      <div v-if="groupMembers?.length">
+        <CardDefault name="Subunit" class="space-y-3">
+          <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
+            <LazyCardArtist v-for="groupMember in groupMembers" :id="groupMember.id" :key="groupMember.id"
+              :image="groupMember.image" :name="groupMember.name" />
+          </transition-group>
+        </CardDefault>
       </div>
-      <div v-if="groups?.length" class="space-y-2.5">
-        <h2 class="text-xl font-semibold">Group's Unit</h2>
-        <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
-          <LazyCardArtist v-for="group in groups" :id="group.id" :key="group.id" :image="group.image"
-            :name="group.name" />
-        </transition-group>
+      <div v-if="groups?.length">
+        <CardDefault name="Group's Unit" class="space-y-3">
+          <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
+            <LazyCardArtist v-for="group in groups" :id="group.id" :key="group.id" :image="group.image"
+              :name="group.name" />
+          </transition-group>
+        </CardDefault>
       </div>
     </section>
   </div>

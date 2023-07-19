@@ -16,9 +16,7 @@
     "@types/node": "^18",
     "@vueuse/core": "^10.2.1",
     "@vueuse/nuxt": "^10.2.1",
-    "nuxt": "^3.6.1",
-    "prettier": "^3.0.0",
-    "prettier-plugin-tailwindcss": "^0.3.0"
+    "nuxt": "^3.6.1"
   },
   "dependencies": {
     "@firebase/app-types": "^0.9.0",
@@ -27,6 +25,8 @@
     "firebase": "^9.23.0",
     "firebase-admin": "^11.9.0",
     "nuxt-vuefire": "^0.1.6",
+    "typescript": "^5.1.6",
+    "vue-multiselect": "^3.0.0-beta.2",
     "vuefire": "^3.1.0"
   }
 }
