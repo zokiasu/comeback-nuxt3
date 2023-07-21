@@ -22,8 +22,7 @@ export const queryByCollection = async (col: string) => {
 
   const docs = Array.from(snapshot.docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
@@ -39,8 +38,7 @@ export const fetchNews = async (startDate: Timestamp, limitNumber: Number) => {
 
   const docs = Array.from(snapshot.docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
@@ -56,8 +54,7 @@ export const fetchReleases = async (startDate: Timestamp, limitNumber: Number) =
 
   const docs = Array.from(snapshot.docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
@@ -73,8 +70,7 @@ export const fetchReleasesByMonth = async (startDate: Timestamp, endDate: Timest
 
   const docs = Array.from(snapshot.docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
@@ -92,15 +88,13 @@ export const fetchReleaseById = async (idRelease: String) => {
 
   const docs = Array.from(snapshotRelease.docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
   docs[0].musics = Array.from(snapshotMusic.docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
@@ -116,8 +110,7 @@ export const fetchReleaseByArtistId = async (idArtist: String) => {
 
   const docs = Array.from(snapshotRelease.docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
@@ -133,8 +126,7 @@ export const fetchArtists = async () => {
 
   const docs = Array.from(snapshot.docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
@@ -150,8 +142,7 @@ export const fetchArtistsWithLimit = async (startDate: Timestamp, limitNumber: N
 
   const docs = Array.from(snapshot.docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
@@ -173,32 +164,28 @@ export const fetchArtistFullInfoById = async (idArtist: String) => {
 
   const docs = Array.from(snapshot.docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
   // @ts-ignore
   docs[0].groups = Array.from((await getDocs(colGroup)).docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
   // @ts-ignore
   docs[0].members = Array.from((await getDocs(colMember)).docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
   // @ts-ignore
   docs[0].releases = Array.from((await getDocs(colRelease)).docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
@@ -218,24 +205,21 @@ export const fetchArtistBasicInfoById = async (idArtist: String) => {
 
   const docs = Array.from(snapshot.docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
   // @ts-ignore
   docs[0].groups = Array.from((await getDocs(colGroup)).docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
   // @ts-ignore
   docs[0].members = Array.from((await getDocs(colMember)).docs).map((doc) => {
     return {
-      ...doc.data(),
-      taskID : doc.id
+      ...doc.data()
     };
   });
 
@@ -244,8 +228,14 @@ export const fetchArtistBasicInfoById = async (idArtist: String) => {
 
 export const set = async (col: string, document: Object) => {
   const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  await setDoc(doc($firestore, col), document, { merge: true });
+};
 
-  await setDoc(doc(collection($firestore, col)), document, { merge: true });
+export const setWithDoc = async (col: string, docId: string, document: Object) => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  await setDoc(doc($firestore, col, docId), document, { merge: true });
 };
 
 export const add = async (col: string, document: Object) => {
@@ -253,6 +243,17 @@ export const add = async (col: string, document: Object) => {
 
   // @ts-ignore
   const colRef = collection($firestore, col);
+
+  const docRef = await addDoc(colRef, document);
+
+  return docRef;
+};
+
+export const addWithDoc = async (col: string, docId: string, document: Object) => {
+  const {$firestore} = useNuxtApp();
+
+  // @ts-ignore
+  const colRef = collection($firestore, col, docId);
 
   const docRef = await addDoc(colRef, document);
 

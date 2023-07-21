@@ -1,11 +1,12 @@
 <script setup>
 const artistFetch = ref(null)
+
 onMounted(async () => {
   artistFetch.value = await fetchArtists()
 })
 
-// function filteredArtistList computed
 const search = ref('')
+
 const filteredArtistList = computed(() => {
   if (!search.value) return artistFetch.value
   return artistFetch.value.filter((artist) => {
