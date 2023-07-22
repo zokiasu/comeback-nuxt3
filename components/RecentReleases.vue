@@ -1,7 +1,7 @@
 <script setup>
 import { Timestamp } from 'firebase/firestore';
 const releases = ref(null)
-onMounted(async () => {
+onBeforeMount(async () => {
   const today = new Date()
   today.setDate(today.getDate() - 7)
   const todayTimestamp = Timestamp.fromDate(today)

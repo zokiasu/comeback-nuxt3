@@ -41,7 +41,7 @@ useHead({
       </div>
       <div class="flex w-fit flex-col gap-10 lg:flex-row">
         <div class="mx-auto h-fit w-fit">
-          <nuxt-img :src="release.image" class="h-1/3 rounded-md bg-gray-300 shadow-2xl shadow-quinary" />
+          <nuxt-img :src="release.image" :alt="release.name" quality="80" loading="lazy" class="h-1/3 rounded-md bg-gray-300 shadow-2xl shadow-quinary" />
         </div>
         <div class="overflow-hidden pr-5 pb-2 lg:h-[34rem] lg:w-[30rem]">
           <ul class="space-y-5">

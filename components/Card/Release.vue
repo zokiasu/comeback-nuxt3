@@ -33,6 +33,15 @@ const { id, image, date, name, type, artistsId, artistsName, displayDate } = def
     default: false,
   },
 })
+
+const dateTimestamp = ref(null)
+onBeforeMount(() => {
+  dateTimestamp.value = new Date(date.seconds * 1000).toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+  })
+})
 </script>
 
 <template>
@@ -40,18 +49,12 @@ const { id, image, date, name, type, artistsId, artistsName, displayDate } = def
     <NuxtLink :to="`/release/${id}`">
       <div class="group relative">
         <nuxt-img :src="image" :alt="name" quality="80" loading="lazy"
-          class="aspect-square bg-red-500 max-h-[8rem] min-h-[8rem] w-full rounded object-cover drop-shadow-2xl" />
+          class="aspect-square bg-zinc-500 max-h-[8rem] min-h-[8rem] w-full rounded object-cover drop-shadow-2xl" />
 
         <div v-if="displayDate"
           class="invisible absolute top-2 right-1.5 rounded bg-quinary bg-opacity-80 px-2 py-0.5 group-hover:visible">
           <p class="text-center text-xs">
-            {{
-              new Date(date).toLocaleDateString('fr-FR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: '2-digit',
-              })
-            }}
+            {{ dateTimestamp }}
           </p>
         </div>
       </div>

@@ -71,8 +71,7 @@ function isSameDate(date) {
     class="flex flex-col md:flex-row w-full overflow-hidden rounded-lg transition-all duration-500 ease-in-out hover:scale-110 hover:drop-shadow-lg">
     <div class="flex h-full w-full items-center space-x-5 bg-quinary py-3 md:p-3">
       <div class="hidden lg:block">
-        <nuxt-img class="shadowCard h-10 w-10 rounded-full object-cover" quality="80" loading="lazy" :src="artist.image"
-          :alt="artist.name + 's picture'" />
+        <nuxt-img :src="artist.image" :alt="artist.name + 's picture'" quality="80" loading="lazy" class="shadowCard h-10 w-10 rounded-full object-cover"/>
       </div>
       <div>
         <h2 class="text-xs lg:text-sm font-semibold">

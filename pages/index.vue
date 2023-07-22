@@ -1,17 +1,8 @@
 <script setup>
-const user = useCurrentUser();
-const signIn = async () => {
-  const context = await signInWithEAndP('zokiasu@gmail.com', 'salimonou')
-  console.log(context)
-}
-const signUp = async () => {
-  const context = await signUpWithEAndP('pierrick.tly@gmail.com', 'salimonou')
-  console.log(context)
-}
-const signOut = async () => {
-  const context = await signOutApp()
-  console.log(context)
-}
+
+const { firebaseUser } = useUser();
+
+console.log(firebaseUser.value)
 </script>
 
 <template>

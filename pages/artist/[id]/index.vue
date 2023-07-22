@@ -1,11 +1,11 @@
 <script setup>
 const title = ref('Artist Page')
 const description = ref('Artist')
+const route = useRoute()
 const artist = ref(null)
 const imageBackground = ref(null)
 
 onMounted(async () => {
-  const route = useRoute()
   artist.value = await fetchArtistFullInfoById(route.params.id)
   imageBackground.value = artist.value.image
   title.value = artist.value.name
@@ -34,22 +34,27 @@ useHead({
   <div v-if="artist">
     <section
       class="background-top relative h-[20vh] overflow-hidden bg-cover bg-no-repeat md:h-[30vh] lg:h-[40vh] xl:h-[50vh] 2xl:h-[70vh]">
-      <nuxt-img :src="imageBackground" :alt="artist.name" class="absolute inset-0 h-full w-full object-cover" />
+      <nuxt-img :src="imageBackground" :alt="artist.name+'_back'" quality="80" loading="lazy" class="absolute inset-0 h-full w-full object-cover" />
       <div class="absolute inset-0 flex items-center bg-secondary/60 p-5 lg:p-10 xl:p-14 xl:px-32">
         <div class="flex items-end space-x-5">
           <div class="relative hidden overflow-hidden xl:block">
-            <img :src="imageBackground" :alt="artist.name"
+            <nuxt-img :src="imageBackground" :alt="artist.name" quality="80" loading="lazy"
               class="aspect-video h-80 rounded-md object-cover drop-shadow-2xl transition-all duration-150 hover:scale-105" />
           </div>
-          <div class="space-y-2 md:space-y-5">
+          <div class="space-y-2">
             <h1 class="font-semibold text-3xl md:text-6xl lg:text-7xl">
               {{ artist.name }}
             </h1>
-            <div v-if="artist.platforms" class="flex flex-wrap gap-3 md:gap-3">
+            <div v-if="artist.platforms.length" class="flex flex-wrap gap-3 md:gap-3">
               <LazyCbExternalLink v-for="link in artist.platforms" :key="link" :href="link" />
             </div>
-            <div v-if="artist.socials" class="flex flex-wrap gap-3 md:gap-3">
+            <div v-if="artist.socials.length" class="flex flex-wrap gap-3 md:gap-3">
               <LazyCbExternalLink v-for="link in artist.socials" :key="link" :href="link" />
+            </div>
+            <div>
+              <NuxtLink :to="'/edit/artist/' + route.params.id" class=" bg-secondary px-2 py-1 uppercase text-xs font-semibold">
+                Edit Artist
+              </NuxtLink>
             </div>
           </div>
         </div>
