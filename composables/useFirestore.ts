@@ -159,6 +159,8 @@ export const fetchArtistFullInfoById = async (idArtist: String) => {
   const colMember = query(collection($firestore, 'artists', idArtist, 'members'));
   // @ts-ignore
   const colRelease = query(collection($firestore, 'releases'), where('artistsId', '==', idArtist));
+  // @ts-ignore
+  const colNews = query(collection($firestore, 'news'), where('artist.id', '==', idArtist));
   
   const snapshot = await getDocs(colArtist);
 
@@ -188,6 +190,14 @@ export const fetchArtistFullInfoById = async (idArtist: String) => {
       ...doc.data()
     };
   });
+
+  // @ts-ignore
+  docs[0].news = Array.from((await getDocs(colNews)).docs).map((doc) => {
+    return {
+      ...doc.data()
+    };
+  });
+
 
   return docs[0];
 }
