@@ -151,7 +151,7 @@ useHead({
 </script>
 
 <template>
-  <div class="container mx-auto p-5 lg:px-10 min-h-[calc(100vh-60px)] space-y-5">
+  <div v-if="artist" class="container mx-auto p-5 lg:px-10 min-h-[calc(100vh-60px)] space-y-5">
     <p class="text-lg lg:text-xl font-semibold uppercase border-b border-zinc-700 pb-1">
       Artist Edition : {{ artistToEdit.name }}
     </p>

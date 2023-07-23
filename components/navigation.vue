@@ -23,7 +23,7 @@ onMounted(() => {
       class="animate__animated animate__fadeInDown px-5 rounded-full transition-all duration-500 ease-in-out">
       <div class="mx-auto flex justify-between py-3 2xl:container">
         <NuxtLink to="/">
-          <nuxt-img src="~/assets/image/logo.png" alt="Comeback" class="block h-8 w-auto" />
+          <img src="~/assets/image/logo.png" alt="Comeback" class="block h-8 w-auto" />
         </NuxtLink>
         <nav class="flex items-center justify-center text-sm space-x-5">
           <NuxtLink :to="`/`" :class="routeN.name === 'index' ? 'text-white' : 'text-zinc-500'">

@@ -4,9 +4,12 @@ const description = ref('Artist')
 const route = useRoute()
 const artist = ref(null)
 const imageBackground = ref(null)
+const editLink = ref('/artist/edit/' + route.params.id)
+
 
 onMounted(async () => {
   artist.value = await fetchArtistFullInfoById(route.params.id)
+  console.log(artist.value)
   imageBackground.value = artist.value.image
   title.value = artist.value.name
   description.value = artist.value.description
@@ -52,7 +55,7 @@ useHead({
               <LazyCbExternalLink v-for="link in artist.socials" :key="link" :href="link" />
             </div>
             <div>
-              <NuxtLink :to="'/edit/artist/' + route.params.id" class=" bg-secondary px-2 py-1 uppercase text-xs font-semibold">
+              <NuxtLink :to="editLink" class=" bg-secondary px-2 py-1 uppercase text-xs font-semibold">
                 Edit Artist
               </NuxtLink>
             </div>
@@ -85,16 +88,21 @@ useHead({
       <div v-if="groupMembers?.length">
         <CardDefault name="Subunit" class="space-y-3">
           <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
-            <LazyCardArtist v-for="groupMember in groupMembers" :id="groupMember.id" :key="groupMember.id"
-              :image="groupMember.image" :name="groupMember.name" />
+            <LazyCardArtist v-for="groupMember in groupMembers" :id="groupMember.id" :key="groupMember.id" :image="groupMember.image" :name="groupMember.name" />
           </transition-group>
         </CardDefault>
       </div>
       <div v-if="groups?.length">
         <CardDefault name="Group's Unit" class="space-y-3">
           <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
-            <LazyCardArtist v-for="group in groups" :id="group.id" :key="group.id" :image="group.image"
-              :name="group.name" />
+            <LazyCardArtist v-for="group in groups" :id="group.id" :key="group.id" :image="group.image" :name="group.name" />
+          </transition-group>
+        </CardDefault>
+      </div>
+      <div v-if="artist.news?.length">
+        <CardDefault name="Last Comeback">
+          <transition-group name="list-complete" tag="div" class="py-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
+            <LazyCardNews v-for="news in artist.news" :key="news.id" :message="news.message" :date="news.date" :artist="news.artist" />
           </transition-group>
         </CardDefault>
       </div>
