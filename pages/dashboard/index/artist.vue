@@ -66,10 +66,10 @@ watch([page], () => {
 
 <template>
   <div v-if="artistFetch" class="space-y-2">
-    <div id="searchbar" class="flex w-full justify-start">
+    <section id="searchbar" class="flex w-full justify-start">
       <input id="search-input" v-model="search" type="text" placeholder="Search" class="w-full rounded border-none bg-quinary py-2 px-5 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none" />
-    </div>
-    <div class="flex w-full justify-between">
+    </section>
+    <section class="flex w-full justify-between">
       <div class="flex space-x-2">
         <select v-model="sort" class="rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none">
           <option value="name">Name</option>
@@ -90,8 +90,8 @@ watch([page], () => {
         <button @click="page++" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Next</button>
         <button @click="page = nbPage" :disabled="startAt == 0" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Last</button>
       </div>
-    </div>
-    <transition-group id="artist-list" name="list-complete" tag="div"
+    </section>
+    <transition-group v-if="filteredArtistList.length > 0" id="artist-list" name="list-complete" tag="div"
       class="transition-all ease-in-out duration-300 grid grid-cols-1 items-center justify-center gap-5 md:grid-cols-2 xl:grid-cols-3">
       <LazyCardDashboardArtist  v-for="artist in filteredArtistList.slice(startAt, endAt)" :key="artist.id" 
         :id="artist.id"
@@ -106,5 +106,30 @@ watch([page], () => {
         :createdAt="artist.createdAt"
       />
     </transition-group>
+    <p v-else class="uppercase font-semibold bg-quaternary w-full p-5 text-center">
+      No artist found
+    </p>
+    <section class="flex w-full justify-between">
+      <div class="flex space-x-2">
+        <select v-model="sort" class="rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none">
+          <option value="name">Name</option>
+          <option value="type">Type</option>
+          <option value="createdAt">Last Created</option>
+        </select>
+        <button @click="invertSort = !invertSort" class="rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none">
+          <icon-sort v-if="!invertSort" class="h-6 w-6 text-tertiary" />
+          <icon-sort-reverse v-else class="h-6 w-6 text-tertiary" />
+        </button>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button @click="page = 1" :disabled="startAt == 0" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">First</button>
+        <button @click="page--" :disabled="startAt == 0" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Prev</button>
+        <input type="text"
+          class="w-10 text-center rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+          v-model.number="page" />
+        <button @click="page++" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Next</button>
+        <button @click="page = nbPage" :disabled="startAt == 0" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Last</button>
+      </div>
+    </section>
   </div>
 </template>

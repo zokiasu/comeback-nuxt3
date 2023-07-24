@@ -26,6 +26,14 @@ const signUp = async () => {
 const signOut = async () => {
   await signOutApp()
 }
+
+useHead({
+  title: 'Authentification',
+  meta: [{
+    name: 'description',
+    content: 'Authentification'
+  }]
+})
 </script>
 
 <template>

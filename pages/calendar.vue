@@ -20,6 +20,14 @@ watch([currentYear, currentMonth], async () => {
   endDate.value = new Date(currentYear.value, currentMonth.value + 1, 0)
   releases.value = await fetchReleasesByMonth(Timestamp.fromDate(startDate.value), Timestamp.fromDate(endDate.value))
 })
+
+useHead({
+  title: 'Releases Calendar',
+  meta: [{
+    name: 'description',
+    content: 'Releases Calendar'
+  }]
+})
 </script>
 
 <template>

@@ -9,7 +9,6 @@ const editLink = ref('/artist/edit/' + route.params.id)
 
 onMounted(async () => {
   artist.value = await fetchArtistFullInfoById(route.params.id)
-  console.log(artist.value)
   imageBackground.value = artist.value.image
   title.value = artist.value.name
   description.value = artist.value.description
@@ -39,7 +38,7 @@ useHead({
       class="background-top relative h-[20vh] overflow-hidden bg-cover bg-no-repeat md:h-[30vh] lg:h-[40vh] xl:h-[50vh] 2xl:h-[70vh]">
       <nuxt-img :src="imageBackground" :alt="artist.name+'_back'" quality="80" loading="lazy" class="absolute inset-0 h-full w-full object-cover" />
       <div class="absolute inset-0 flex items-center bg-secondary/60 p-5 lg:p-10 xl:p-14 xl:px-32">
-        <div class="flex items-end space-x-5">
+        <div class="flex items-center space-x-5">
           <div class="relative hidden overflow-hidden xl:block">
             <nuxt-img :src="imageBackground" :alt="artist.name" quality="80" loading="lazy"
               class="aspect-video h-80 rounded-md object-cover drop-shadow-2xl transition-all duration-150 hover:scale-105" />

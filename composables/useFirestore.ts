@@ -22,7 +22,8 @@ export const queryByCollection = async (col: string) => {
 
   const docs = Array.from(snapshot.docs).map((doc) => {
     return {
-      ...doc.data()
+      ...doc.data(),
+      taskID: doc.id
     };
   });
 
@@ -281,9 +282,80 @@ export const update = async (col: string, id: string, document:any) => {
 
 };
 
+export const updateArtist = async (id: string, document:any) => {
+  const {$firestore} = useNuxtApp();
+  const artistGroups = ref(null);
+  const artistMembers = ref(null);
+
+  if(document.groups) {
+    artistGroups.value = document.groups;
+    delete document.groups;
+    console.log('artistGroups', artistGroups.value);
+  }
+
+  if(document.members) {
+    artistMembers.value = document.members;
+    delete document.members;
+    console.log('artistMembers', artistMembers.value);
+  }
+
+  if(document.taskID) delete document.taskID;
+  if(document.createdAt) delete document.createdAt;
+
+  document.updatedAt = Timestamp.fromDate(new Date());
+
+  // @ts-ignore
+  const docRef = doc($firestore, 'artists', document.id);
+  await updateDoc(docRef, document);
+
+  if(artistGroups.value) {
+    console.log('artistGroups 2', artistGroups.value);
+    // @ts-ignore
+    const colGroup = collection($firestore, 'artists', document.id, 'groups');
+    const snapshot = await getDocs(colGroup);
+    const docs = Array.from(snapshot.docs).map((doc) => {
+      return {
+        ...doc.data()
+      };
+    });
+
+    docs.forEach(async (docU) => {
+      // @ts-ignore
+      await deleteDoc(doc($firestore, 'artists', document.id, 'groups', docU.id));
+    });
+
+    artistGroups.value?.forEach(async (group : Object) => {
+      // @ts-ignore
+      await setDoc(doc($firestore, 'artists', document.id, 'groups', group.id), group);
+    });
+  }
+
+  if(artistMembers.value) {
+    console.log('artistMembers 2', artistMembers.value);
+    // @ts-ignore
+    const colMember = collection($firestore, 'artists', document.id, 'members');
+    const snapshot = await getDocs(colMember);
+    const docs = Array.from(snapshot.docs).map((doc) => {
+      return {
+        ...doc.data()
+      };
+    });
+
+    docs.forEach(async (docU) => {
+      // @ts-ignore
+      await deleteDoc(doc($firestore, 'artists', document.id, 'members', docU.id));
+    });
+
+    artistMembers.value?.forEach(async (member : Object) => {
+      // @ts-ignore
+      await setDoc(doc($firestore, 'artists', document.id, 'members', member.id), member);
+    });
+  }
+}
+
 export const deleteByCollection = async (col : string, id : string) => {
   const {$firestore} = useNuxtApp();
-
+  // @ts-ignore
   const docRef = doc($firestore, col, id);
   return await deleteDoc(docRef);
 };

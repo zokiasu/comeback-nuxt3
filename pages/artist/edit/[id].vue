@@ -160,7 +160,7 @@ useHead({
       <div class="flex flex-col gap-2">
         <CbLabel label="Image" />
         <div class="space-y-5">
-          <nuxt-img :src="artistToEdit.image" :alt="artistToEdit.name" quality="80" loading="lazy"
+          <nuxt-img v-if="artistToEdit.image" :src="artistToEdit.image" :alt="artistToEdit.name" quality="80" loading="lazy"
             class="w-full rounded object-cover md:w-auto md:max-w-lg xl:max-w-xl" />
           <div>
             <input ref="imageFile" type="file" accept="image/png, image/jpeg"

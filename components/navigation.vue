@@ -38,7 +38,7 @@ onMounted(() => {
           <!-- <NuxtLink :to="`/`" :class="routeN.name === 'index' ? 'text-white' : 'text-zinc-500'">
           Profil
         </NuxtLink> -->
-          <NuxtLink :to="`/dashboard`" :class="routeN.name === 'dashboard' ? 'text-white' : 'text-zinc-500'">
+          <NuxtLink :to="`/dashboard/artist`" :class="routeN.name === 'dashboard-index-*' ? 'text-white' : 'text-zinc-500'">
             Dashboard
           </NuxtLink>
           <button @click="showModal = true"

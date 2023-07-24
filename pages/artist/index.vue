@@ -13,6 +13,14 @@ const filteredArtistList = computed(() => {
     return artist.name.toLowerCase().includes(search.value.toLowerCase())
   })
 })
+
+useHead({
+  title: 'Artist List',
+  meta: [{
+    name: 'description',
+    content: 'Artist List'
+  }]
+})
 </script>
 
 <template>
