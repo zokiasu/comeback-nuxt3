@@ -237,6 +237,22 @@ export const fetchArtistBasicInfoById = async (idArtist: String) => {
   return docs[0];
 }
 
+export const fetchArtistLimitedInfoById = async (idArtist: String) => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  const colArtist = query(collection($firestore, 'artists'), where('id', '==', idArtist));
+  
+  const snapshot = await getDocs(colArtist);
+
+  const docs = Array.from(snapshot.docs).map((doc) => {
+    return {
+      ...doc.data()
+    };
+  });
+
+  return docs[0];
+}
+
 export const set = async (col: string, document: Object) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
@@ -321,12 +337,19 @@ export const updateArtist = async (id: string, document:any) => {
 
     docs.forEach(async (docU) => {
       // @ts-ignore
-      await deleteDoc(doc($firestore, 'artists', document.id, 'groups', docU.id));
+      deleteDoc(doc($firestore, 'artists', document.id, 'groups', docU.id));
+      // @ts-ignore
+      deleteDoc(doc($firestore, 'artists', docU.id, 'members', document.id));
     });
 
     artistGroups.value?.forEach(async (group : Object) => {
       // @ts-ignore
       await setDoc(doc($firestore, 'artists', document.id, 'groups', group.id), group);
+      fetchArtistLimitedInfoById(document.id).then((artist) => {
+        // console.log('artist', artist);
+        // @ts-ignore
+        setDoc(doc($firestore, 'artists', group.id, 'members', artist.id), artist);
+      });
     });
   }
 
@@ -344,11 +367,18 @@ export const updateArtist = async (id: string, document:any) => {
     docs.forEach(async (docU) => {
       // @ts-ignore
       await deleteDoc(doc($firestore, 'artists', document.id, 'members', docU.id));
+      // @ts-ignore
+      await deleteDoc(doc($firestore, 'artists', docU.id, 'groups', document.id));
     });
 
     artistMembers.value?.forEach(async (member : Object) => {
       // @ts-ignore
       await setDoc(doc($firestore, 'artists', document.id, 'members', member.id), member);
+      fetchArtistLimitedInfoById(document.id).then((artist) => {
+        // console.log('artist', artist);
+        // @ts-ignore
+        setDoc(doc($firestore, 'artists', member.id, 'groups', artist.id), artist);
+      });
     });
   }
 }
