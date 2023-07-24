@@ -1,5 +1,7 @@
 <script setup>
+import { useToast } from "vue-toastification";
 const artistUpdateList = ref([])
+const toast = useToast();
 
 onMounted(async () => {
   artistUpdateList.value = await queryByCollection('updateArtistPending')
@@ -8,12 +10,46 @@ onMounted(async () => {
 const deleteEdition = async (id, index) => {
   await deleteByCollection('updateArtistPending', id)
   artistUpdateList.value.splice(index, 1)
+  toast.success('Artist Pending Deleted', {
+    position: 'top-right',
+    timeout: 5000,
+    closeOnClick: true,
+    pauseOnFocusLoss: false,
+    pauseOnHover: true,
+    draggable: true,
+    draggablePercent: 0.6,
+    showCloseButtonOnHover: false,
+    hideProgressBar: false,
+    closeButton: 'button',
+    icon: true,
+    rtl: false,
+    transition: 'Vue-Toastification__bounce',
+    maxToasts: 5,
+    newestOnTop: true,
+  })
 }
 
 const confirmEdition = async (id, artist, index) => {
   updateArtist(id, artist).then(async () => {
     await deleteByCollection('updateArtistPending', id)
     artistUpdateList.value.splice(index, 1)
+    toast.success('Artist Updated', {
+      position: 'top-right',
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: false,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: false,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+      transition: 'Vue-Toastification__bounce',
+      maxToasts: 5,
+      newestOnTop: true,
+    })
   })
 }
 </script>

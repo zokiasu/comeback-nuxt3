@@ -53,5 +53,11 @@ export default defineNuxtConfig({
   colorMode: {
     classSuffix: ''
   },
-  devtools: { enabled: true }
+  devtools: { enabled: true },
+  
+  build:{
+    // vue-toastification - old commonjs module 
+    transpile: ['vue-toastification'],
+  }
+
 })

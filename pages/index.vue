@@ -1,9 +1,4 @@
 <script setup>
-
-const { firebaseUser } = useUser();
-
-// console.log(firebaseUser.value)
-
 useHead({
   title: 'Comeback',
   htmlAttrs: {

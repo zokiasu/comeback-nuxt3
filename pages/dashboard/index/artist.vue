@@ -87,8 +87,8 @@ watch([page], () => {
         <input type="text"
           class="w-10 text-center rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
           v-model.number="page" />
-        <button @click="page++" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Next</button>
-        <button @click="page = nbPage" :disabled="startAt == 0" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Last</button>
+        <button @click="page++" :disabled="startAt == nbPage" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Next</button>
+        <button @click="page = nbPage" :disabled="startAt == nbPage" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Last</button>
       </div>
     </section>
     <transition-group v-if="filteredArtistList.length > 0" id="artist-list" name="list-complete" tag="div"
@@ -127,8 +127,8 @@ watch([page], () => {
         <input type="text"
           class="w-10 text-center rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
           v-model.number="page" />
-        <button @click="page++" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Next</button>
-        <button @click="page = nbPage" :disabled="startAt == 0" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Last</button>
+        <button @click="page++" :disabled="startAt == nbPage" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Next</button>
+        <button @click="page = nbPage" :disabled="startAt == nbPage" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Last</button>
       </div>
     </section>
   </div>

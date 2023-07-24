@@ -20,7 +20,7 @@ const soloMembers = computed(() => {
 })
 // computed groupMembers
 const groupMembers = computed(() => {
-  return artist.value.members.filter((member) => member.type === 'GROUP')
+  return artist.value.groups.filter((member) => member.type === 'GROUP')
 })
 
 useHead({
