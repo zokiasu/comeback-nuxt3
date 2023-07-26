@@ -5,7 +5,7 @@ onBeforeMount(async () => {
   const today = new Date()
   today.setDate(today.getDate() - 7)
   const todayTimestamp = Timestamp.fromDate(today)
-  releases.value = await fetchReleases(todayTimestamp, 8)
+  releases.value = await fetchReleasesWithDateAndLimit(todayTimestamp, 8)
 })
 </script>
 <template>

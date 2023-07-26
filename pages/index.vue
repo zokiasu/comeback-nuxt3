@@ -33,9 +33,6 @@ useHead({
         </p>
         <p class="text-[3vw] xl:text-3xl">Track every next release by your favorite artists</p>
       </div>
-      <p class="absolute bottom-5 left-0 right-0 sm:hidden">
-        <!-- <icons-arrow-down class="animate-bounce w-5 h-5 mx-auto" /> -->
-      </p>
     </section>
     <div class="container mx-auto p-5 min-h-screen">
       <div class="rounded-lg space-y-8">

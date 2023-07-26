@@ -46,7 +46,22 @@ export const fetchNews = async (startDate: Timestamp, limitNumber: Number) => {
   return docs;
 }
 
-export const fetchReleases = async (startDate: Timestamp, limitNumber: Number) => {
+export const fetchReleasesWithDate = async () => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  const colRef = query(collection($firestore, 'releases'), orderBy('date', 'desc'));
+  return getDocs(colRef).then((snapshot) => {
+    const docs = Array.from(snapshot.docs).map((doc) => {
+      // @ts-ignore
+      return {
+        ...doc.data()
+      };
+    });
+    return docs;
+  });
+}
+
+export const fetchReleasesWithDateAndLimit = async (startDate: Timestamp, limitNumber: Number) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
   const colRef = query(collection($firestore, 'releases'), where('date', '>=', startDate), orderBy('date', 'desc'), limit(limitNumber));
@@ -387,5 +402,10 @@ export const deleteByCollection = async (col : string, id : string) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
   const docRef = doc($firestore, col, id);
-  return await deleteDoc(docRef);
+  console.log('delete', col, id)
+  await deleteDoc(docRef).then(() => {
+    console.log('deleteByCollection : Document successfully deleted!');
+  }).catch((error) => {
+    console.error('deleteByCollection : Error removing document: ', error);
+  })
 };

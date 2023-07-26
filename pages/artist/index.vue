@@ -8,7 +8,7 @@ onMounted(async () => {
 const search = ref('')
 
 const startAt = ref(0)
-const endAt = ref(32)
+const endAt = ref(40)
 const page = ref(1)
 
 const filteredArtistList = computed(() => {
@@ -27,16 +27,16 @@ const filteredArtistList = computed(() => {
   }
 })
 
-// nombre de page pour afficher 32 artist parmis le nombre d'artist total
+// nombre de page pour afficher 40 artist parmis le nombre d'artist total
 const nbPage = computed(() => {
-  return Math.ceil(filteredArtistList.value.length / 32)
+  return Math.ceil(filteredArtistList.value.length / 40)
 })
 
 watch([page], () => {
   if (page.value > nbPage.value) page.value = nbPage.value
   if (page.value < 1) page.value = 1
-  startAt.value = (page.value - 1) * 32
-  endAt.value = page.value * 32
+  startAt.value = (page.value - 1) * 40
+  endAt.value = page.value * 40
 })
 
 useHead({

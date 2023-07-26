@@ -52,7 +52,7 @@ const createdAtDate = new Date(createdAt.seconds * 1000).toLocaleDateString('fr-
 
 <template>
   <div class="list-complete-item h-full bg-quaternary p-3 rounded space-y-3">
-    <nuxt-img :src="image" :alt="name" quality="30" loading="lazy" class="rounded bg-zinc-500" />
+    <nuxt-img :src="image" :alt="name" quality="30" loading="lazy" class="rounded bg-zinc-500 aspect-video object-cover" />
     <div class="flex w-full items-center justify-between">
       <div>
         <p class="space-x-1">
@@ -93,7 +93,7 @@ const createdAtDate = new Date(createdAt.seconds * 1000).toLocaleDateString('fr-
 
     <div class="space-y-2">
       <p class="text-sm font-semibold uppercase border-b border-zinc-500 pb-1">Platforms</p>
-      <div v-if="platforms.length" class="flex flex-col space-y-1">
+      <div v-if="platforms.length" class="flex flex-col space-y-1 overflow-hidden">
         <a v-for="platform in platforms" :key="platform" :href="platform" target="_blank" 
         class="bg-quinary text-xs px-2 py-1 rounded">
           {{ platform }}
