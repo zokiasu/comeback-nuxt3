@@ -1,10 +1,24 @@
 <script setup>
-import { Timestamp } from 'firebase/firestore';
 import { useToast } from "vue-toastification";
 const toast = useToast();
+const toastOption = {
+  position: 'top-right',
+  timeout: 5000,
+  closeOnClick: true,
+  pauseOnFocusLoss: false,
+  pauseOnHover: true,
+  draggable: true,
+  draggablePercent: 0.6,
+  showCloseButtonOnHover: false,
+  hideProgressBar: false,
+  closeButton: 'button',
+  icon: true,
+  rtl: false,
+  transition: 'Vue-Toastification__bounce',
+  maxToasts: 5,
+  newestOnTop: true,
+}
 const releaseFetch = ref(null)
-const currentYear = ref(new Date().getFullYear())
-const startDate = ref(new Date(currentYear.value, 0, 1))
 
 const search = ref('')
 const sort = ref('date')
@@ -28,61 +42,13 @@ const deleteRelease = async (id) => {
     await deleteByCollection('releases', id).then(() => {
       console.log('Document successfully deleted!')
       releaseFetch.value.splice(index, 1)
-      toast.success('Release Deleted', {
-        position: 'top-right',
-        timeout: 5000,
-        closeOnClick: true,
-        pauseOnFocusLoss: false,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 0.6,
-        showCloseButtonOnHover: false,
-        hideProgressBar: false,
-        closeButton: 'button',
-        icon: true,
-        rtl: false,
-        transition: 'Vue-Toastification__bounce',
-        maxToasts: 5,
-        newestOnTop: true,
-      })
+      toast.success('Release Deleted', toastOption)
     }).catch((error) => {
       console.error('Error removing document: ', error)
-      toast.error('Error Removing Release', {
-        position: 'top-right',
-        timeout: 5000,
-        closeOnClick: true,
-        pauseOnFocusLoss: false,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 0.6,
-        showCloseButtonOnHover: false,
-        hideProgressBar: false,
-        closeButton: 'button',
-        icon: true,
-        rtl: false,
-        transition: 'Vue-Toastification__bounce',
-        maxToasts: 5,
-        newestOnTop: true,
-      })
+      toast.error('Error Removing Release', toastOption)
     })
   } else {
-    toast.error('Release Not Found', {
-      position: 'top-right',
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: false,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: false,
-      closeButton: 'button',
-      icon: true,
-      rtl: false,
-      transition: 'Vue-Toastification__bounce',
-      maxToasts: 5,
-      newestOnTop: true,
-    })
+    toast.error('Release Not Found', toastOption)
   }
 }
 

@@ -48,6 +48,10 @@ const createdAtDate = new Date(createdAt.seconds * 1000).toLocaleDateString('fr-
   year: '2-digit',
 })
 
+const emit = defineEmits(['deleteArtist'])
+const deleteArtist = () => {
+  emit('deleteArtist', id)
+}
 </script>
 
 <template>
@@ -65,7 +69,7 @@ const createdAtDate = new Date(createdAt.seconds * 1000).toLocaleDateString('fr-
       </div>
       <div class="space-x-1">
         <NuxtLink :to="'/artist/edit/' + id" target="_blank" class="bg-quinary uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Edit</NuxtLink>
-        <button class="bg-quinary uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Delete</button>
+        <button @click="deleteArtist" class="bg-quinary uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Delete</button>
       </div>
     </div>
 
