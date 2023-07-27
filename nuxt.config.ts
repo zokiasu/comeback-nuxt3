@@ -18,16 +18,21 @@ export default defineNuxtConfig({
       FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
     }
   },
+
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
   },
+
   modules: [
     '@nuxtjs/tailwindcss',
     '@nuxtjs/color-mode',
     '@nuxt/image',
     '@vueuse/nuxt',
     'nuxt-vuefire',
+    '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt',
   ],
+
   vuefire: {
     config: {
       apiKey: process.env.FIREBASE_API_KEY,
@@ -43,6 +48,15 @@ export default defineNuxtConfig({
     //   serviceAccount: 'path/to/credentials.json',
     // }
   },
+
+  imports: {
+    dirs: ['./stores'],
+  },
+
+  pinia: {
+    autoImports: ['defineStore', 'acceptHMRUpdate'],
+  },
+
   tailwindcss:{
     cssPath: '~/assets/css/tailwind.css',
     configPath: 'tailwind.config.js',
@@ -50,9 +64,11 @@ export default defineNuxtConfig({
     injectPosition: 0,
     viewer: true,
   },
+
   colorMode: {
     classSuffix: ''
   },
+
   devtools: { enabled: true },
   
   build:{

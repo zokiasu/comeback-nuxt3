@@ -1,5 +1,6 @@
 import {
   collection,
+  getDoc,
   getDocs,
   addDoc,
   deleteDoc,
@@ -26,6 +27,18 @@ export const queryByCollection = async (col: string) => {
       taskID: doc.id
     };
   });
+
+  return docs;
+};
+
+export const queryByDoc = async (col: string, id: string) => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  const colRef = doc($firestore, col, id);
+
+  const snapshot = await getDoc(colRef);
+
+  const docs = snapshot.data();
 
   return docs;
 };
@@ -97,6 +110,7 @@ export const fetchReleaseById = async (idRelease: String) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
   const colRelease = query(collection($firestore, 'releases'), where('id', '==', idRelease));
+  // @ts-ignore
   const colMusic = query(collection($firestore, 'releases', idRelease, 'musics'));
   
   const snapshotRelease = await getDocs(colRelease);
@@ -321,13 +335,11 @@ export const updateArtist = async (id: string, document:any) => {
   if(document.groups) {
     artistGroups.value = document.groups;
     delete document.groups;
-    console.log('artistGroups', artistGroups.value);
   }
 
   if(document.members) {
     artistMembers.value = document.members;
     delete document.members;
-    console.log('artistMembers', artistMembers.value);
   }
 
   if(document.taskID) delete document.taskID;
@@ -340,7 +352,6 @@ export const updateArtist = async (id: string, document:any) => {
   await updateDoc(docRef, document);
 
   if(artistGroups.value) {
-    console.log('artistGroups 2', artistGroups.value);
     // @ts-ignore
     const colGroup = collection($firestore, 'artists', document.id, 'groups');
     const snapshot = await getDocs(colGroup);
@@ -361,7 +372,6 @@ export const updateArtist = async (id: string, document:any) => {
       // @ts-ignore
       await setDoc(doc($firestore, 'artists', document.id, 'groups', group.id), group);
       fetchArtistLimitedInfoById(document.id).then((artist) => {
-        // console.log('artist', artist);
         // @ts-ignore
         setDoc(doc($firestore, 'artists', group.id, 'members', artist.id), artist);
       });
@@ -369,7 +379,6 @@ export const updateArtist = async (id: string, document:any) => {
   }
 
   if(artistMembers.value) {
-    console.log('artistMembers 2', artistMembers.value);
     // @ts-ignore
     const colMember = collection($firestore, 'artists', document.id, 'members');
     const snapshot = await getDocs(colMember);
@@ -390,7 +399,6 @@ export const updateArtist = async (id: string, document:any) => {
       // @ts-ignore
       await setDoc(doc($firestore, 'artists', document.id, 'members', member.id), member);
       fetchArtistLimitedInfoById(document.id).then((artist) => {
-        // console.log('artist', artist);
         // @ts-ignore
         setDoc(doc($firestore, 'artists', member.id, 'groups', artist.id), artist);
       });
@@ -402,9 +410,8 @@ export const deleteByCollection = async (col : string, id : string) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
   const docRef = doc($firestore, col, id);
-  console.log('delete', col, id)
+  
   await deleteDoc(docRef).then(() => {
-    console.log('deleteByCollection : Document successfully deleted!');
   }).catch((error) => {
     console.error('deleteByCollection : Error removing document: ', error);
   })

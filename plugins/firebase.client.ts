@@ -19,7 +19,6 @@ export default defineNuxtPlugin((nuxtApp) => {
   // const analytics = getAnalytics(app);
   const auth = getAuth(app);
   const firestore = getFirestore(app);
-  // console.log('auth', auth)
 
   const { firebaseUser } = useUser();
   

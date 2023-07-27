@@ -15,6 +15,11 @@ const { name, placeholder, value } = defineProps({
   disabled: {
     type: Boolean,
     required: false
+  },
+  type: {
+    type: String,
+    default: 'text',
+    required: false
   }
 })
 </script>
@@ -22,7 +27,7 @@ const { name, placeholder, value } = defineProps({
 <template>
   <div class="flex flex-col gap-1">
     <CbLabel v-if="label" :disabled="disabled" :label="label" />
-    <input type="text" :placeholder="placeholder" :value="value" :disabled="disabled"
+    <input :type="type" :placeholder="placeholder" :value="value" :disabled="disabled"
       class="bg-transparent border-b appearance-none transition-all ease-in-out duration-150 focus:p-1.5 focus:outline-none focus:bg-tertiary focus:text-secondary focus:rounded"
       :class="{ 'text-zinc-500 border-zinc-500': disabled }">
   </div>

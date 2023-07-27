@@ -32,7 +32,6 @@ const needToBeVerifiedFilter = ref(false)
 
 onMounted(async () => {
   releaseFetch.value = await fetchReleasesWithDate()
-  console.log(releaseFetch.value)
 })
 
 const deleteRelease = async (id) => {

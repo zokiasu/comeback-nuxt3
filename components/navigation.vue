@@ -1,8 +1,23 @@
 <script setup>
-// import { Modal } from '@kouts/vue-modal'
+import { Modal } from '@kouts/vue-modal'
+
 const routeN = useRoute()
+
 const navbar = ref(null)
 const showModal = ref(false)
+const artistFetch = ref(null)
+const userRole = ref(null)
+
+const userIsLogin = useUser().isUserLogin()
+const userData = useUser().useUserData()
+
+onMounted(async () => {
+  artistFetch.value = await fetchArtists()
+  window.addEventListener('scroll', handleScroll)
+
+  userData.value = await useUser().getDatabaseUser()
+  userRole.value = userData?.value?.role
+})
 
 function handleScroll() {
   if (window.scrollY > 50) {
@@ -12,9 +27,11 @@ function handleScroll() {
   }
 }
 
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
-})
+const signOut = async () => {
+  await signOutApp()
+  const router = useRouter()
+  router.push('/')
+}
 </script>
 
 <template>
@@ -35,24 +52,27 @@ onMounted(() => {
           <NuxtLink :to="`/artist`" :class="routeN.name === 'artist' ? 'text-white' : 'text-zinc-500'">
             Artists
           </NuxtLink>
-          <!-- <NuxtLink :to="`/`" :class="routeN.name === 'index' ? 'text-white' : 'text-zinc-500'">
-          Profil
-        </NuxtLink> -->
-          <NuxtLink :to="`/dashboard/artist`" :class="routeN.name === 'dashboard-index-*' ? 'text-white' : 'text-zinc-500'">
+          <NuxtLink v-if="userIsLogin && userRole === 'ADMIN'" :to="`/dashboard/artist`" :class="routeN.name === 'dashboard-index-*' ? 'text-white' : 'text-zinc-500'">
             Dashboard
           </NuxtLink>
-          <button @click="showModal = true"
+          <button v-if="userIsLogin" @click="showModal = true"
             class="text-primary font-bold hover:text-red-500 hover:scale-110 transition-all ease-in-out duration-300">
             New Comeback
           </button>
+          <NuxtLink v-if="!userIsLogin" :to="`/authentification`" :class="routeN.name === 'authentification' ? 'text-white' : 'text-zinc-500'">
+            Log In
+          </NuxtLink>
+          <button v-else @click="signOut" :class="routeN.name === 'authentification' ? 'text-white' : 'text-zinc-500'">
+            Log Out
+          </button>
         </nav>
       </div>
-      <!-- <Modal v-model="showModal" title="Add a News" wrapper-class="animate__animated modal-wrapper"
+      <Modal v-model="showModal" title="Add a News" wrapper-class="animate__animated modal-wrapper"
         :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
         :in-class="`animate__fadeInDown`" :out-class="`animate__bounceOut`" bg-class="animate__animated"
         :bg-in-class="`animate__fadeInUp`" :bg-out-class="`animate__fadeOutDown`">
         <p>Modal content goes here...</p>
-      </Modal> -->
+      </Modal>
     </div>
   </div>
 </template>
