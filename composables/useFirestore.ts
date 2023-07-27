@@ -43,6 +43,23 @@ export const queryByDoc = async (col: string, id: string) => {
   return docs;
 };
 
+export const fetchAllNews = async () => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  const colRef = query(collection($firestore, 'news'), orderBy('date', 'desc'));
+  
+  const snapshot = await getDocs(colRef);
+
+  const docs = Array.from(snapshot.docs).map((doc) => {
+    return {
+      ...doc.data(),
+      taskID: doc.id
+    };
+  });
+
+  return docs;
+}
+
 export const fetchNews = async (startDate: Timestamp, limitNumber: Number) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore

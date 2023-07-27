@@ -59,6 +59,7 @@ const loadingDone = () => {
 }
 
 const emit = defineEmits(['deleteRelease'])
+
 const deleteRelease = () => {
   emit('deleteRelease', id)
 }
@@ -86,7 +87,7 @@ const deleteRelease = () => {
         :alt="name" 
         quality="30" 
         loading="lazy" 
-        class="rounded bg-zinc-500" 
+        class="rounded" 
         @load="loadingDone"
       />
     </div>
