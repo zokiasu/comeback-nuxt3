@@ -42,6 +42,8 @@ const { id, image, name, description, type, idYoutubeMusic, styles, socials, pla
   },
 })
 
+const skeleton = ref(null)
+
 const createdAtDate = new Date(createdAt.seconds * 1000).toLocaleDateString('fr-FR', {
   day: '2-digit',
   month: '2-digit',
@@ -52,11 +54,28 @@ const emit = defineEmits(['deleteArtist'])
 const deleteArtist = () => {
   emit('deleteArtist', id)
 }
+
+const loadingDone = () => {
+  skeleton.value.classList.add('opacity-0')
+}
 </script>
 
 <template>
-  <div class="list-complete-item h-full bg-quaternary p-3 rounded space-y-3">
-    <nuxt-img :src="image" :alt="name" quality="30" loading="lazy" class="rounded bg-zinc-500 aspect-video object-cover" />
+  <div class="list-complete-item h-full bg-quaternary p-3 rounded space-y-3 relative">
+    <div class="relative">
+      <div
+        ref="skeleton"
+        class="absolute z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
+      ></div>
+      <nuxt-img 
+        :src="image" 
+        :alt="name" 
+        quality="30" 
+        loading="lazy"  
+        @load="loadingDone"
+        class="rounded bg-zinc-500 aspect-video object-cover"
+      />
+    </div>
     <div class="flex w-full items-center justify-between">
       <div>
         <p class="space-x-1">

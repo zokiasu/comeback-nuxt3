@@ -18,13 +18,24 @@ const { id, image, name, dimension } = defineProps({
       'min-h-[5rem] min-w-[5rem] md:min-h-[8rem] md:min-w-[8rem] max-h-[5rem] max-w-[5rem] md:max-h-[8rem] md:max-w-[8rem]',
   },
 })
+
+const skeleton = ref(null)
+
+const loadingDone = () => {
+  skeleton.value.classList.add('opacity-0')
+}
 </script>
 
 <template>
   <div class="space-y-2">
     <NuxtLink :to="`/artist/${id}`">
-      <div>
-        <nuxt-img :src="image" :alt="name" quality="80" loading="lazy"
+      <div class="relative">
+        <div
+          ref="skeleton"
+           :class="dimension"
+          class="absolute mx-auto aspect-square rounded-full z-10 inset-0 bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
+        ></div>
+        <nuxt-img :src="image" :alt="name" quality="80" loading="lazy" @load="loadingDone"
           class="bg-zinc-500 mx-auto aspect-square rounded-full object-cover" :class="dimension" />
       </div>
     </NuxtLink>

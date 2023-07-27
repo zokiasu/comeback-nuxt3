@@ -46,11 +46,17 @@ const { id, artistsName, createdAt, date, idYoutubeMusic, image, name, needToBeV
   },
 })
 
+const skeleton = ref(null)
+
 const releaseDate = new Date(date.seconds * 1000).toLocaleDateString('fr-FR', {
   day: '2-digit',
   month: '2-digit',
   year: '2-digit',
 })
+
+const loadingDone = () => {
+  skeleton.value.classList.add('opacity-0')
+}
 
 const emit = defineEmits(['deleteRelease'])
 const deleteRelease = () => {
@@ -70,7 +76,20 @@ const deleteRelease = () => {
       </p>
     </div>
     <p v-if="needToBeVerified" class="absolute bg-red-500 text-xs rounded-full px-2 font-semibold">Need To Be Verified</p>
-    <nuxt-img :src="image" :alt="name" quality="30" loading="lazy" class="rounded bg-zinc-500" />
+    <div class="relative">
+      <div
+        ref="skeleton"
+        class="absolute z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
+      ></div>
+      <nuxt-img 
+        :src="image" 
+        :alt="name" 
+        quality="30" 
+        loading="lazy" 
+        class="rounded bg-zinc-500" 
+        @load="loadingDone"
+      />
+    </div>
 
     <div>
       <NuxtLink :to="'/release/' + id" target="_blank" class="font-semibold hover:text-primary transition-all ease-in-out duration-300">

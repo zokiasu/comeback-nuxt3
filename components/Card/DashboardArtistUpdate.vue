@@ -52,22 +52,39 @@ const { id, taskId, image, name, description, type, idYoutubeMusic, styles, soci
 
 const artist = ref(null)
 
+const skeleton = ref(null)
+const skeleton_changed = ref(null)
+
 onMounted(async () => {
   artist.value = await fetchArtistFullInfoById(id)
 })
+
+const loadingDone = () => {
+  skeleton.value.classList.add('opacity-0')
+}
+const loadingDoneChanged = () => {
+  skeleton_changed.value.classList.add('opacity-0')
+}
 </script>
 
 <template>
   <div v-if="artist" class="grid gap-2 grid-rows-2 md:grid-cols-2 md:grid-rows-none">
     <section class="list-complete-item bg-quaternary p-3 rounded space-y-2">
       <p class="font-semibold text-center uppercase border-b border-zinc-500 pb-0.5">Original Data</p>
-      <nuxt-img 
-        :src="artist.image"
-        :alt="artist.name"
-        quality="30"
-        loading="lazy"
-        class="rounded bg-zinc-500"
-      />
+      <div class="relative">
+        <div
+          ref="skeleton"
+          class="absolute z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
+        ></div>
+        <nuxt-img 
+          :src="artist.image"
+          :alt="artist.name"
+          quality="30"
+          loading="lazy" 
+          @load="loadingDone"
+          class="rounded bg-zinc-500"
+        />
+      </div>
       <!-- General Info -->
       <div class="text-sm">
         <p>
@@ -149,14 +166,20 @@ onMounted(async () => {
     </section>
     <section class="list-complete-item bg-quaternary p-3 rounded space-y-2">
       <p class="font-semibold text-center uppercase border-b border-zinc-500 pb-0.5">Data Changed</p>
-      <nuxt-img
-        v-if="image"
-        :src="image"
-        alt="image changed"
-        quality="30"
-        loading="lazy"
-        class="rounded bg-zinc-500"
-      />
+      <div v-if="image" class="relative">
+        <div
+          ref="skeleton_changed"
+          class="absolute z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
+        ></div>
+        <nuxt-img
+          :src="image"
+          alt="image changed"
+          quality="30"
+          loading="lazy"
+          @load="loadingDoneChanged"
+          class="rounded bg-zinc-500"
+        />
+      </div>
       <!-- General Info -->
       <div class="text-sm">
         <p v-if="name">

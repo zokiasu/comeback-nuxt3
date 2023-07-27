@@ -34,6 +34,8 @@ const { id, image, date, name, type, artistsId, artistsName, displayDate } = def
   },
 })
 
+const skeleton = ref(null)
+
 const dateTimestamp = ref(null)
 onBeforeMount(() => {
   dateTimestamp.value = new Date(date.seconds * 1000).toLocaleDateString('fr-FR', {
@@ -42,13 +44,21 @@ onBeforeMount(() => {
     year: '2-digit',
   })
 })
+
+const loadingDone = () => {
+  skeleton.value.classList.add('opacity-0')
+}
 </script>
 
 <template>
   <div class="min-w-[8rem] max-w-[8rem] space-y-2">
     <NuxtLink :to="`/release/${id}`">
       <div class="group relative">
-        <nuxt-img :src="image" :alt="name" quality="80" loading="lazy"
+        <div
+          ref="skeleton"
+          class="absolute z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
+        ></div>
+        <nuxt-img :src="image" :alt="name" quality="80" loading="lazy" @load="loadingDone"
           class="aspect-square bg-zinc-500 max-h-[8rem] min-h-[8rem] w-full rounded object-cover drop-shadow-2xl" />
 
         <div v-if="displayDate"

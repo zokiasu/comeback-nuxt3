@@ -17,6 +17,8 @@ const { message, date, artist } = defineProps({
   }
 })
 
+const skeleton = ref(null)
+
 function daysUntil(futureDate) {
   // Récupère la date d'aujourd'hui
   const today = new Date()
@@ -64,14 +66,22 @@ function isSameDate(date) {
     inputDate.getDate() === today.getDate()
   )
 }
+
+const loadingDone = () => {
+  skeleton.value.classList.add('opacity-0')
+}
 </script>
 
 <template>
   <NuxtLink :to="`/artist/${artist.id}`"
     class="flex flex-col md:flex-row w-full overflow-hidden rounded-lg transition-all duration-500 ease-in-out hover:scale-110 hover:drop-shadow-lg">
     <div class="flex h-full w-full items-center space-x-5 bg-quinary py-3 md:p-3">
-      <div class="hidden lg:block">
-        <nuxt-img :src="artist.image" :alt="artist.name + 's picture'" quality="80" loading="lazy" class="shadowCard h-10 w-10 rounded-full object-cover"/>
+      <div class="hidden lg:block relative">
+        <div
+          ref="skeleton"
+          class="absolute h-10 w-10 mx-auto aspect-square rounded-full z-10 inset-0 bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
+        ></div>
+        <nuxt-img :src="artist.image" :alt="artist.name + 's picture'" quality="80" loading="lazy" @load="loadingDone" class="shadowCard h-10 w-10 rounded-full object-cover"/>
       </div>
       <div>
         <h2 class="text-xs lg:text-sm font-semibold">
