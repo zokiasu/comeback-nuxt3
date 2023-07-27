@@ -19,11 +19,6 @@ export const useUser = () => {
 
         return result.success;
     };
-    
-    const isLogin = computed(() => {
-        if (!user.value) return false;
-        return true;
-    });
 
     const getDatabaseUser = async () => {
         if (!user.value) return null;
@@ -46,7 +41,6 @@ export const useUser = () => {
         markOnboardingComplete,
         useUserData,
         isUserLogin,
-        isLogin,
         getDatabaseUser,
         user,
         auth,

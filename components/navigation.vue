@@ -8,7 +8,7 @@ const showModal = ref(false)
 const artistFetch = ref(null)
 const userRole = ref(null)
 
-const userIsLogin = useUser().isUserLogin()
+const isLogin = useUser().isUserLogin()
 const userData = useUser().useUserData()
 
 onMounted(async () => {
@@ -52,14 +52,14 @@ const signOut = async () => {
           <NuxtLink :to="`/artist`" :class="routeN.name === 'artist' ? 'text-white' : 'text-zinc-500'">
             Artists
           </NuxtLink>
-          <NuxtLink v-if="userIsLogin && userRole === 'ADMIN'" :to="`/dashboard/artist`" :class="routeN.name === 'dashboard-index-*' ? 'text-white' : 'text-zinc-500'">
+          <NuxtLink v-if="isLogin && userRole === 'ADMIN'" :to="`/dashboard/artist`" :class="routeN.name === 'dashboard-index-*' ? 'text-white' : 'text-zinc-500'">
             Dashboard
           </NuxtLink>
-          <button v-if="userIsLogin" @click="showModal = true"
+          <button v-if="isLogin" @click="showModal = true"
             class="text-primary font-bold hover:text-red-500 hover:scale-110 transition-all ease-in-out duration-300">
             New Comeback
           </button>
-          <NuxtLink v-if="!userIsLogin" :to="`/authentification`" :class="routeN.name === 'authentification' ? 'text-white' : 'text-zinc-500'">
+          <NuxtLink v-if="!isLogin" :to="`/authentification`" :class="routeN.name === 'authentification' ? 'text-white' : 'text-zinc-500'">
             Log In
           </NuxtLink>
           <button v-else @click="signOut" :class="routeN.name === 'authentification' ? 'text-white' : 'text-zinc-500'">
