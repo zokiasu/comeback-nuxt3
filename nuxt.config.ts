@@ -37,13 +37,6 @@ export default defineNuxtConfig({
       measurementId: process.env.FIREBASE_MEASUREMENT_ID,
     },
     auth: true,
-    // admin: {
-    //   serviceAccount: 'path/to/credentials.json',
-    // }
-  },
-
-  imports: {
-    dirs: ['./stores'],
   },
 
   pinia: {
@@ -56,10 +49,6 @@ export default defineNuxtConfig({
     exposeConfig: false,
     injectPosition: 0,
     viewer: true,
-  },
-
-  colorMode: {
-    classSuffix: ''
   },
 
   devtools: { enabled: true },
