@@ -76,7 +76,9 @@ const deleteRelease = () => {
         {{ idYoutubeMusic }}
       </p>
     </div>
+
     <p v-if="needToBeVerified" class="absolute bg-red-500 text-xs rounded-full px-2 font-semibold">Need To Be Verified</p>
+    
     <div class="relative">
       <div
         ref="skeleton"

@@ -24,6 +24,39 @@ onMounted(async () => {
   artistFetch.value = await fetchArtists()
 })
 
+const deleteArtist = async (id) => {
+  const artist = artistFetch.value.find((artist) => artist.id === id)
+  if (artist) {
+    const index = artistFetch.value.indexOf(artist)
+    await deleteByCollection('artists', id).then(() => {
+      console.log('Document successfully deleted!')
+      artistFetch.value.splice(index, 1)
+      toast.success('Artist Deleted', toastOption)
+    }).catch((error) => {
+      console.error('Error removing document: ', error)
+      toast.error('Error Removing Artist', toastOption)
+    })
+  } else {
+    toast.error('Release Not Found', {
+      position: 'top-right',
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: false,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: false,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+      transition: 'Vue-Toastification__bounce',
+      maxToasts: 5,
+      newestOnTop: true,
+    })
+  }
+}
+
 const search = ref('')
 const sort = ref('createdAt')
 const invertSort = ref(true)
@@ -70,43 +103,9 @@ const filteredArtistList = computed(() => {
   }
 })
 
-// nombre de page pour afficher 9 artist parmis le nombre d'artist total
 const nbPage = computed(() => {
   return Math.ceil(filteredArtistList.value.length / 9)
 })
-
-const deleteArtist = async (id) => {
-  const artist = artistFetch.value.find((artist) => artist.id === id)
-  if (artist) {
-    const index = artistFetch.value.indexOf(artist)
-    await deleteByCollection('artists', id).then(() => {
-      console.log('Document successfully deleted!')
-      artistFetch.value.splice(index, 1)
-      toast.success('Artist Deleted', toastOption)
-    }).catch((error) => {
-      console.error('Error removing document: ', error)
-      toast.error('Error Removing Artist', toastOption)
-    })
-  } else {
-    toast.error('Release Not Found', {
-      position: 'top-right',
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: false,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: false,
-      closeButton: 'button',
-      icon: true,
-      rtl: false,
-      transition: 'Vue-Toastification__bounce',
-      maxToasts: 5,
-      newestOnTop: true,
-    })
-  }
-}
 
 watch([page], () => {
   if(page.value > nbPage.value) page.value = nbPage.value
@@ -143,18 +142,25 @@ watch([page], () => {
         <button @click="page = nbPage" :disabled="startAt == nbPage" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Last</button>
       </div>
     </section>
-    <transition-group v-if="filteredArtistList.length > 0" id="artist-list" name="list-complete" tag="div"
-      class="transition-all ease-in-out duration-300 grid grid-cols-1 items-center justify-center gap-5 md:grid-cols-2 xl:grid-cols-3">
-      <LazyCardDashboardArtist  v-for="artist in filteredArtistList.slice(startAt, endAt)" :key="artist.id" 
+    <transition-group 
+      v-if="filteredArtistList.length > 0" 
+      id="artist-list" 
+      name="list-complete" 
+      tag="div"
+      class="transition-all ease-in-out duration-300 grid grid-cols-1 items-center justify-center gap-5 md:grid-cols-2 xl:grid-cols-3"
+    >
+      <LazyCardDashboardArtist
+        v-for="artist in filteredArtistList.slice(startAt, endAt)"
+        :key="artist.id"
         :id="artist.id"
-        :image="artist.image" 
-        :name="artist.name" 
-        :description="artist.description" 
-        :type="artist.type" 
-        :idYoutubeMusic="artist.idYoutubeMusic" 
-        :styles="artist.styles" 
-        :socials="artist.socials" 
-        :platforms="artist.platforms" 
+        :image="artist.image"
+        :name="artist.name"
+        :description="artist.description"
+        :type="artist.type"
+        :idYoutubeMusic="artist.idYoutubeMusic"
+        :styles="artist.styles"
+        :socials="artist.socials"
+        :platforms="artist.platforms"
         :createdAt="artist.createdAt"
         @deleteArtist="deleteArtist"
       />

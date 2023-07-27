@@ -100,7 +100,6 @@ const filteredNewsList = computed(() => {
   }
 })
 
-// nombre de page pour afficher 9 artist parmis le nombre d'artist total
 const nbPage = computed(() => {
   return Math.ceil(filteredNewsList.value.length / 9)
 })
