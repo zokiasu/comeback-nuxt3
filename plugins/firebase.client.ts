@@ -20,13 +20,15 @@ export default defineNuxtPlugin((nuxtApp) => {
   const auth = getAuth(app);
   const firestore = getFirestore(app);
 
-  const { firebaseUser } = useUser();
+  const { firebaseUser, isLogin } = useUser();
   
   auth.onAuthStateChanged((userState) => {
     if (userState) {
       firebaseUser.value = userState
+      isLogin.value = true
     } else {
       firebaseUser.value = null;
+      isLogin.value = false;
     }
   });
 

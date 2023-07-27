@@ -1,22 +1,34 @@
 <script setup>
-// import { Modal } from '@kouts/vue-modal'
-
 const routeN = useRoute()
 
 const navbar = ref(null)
 const showModal = ref(false)
 const artistFetch = ref(null)
-const userRole = ref(null)
 
-const isLogin = useUser().isUserLogin()
-const userData = useUser().useUserData()
+const user = ref(null)
+const userData = ref(null)
+const userRole = ref(null)
+const isLogin = ref(null)
 
 onMounted(async () => {
   artistFetch.value = await fetchArtists()
   window.addEventListener('scroll', handleScroll)
 
+  isLogin.value = useUser().isLogin.value
+  console.log('isLogin', isLogin.value)
+
+  user.value = useUser().firebaseUser.value
+  console.log('user', user.value)
+
   userData.value = await useUser().getDatabaseUser()
-  userRole.value = userData?.value?.role
+  console.log('userData', userData.value)
+
+  userRole.value = userData.value.role
+})
+
+// watch
+watch(() => useUser().isLogin.value, (value) => {
+  isLogin.value = value
 })
 
 function handleScroll() {
@@ -52,7 +64,7 @@ const signOut = async () => {
           <NuxtLink :to="`/artist`" :class="routeN.name === 'artist' ? 'text-white' : 'text-zinc-500'">
             Artists
           </NuxtLink>
-          <NuxtLink v-if="isLogin && userRole === 'ADMIN'" :to="`/dashboard/artist`" :class="routeN.name === 'dashboard-index-*' ? 'text-white' : 'text-zinc-500'">
+          <NuxtLink v-if="isLogin && userRole == 'ADMIN'" :to="`/dashboard/artist`" :class="routeN.name === 'dashboard-index-*' ? 'text-white' : 'text-zinc-500'">
             Dashboard
           </NuxtLink>
           <button v-if="isLogin" @click="showModal = true"
@@ -67,12 +79,6 @@ const signOut = async () => {
           </button>
         </nav>
       </div>
-      <!-- <Modal v-model="showModal" title="Add a News" wrapper-class="animate__animated modal-wrapper"
-        :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-        :in-class="`animate__fadeInDown`" :out-class="`animate__bounceOut`" bg-class="animate__animated"
-        :bg-in-class="`animate__fadeInUp`" :bg-out-class="`animate__fadeOutDown`">
-        <p>Modal content goes here...</p>
-      </Modal> -->
     </div>
   </div>
 </template>

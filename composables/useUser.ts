@@ -1,16 +1,12 @@
+import { useCurrentUser, useFirebaseAuth } from 'vuefire';
 import { User, UserCredential } from 'firebase/auth';
-import { useCurrentUser, useFirebaseAuth } from 'vuefire'
 
 export const useUser = () => {
+    const userCredentials = useState<UserCredential | null>('userCredentials', () => null);
+    const firebaseUser = useState<User | null>('user', () => null);
 
     const auth = useFirebaseAuth()!; // only exists on client side
     const user = useCurrentUser();
-
-    // User credentials - contains info after signing in
-    const userCredentials = useState<UserCredential | null> ( 'userCredentials', () => null );
-
-    // Firebase user object - contains user info
-    const firebaseUser = useState<User | null>('user', () => null);
 
     const markOnboardingComplete = async (workspaceId: string) => {
         const { $trpcClient } = useNuxtApp();
@@ -21,28 +17,24 @@ export const useUser = () => {
     };
 
     const getDatabaseUser = async () => {
-        if (!user.value) return null;
+        if (user.value == null) return null;
 
         const result = await queryByDoc('users', user.value.uid);
 
-        if (result) {
-            return result;
-        }
+        if (result) return result;
 
         return null;
     };
 
-    const useUserData = () => useState<Object>('userData', () => null);
-    const isUserLogin = () => useState<boolean>('isLogin', () => user.value !== null);
+    const isLogin = useState<boolean>('isLogin', () => false);
 
     return {
         userCredentials,
         firebaseUser,
-        markOnboardingComplete,
-        useUserData,
-        isUserLogin,
-        getDatabaseUser,
-        user,
+        isLogin,
         auth,
+        user,
+        markOnboardingComplete,
+        getDatabaseUser,
     };
 };

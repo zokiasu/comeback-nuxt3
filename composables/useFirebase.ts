@@ -31,6 +31,7 @@ export const signInWithEAndP = async (email: string, password: string) => {
 }
 
 export const signOutApp = async () => {
+  console.log('signOutApp')
   const { $auth } = useNuxtApp();
   const result = await $auth.signOut()
   return result;
