@@ -17,7 +17,7 @@ useHead({
     { hid: 'og:image', property: 'og:image', content: 'https://nuxt-firebase-auth.vercel.app/ogp.png' },
   ],
   link: [
-    { rel: 'icon', type: 'image/x-icon', href: '/public/favicon.ico' },
+    { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
   ]
 })
 </script>

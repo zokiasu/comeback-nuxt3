@@ -1,4 +1,5 @@
 <script setup>
+import { Modal } from '@kouts/vue-modal'
 const routeN = useRoute()
 
 const navbar = ref(null)
@@ -30,10 +31,6 @@ const signOut = async () => {
   const router = useRouter()
   router.push('/')
 }
-</script>
-
-<script>
-import { Modal } from '@kouts/vue-modal'
 </script>
 
 <template>

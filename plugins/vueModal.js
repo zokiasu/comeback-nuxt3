@@ -1,6 +1,7 @@
-import { Modal } from '@kouts/vue-modal'
+import * as mdl from '@kouts/vue-modal'
 import '@kouts/vue-modal/dist/vue-modal.css'
 
 export default defineNuxtPlugin(nuxtApp => {
-  // nuxtApp.vueApp.use(Modal);
+  const { Modal } = mdl
+  nuxtApp.vueApp.use(Modal);
 })
