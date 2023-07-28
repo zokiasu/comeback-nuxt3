@@ -28,10 +28,16 @@ export const useUser = () => {
 
     const isLogin = useState<boolean>('isLogin', () => false);
 
+    const isAdmin = useState<boolean>('isAdmin', () => false);
+
+    const userData = useState<any>('userData', () => null);
+
     return {
         userCredentials,
         firebaseUser,
+        isAdmin,
         isLogin,
+        userData,
         auth,
         user,
         markOnboardingComplete,

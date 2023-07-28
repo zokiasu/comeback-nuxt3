@@ -51,6 +51,24 @@ const deleteRelease = async (id) => {
   }
 }
 
+const verifiedRelease = async (id) => {
+  const release = releaseFetch.value.find((release) => release.id === id)
+  if (release) {
+    const index = releaseFetch.value.indexOf(release)
+    release.needToBeVerified = false
+    update('releases', id, release).then(() => {
+      console.log('Document successfully updated!')
+      releaseFetch.value.splice(index, 1, release)
+      toast.success('Release Verified', toastOption)
+    }).catch((error) => {
+      console.error('Error updating document: ', error)
+      toast.error('Error Updating Release', toastOption)
+    })
+  } else {
+    toast.error('Release Not Found', toastOption)
+  }
+}
+
 const filteredReleaseList = computed(() => {
   if (page != 1) page.value = 1
   if (!releaseFetch.value) return releaseFetch.value
@@ -197,6 +215,7 @@ watch([page], () => {
         :type="release.type"
         :yearReleased="release.year"
         @deleteRelease="deleteRelease"
+        @verifiedRelease="verifiedRelease"
       />
     </transition-group>
     <p v-else class="uppercase font-semibold bg-quaternary w-full p-5 text-center">

@@ -6,6 +6,7 @@ const artist = ref(null)
 const imageBackground = ref(null)
 const editLink = ref('/artist/edit/' + route.params.id)
 
+const { isAdmin } = useUser();
 
 onMounted(async () => {
   artist.value = await fetchArtistFullInfoById(route.params.id)
@@ -53,7 +54,7 @@ useHead({
             <div v-if="artist.socials.length" class="flex flex-wrap gap-3 md:gap-3">
               <LazyCbExternalLink v-for="link in artist.socials" :key="link" :href="link" />
             </div>
-            <div>
+            <div v-if="isAdmin">
               <NuxtLink :to="editLink" class=" bg-secondary px-2 py-1 uppercase text-xs font-semibold">
                 Edit Artist
               </NuxtLink>

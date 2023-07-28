@@ -58,10 +58,14 @@ const loadingDone = () => {
   skeleton.value.classList.add('opacity-0')
 }
 
-const emit = defineEmits(['deleteRelease'])
+const emit = defineEmits(['deleteRelease', 'verifiedRelease'])
 
 const deleteRelease = () => {
   emit('deleteRelease', id)
+}
+
+const verifiedRelease = () => {
+  emit('verifiedRelease', id)
 }
 </script>
 
@@ -77,7 +81,7 @@ const deleteRelease = () => {
       </p>
     </div>
 
-    <p v-if="needToBeVerified" class="absolute bg-red-500 text-xs rounded-full px-2 font-semibold">Need To Be Verified</p>
+    <p v-if="needToBeVerified" class="absolute bg-red-500 text-xs rounded-full px-2 font-semibold z-50">Need To Be Verified</p>
     
     <div class="relative">
       <div
@@ -117,7 +121,8 @@ const deleteRelease = () => {
     <div class="flex w-full items-center justify-between">
       <p class="text-xs uppercase">Release date : <span class="font-bold">{{ releaseDate }}</span></p>
       <div class="space-x-1">
-        <!-- <NuxtLink :to="'/artist/edit/' + id" target="_blank" class="bg-quinary uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Edit</NuxtLink> -->
+        <!-- <NuxtLink :to="'/release/edit/' + id" target="_blank" class="bg-quinary uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Edit</NuxtLink> -->
+          <button @click="verifiedRelease" class="bg-quinary uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Verified</button>
         <button @click="deleteRelease" class="bg-quinary uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Delete</button>
       </div>
     </div>

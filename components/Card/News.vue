@@ -74,7 +74,7 @@ const loadingDone = () => {
 
 <template>
   <NuxtLink :to="`/artist/${artist.id}`"
-    class="flex flex-col md:flex-row w-full overflow-hidden rounded-lg transition-all duration-500 ease-in-out hover:scale-110 hover:drop-shadow-lg">
+    class="flex flex-col md:flex-row w-full overflow-hidden rounded-lg transition-all duration-500 ease-in-out hover:scale-110 hover:drop-shadow-lg hover:z-20">
     <div class="flex h-full w-full items-center space-x-5 bg-quinary py-3 md:p-3">
       <div class="hidden lg:block relative">
         <div
