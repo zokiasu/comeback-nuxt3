@@ -14,6 +14,6 @@
 
 <script>
 export default {
-  name: 'IconsYoutubeMusic',
+  name: 'IconYoutubeMusic',
 }
 </script>

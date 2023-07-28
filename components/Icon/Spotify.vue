@@ -10,6 +10,6 @@
 
 <script>
 export default {
-  name: 'IconsSpotify',
+  name: 'IconSpotify',
 }
 </script>

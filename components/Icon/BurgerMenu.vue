@@ -16,6 +16,6 @@
 
 <script>
 export default {
-  name: 'IconsBurgerMenu',
+  name: 'IconBurgerMenu',
 }
 </script>

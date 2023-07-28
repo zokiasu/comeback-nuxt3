@@ -9,6 +9,6 @@
 
 <script>
 export default {
-  name: 'IconsArrowDown',
+  name: 'IconArrowDown',
 }
 </script>

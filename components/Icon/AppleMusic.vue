@@ -55,6 +55,6 @@
 
 <script>
 export default {
-  name: 'IconsAppleMusic',
+  name: 'IconAppleMusic',
 }
 </script>

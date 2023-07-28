@@ -27,6 +27,6 @@
 
 <script>
 export default {
-  name: 'IconsWeibo',
+  name: 'IconWeibo',
 }
 </script>

@@ -32,6 +32,6 @@
 
 <script>
 export default {
-  name: 'IconsSearch',
+  name: 'IconSearch',
 }
 </script>

@@ -84,6 +84,6 @@
 
 <script>
 export default {
-  name: 'IconsInstagram',
+  name: 'IconInstagram',
 }
 </script>

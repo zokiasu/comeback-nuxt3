@@ -15,6 +15,6 @@
 
 <script>
 export default {
-  name: 'IconsComeback',
+  name: 'IconComeback',
 }
 </script>

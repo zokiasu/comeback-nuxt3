@@ -9,6 +9,6 @@
 
 <script>
 export default {
-  name: 'IconsHeartFilled',
+  name: 'IconHeartFilled',
 }
 </script>

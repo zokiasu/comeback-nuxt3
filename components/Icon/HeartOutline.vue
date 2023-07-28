@@ -9,6 +9,6 @@
 
 <script>
 export default {
-  name: 'IconsHeartOutline',
+  name: 'IconHeartOutline',
 }
 </script>

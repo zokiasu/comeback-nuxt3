@@ -78,7 +78,7 @@ useHead({
       </div>
       <div v-if="artist.releases?.length">
         <CardDefault name="Releases" class="space-y-3">
-          <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
+          <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3 justify-between lg:justify-start">
             <LazyCardRelease v-for="release in artist.releases" :key="release.id" :id="release.id" :image="release.image"
               :date="release.date" :name="release.name" :type="release.type" :artistsId="release.artistsId"
               :artistsName="release.artistsName" :displayDate="true" />

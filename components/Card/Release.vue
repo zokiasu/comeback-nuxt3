@@ -51,7 +51,7 @@ const loadingDone = () => {
 </script>
 
 <template>
-  <div class="min-w-[8rem] max-w-[8rem] space-y-2">
+  <div class="min-w-[10rem] max-w-[10rem] space-y-2">
     <NuxtLink :to="`/release/${id}`">
       <div class="group relative">
         <div
@@ -59,7 +59,7 @@ const loadingDone = () => {
           class="absolute z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
         ></div>
         <nuxt-img :src="image" :alt="name" quality="80" loading="lazy" @load="loadingDone"
-          class="aspect-square bg-zinc-500 max-h-[8rem] min-h-[8rem] w-full rounded object-cover drop-shadow-2xl" />
+          class="aspect-square bg-zinc-500 max-h-[10rem] min-h-[10rem] w-full rounded object-cover drop-shadow-2xl" />
 
         <div v-if="displayDate"
           class="invisible absolute top-2 right-1.5 rounded bg-quinary bg-opacity-80 px-2 py-0.5 group-hover:visible">

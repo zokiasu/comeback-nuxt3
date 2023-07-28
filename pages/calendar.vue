@@ -58,7 +58,7 @@ useHead({
         </div>
       </div>
     </div>
-    <transition-group name="list" tag="div" class="flex flex-wrap items-center justify-center gap-5">
+    <transition-group name="list" tag="div" class="flex flex-wrap items-center justify-between lg:justify-center gap-5">
       <LazyCardRelease v-for="release in releases" :key="release.id" :id="release.id" :image="release.image"
         :date="release.date" :name="release.name" :type="release.type" :artistsId="release.artistsId"
         :artistsName="release.artistsName" :displayDate="true" />

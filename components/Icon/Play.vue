@@ -15,6 +15,6 @@
 
 <script>
 export default {
-  name: 'IconsPlay',
+  name: 'IconPlay',
 }
 </script>

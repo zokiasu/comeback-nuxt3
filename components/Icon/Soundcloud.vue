@@ -10,6 +10,6 @@
 
 <script>
 export default {
-  name: 'IconsSoundcloud',
+  name: 'IconSoundcloud',
 }
 </script>

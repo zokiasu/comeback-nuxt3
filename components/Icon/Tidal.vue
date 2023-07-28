@@ -16,6 +16,6 @@
 
 <script>
 export default {
-  name: 'IconsTidal',
+  name: 'IconTidal',
 }
 </script>

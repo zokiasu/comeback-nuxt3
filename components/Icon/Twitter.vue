@@ -9,6 +9,6 @@
 
 <script>
 export default {
-  name: 'IconsTwitter',
+  name: 'IconTwitter',
 }
 </script>

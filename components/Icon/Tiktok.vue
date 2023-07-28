@@ -25,6 +25,6 @@
 
 <script>
 export default {
-  name: 'IconsTiktok',
+  name: 'IconTiktok',
 }
 </script>
