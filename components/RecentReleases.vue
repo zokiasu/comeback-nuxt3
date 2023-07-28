@@ -10,7 +10,7 @@ onBeforeMount(async () => {
 </script>
 <template>
   <CardDefault name="Recent Releases" :class="{ 'hidden': !releases }">
-    <div class="py-5 grid grid-cols-2 gap-5 w-full md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
+    <div class="py-5 grid grid-cols-2 gap-5 w-full md:grid-cols-4 lg:grid-cols-6 2xl:grid-cols-8">
       <LazyCardRelease 
         v-for="release in releases" 
         :key="release.id" 
