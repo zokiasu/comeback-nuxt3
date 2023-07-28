@@ -1,5 +1,8 @@
 <script setup>
-import { Modal } from '@kouts/vue-modal'
+import * as Mdl from '@kouts/vue-modal'
+
+const { Modal } = Mdl
+
 const routeN = useRoute()
 
 const navbar = ref(null)
