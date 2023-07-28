@@ -32,6 +32,10 @@ const signOut = async () => {
 }
 </script>
 
+<script>
+import { Modal } from '@kouts/vue-modal'
+</script>
+
 <template>
   <div class="sticky top-0 py-2 px-3 xl:py-3 z-50 transition-all duration-500 ease-in-out">
     <div ref="navbar" class="animate__animated animate__fadeInDown px-5 rounded-full transition-all duration-500 ease-in-out">
@@ -65,5 +69,11 @@ const signOut = async () => {
         </nav>
       </div>
     </div>
+    <Modal v-model="showModal" title="Add a News" wrapper-class="animate__animated modal-wrapper"
+    :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
+    :in-class="`animate__fadeInDown`" :out-class="`animate__bounceOut`" bg-class="animate__animated"
+    :bg-in-class="`animate__fadeInUp`" :bg-out-class="`animate__fadeOutDown`">
+    <p>Modal content goes here...</p>
+    </Modal>
   </div>
 </template>
