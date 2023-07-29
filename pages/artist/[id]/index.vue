@@ -15,13 +15,13 @@ onMounted(async () => {
   description.value = artist.value.description
 })
 
-// computed Solo members
-const soloMembers = computed(() => {
+// computed members
+const members = computed(() => {
   return artist.value.members.filter((member) => member.type === 'SOLO')
 })
-// computed groupMembers
-const groupMembers = computed(() => {
-  return artist.value.groups.filter((member) => member.type === 'GROUP')
+// computed subUnitMembers
+const subUnitMembers = computed(() => {
+  return artist.value.members.filter((member) => member.type === 'GROUP')
 })
 
 useHead({
@@ -68,10 +68,10 @@ useHead({
       <p v-if="artist.description" class="whitespace-pre-line">
         {{ artist.description }}
       </p>
-      <div v-if="soloMembers?.length">
+      <div v-if="members?.length">
         <CardDefault name="Members" class="space-y-3">
           <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
-            <LazyCardArtist v-for="soloMember in soloMembers" :id="soloMember.id" :key="soloMember.id"
+            <LazyCardArtist v-for="soloMember in members" :id="soloMember.id" :key="soloMember.id"
               :image="soloMember.image" :name="soloMember.name" />
           </transition-group>
         </CardDefault>
@@ -85,17 +85,17 @@ useHead({
           </transition-group>
         </CardDefault>
       </div>
-      <div v-if="groupMembers?.length">
+      <div v-if="subUnitMembers?.length">
         <CardDefault name="Subunit" class="space-y-3">
           <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
-            <LazyCardArtist v-for="groupMember in groupMembers" :id="groupMember.id" :key="groupMember.id" :image="groupMember.image" :name="groupMember.name" />
+            <LazyCardArtist v-for="groupMember in subUnitMembers" :id="groupMember.id" :key="groupMember.id" :image="groupMember.image" :name="groupMember.name" />
           </transition-group>
         </CardDefault>
       </div>
-      <div v-if="groups?.length">
-        <CardDefault name="Group's Unit" class="space-y-3">
+      <div v-if="artist.groups?.length">
+        <CardDefault name="Group" class="space-y-3">
           <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
-            <LazyCardArtist v-for="group in groups" :id="group.id" :key="group.id" :image="group.image" :name="group.name" />
+            <LazyCardArtist v-for="group in artist.groups" :id="group.id" :key="group.id" :image="group.image" :name="group.name" />
           </transition-group>
         </CardDefault>
       </div>

@@ -3,10 +3,27 @@ import * as fire from 'firebase/storage'
 import VueMultiselect from 'vue-multiselect'
 import { Timestamp } from 'firebase/firestore';
 import { useToast } from "vue-toastification";
+const toast = useToast();
+const toastOption = {
+  position: 'top-right',
+  timeout: 5000,
+  closeOnClick: true,
+  pauseOnFocusLoss: false,
+  pauseOnHover: true,
+  draggable: true,
+  draggablePercent: 0.6,
+  showCloseButtonOnHover: false,
+  hideProgressBar: false,
+  closeButton: 'button',
+  icon: true,
+  rtl: false,
+  transition: 'Vue-Toastification__bounce',
+  maxToasts: 5,
+  newestOnTop: true,
+}
 
 const title = ref('Edit Artist Page')
 const description = ref('Edit Artist Page')
-const toast = useToast();
 
 const isUploadingImage = ref(false)
 const route = useRoute()
@@ -67,44 +84,12 @@ const uploadImageFile = async (files) => {
       downloadUrl.value = await fire.getDownloadURL(fileRef.value)
       artistToEdit.value.image = downloadUrl.value
       isUploadingImage.value = false
-      toast.success('Image Upload', {
-        position: 'top-right',
-        timeout: 5000,
-        closeOnClick: true,
-        pauseOnFocusLoss: false,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 0.6,
-        showCloseButtonOnHover: false,
-        hideProgressBar: false,
-        closeButton: 'button',
-        icon: true,
-        rtl: false,
-        transition: 'Vue-Toastification__bounce',
-        maxToasts: 5,
-        newestOnTop: true,
-      })
+      toast.success('Image Upload', toastOption)
     })
     .catch((error) => {
       console.error('error', error)
       isUploadingImage.value = false
-      toast.warning('Image Upload Failed', {
-        position: 'top-right',
-        timeout: 5000,
-        closeOnClick: true,
-        pauseOnFocusLoss: false,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 0.6,
-        showCloseButtonOnHover: false,
-        hideProgressBar: false,
-        closeButton: 'button',
-        icon: true,
-        rtl: false,
-        transition: 'Vue-Toastification__bounce',
-        maxToasts: 5,
-        newestOnTop: true,
-      })
+      toast.warning('Image Upload Failed', toastOption)
     })
 }
 
@@ -172,42 +157,10 @@ const updateArtist = async () => {
 
   add('updateArtistPending', artistToEdit.value).then(() => {
     console.log('Document successfully written!')
-    toast.success('Artist Update', {
-      position: 'top-right',
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: false,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: false,
-      closeButton: 'button',
-      icon: true,
-      rtl: false,
-      transition: 'Vue-Toastification__bounce',
-      maxToasts: 5,
-      newestOnTop: true,
-    })
+    toast.success('Artist Update', toastOption)
   }).catch((error) => {
     console.error('Error writing document: ', error)
-    toast.warning('Artist Update Failed', {
-      position: 'top-right',
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: false,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: false,
-      closeButton: 'button',
-      icon: true,
-      rtl: false,
-      transition: 'Vue-Toastification__bounce',
-      maxToasts: 5,
-      newestOnTop: true,
-    })
+    toast.warning('Artist Update Failed', toastOption)
   })
 }
 

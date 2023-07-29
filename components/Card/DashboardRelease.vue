@@ -9,11 +9,11 @@ const { id, artistsName, createdAt, date, idYoutubeMusic, image, name, needToBeV
     required: true,
   },
   createdAt: {
-    type: String,
+    type: Object,
     required: true,
   },
   date: {
-    type: String,
+    type: Object,
     required: true,
   },
   idYoutubeMusic: {
@@ -41,7 +41,7 @@ const { id, artistsName, createdAt, date, idYoutubeMusic, image, name, needToBeV
     required: true,
   },
   yearReleased: {
-    type: String,
+    type: Number,
     required: true,
   },
 })

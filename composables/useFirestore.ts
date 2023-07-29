@@ -24,7 +24,7 @@ export const queryByCollection = async (col: string) => {
   const docs = Array.from(snapshot.docs).map((doc) => {
     return {
       ...doc.data(),
-      taskID: doc.id
+      taskId: doc.id
     };
   });
 
@@ -53,7 +53,7 @@ export const fetchAllNews = async () => {
   const docs = Array.from(snapshot.docs).map((doc) => {
     return {
       ...doc.data(),
-      taskID: doc.id
+      taskId: doc.id
     };
   });
 
@@ -359,7 +359,7 @@ export const updateArtist = async (id: string, document:any) => {
     delete document.members;
   }
 
-  if(document.taskID) delete document.taskID;
+  if(document.taskId) delete document.taskId;
   if(document.createdAt) delete document.createdAt;
 
   document.updatedAt = Timestamp.fromDate(new Date());

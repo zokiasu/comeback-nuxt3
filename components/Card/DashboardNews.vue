@@ -46,6 +46,9 @@ const deleteNews = () => {
 
 <template>
   <div class="list-complete-item h-full bg-quaternary p-3 rounded space-y-2.5 relative">
+    <p>
+      News ID : {{ id }}
+    </p>
     <div class="grid grid-cols-2 gap-5">
       <div class="space-y-2">
         <CbLabel label="Artist" class="border-b border-zinc-500" />
@@ -55,6 +58,7 @@ const deleteNews = () => {
             class="absolute h-14 z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
           ></div>
           <nuxt-img 
+            v-if="artist.image"
             :src="artist.image" 
             :alt="artist.name" 
             quality="30" 
@@ -76,6 +80,7 @@ const deleteNews = () => {
             class="absolute h-14 z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
           ></div>
           <nuxt-img 
+            v-if="user.picture"
             :src="user.picture" 
             :alt="user.name" 
             quality="30" 

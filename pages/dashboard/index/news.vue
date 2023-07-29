@@ -25,7 +25,7 @@ const sort = ref('date')
 const invertSort = ref(true)
 
 const startAt = ref(0)
-const endAt = ref(9)
+const endAt = ref(12)
 const page = ref(1)
 
 onMounted(async () => {
@@ -33,10 +33,12 @@ onMounted(async () => {
 })
 
 const deleteNews = async (id) => {
-  const news = newsFetch.value.find((news) => news.id === id)
-  if (news) {
-    const index = newsFetch.value.indexOf(news)
-    await deleteNewsById(id).then(async () => {
+  console.log('deleteNews', id)
+  const newsToDelete = newsFetch.value.find((news) => news.taskId === id)
+
+  if (newsToDelete) {
+    const index = newsFetch.value.indexOf(newsToDelete)
+    await deleteByCollection('news', id).then(async () => {
       console.log('Document successfully deleted!')
       newsFetch.value.splice(index, 1)
       toast.success('News deleted', toastOption)
@@ -101,14 +103,14 @@ const filteredNewsList = computed(() => {
 })
 
 const nbPage = computed(() => {
-  return Math.ceil(filteredNewsList.value.length / 9)
+  return Math.ceil(filteredNewsList.value.length / 12)
 })
 
 watch([page], () => {
   if (page.value > nbPage.value) page.value = nbPage.value
   if (page.value < 1) page.value = 1
-  startAt.value = (page.value - 1) * 9
-  endAt.value = page.value * 9
+  startAt.value = (page.value - 1) * 12
+  endAt.value = page.value * 12
 })
 </script>
 
@@ -164,7 +166,7 @@ watch([page], () => {
         :date="news.date"
         :user="news.user"
         :verified="news.verified"
-        @deleteNews="deleteNews"
+        @deleteNews="deleteNews(news.taskId)"
       />
     </transition-group>
   </div>

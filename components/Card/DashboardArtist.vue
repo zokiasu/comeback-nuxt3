@@ -37,7 +37,7 @@ const { id, image, name, description, type, idYoutubeMusic, styles, socials, pla
     required: true,
   },
   createdAt: {
-    type: String,
+    type: Object,
     required: true,
   },
 })

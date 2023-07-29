@@ -60,7 +60,7 @@ const confirmEdition = async (id, artist, index) => {
       <div v-for="(artist, index) in artistUpdateList" :key="artist.id" class="list-complete-item bg-zinc-500 h-full w-full p-2 space-y-2">
         <CardDashboardArtistUpdate 
           :id="artist.id"
-          :taskId="artist.taskID"
+          :taskId="artist.taskId"
           :name="artist.name"
           :image="artist.image"
           :description="artist.description"
@@ -73,10 +73,10 @@ const confirmEdition = async (id, artist, index) => {
           :members="artist.members"
         />
         <div class="grid grid-cols-2 gap-2">
-          <button @click="confirmEdition(artist.taskID, artist, index)" class="bg-green-700 font-semibold rounded uppercase transition-all ease-in-out duration-300 hover:bg-green-500">
+          <button @click="confirmEdition(artist.taskId, artist, index)" class="bg-green-700 font-semibold rounded uppercase transition-all ease-in-out duration-300 hover:bg-green-500">
             Confirm
           </button>
-          <button @click="deleteEdition(artist.taskID, index)" class="bg-red-700 font-semibold rounded uppercase transition-all ease-in-out duration-300 hover:bg-red-500">
+          <button @click="deleteEdition(artist.taskId, index)" class="bg-red-700 font-semibold rounded uppercase transition-all ease-in-out duration-300 hover:bg-red-500">
             Reject
           </button>
         </div>

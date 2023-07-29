@@ -55,7 +55,7 @@ export default defineNuxtConfig({
   
   build:{
     // vue-toastification - old commonjs module 
-    transpile: ['vue-toastification'],
+    transpile: ['vue-toastification', '@vuepic/vue-datepicker'],
   }
 
 })
