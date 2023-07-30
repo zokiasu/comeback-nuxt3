@@ -142,8 +142,8 @@ watch([page], () => {
           class="w-10 text-center rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
           v-model.number="page"
         />
-        <button @click="page++" :disabled="startAt == nbPage" class="bg-quinary aspect-square sm:aspect-auto h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Next</button>
-        <button @click="page = nbPage" :disabled="startAt == nbPage" class="bg-quinary aspect-square sm:aspect-auto h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Last</button>
+        <button @click="page++" :disabled="page == nbPage" class="bg-quinary aspect-square sm:aspect-auto h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Next</button>
+        <button @click="page = nbPage" :disabled="page == nbPage" class="bg-quinary aspect-square sm:aspect-auto h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Last</button>
       </div>
     </section>
     <transition-group 

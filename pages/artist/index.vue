@@ -70,7 +70,7 @@ useHead({
           />/ {{ nbPage }}
         </div>
         <button @click="page++" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Next</button>
-        <button @click="page = nbPage" :disabled="startAt == nbPage" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Last</button>
+        <button @click="page = nbPage" :disabled="page == nbPage" class="bg-quinary h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Last</button>
       </div>
     </section>
     <transition-group v-if="filteredArtistList.length > 0" id="artist-list" name="list" tag="div"
@@ -99,7 +99,7 @@ useHead({
         />/ {{ nbPage }}
       </div>
       <button @click="page++" class="bg-quinary h-full uppercase px-2 py-1 rounded hover:bg-zinc-500">Next</button>
-      <button @click="page = nbPage" :disabled="startAt == nbPage" class="bg-quinary h-full uppercase px-2 py-1 rounded hover:bg-zinc-500">Last</button>
+      <button @click="page = nbPage" :disabled="page == nbPage" class="bg-quinary h-full uppercase px-2 py-1 rounded hover:bg-zinc-500">Last</button>
     </div>
   </div>
 </template>
