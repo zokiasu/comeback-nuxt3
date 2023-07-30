@@ -31,14 +31,14 @@ const page = ref(1)
 const needToBeVerifiedFilter = ref(false)
 
 onMounted(async () => {
-  releaseFetch.value = await fetchReleasesWithDate()
+  releaseFetch.value = await queryByCollection('releases')
 })
 
 const deleteRelease = async (id) => {
   const release = releaseFetch.value.find((release) => release.id === id)
   if (release) {
     const index = releaseFetch.value.indexOf(release)
-    await deleteByCollection('releases', id).then(() => {
+    await deletebyDoc('releases', id).then(() => {
       console.log('Document successfully deleted!')
       releaseFetch.value.splice(index, 1)
       toast.success('Release Deleted', toastOption)

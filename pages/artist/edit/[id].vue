@@ -54,7 +54,7 @@ onBeforeMount(async () => {
   title.value = 'EDIT ARTIST : ' + artist.value.name
   description.value = artist.value.description
 
-  artistList.value = await fetchArtists()
+  artistList.value = await queryByCollection('artists')
   groupList.value = artistList.value.filter(artist => artist.type == 'GROUP')
   membersList.value = artistList.value.filter(artist => artist.type == 'SOLO')
 

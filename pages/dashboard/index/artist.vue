@@ -21,14 +21,14 @@ const toastOption = {
 const artistFetch = ref(null)
 
 onMounted(async () => {
-  artistFetch.value = await fetchArtists()
+  artistFetch.value = await queryByCollection('artists')
 })
 
 const deleteArtist = async (id) => {
   const artist = artistFetch.value.find((artist) => artist.id === id)
   if (artist) {
     const index = artistFetch.value.indexOf(artist)
-    await deleteByCollection('artists', id).then(() => {
+    await deletebyDoc('artists', id).then(() => {
       console.log('Document successfully deleted!')
       artistFetch.value.splice(index, 1)
       toast.success('Artist Deleted', toastOption)

@@ -72,7 +72,6 @@
 
   const createNews = () => {
     sendNews.value = true
-    console.log(news.value)
     add('news', news.value).then(() => {
       news.value = {
         artist: null,

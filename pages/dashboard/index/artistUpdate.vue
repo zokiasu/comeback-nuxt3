@@ -8,7 +8,7 @@ onMounted(async () => {
 })
 
 const deleteEdition = async (id, index) => {
-  await deleteByCollection('updateArtistPending', id)
+  await deletebyDoc('updateArtistPending', id)
   artistUpdateList.value.splice(index, 1)
   toast.success('Artist Pending Deleted', {
     position: 'top-right',
@@ -31,7 +31,7 @@ const deleteEdition = async (id, index) => {
 
 const confirmEdition = async (id, artist, index) => {
   updateArtist(id, artist).then(async () => {
-    await deleteByCollection('updateArtistPending', id)
+    await deletebyDoc('updateArtistPending', id)
     artistUpdateList.value.splice(index, 1)
     toast.success('Artist Updated', {
       position: 'top-right',

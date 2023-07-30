@@ -2,7 +2,7 @@
 const artistFetch = ref(null)
 
 onMounted(async () => {
-  artistFetch.value = await fetchArtists()
+  artistFetch.value = await queryByCollection('artists')
 })
 
 const search = ref('')

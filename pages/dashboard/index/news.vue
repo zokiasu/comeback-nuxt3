@@ -29,16 +29,15 @@ const endAt = ref(12)
 const page = ref(1)
 
 onMounted(async () => {
-  newsFetch.value = await fetchAllNews()
+  newsFetch.value = await queryByCollection('news')
 })
 
 const deleteNews = async (id) => {
-  console.log('deleteNews', id)
   const newsToDelete = newsFetch.value.find((news) => news.taskId === id)
 
   if (newsToDelete) {
     const index = newsFetch.value.indexOf(newsToDelete)
-    await deleteByCollection('news', id).then(async () => {
+    await deletebyDoc('news', id).then(async () => {
       console.log('Document successfully deleted!')
       newsFetch.value.splice(index, 1)
       toast.success('News deleted', toastOption)

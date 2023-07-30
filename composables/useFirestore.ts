@@ -14,52 +14,6 @@ import {
   limit
 } from "firebase/firestore";
 
-export const queryByCollection = async (col: string) => {
-  const {$firestore} = useNuxtApp();
-  // @ts-ignore
-  const colRef = collection($firestore, col);
-
-  const snapshot = await getDocs(colRef);
-
-  const docs = Array.from(snapshot.docs).map((doc) => {
-    return {
-      ...doc.data(),
-      taskId: doc.id
-    };
-  });
-
-  return docs;
-};
-
-export const queryByDoc = async (col: string, id: string) => {
-  const {$firestore} = useNuxtApp();
-  // @ts-ignore
-  const colRef = doc($firestore, col, id);
-
-  const snapshot = await getDoc(colRef);
-
-  const docs = snapshot.data();
-
-  return docs;
-};
-
-export const fetchAllNews = async () => {
-  const {$firestore} = useNuxtApp();
-  // @ts-ignore
-  const colRef = query(collection($firestore, 'news'), orderBy('date', 'desc'));
-  
-  const snapshot = await getDocs(colRef);
-
-  const docs = Array.from(snapshot.docs).map((doc) => {
-    return {
-      ...doc.data(),
-      taskId: doc.id
-    };
-  });
-
-  return docs;
-}
-
 export const fetchNews = async (startDate: Timestamp, limitNumber: Number) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
@@ -74,21 +28,6 @@ export const fetchNews = async (startDate: Timestamp, limitNumber: Number) => {
   });
 
   return docs;
-}
-
-export const fetchReleasesWithDate = async () => {
-  const {$firestore} = useNuxtApp();
-  // @ts-ignore
-  const colRef = query(collection($firestore, 'releases'), orderBy('date', 'desc'));
-  return getDocs(colRef).then((snapshot) => {
-    const docs = Array.from(snapshot.docs).map((doc) => {
-      // @ts-ignore
-      return {
-        ...doc.data()
-      };
-    });
-    return docs;
-  });
 }
 
 export const fetchReleasesWithDateAndLimit = async (startDate: Timestamp, limitNumber: Number) => {
@@ -156,22 +95,6 @@ export const fetchReleaseByArtistId = async (idArtist: String) => {
   const snapshotRelease = await getDocs(colRelease);
 
   const docs = Array.from(snapshotRelease.docs).map((doc) => {
-    return {
-      ...doc.data()
-    };
-  });
-
-  return docs;
-}
-
-export const fetchArtists = async () => {
-  const {$firestore} = useNuxtApp();
-  // @ts-ignore
-  const colRef = query(collection($firestore, 'artists'), orderBy('name', 'asc'));
-  
-  const snapshot = await getDocs(colRef);
-
-  const docs = Array.from(snapshot.docs).map((doc) => {
     return {
       ...doc.data()
     };
@@ -299,51 +222,6 @@ export const fetchArtistLimitedInfoById = async (idArtist: String) => {
   return docs[0];
 }
 
-export const set = async (col: string, document: Object) => {
-  const {$firestore} = useNuxtApp();
-  // @ts-ignore
-  await setDoc(doc($firestore, col), document, { merge: true });
-};
-
-export const setWithDoc = async (col: string, docId: string, document: Object) => {
-  const {$firestore} = useNuxtApp();
-  // @ts-ignore
-  await setDoc(doc($firestore, col, docId), document, { merge: true });
-};
-
-export const add = async (col: string, document: Object) => {
-  const {$firestore} = useNuxtApp();
-
-  // @ts-ignore
-  const colRef = collection($firestore, col);
-
-  const docRef = await addDoc(colRef, document);
-
-  return docRef;
-};
-
-export const addWithDoc = async (col: string, docId: string, document: Object) => {
-  const {$firestore} = useNuxtApp();
-
-  // @ts-ignore
-  const colRef = collection($firestore, col, docId);
-
-  const docRef = await addDoc(colRef, document);
-
-  return docRef;
-};
-
-export const update = async (col: string, id: string, document:any) => {
-  const {$firestore} = useNuxtApp();
-
-  const docRef = doc($firestore, col, id);
-
-  await updateDoc(docRef, document);
-
-  return docRef;
-
-};
-
 export const updateArtist = async (id: string, document:any) => {
   const {$firestore} = useNuxtApp();
   const artistGroups = ref(null);
@@ -421,15 +299,91 @@ export const updateArtist = async (id: string, document:any) => {
       });
     });
   }
-}
+};
 
-export const deleteByCollection = async (col : string, id : string) => {
+
+
+export const queryByCollection = async (col: string) => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  const colRef = collection($firestore, col);
+
+  const snapshot = await getDocs(colRef);
+
+  const docs = Array.from(snapshot.docs).map((doc) => {
+    return {
+      ...doc.data(),
+      taskId: doc.id
+    };
+  });
+
+  return docs;
+};
+
+export const queryByDoc = async (col: string, id: string) => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  const colRef = doc($firestore, col, id);
+
+  const snapshot = await getDoc(colRef);
+
+  const docs = snapshot.data();
+
+  return docs;
+};
+
+export const set = async (col: string, document: Object) => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  await setDoc(doc($firestore, col), document, { merge: true });
+};
+
+export const setWithDoc = async (col: string, docId: string, document: Object) => {
+  const {$firestore} = useNuxtApp();
+  // @ts-ignore
+  await setDoc(doc($firestore, col, docId), document, { merge: true });
+};
+
+export const add = async (col: string, document: Object) => {
+  const {$firestore} = useNuxtApp();
+
+  // @ts-ignore
+  const colRef = collection($firestore, col);
+
+  const docRef = await addDoc(colRef, document);
+
+  return docRef;
+};
+
+export const addWithDoc = async (col: string, docId: string, document: Object) => {
+  const {$firestore} = useNuxtApp();
+
+  // @ts-ignore
+  const colRef = collection($firestore, col, docId);
+
+  const docRef = await addDoc(colRef, document);
+
+  return docRef;
+};
+
+export const update = async (col: string, id: string, document:any) => {
+  const {$firestore} = useNuxtApp();
+
+  const docRef = doc($firestore, col, id);
+
+  await updateDoc(docRef, document);
+
+  return docRef;
+
+};
+
+export const deletebyDoc = async (col : string, id : string) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
   const docRef = doc($firestore, col, id);
   
   await deleteDoc(docRef).then(() => {
   }).catch((error) => {
-    console.error('deleteByCollection : Error removing document: ', error);
+    console.error('deletebyDoc : Error removing document: ', error);
   })
 };

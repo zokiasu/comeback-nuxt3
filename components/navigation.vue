@@ -12,7 +12,7 @@ const artistFetch = ref(null)
 const { isAdmin, isLogin } = useUser();
 
 onMounted(async () => {
-  artistFetch.value = await fetchArtists()
+  artistFetch.value = await queryByCollection('artists')
   window.addEventListener('scroll', handleScroll)
 })
 
