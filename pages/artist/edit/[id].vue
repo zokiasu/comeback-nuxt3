@@ -3,6 +3,22 @@ import * as fire from 'firebase/storage'
 import VueMultiselect from 'vue-multiselect'
 import { Timestamp } from 'firebase/firestore';
 import { useToast } from "vue-toastification";
+
+useHead({
+  title,
+  meta: [{
+    name: 'description',
+    content: description
+  }]
+})
+
+definePageMeta({
+  middleware: 'admin'
+})
+
+const title = ref('Edit Artist Page')
+const description = ref('Edit Artist Page')
+
 const toast = useToast();
 const toastOption = {
   position: 'top-right',
@@ -21,12 +37,9 @@ const toastOption = {
   maxToasts: 5,
   newestOnTop: true,
 }
-
-const title = ref('Edit Artist Page')
-const description = ref('Edit Artist Page')
+const route = useRoute()
 
 const isUploadingImage = ref(false)
-const route = useRoute()
 
 const artist = ref(null)
 const groupList = ref(null)
@@ -163,14 +176,6 @@ const updateArtist = async () => {
     toast.warning('Artist Update Failed', toastOption)
   })
 }
-
-useHead({
-  title,
-  meta: [{
-    name: 'description',
-    content: description
-  }]
-})
 </script>
 
 <template>

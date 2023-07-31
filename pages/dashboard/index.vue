@@ -1,5 +1,10 @@
 <script setup>
 const routeN = useRoute()
+
+definePageMeta({
+  middleware: 'admin'
+})
+
 </script>
 
 <template>

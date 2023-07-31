@@ -14,7 +14,7 @@ import {
   limit
 } from "firebase/firestore";
 
-
+/** NEWS FUNCTION **/
 
 export const fetchNews = async (startDate: Timestamp, limitNumber: Number) => {
   const {$firestore} = useNuxtApp();
@@ -32,7 +32,7 @@ export const fetchNews = async (startDate: Timestamp, limitNumber: Number) => {
   return docs;
 }
 
-
+/** RELEASES FUNCTION **/
 
 export const fetchReleasesWithDateAndLimit = async (startDate: Timestamp, limitNumber: Number) => {
   const {$firestore} = useNuxtApp();
@@ -107,7 +107,7 @@ export const fetchReleaseByArtistId = async (idArtist: String) => {
   return docs;
 }
 
-
+/** ARTIST FUNCTION **/
 
 export const fetchArtistsWithLimit = async (startDate: Timestamp, limitNumber: Number) => {
   const {$firestore} = useNuxtApp();
@@ -307,7 +307,7 @@ export const updateArtist = async (id: string, document:any) => {
   }
 };
 
-
+/** GENERAL FUNCTION **/
 
 export const queryByCollection = async (col: string) => {
   const {$firestore} = useNuxtApp();
