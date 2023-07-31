@@ -14,6 +14,8 @@ import {
   limit
 } from "firebase/firestore";
 
+
+
 export const fetchNews = async (startDate: Timestamp, limitNumber: Number) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
@@ -30,6 +32,8 @@ export const fetchNews = async (startDate: Timestamp, limitNumber: Number) => {
   return docs;
 }
 
+
+
 export const fetchReleasesWithDateAndLimit = async (startDate: Timestamp, limitNumber: Number) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
@@ -41,7 +45,7 @@ export const fetchReleasesWithDateAndLimit = async (startDate: Timestamp, limitN
     return {
       ...doc.data()
     };
-  });
+  }).filter((doc) => {return doc.needToBeVerified === false});
 
   return docs;
 }
@@ -57,7 +61,7 @@ export const fetchReleasesByMonth = async (startDate: Timestamp, endDate: Timest
     return {
       ...doc.data()
     };
-  });
+  }).filter((doc) => {return doc.needToBeVerified === false});
 
   return docs;
 }
@@ -76,7 +80,7 @@ export const fetchReleaseById = async (idRelease: String) => {
     return {
       ...doc.data()
     };
-  });
+  }).filter((doc) => {return doc.needToBeVerified === false});
 
   docs[0].musics = Array.from(snapshotMusic.docs).map((doc) => {
     return {
@@ -98,10 +102,12 @@ export const fetchReleaseByArtistId = async (idArtist: String) => {
     return {
       ...doc.data()
     };
-  });
+  }).filter((doc) => {return doc.needToBeVerified === false});
 
   return docs;
 }
+
+
 
 export const fetchArtistsWithLimit = async (startDate: Timestamp, limitNumber: Number) => {
   const {$firestore} = useNuxtApp();
@@ -114,7 +120,7 @@ export const fetchArtistsWithLimit = async (startDate: Timestamp, limitNumber: N
     return {
       ...doc.data()
     };
-  });
+  })
 
   return docs;
 }

@@ -25,7 +25,7 @@ useHead({
 <template>
   <div>
     <section
-      class="animate__animated animate__fadeInDown relative px-10 xl:px-40 w-full flex flex-col justify-center h-[30rem] bg-cover bg-center bg-no-repeat bg-[url('https://www.blind-magazine.com/wp-content/uploads/2021/12/comment-photographier-un-concert-fr-1536x864.jpg.webp')]">
+      class="animate__animated animate__fadeInDown relative px-10 xl:px-40 w-full flex flex-col justify-center h-screen sm:h-[calc(100vh-60px)] bg-cover bg-center bg-no-repeat bg-[url('https://www.blind-magazine.com/wp-content/uploads/2021/12/comment-photographier-un-concert-fr-1536x864.jpg.webp')]">
       <div class="absolute inset-0 bg-black/60"></div>
       <div class="z-10 space-y-1.5 xl:space-y-5">
         <p class="text-[2rem] sm:text-[6vw] xl:text-7xl font-bold">
