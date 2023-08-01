@@ -133,7 +133,7 @@ const filteredReleaseList = computed(() => {
         return b.artistsId.localeCompare(a.artistsId)
       }
     }).filter((artist) => {
-      if(needToBeVerifiedFilter.value) return artist.needToBeVerified == true
+      if(needToBeVerifiedFilter.value) return artist.needToBeVerified
       return artist.name.toLowerCase().includes(search.value.toLowerCase()) 
       || artist.artistsName.toLowerCase().includes(search.value.toLowerCase())
     })

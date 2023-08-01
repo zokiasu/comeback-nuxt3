@@ -4,9 +4,9 @@ import { Timestamp } from 'firebase/firestore';
 const newsT = ref(null)
 onMounted(async () => {
   const today = new Date()
-  today.setDate(today.getDate() - 7)
+  today.setDate(today.getDate() - 3)
   const todayTimestamp = Timestamp.fromDate(today)
-  newsT.value = await fetchNews(todayTimestamp, 9)
+  newsT.value = await fetchNews(todayTimestamp)
 })
 </script>
 <template>

@@ -16,10 +16,10 @@ import {
 
 /** NEWS FUNCTION **/
 
-export const fetchNews = async (startDate: Timestamp, limitNumber: Number) => {
+export const fetchNews = async (startDate: Timestamp) => {
   const {$firestore} = useNuxtApp();
   // @ts-ignore
-  const colRef = query(collection($firestore, 'news'), where('date', '>=', startDate), orderBy('date', 'asc'), limit(limitNumber));
+  const colRef = query(collection($firestore, 'news'), where('date', '>=', startDate), orderBy('date', 'asc'));
   
   const snapshot = await getDocs(colRef);
 
