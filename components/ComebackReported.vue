@@ -16,10 +16,12 @@ const maxDisplay = ref(9)
         :artist="newsT.artist" />
     </transition-group>
     <button v-if="newsT.length > 9 && newsT.length != maxDisplay" class="font-semibold text-center w-full" @click="maxDisplay = newsT.length">
-      See More
+      <p>See More</p>
+      <IconArrowDown class="w-5 h-5 mx-auto" />
     </button>
     <button v-if="newsT.length == maxDisplay" class="font-semibold text-center w-full" @click="maxDisplay = 9">
-      See Less
+      <IconArrowUp class="w-5 h-5 mx-auto" />
+      <p>See Less</p>
     </button>
   </CardDefault>
 </template>

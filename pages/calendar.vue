@@ -64,23 +64,28 @@ useHead({
         :artistsName="release.artistsName" :displayDate="true" />
     </transition-group>
     <div class="md:hidden">
-      <p class="text-lg font-semibold uppercase">Released in June 2023</p>
+      <p class="text-lg uppercase">Released in <span class="font-bold">{{ monthNames[currentMonth] }} {{
+        currentYear }}</span></p>
       <div class="flex items-center divide-x space-x-2 divide-zinc-500 pt-1">
         <div class="flex items-center space-x-2">
           <button
-            class="text-[0.6rem] capitalize rounded border py-0.5 px-1 transition-all duration-300 ease-in-out hover:bg-zinc-500 tracking-wider">Prev
-            Month</button>
+            class="text-[0.6rem] capitalize rounded border py-0.5 px-1 transition-all duration-300 ease-in-out hover:bg-zinc-500 tracking-wider"
+            @click="currentMonth--">
+            Prev Month
+          </button>
           <button
-            class="text-[0.6rem] capitalize rounded border py-0.5 px-1 transition-all duration-300 ease-in-out hover:bg-zinc-500 tracking-wider">Next
-            Month</button>
+            class="text-[0.6rem] capitalize rounded border py-0.5 px-1 transition-all duration-300 ease-in-out hover:bg-zinc-500 tracking-wider"
+            @click="currentMonth++">
+            Next Month
+          </button>
         </div>
         <div class="flex items-center space-x-2 pl-2">
           <button
-            class="text-[0.6rem] capitalize rounded border py-0.5 px-1 transition-all duration-300 ease-in-out hover:bg-zinc-500 tracking-wider">Prev
-            Year</button>
+            class="text-[0.6rem] capitalize rounded border py-0.5 px-1 transition-all duration-300 ease-in-out hover:bg-zinc-500 tracking-wider"
+            @click="currentYear--">Prev Year</button>
           <button
-            class="text-[0.6rem] capitalize rounded border py-0.5 px-1 transition-all duration-300 ease-in-out hover:bg-zinc-500 tracking-wider">Next
-            Year</button>
+            class="text-[0.6rem] capitalize rounded border py-0.5 px-1 transition-all duration-300 ease-in-out hover:bg-zinc-500 tracking-wider"
+            @click="currentYear++">Next Year</button>
         </div>
       </div>
     </div>

@@ -47,18 +47,18 @@ const { artistFetch, isAdmin, isLogin } = defineProps(['artistFetch', 'isAdmin',
         <IconComeback class="w-5 h-5 mx-auto" />
       </button>
     </div>
-      <Modal 
-        v-model="showModal"
-        title="Add a News"
-        wrapper-class="animate__animated modal-wrapper"
-        :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-        :in-class="`animate__fadeInDown`"
-        :out-class="`animate__bounceOut`"
-        bg-class="animate__animated"
-        :bg-in-class="`animate__fadeInUp`"
-        :bg-out-class="`animate__fadeOutDown`"
-      >
-        <NewsCreation :artistList="artistFetch" @close-modal="showModal = false"/>
-      </Modal>
+    <Modal
+      v-model="showModal"
+      title="Add a News"
+      wrapper-class="animate__animated modal-wrapper"
+      :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
+      :in-class="`animate__fadeInDown`"
+      :out-class="`animate__bounceOut`"
+      bg-class="animate__animated"
+      :bg-in-class="`animate__fadeInUp`"
+      :bg-out-class="`animate__fadeOutDown`"
+    >
+      <NewsCreation :artistList="artistFetch" @close-modal="showModal = false"/>
+    </Modal>
   </div>
 </template>
