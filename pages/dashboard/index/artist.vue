@@ -121,29 +121,45 @@ watch([page], () => {
       <input id="search-input" v-model="search" type="text" placeholder="Search" class="w-full rounded border-none bg-quinary py-2 px-5 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none" />
     </section>
     <section class="flex flex-col gap-1.5 sm:flex-row sm:justify-between w-full">
-
       <div class="flex space-x-2">
-        <select v-model="sort" class="rounded border-none text-xs uppercase bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none">
+        <select 
+          v-model="sort" 
+          class="w-full sm:w-fit rounded border-none text-xs uppercase bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+        >
           <option value="name">Name</option>
           <option value="type">Type</option>
           <option value="createdAt">Last Created</option>
         </select>
-        <button @click="invertSort = !invertSort" class="rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none">
+        <button 
+          @click="invertSort = !invertSort" 
+          class="rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+        >
           <icon-sort v-if="!invertSort" class="h-6 w-6 text-tertiary" />
           <icon-sort-reverse v-else class="h-6 w-6 text-tertiary" />
         </button>
       </div>
-
-      <div class="flex items-center space-x-2 w-full justify-between sm:justify-end">
-        <button @click="page = 1" :disabled="startAt == 0" class="bg-quinary aspect-square sm:aspect-auto h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">First</button>
-        <button @click="page--" :disabled="startAt == 0" class="bg-quinary aspect-square sm:aspect-auto h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Prev</button>
-        <input 
+      <div class="flex space-x-2 w-full justify-between sm:justify-end">
+        <button 
+          @click="page = 1"
+          :disabled="startAt == 0"
+          class="bg-quinary w-full sm:w-fit uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500"
+        >
+          First
+        </button>
+        <button 
+          @click="page--"
+          :disabled="startAt == 0"
+          class="bg-quinary w-full sm:w-fit uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500"
+        >
+          Prev
+        </button>
+        <input
           type="text"
           class="w-10 text-center rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
           v-model.number="page"
         />
-        <button @click="page++" :disabled="page == nbPage" class="bg-quinary aspect-square sm:aspect-auto h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Next</button>
-        <button @click="page = nbPage" :disabled="page == nbPage" class="bg-quinary aspect-square sm:aspect-auto h-full uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Last</button>
+        <button @click="page++" :disabled="page == nbPage" class="bg-quinary w-full sm:w-fit uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Next</button>
+        <button @click="page = nbPage" :disabled="page == nbPage" class="bg-quinary w-full sm:w-fit uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Last</button>
       </div>
     </section>
     <transition-group 
@@ -172,5 +188,47 @@ watch([page], () => {
     <p v-else class="uppercase font-semibold bg-quaternary w-full p-5 text-center">
       No artist found
     </p>
+    <section class="flex flex-col gap-1.5 sm:flex-row sm:justify-between w-full">
+      <div class="flex space-x-2">
+        <select 
+          v-model="sort" 
+          class="w-full sm:w-fit rounded border-none text-xs uppercase bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+        >
+          <option value="name">Name</option>
+          <option value="type">Type</option>
+          <option value="createdAt">Last Created</option>
+        </select>
+        <button 
+          @click="invertSort = !invertSort" 
+          class="rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+        >
+          <icon-sort v-if="!invertSort" class="h-6 w-6 text-tertiary" />
+          <icon-sort-reverse v-else class="h-6 w-6 text-tertiary" />
+        </button>
+      </div>
+      <div class="flex space-x-2 w-full justify-between sm:justify-end">
+        <button 
+          @click="page = 1"
+          :disabled="startAt == 0"
+          class="bg-quinary w-full sm:w-fit uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500"
+        >
+          First
+        </button>
+        <button 
+          @click="page--"
+          :disabled="startAt == 0"
+          class="bg-quinary w-full sm:w-fit uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500"
+        >
+          Prev
+        </button>
+        <input
+          type="text"
+          class="w-10 text-center rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-700 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+          v-model.number="page"
+        />
+        <button @click="page++" :disabled="page == nbPage" class="bg-quinary w-full sm:w-fit uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Next</button>
+        <button @click="page = nbPage" :disabled="page == nbPage" class="bg-quinary w-full sm:w-fit uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Last</button>
+      </div>
+    </section>
   </div>
 </template>

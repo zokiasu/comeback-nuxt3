@@ -79,7 +79,7 @@ const loadingDone = () => {
     <div class="flex w-full items-center justify-between">
       <div>
         <p class="space-x-1">
-          <span class="font-semibold">{{ name }}</span> 
+          <NuxtLink :to="'/artist/'+id" target="_blank" class="font-semibold hover:text-primary">{{ name }}</NuxtLink> 
           <span class="text-xs">[ {{ type }} ]</span>
         </p>
         <p class="text-xs">
