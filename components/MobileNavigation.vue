@@ -36,7 +36,14 @@ const { artistFetch, isAdmin, isLogin } = defineProps(['artistFetch', 'isAdmin',
       >
         <IconEdit class="w-5 h-5 mx-auto" />
       </NuxtLink>
-      <button  v-if="isLogin" @click="showModal = true" class="flex items-center justify-center w-full py-2 bg-primary/20 transition-all ease-in-out duration-500">
+      <NuxtLink
+        v-if="!isLogin"
+        :to="`/authentification`"
+        class="flex items-center justify-center w-full py-2 hover:bg-zinc-500/50 transition-all ease-in-out duration-500"
+      >
+        <IconAccount class="w-5 h-5 mx-auto" />
+      </NuxtLink>
+      <button v-else @click="showModal = true" class="flex items-center justify-center w-full py-2 bg-primary/20 transition-all ease-in-out duration-500">
         <IconComeback class="w-5 h-5 mx-auto" />
       </button>
     </div>
