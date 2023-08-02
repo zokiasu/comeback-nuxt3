@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { Timestamp } from 'firebase/firestore';
+
 useHead({
   title: 'Comeback',
   htmlAttrs: {
@@ -20,6 +22,19 @@ useHead({
     { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
   ]
 })
+
+const news = ref([] as Object[])
+const artists = ref([] as Object[])
+const releases = ref([] as Object[])
+
+onBeforeMount(async () => {
+  const today = new Date()
+  today.setDate(today.getDate() - 7)
+  const todayTimestamp = Timestamp.fromDate(today)
+  releases.value = await fetchReleasesWithDateAndLimit(todayTimestamp, 8)
+  news.value = await fetchNews(todayTimestamp)
+  artists.value = await fetchArtistsWithLimit(todayTimestamp, 8)
+})
 </script>
 
 <template>
@@ -39,9 +54,9 @@ useHead({
     </section>
     <div class="container mx-auto px-5 py-8 min-h-screen">
       <div class="rounded-lg space-y-8">
-        <LazyComebackReported class="rounded-lg animate__animated animate__fadeInUp" />
-        <LazyRecentReleases class="rounded-lg animate__animated animate__fadeInUp" />
-        <LazyArtistAdded class="rounded-lg animate__animated animate__fadeInUp" />
+        <LazyComebackReported v-if="news.length > 0" :newsT="news" class="rounded-lg animate__animated animate__fadeInUp" />
+        <LazyRecentReleases v-if="releases.length > 0" :releases="releases" class="rounded-lg animate__animated animate__fadeInUp" />
+        <LazyArtistAdded v-if="artists.length > 0" :artists="artists" class="rounded-lg animate__animated animate__fadeInUp" />
       </div>
     </div>
   </div>

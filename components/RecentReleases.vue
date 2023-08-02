@@ -1,11 +1,9 @@
 <script setup>
-import { Timestamp } from 'firebase/firestore';
-const releases = ref(null)
-onBeforeMount(async () => {
-  const today = new Date()
-  today.setDate(today.getDate() - 7)
-  const todayTimestamp = Timestamp.fromDate(today)
-  releases.value = await fetchReleasesWithDateAndLimit(todayTimestamp, 8)
+const { releases } = defineProps({
+  releases: {
+    type: Array,
+    required: true
+  }
 })
 </script>
 <template>

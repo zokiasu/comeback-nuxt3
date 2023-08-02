@@ -1,12 +1,9 @@
 <script setup>
-import { Timestamp } from 'firebase/firestore';
-
-const artists = ref(null)
-onMounted(async () => {
-  const today = new Date()
-  today.setDate(today.getDate())
-  const todayTimestamp = Timestamp.fromDate(today)
-  artists.value = await fetchArtistsWithLimit(todayTimestamp, 8)
+const { artists } = defineProps({
+  artists: {
+    type: Array,
+    required: true
+  }
 })
 </script>
 <template>
