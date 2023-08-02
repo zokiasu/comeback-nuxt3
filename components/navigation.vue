@@ -1,24 +1,17 @@
 <script setup>
 import * as Mdl from '@kouts/vue-modal'
 
+const { artistFetch, isAdmin, isLogin } = defineProps(['artistFetch', 'isAdmin', 'isLogin'])
+
 const { Modal } = Mdl
 
 const routeN = useRoute()
 
 const navbar = ref(null)
 const showModal = ref(false)
-const artistFetch = ref(null)
-
-const { isAdmin, isLogin } = useUser();
 
 onMounted(async () => {
-  artistFetch.value = await queryByCollection('artists')
   window.addEventListener('scroll', handleScroll)
-})
-
-// watch
-watch(() => useUser().isLogin.value, (value) => {
-  isLogin.value = value
 })
 
 function handleScroll() {
