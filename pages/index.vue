@@ -29,11 +29,11 @@ const releases = ref([] as Object[])
 
 onBeforeMount(async () => {
   const today = new Date()
+  artists.value = await fetchArtistsWithLimit(Timestamp.fromDate(today), 8)
+  today.setDate(today.getDate() - 1)
+  news.value = await fetchNews(Timestamp.fromDate(today))
   today.setDate(today.getDate() - 7)
-  const todayTimestamp = Timestamp.fromDate(today)
-  releases.value = await fetchReleasesWithDateAndLimit(todayTimestamp, 8)
-  news.value = await fetchNews(todayTimestamp)
-  artists.value = await fetchArtistsWithLimit(todayTimestamp, 8)
+  releases.value = await fetchReleasesWithDateAndLimit(Timestamp.fromDate(today), 8)
 })
 </script>
 
