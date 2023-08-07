@@ -1,19 +1,11 @@
 <script setup>
-const user = ref(null)
-const userData = ref(null)
-const isLogin = ref(null)
-
-onMounted(async () => {
-  isLogin.value = useUser().isLogin.value
-
-  user.value = useUser().firebaseUser.value
-
-  userData.value = await useUser().getDatabaseUser()
-})
+import { useUserStore } from '@/stores/user'
+const { firebaseUserStore, userDataStore } = useUserStore()
 </script>
 
 <template>
-  <div>
-    <pre>{{ user }}</pre>
+  <div class="space-y-5">
+    <pre>{{ firebaseUserStore }}</pre>
+    <pre>{{ userDataStore }}</pre>
   </div>
 </template>

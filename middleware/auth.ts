@@ -1,10 +1,10 @@
-import { useCurrentUser } from 'vuefire';
+import { useUserStore } from '@/stores/user';
 // middleware/auth.ts
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  const user = await useCurrentUser();
+  const { firebaseUserStore } = useUserStore()
   
   // redirect the user to the login page
-  if (!user.value) {
+  if (!firebaseUserStore) {
     return navigateTo({
       path: '/authentification',
       query: {

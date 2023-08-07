@@ -1,46 +1,33 @@
 import { useCurrentUser, useFirebaseAuth } from 'vuefire';
 import { User, UserCredential } from 'firebase/auth';
+import { useUserStore } from '@/stores/user'
 
 export const useUser = () => {
-    const userCredentials = useState<UserCredential | null>('userCredentials', () => null);
-    const firebaseUser = useState<User | null>('user', () => null);
+    const { isLoginStore, isAdminStore, userDataStore, firebaseUserStore } = useUserStore()
+    
+    const firebaseUser = useState<User | null>('firebaseUser', () => firebaseUserStore);
 
-    const auth = useFirebaseAuth()!; // only exists on client side
-    const user = useCurrentUser();
+    const isLogin = useState<boolean>('isLogin', () => isLoginStore);
 
-    const markOnboardingComplete = async (workspaceId: string) => {
-        const { $trpcClient } = useNuxtApp();
+    const isAdmin = useState<boolean>('isAdmin', () => isAdminStore);
 
-        const result = await $trpcClient.user.markOnboardingComplete.mutate({ workspaceId });
-
-        return result.success;
-    };
+    const userData = useState<any>('userData', () => userDataStore);
 
     const getDatabaseUser = async () => {
-        if (user.value == null) return null;
+        if (firebaseUser.value == null) return null;
 
-        const result = await queryByDoc('users', user.value.uid);
+        const result = await queryByDoc('users', firebaseUser.value.uid);
 
         if (result) return result;
 
         return null;
     };
 
-    const isLogin = useState<boolean>('isLogin', () => false);
-
-    const isAdmin = useState<boolean>('isAdmin', () => false);
-
-    const userData = useState<any>('userData', () => null);
-
     return {
-        userCredentials,
         firebaseUser,
         isAdmin,
         isLogin,
         userData,
-        auth,
-        user,
-        markOnboardingComplete,
         getDatabaseUser,
     };
 };

@@ -4,14 +4,6 @@ import VueMultiselect from 'vue-multiselect'
 import { Timestamp } from 'firebase/firestore';
 import { useToast } from "vue-toastification";
 
-useHead({
-  title,
-  meta: [{
-    name: 'description',
-    content: description
-  }]
-})
-
 definePageMeta({
   middleware: 'admin'
 })
@@ -176,6 +168,14 @@ const updateArtist = async () => {
     toast.warning('Artist Update Failed', toastOption)
   })
 }
+
+useHead({
+  title,
+  meta: [{
+    name: 'description',
+    content: description
+  }]
+})
 </script>
 
 <template>

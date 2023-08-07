@@ -1,9 +1,9 @@
 <script setup>
 const routeN = useRoute()
 
-definePageMeta({
-  middleware: 'admin'
-})
+// definePageMeta({
+//   middleware: 'admin'
+// })
 
 </script>
 

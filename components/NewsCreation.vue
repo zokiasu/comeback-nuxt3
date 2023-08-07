@@ -4,6 +4,9 @@
   import VueDatePicker from '@vuepic/vue-datepicker';
   import '@vuepic/vue-datepicker/dist/main.css'
   import { useToast } from "vue-toastification";
+  import { useUserStore } from '@/stores/user'
+  const { userDataStore } = useUserStore()
+
   const toast = useToast();
   const toastOption = {
     position: 'top-right',
@@ -29,8 +32,7 @@
       required: true,
     },
   })
-
-  const { userData } = useUser();
+  
   const dateToDateFormat = ref(null)
   const artistToSend = ref(null)
   const sendNews = ref(false)
@@ -42,9 +44,9 @@
       image: null,
     },
     user: {
-      id: userData.value.id,
-      name: userData.value.name,
-      picture: userData.value.picture,
+      id: userDataStore.id,
+      name: userDataStore.name,
+      picture: userDataStore.picture,
     },
     date: null,
     message: null,
@@ -76,9 +78,9 @@
       news.value = {
         artist: null,
         user: {
-          id: userData.value.id,
-          name: userData.value.name,
-          image: userData.value.picture,
+          id: userDataStore.id,
+          name: userDataStore.name,
+          image: userDataStore.picture,
         },
         date: null,
         message: null,
