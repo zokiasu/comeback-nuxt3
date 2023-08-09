@@ -49,7 +49,7 @@ const signOut = async () => {
           <NuxtLink v-if="isAdmin" :to="`/dashboard/artist`" :class="routeN.name === 'dashboard-index-*' ? 'text-white' : 'text-zinc-500'">
             Dashboard
           </NuxtLink>
-          <button v-if="isLogin" @click="showModal = true"
+          <button v-if="isLogin && artistFetch" @click="showModal = true"
             class="text-primary font-bold hover:text-red-500 hover:scale-110 transition-all ease-in-out duration-300">
             New Comeback
           </button>
