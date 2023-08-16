@@ -1,7 +1,14 @@
 <script setup>
+const idYoutubeVideo = useIdYoutubeVideo()
+const isPlayingVideo = useIsPlayingVideo()
 const title = ref('Release Page')
 const description = ref('Release')
 const release = ref(null)
+
+const playVideo = (videoId) => {
+  idYoutubeVideo.value = videoId
+  isPlayingVideo.value = true
+}
 
 onMounted(async () => {
   const route = useRoute()
@@ -45,13 +52,25 @@ useHead({
         </div>
         <div class="overflow-hidden pr-5 pb-2 lg:h-[34rem] lg:w-[30rem]">
           <ul class="space-y-5">
-            <a v-for="music in release.musics.slice().reverse()" :key="music.id"
-              :href="`https://youtu.be/${music.videoId}`" target="_blank" class="flex items-center justify-between gap-5">
+            <li 
+              v-for="music in release.musics.slice().reverse()"
+              :key="music.id"
+              target="_blank"
+              class="flex items-center justify-between gap-5"
+            >
               <h3 class="font-semibold text-xl">{{ music.name }}</h3>
-              <a :href="`https://youtu.be/${music.videoId}`" target="_blank">
-                <icon-youtube class="h-8 w-8" />
-              </a>
-            </a>
+              <div class="flex gap-2">
+                <a :href="`https://youtu.be/${music.videoId}`" target="_blank">
+                  <icon-youtube class="h-8 w-8" />
+                </a>
+                <button
+                  @click="playVideo(music.videoId)"
+                  class="rounded px-2 uppercase text-xs font-semibold hover:bg-tertiary hover:text-secondary transition-all ease-in-out duration-300"
+                >
+                  Play
+                </button>
+              </div>
+            </li>
           </ul>
         </div>
       </div>

@@ -1,6 +1,8 @@
 <script setup>
-const artistFetch = ref(null)
+import 'animate.css';
 
+const isPlayingVideo = useIsPlayingVideo()
+const artistFetch = ref(null)
 const { isAdmin, isLogin } = useUser();
 
 onMounted(async () => {
@@ -25,5 +27,6 @@ watch([() => useUser().isAdmin.value, () => useUser().isLogin.value], ([isAdmin,
     </main>
     <LazyFooter />
     <LazyMobileNavigation class="md:hidden" :artistFetch="artistFetch" :isAdmin="isAdmin" :isLogin="isLogin" />
+    <LazyYoutubePlayer ref="YTPlayer" v-if="isPlayingVideo" class="fixed bottom-0 animate__animated animate__fadeInUp" />
   </div>
 </template>

@@ -3,12 +3,13 @@ import * as Mdl from '@kouts/vue-modal'
 
 const { Modal } = Mdl
 const showModal = ref(false)
+const isPlayingVideo = useIsPlayingVideo()
 
 const { artistFetch, isAdmin, isLogin } = defineProps(['artistFetch', 'isAdmin', 'isLogin'])
 </script>
 
 <template>
-  <div class="fixed bottom-5 px-5 w-full">
+  <div class="fixed px-5 w-full transition-all ease-in-out duration-300" :class="isPlayingVideo ? 'bottom-20':'bottom-5'">
     <div
       class="w-full flex justify-between divide-x divide-zinc-700 rounded-full bg-secondary drop-shadow-sm overflow-hidden border border-zinc-700 shadow shadow-zinc-700">
       <NuxtLink 
