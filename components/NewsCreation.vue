@@ -122,7 +122,7 @@
       <VueDatePicker v-model="dateToDateFormat" auto-apply :enable-time-picker="false" />
     </div>
     <div class="flex flex-col gap-1">
-      <CbInput label="Your News" placeholder="Your News" :value="news.message" />
+      <CbInput label="Your News" placeholder="Your News" v-model="news.message" />
     </div>
     <button @click="createNews" class="bg-primary w-full rounded font-semibold uppercase py-2 hover:scale-105 hover:bg-red-900 transition-all ease-in-out duration-300">
       Send News

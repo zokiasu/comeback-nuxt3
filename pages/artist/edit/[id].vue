@@ -10,6 +10,7 @@ definePageMeta({
 
 const title = ref('Edit Artist Page')
 const description = ref('Edit Artist Page')
+const route = useRoute()
 
 const toast = useToast();
 const toastOption = {
@@ -29,10 +30,8 @@ const toastOption = {
   maxToasts: 5,
   newestOnTop: true,
 }
-const route = useRoute()
-
 const isUploadingImage = ref(false)
-
+const isUploadingEdit = ref(false)
 const artist = ref(null)
 const groupList = ref(null)
 const membersList = ref(null)
@@ -50,21 +49,6 @@ const artistToEdit = ref({
   styles: [],
   groups: [],
   members: []
-})
-
-onBeforeMount(async () => {
-  artist.value = await fetchArtistBasicInfoById(route.params.id)
-  Object.assign(artistToEdit.value, artist.value)
-
-  title.value = 'EDIT ARTIST : ' + artist.value.name
-  description.value = artist.value.description
-
-  artistList.value = await queryByCollection('artists')
-  groupList.value = artistList.value.filter(artist => artist.type == 'GROUP')
-  membersList.value = artistList.value.filter(artist => artist.type == 'SOLO')
-
-  stylesList.value = await queryByCollection('general')
-  stylesList.value = stylesList.value[0].styles
 })
 
 const uploadImageFile = async (files) => {
@@ -99,6 +83,7 @@ const uploadImageFile = async (files) => {
 }
 
 const updateArtist = async () => {
+  isUploadingEdit.value = true
   // verify each field from artistToEdit is not equal to artist's field
   if (artistToEdit.value.name == artist.value.name &&
     artistToEdit.value.idYoutubeMusic == artist.value.idYoutubeMusic &&
@@ -112,6 +97,7 @@ const updateArtist = async () => {
     artistToEdit.value.members == artist.value.members
   ) {
     console.log('No changes')
+    isUploadingEdit.value = false
     return
   }
 
@@ -120,6 +106,8 @@ const updateArtist = async () => {
   }
 
   if (artistToEdit.value.idYoutubeMusic == artist.value.idYoutubeMusic) {
+    console.log('artist', artist.value.idYoutubeMusic)
+    console.log('artistToEdit', artistToEdit.value.idYoutubeMusic)
     delete artistToEdit.value.idYoutubeMusic
   }
 
@@ -135,24 +123,64 @@ const updateArtist = async () => {
     delete artistToEdit.value.image
   }
 
-  if (artistToEdit.value.platforms == artist.value.platforms) {
-    delete artistToEdit.value.platforms
+  if (artistToEdit.value.platforms.length == artist.value.platforms.length) {
+    let isSame = true
+    artistToEdit.value.platforms.forEach(platform => {
+      if (!artist.value.platforms.includes(platform)) {
+        isSame = false
+      }
+    })
+    if (isSame) {
+      delete artistToEdit.value.platforms
+    }
   }
 
-  if (artistToEdit.value.socials == artist.value.socials) {
-    delete artistToEdit.value.socials
+  if (artistToEdit.value.socials.length == artist.value.socials.length) {
+    let isSame = true
+    artistToEdit.value.socials.forEach(social => {
+      if (!artist.value.socials.includes(social)) {
+        isSame = false
+      }
+    })
+    if (isSame) {
+      delete artistToEdit.value.socials
+    }
   }
 
-  if (artistToEdit.value.styles == artist.value.styles) {
-    delete artistToEdit.value.styles
+  if (artistToEdit.value.styles.length == artist.value.styles.length) {
+    let isSame = true
+    artistToEdit.value.styles.forEach(style => {
+      if (!artist.value.styles.includes(style)) {
+        isSame = false
+      }
+    })
+    if (isSame) {
+      delete artistToEdit.value.styles
+    }
   }
 
-  if (artistToEdit.value.groups == artist.value.groups) {
-    delete artistToEdit.value.groups
+  if (artistToEdit.value.groups.length == artist.value.groups.length) {
+    let isSame = true
+    artistToEdit.value.groups.forEach(group => {
+      if (!artist.value.groups.includes(group)) {
+        isSame = false
+      }
+    })
+    if (isSame) {
+      delete artistToEdit.value.groups
+    }
   }
 
-  if (artistToEdit.value.members == artist.value.members) {
-    delete artistToEdit.value.members
+  if (artistToEdit.value.members.length == artist.value.members.length) {
+    let isSame = true
+    artistToEdit.value.members.forEach(member => {
+      if (!artist.value.members.includes(member)) {
+        isSame = false
+      }
+    })
+    if (isSame) {
+      delete artistToEdit.value.members
+    }
   }
 
   const today = new Date()
@@ -162,12 +190,28 @@ const updateArtist = async () => {
 
   add('updateArtistPending', artistToEdit.value).then(() => {
     console.log('Document successfully written!')
+    isUploadingEdit.value = false
     toast.success('Artist Update', toastOption)
   }).catch((error) => {
     console.error('Error writing document: ', error)
     toast.warning('Artist Update Failed', toastOption)
   })
 }
+
+onMounted(async () => {
+  artist.value = await fetchArtistBasicInfoById(route.params.id)
+  artistToEdit.value = await fetchArtistBasicInfoById(route.params.id)
+
+  title.value = 'EDIT ARTIST : ' + artist.value.name
+  description.value = artist.value.description
+
+  artistList.value = await queryByCollection('artists')
+  groupList.value = artistList.value.filter(artist => artist.type == 'GROUP')
+  membersList.value = artistList.value.filter(artist => artist.type == 'SOLO')
+
+  stylesList.value = await queryByCollection('general')
+  stylesList.value = stylesList.value[0].styles
+})
 
 useHead({
   title,
@@ -202,12 +246,12 @@ useHead({
       </div>
       <!-- Name & Id -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <CbInput label="Name" placeholder="Name" :value="artistToEdit.name" />
-        <CbInput label="Unique Id" placeholder="Unique Id" :value="artistToEdit.id" disabled />
+        <CbInput label="Name" :placeholder="artist.name" v-model="artistToEdit.name" />
+        <CbInput label="Unique Id" :placeholder="artist.id" v-model="artistToEdit.id" disabled />
       </div>
       <!-- Id YTM & Type -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <CbInput label="Id Youtube Music" placeholder="Id Youtube Music" :value="artistToEdit.idYoutubeMusic" />
+        <CbInput label="Id Youtube Music" :placeholder="artist.idYoutubeMusic" v-model="artistToEdit.idYoutubeMusic" />
         <div class="grid grid-cols-1 gap-1">
           <CbLabel label="Type" />
           <select v-model="artistToEdit.type"
@@ -232,8 +276,10 @@ useHead({
       <div class="flex flex-col gap-1">
         <CbLabel label="Description" />
         <textarea
+          :placeholder="artistToEdit.description || 'Description'" 
+          v-model="artistToEdit.description"
           class="bg-transparent w-full min-h-full border-b appearance-none transition-all ease-in-out duration-150 focus:p-1.5 focus:outline-none focus:bg-tertiary focus:text-secondary focus:rounded"
-          placeholder="Description" v-model="artistToEdit.description" />
+        />
       </div>
       <!-- Group -->
       <div v-if="groupList" class="flex flex-col gap-1">
@@ -254,8 +300,13 @@ useHead({
         <!-- Platforms -->
         <div class="flex flex-col gap-2">
           <CbLabel label="Platforms" />
-          <div v-for="platform in artistToEdit.platforms" :key="platform" class="flex w-full gap-1">
-            <CbInput placeholder="New Platforms Link" :value="platform" class="w-full" />
+          <div v-for="(platform, index) in artistToEdit.platforms" :key="platform" class="flex w-full gap-1">
+            <input
+              type="text"
+              :value="platform"
+              @input="artistToEdit.platforms[index] = $event.target.value"
+              class="w-full bg-transparent border-b appearance-none transition-all ease-in-out duration-150 focus:p-1.5 focus:outline-none focus:bg-tertiary focus:text-secondary focus:rounded"
+            />
             <button class="bg-red-900 text-xs p-1 rounded"
               @click="artistToEdit.platforms.splice(artistToEdit.platforms.indexOf(platform), 1)">
               Delete
@@ -270,8 +321,13 @@ useHead({
         <!-- Socials -->
         <div class="flex flex-col gap-2">
           <CbLabel label="Socials" />
-          <div v-for="social in artistToEdit.socials" :key="social" class="flex w-full gap-1">
-            <CbInput placeholder="New Socials Link" :value="social" class="w-full" />
+          <div v-for="(social, index) in artistToEdit.socials" :key="social" class="flex w-full gap-1">
+            <input
+              type="text"
+              :value="social"
+              @input="artistToEdit.socials[index] = $event.target.value"
+              class="w-full bg-transparent border-b appearance-none transition-all ease-in-out duration-150 focus:p-1.5 focus:outline-none focus:bg-tertiary focus:text-secondary focus:rounded"
+            />
             <button class="bg-red-900 text-xs p-1 rounded"
               @click="artistToEdit.socials.splice(artistToEdit.socials.indexOf(platform), 1)">
               Delete
@@ -284,12 +340,12 @@ useHead({
           </button>
         </div>
       </div>
-
     </div>
     <div class="border-t border-zinc-700 pt-3">
       <button @click="updateArtist"
+        :disabled="isUploadingEdit"
         class="bg-primary w-full rounded text-xl font-semibold uppercase py-3 hover:scale-105 hover:bg-red-900 transition-all ease-in-out duration-300">
-        Saves
+        {{ isUploadingEdit ? 'Loading' : 'Saves'}}
       </button>
     </div>
   </div>

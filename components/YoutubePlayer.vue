@@ -46,6 +46,7 @@ const createPlayer = () => {
       playsinline: 1,
       rel: 0,
       showinfo: 0,
+      host: 'https://www.youtube.com',
     },
     events: {
       onReady: onPlayerReady,
