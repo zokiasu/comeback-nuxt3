@@ -91,21 +91,21 @@ export const fetchReleaseById = async (idRelease: String) => {
   return docs[0];
 }
 
-export const fetchReleaseByArtistId = async (idArtist: String) => {
-  const {$firestore} = useNuxtApp();
-  // @ts-ignore
-  const colRelease = query(collection($firestore, 'releases'), where('artistsId', '==', idArtist));
+// export const fetchReleaseByArtistId = async (idArtist: String) => {
+//   const {$firestore} = useNuxtApp();
+//   // @ts-ignore
+//   const colRelease = query(collection($firestore, 'releases'), where('artistsId', '==', idArtist));
   
-  const snapshotRelease = await getDocs(colRelease);
+//   const snapshotRelease = await getDocs(colRelease);
 
-  const docs = Array.from(snapshotRelease.docs).map((doc) => {
-    return {
-      ...doc.data()
-    };
-  }).filter((doc) => {return doc.needToBeVerified === false});
+//   const docs = Array.from(snapshotRelease.docs).map((doc) => {
+//     return {
+//       ...doc.data()
+//     };
+//   }).filter((doc) => {return doc.needToBeVerified === false});
 
-  return docs;
-}
+//   return docs;
+// }
 
 /** ARTIST FUNCTION **/
 
@@ -344,11 +344,11 @@ export const set = async (col: string, document: Object) => {
   await setDoc(doc($firestore, col), document, { merge: true });
 };
 
-export const setWithDoc = async (col: string, docId: string, document: Object) => {
-  const {$firestore} = useNuxtApp();
-  // @ts-ignore
-  await setDoc(doc($firestore, col, docId), document, { merge: true });
-};
+// export const setWithDoc = async (col: string, docId: string, document: Object) => {
+//   const {$firestore} = useNuxtApp();
+//   // @ts-ignore
+//   await setDoc(doc($firestore, col, docId), document, { merge: true });
+// };
 
 export const add = async (col: string, document: Object) => {
   const {$firestore} = useNuxtApp();
@@ -361,16 +361,16 @@ export const add = async (col: string, document: Object) => {
   return docRef;
 };
 
-export const addWithDoc = async (col: string, docId: string, document: Object) => {
-  const {$firestore} = useNuxtApp();
+// export const addWithDoc = async (col: string, docId: string, document: Object) => {
+//   const {$firestore} = useNuxtApp();
 
-  // @ts-ignore
-  const colRef = collection($firestore, col, docId);
+//   // @ts-ignore
+//   const colRef = collection($firestore, col, docId);
 
-  const docRef = await addDoc(colRef, document);
+//   const docRef = await addDoc(colRef, document);
 
-  return docRef;
-};
+//   return docRef;
+// };
 
 export const update = async (col: string, id: string, document:any) => {
   const {$firestore} = useNuxtApp();

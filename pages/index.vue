@@ -27,13 +27,15 @@ const news = ref([] as Object[])
 const artists = ref([] as Object[])
 const releases = ref([] as Object[])
 
-onBeforeMount(async () => {
-  const today = new Date()
-  artists.value = await fetchArtistsWithLimit(Timestamp.fromDate(today), 8)
-  today.setDate(today.getDate() - 1)
-  news.value = await fetchNews(Timestamp.fromDate(today))
-  today.setDate(today.getDate() - 7)
-  releases.value = await fetchReleasesWithDateAndLimit(Timestamp.fromDate(today), 8)
+onMounted(async () => {
+  const artistDate = new Date()
+  const releaseDate = new Date()
+  releaseDate.setDate(releaseDate.getDate() - 7)
+  const newsDate = new Date()
+  newsDate.setDate(newsDate.getDate() - 1)
+  news.value = await fetchNews(Timestamp.fromDate(newsDate))
+  releases.value = await fetchReleasesWithDateAndLimit(Timestamp.fromDate(releaseDate), 8)
+  artists.value = await fetchArtistsWithLimit(Timestamp.fromDate(artistDate), 8)
 })
 </script>
 
@@ -52,12 +54,12 @@ onBeforeMount(async () => {
         <icon-arrow-down class="animate-bounce w-5 h-5 mx-auto" />
       </p>
     </section>
-    <div class="container mx-auto px-5 py-8 min-h-screen">
-      <div class="rounded-lg space-y-8">
-        <LazyComebackReported v-if="news.length > 0" :newsT="news" class="rounded-lg animate__animated animate__fadeInUp" />
-        <LazyRecentReleases v-if="releases.length > 0" :releases="releases" class="rounded-lg animate__animated animate__fadeInUp" />
-        <LazyArtistAdded v-if="artists.length > 0" :artists="artists" class="rounded-lg animate__animated animate__fadeInUp" />
+    <section v-if="news.length > 0 || releases.length > 0 || artists.length > 0" class="container mx-auto py-10">
+      <div class="space-y-8">
+        <ComebackReported v-if="news.length > 0" :newsT="news" class="animate__animated animate__fadeInUp" />
+        <RecentReleases v-if="releases.length > 0" :releases="releases" class="animate__animated animate__fadeInUp" />
+        <ArtistAdded v-if="artists.length > 0" :artists="artists" class="animate__animated animate__fadeInUp" />
       </div>
-    </div>
+    </section>
   </div>
 </template>

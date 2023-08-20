@@ -18,13 +18,18 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxtjs/tailwindcss',
-    '@nuxtjs/color-mode',
     '@nuxt/image',
-    '@vueuse/nuxt',
     'nuxt-vuefire',
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
+    'nuxt-delay-hydration',
   ],
+  
+  delayHydration: { 
+    mode: 'init',
+    // enables nuxt-delay-hydration in dev mode for testing  
+    debug: process.env.NODE_ENV === 'development'
+  },
 
   vuefire: {
     config: {
@@ -53,7 +58,13 @@ export default defineNuxtConfig({
     viewer: true,
   },
 
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+
+    timeline: {
+      enabled: true
+    }
+  },
   
   build:{
     // vue-toastification - old commonjs module 
