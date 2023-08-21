@@ -81,7 +81,7 @@ const loadingDone = () => {
           ref="skeleton"
           class="absolute h-10 w-10 mx-auto aspect-square rounded-full z-10 inset-0 bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
         ></div>
-        <nuxt-img :src="artist.image" :alt="artist.name + 's picture'" quality="80" loading="lazy" @load="loadingDone" class="shadowCard h-10 w-10 rounded-full object-cover"/>
+        <nuxt-img :src="artist.image" :alt="artist.name + 's picture'" quality="30" loading="lazy" @load="loadingDone" class="shadowCard h-10 w-10 rounded-full object-cover"/>
       </div>
       <div>
         <h2 class="text-xs lg:text-sm font-semibold">

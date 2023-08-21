@@ -35,7 +35,7 @@ const loadingDone = () => {
            :class="dimension"
           class="absolute mx-auto aspect-square rounded-full z-10 inset-0 bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
         ></div>
-        <nuxt-img :src="image" :alt="name" quality="80" loading="lazy" @load="loadingDone"
+        <nuxt-img :src="image" :alt="name" quality="50" loading="lazy" @load="loadingDone"
           class="bg-zinc-500 mx-auto aspect-square rounded-full object-cover" :class="dimension" />
       </div>
     </NuxtLink>
