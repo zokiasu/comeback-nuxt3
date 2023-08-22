@@ -22,14 +22,7 @@ export default defineNuxtConfig({
     'nuxt-vuefire',
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
-    'nuxt-delay-hydration',
   ],
-  
-  delayHydration: { 
-    mode: 'init',
-    // enables nuxt-delay-hydration in dev mode for testing  
-    debug: process.env.NODE_ENV === 'development'
-  },
 
   vuefire: {
     config: {
