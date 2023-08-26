@@ -35,6 +35,8 @@ export default defineNuxtPlugin((nuxtApp) => {
           setIsAdmin(result.role ? true : false)
           isAdmin.value = result.role ? true : false
         }
+      }).catch(()=> {
+        console.log('getDatabaseUser doesn\'t work')
       })
     } else {
       setFirebaseUser(null)

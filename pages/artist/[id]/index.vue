@@ -11,7 +11,6 @@ const editLink = ref('/artist/edit/' + route.params.id)
 
 onMounted(async () => {
   artist.value = await fetchArtistFullInfoById(route.params.id)
-  console.log('artist', artist.value)
   imageBackground.value = artist.value.image
   title.value = artist.value.name
   description.value = artist.value.description

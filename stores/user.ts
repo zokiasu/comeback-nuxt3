@@ -1,4 +1,5 @@
 export const useUserStore = defineStore('userStore', () => {
+
   const userStore = useState<any>('userStore', () => null);
   const authStore = useState<any>('authStore', () => null);
   const firebaseUserStore = useState<any>('firebaseUserStore', () => null);
@@ -6,7 +7,7 @@ export const useUserStore = defineStore('userStore', () => {
   const isLoginStore = useState<boolean>('isLoginStore', () => false);
   const isAdminStore = useState<boolean>('isAdminStore', () => false);
   const userDataStore = useState<any>('userDataStore', () => null);
-
+  
   const setUserData = (user: any) => {
     userDataStore.value = user
   }

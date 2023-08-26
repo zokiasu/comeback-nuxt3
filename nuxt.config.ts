@@ -9,6 +9,7 @@ export default defineNuxtConfig({
       FIREBASE_MESSAGIN_SENDER_ID: process.env.FIREBASE_MESSAGIN_SENDER_ID,
       FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
       FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
+      GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
     }
   },
 
@@ -25,6 +26,7 @@ export default defineNuxtConfig({
   ],
 
   vuefire: {
+    auth: true,
     config: {
       apiKey: process.env.FIREBASE_API_KEY,
       authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -34,7 +36,6 @@ export default defineNuxtConfig({
       appId: process.env.FIREBASE_APP_ID,
       measurementId: process.env.FIREBASE_MEASUREMENT_ID,
     },
-    auth: true,
   },
 
   pinia: {

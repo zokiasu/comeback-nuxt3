@@ -106,8 +106,6 @@ const updateArtist = async () => {
   }
 
   if (artistToEdit.value.idYoutubeMusic == artist.value.idYoutubeMusic) {
-    console.log('artist', artist.value.idYoutubeMusic)
-    console.log('artistToEdit', artistToEdit.value.idYoutubeMusic)
     delete artistToEdit.value.idYoutubeMusic
   }
 
