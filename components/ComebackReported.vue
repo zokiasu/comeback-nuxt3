@@ -10,10 +10,10 @@ const maxDisplay = ref(9)
 
 <template>
   <CardDefault name="Comeback reported" :class="{ 'hidden': !newsT }">
-    <transition-group name="list-complete" tag="div" class="py-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
-      <LazyCardNews v-for="newsT in newsT.slice(0, maxDisplay)" :key="newsT.id" :message="newsT.message" :date="newsT.date"
+    <div class="py-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
+      <CardNews v-for="newsT in newsT.slice(0, maxDisplay)" :key="newsT.id" :message="newsT.message" :date="newsT.date"
         :artist="newsT.artist" />
-    </transition-group>
+    </div>
     <button v-if="newsT.length > 9 && newsT.length != maxDisplay" class="font-semibold text-center w-full" @click="maxDisplay = newsT.length">
       <p>See More</p>
       <IconArrowDown class="w-5 h-5 mx-auto" />
