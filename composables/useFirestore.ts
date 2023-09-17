@@ -165,7 +165,7 @@ export const fetchArtistFullInfoById = async (idArtist: String) => {
     return {
       ...doc.data()
     };
-  });
+  }).filter((doc) => {return doc.needToBeVerified === false});
 
   // @ts-ignore
   docs[0].news = Array.from((await getDocs(colNews)).docs).map((doc) => {
