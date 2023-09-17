@@ -82,7 +82,7 @@ useHead({
           <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3 justify-between lg:justify-start">
             <LazyCardRelease v-for="release in artist.releases" :key="release.id" :id="release.id" :image="release.image"
               :date="release.date" :name="release.name" :type="release.type" :artistsId="release.artistsId"
-              :artistsName="release.artistsName" :displayDate="true" />
+              :artistsName="release.artistsName" :displayDate="true" :yearReleased="release.year" />
           </transition-group>
         </CardDefault>
       </div>
@@ -101,7 +101,7 @@ useHead({
         </CardDefault>
       </div>
       <div v-if="artist.news?.length">
-        <CardDefault name="Last Comeback">
+        <CardDefault name="Comeback Reported">
           <transition-group name="list-complete" tag="div" class="py-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
             <LazyCardNews v-for="news in artist.news" :key="news.id" :message="news.message" :date="news.date" :artist="news.artist" />
           </transition-group>

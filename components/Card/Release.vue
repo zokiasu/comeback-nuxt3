@@ -32,6 +32,10 @@ const { id, image, date, name, type, artistsId, artistsName, displayDate } = def
     type: Boolean,
     default: false,
   },
+  yearReleased: {
+    type: Number,
+    required: false,
+  },
 })
 
 const skeleton = ref(null)
@@ -74,7 +78,7 @@ const loadingDone = () => {
       <div v-if="artistsId && artistsName" class="text-xs">
         <NuxtLink :to="`/artist/${artistsId}`" class="mt-1">
           <p v-if="artistsName" class="hover-underline-animation truncate hover-underline-animation">
-            {{ artistsName }}
+            {{ artistsName }} <span v-if="yearReleased">- {{ yearReleased }}</span>
           </p>
         </NuxtLink>
       </div>
