@@ -33,18 +33,21 @@ useHead({
 <template>
   <div class="container mx-auto min-h-screen p-5 space-y-5">
     <div class="md:flex md:justify-between">
-      <p class="text-lg uppercase">Released in <span class="font-bold">{{ monthNames[currentMonth] }} {{
-        currentYear }}</span></p>
+      <p class="text-lg uppercase">
+        Released in <span class="font-bold">{{ monthNames[currentMonth] }} {{currentYear }}</span>
+      </p>
       <div class="flex items-center divide-x space-x-2 divide-zinc-500 pt-1">
         <div class="flex items-center space-x-2">
           <button
             class="text-[0.6rem] capitalize rounded border py-0.5 px-1 transition-all duration-300 ease-in-out hover:bg-zinc-500 tracking-wider"
-            @click="currentMonth--">
+            @click="currentMonth--"
+          >
             Prev Month
           </button>
           <button
             class="text-[0.6rem] capitalize rounded border py-0.5 px-1 transition-all duration-300 ease-in-out hover:bg-zinc-500 tracking-wider"
-            @click="currentMonth++">
+            @click="currentMonth++"
+          >
             Next Month
           </button>
         </div>
