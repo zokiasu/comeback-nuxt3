@@ -5,7 +5,6 @@ import { getFirestore } from 'firebase/firestore';
 import { useUserStore } from '@/stores/user'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  console.log('defineNuxtPlugin')
   const config = useRuntimeConfig()
 
   const firebaseConfig = {
