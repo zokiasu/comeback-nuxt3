@@ -18,6 +18,7 @@ const toastOption = {
   maxToasts: 5,
   newestOnTop: true,
 }
+
 const artistFetch = ref(null)
 
 onMounted(async () => {

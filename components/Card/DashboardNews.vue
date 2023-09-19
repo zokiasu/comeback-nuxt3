@@ -46,33 +46,25 @@ const deleteNews = () => {
 
 <template>
   <div class="list-complete-item h-full bg-quaternary p-3 rounded space-y-2.5 relative">
-    <p>
-      News ID : {{ id }}
-    </p>
-    <div class="grid grid-cols-2 gap-5">
-      <div class="space-y-2">
-        <CbLabel label="Artist" class="border-b border-zinc-500" />
-        <div class="relative">
-          <div
-            ref="skeleton"
-            class="absolute h-14 z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
-          ></div>
-          <nuxt-img 
-            v-if="artist.image"
-            :src="artist.image" 
-            :alt="artist.name" 
-            quality="30" 
-            loading="lazy" 
-            class="rounded h-14" 
-            @load="loadingDone"
-          />
-        </div>
-        <div>
-          <p class="font-semibold">{{ artist.name }}</p>
-          <p class="text-xs">{{ artist.id }}</p>
-        </div>
+    <div class="space-y-2">
+      <div class="flex justify-between w-full border-b border-zinc-500">
+        <p class="font-semibold">{{ artist.name }}</p>
+        <NuxtLink :to="'/artist/' + artist.id" target="_blank">{{ artist.id }}</NuxtLink>
       </div>
-      <div class="space-y-2">
+      <div class="relative">
+        <nuxt-img 
+          v-if="artist.image"
+          :src="artist.image" 
+          :alt="artist.name" 
+          quality="30" 
+          loading="lazy" 
+          class="rounded" 
+          @load="loadingDone"
+        />
+      </div>
+    </div>
+    <div>
+      <!-- <div class="space-y-2">
         <CbLabel label="User" class="border-b border-zinc-500" />
         <div class="relative">
           <div
@@ -93,7 +85,7 @@ const deleteNews = () => {
           <p class="font-semibold">{{ user.name }}</p>
           <p class="text-xs truncate">{{ user.id }}</p>
         </div>
-      </div>
+      </div> -->
     </div>
     
     <div>
@@ -102,12 +94,17 @@ const deleteNews = () => {
     </div>
 
     <div class="grid grid-cols-2 gap-3">
-      <!-- <button class="bg-quinary rounded px-3 py-1 transition-all duration-300 ease-in-out hover:bg-tertiary/30">
-      Edit
-    </button> -->
+      <button disabled class="bg-quinary rounded px-3 py-1 transition-all duration-300 ease-in-out hover:bg-tertiary/30">
+        Edit
+      </button>
       <button @click="deleteNews" class="bg-quinary rounded px-3 py-1 transition-all duration-300 ease-in-out hover:bg-tertiary/30">
         Delete
       </button>
+    </div>
+    
+    <div class="flex justify-between w-full">
+      <p>{{ user.name }}</p>
+      <p></p>
     </div>
   </div>
 </template>
