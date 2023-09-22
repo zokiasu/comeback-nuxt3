@@ -1,3 +1,7 @@
+import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+
+
 export const useUserStore = defineStore('userStore', () => {
 
   const userStore = useState<any>('userStore', () => null);
@@ -24,6 +28,38 @@ export const useUserStore = defineStore('userStore', () => {
     isAdminStore.value = isAdmin
   }
 
+  const auth = getAuth();
+  
+  onAuthStateChanged(auth, async (user: User | null) => {
+    if (user) {
+      setFirebaseUser(user);
+      setIsLogin(true);
+
+      const userData = await getDatabaseUser(user.uid);
+      if (userData) {
+        setUserData(userData);
+        setIsAdmin(userData.role ? true : false);
+      }
+    } else {
+      setFirebaseUser(null);
+      setIsLogin(false);
+      setUserData(null);
+      setIsAdmin(false);
+    }
+  });
+
+  const getDatabaseUser = async (uid: string) => {
+    const db = getFirestore();
+    const userDoc = doc(db, "users", uid);
+    const userSnap = await getDoc(userDoc);
+
+    if (userSnap.exists()) {
+      return userSnap.data();
+    } else {
+      return null;
+    }
+  };
+
   return {
     userStore,
     authStore,
@@ -34,7 +70,8 @@ export const useUserStore = defineStore('userStore', () => {
     setUserData,
     setFirebaseUser,
     setIsLogin,
-    setIsAdmin
+    setIsAdmin,
+    getDatabaseUser,
   }
 }, {
   persist: true

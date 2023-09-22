@@ -21,36 +21,28 @@ export default defineNuxtPlugin((nuxtApp) => {
   const auth = getAuth(app);
   const firestore = getFirestore(app);
 
-  const { getDatabaseUser, isLogin, isAdmin } = useUser();
-  const { setUserData, setFirebaseUser, setIsLogin, setIsAdmin } = useUserStore()
+  const { getDatabaseUser, setUserData, setFirebaseUser, setIsLogin, setIsAdmin, isAdminStore, isLoginStore } = useUserStore()
   
   auth.onAuthStateChanged((userState) => {
     if (userState) {
       setFirebaseUser(userState)
       setIsLogin(true)
-      isLogin.value = true
-      getDatabaseUser().then((result) => {
+      getDatabaseUser(userState.uid).then((result) => {
         if (result) {
           setUserData(result)
           setIsAdmin(result.role ? true : false)
-          isAdmin.value = result.role ? true : false
         }
-      }).catch(()=> {
-        console.log('getDatabaseUser doesn\'t work')
+      }).catch((error)=> {
+        console.error('Erreur lors de la récupération de l\'utilisateur de la base de données:', error);
       })
     } else {
       setFirebaseUser(null)
       setIsLogin(false)
       setUserData(null)
       setIsAdmin(false)
-      isLogin.value = false
-      isAdmin.value = false
     }
   });
 
-  nuxtApp.vueApp.provide('auth', auth)
   nuxtApp.provide('auth', auth)
-
-  nuxtApp.vueApp.provide('firestore', firestore)
   nuxtApp.provide('firestore', firestore)
 });

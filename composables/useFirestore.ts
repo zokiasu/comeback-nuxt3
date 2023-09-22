@@ -98,7 +98,6 @@ export const getRandomSong = async () => {
   //get number of releases in releases collection
   const coll = collection(db as any, 'releases');
   const snapshot = await getCountFromServer(coll);
-  console.log('count: ', snapshot.data().count);
 
   // set a random number with snapshot.data().count as max
   const random = Math.floor(Math.random() * snapshot.data().count);
@@ -118,8 +117,8 @@ export const getRandomSong = async () => {
       ...doc.data()
     };
   });
-  console.log('musics', musics[0])
-  return musics[0];
+  const randomMusic = Math.floor(Math.random() * musics.length);
+  return musics[randomMusic];
 }
 
 // export const fetchReleaseByArtistId = async (idArtist: String) => {

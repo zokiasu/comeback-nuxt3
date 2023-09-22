@@ -12,21 +12,27 @@ const duration = ref(0);
 const playerContainer = ref(null);
 const player = ref(null);
 const volumeOn = ref(true);
+const volume = ref(30);
 
 onMounted(() => {
-  createYTPlayer()
+  if (document.readyState === 'complete') {
+    createYTPlayer();
+  } else {
+    window.addEventListener('load', createYTPlayer);
+  }
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener('load', createYTPlayer);
   if (player.value) {
     player.value.destroy();
   }
 });
 
 const changeVideoId = (id) => {
-  videoId = id
-  if (player.value) player.value.destroy();
-  createYTPlayer();
+  if (player.value) {
+    player.value.cueVideoById(id);
+  }
 }
 
 const createPlayer = () => {
@@ -108,7 +114,8 @@ const seekToTime = () => {
 
 const setVolume = (volume) => {
   if (player.value) {
-    player.value.setVolume(volume);
+    player.value.setVolume(newVolume);
+    volume.value = newVolume; // Met à jour la valeur réactive
   }
 };
 

@@ -16,7 +16,7 @@ const signIn = async () => {
 
 const signUp = async () => {
   if (password.value !== passwordConfirm.value) {
-    console.log('password not equal')
+    console.error('password not equal')
     return
   }
 
