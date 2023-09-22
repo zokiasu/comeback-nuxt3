@@ -11,7 +11,8 @@ import {
   query,
   where,
   orderBy,
-  limit
+  limit,
+  getCountFromServer
 } from "firebase/firestore";
 
 /** NEWS FUNCTION **/
@@ -89,6 +90,36 @@ export const fetchReleaseById = async (idRelease: String) => {
   });
 
   return docs[0];
+}
+
+export const getRandomSong = async () => {
+  const {$firestore: db} = useNuxtApp();
+
+  //get number of releases in releases collection
+  const coll = collection(db as any, 'releases');
+  const snapshot = await getCountFromServer(coll);
+  console.log('count: ', snapshot.data().count);
+
+  // set a random number with snapshot.data().count as max
+  const random = Math.floor(Math.random() * snapshot.data().count);
+
+  // get the release with the random number
+  const colRef = query(coll);
+
+  const snapshot2 = await getDocs(colRef);
+  const doc = snapshot2.docs[random].data();
+
+  // @ts-ignore
+  const colMusic = query(collection(db, 'releases', doc.id, 'musics'));
+  const snapshotMusic = await getDocs(colMusic);
+
+  const musics = Array.from(snapshotMusic.docs).map((doc) => {
+    return {
+      ...doc.data()
+    };
+  });
+  console.log('musics', musics[0])
+  return musics[0];
 }
 
 // export const fetchReleaseByArtistId = async (idArtist: String) => {

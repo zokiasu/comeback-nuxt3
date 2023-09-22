@@ -44,7 +44,7 @@ onMounted(async () => {
     <section v-if="newsToday.length > 1" class="animate__animated animate__fadeInDown">
       <div class="relative">
         <div class="absolute z-10 pt-10">
-          <p class="bg-red-700 w-fit text-xs pr-5 pl-8 py-1 lg:text-xl xl:text-2xl font-semibold uppercase">
+          <p class="bg-red-700 drop-shadow-lg w-fit text-xs pr-5 pl-8 py-1 lg:text-xl xl:text-2xl font-semibold uppercase">
             Comeback Today
           </p>
         </div>
@@ -56,7 +56,7 @@ onMounted(async () => {
           >
             <NuxtImg 
               :src="news.artist.image"
-              class="max-h-[30rem] w-full object-cover"
+              class="min-h-[20rem] lg:max-h-[40rem] w-full object-cover"
             />
             <NuxtLink :to="`/artist/${news.artist.id}`" class="absolute z-50 flex flex-col items-center justify-center inset-0 p-5 bg-secondary/30">
               <p class="self-center text-3xl lg:text-5xl xl:text-7xl 2xl:text-9xl font-bold">
@@ -67,8 +67,9 @@ onMounted(async () => {
         </swiper-container>
       </div>
     </section>
-    <section class="container mx-auto max-w-7xl px-10 py-24 space-y-24">
-      <DiscoverMusic class="animate__animated animate__fadeInUp" />
+    <section class="container mx-auto max-w-7xl px-10 py-16 space-y-16">
+      <DiscoverMusic class="animate__animated animate__fadeInDown" />
+      <ComebackReported v-if="news" :news-t="news" class="animate__animated animate__fadeInUp" />
       <RecentReleases class="animate__animated animate__fadeInUp" />
       <ArtistAdded class="animate__animated animate__fadeInUp" />
     </section>
