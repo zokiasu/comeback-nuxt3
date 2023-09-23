@@ -36,6 +36,11 @@ const { id, image, date, name, type, artistsId, artistsName, displayDate } = def
     type: Number,
     required: false,
   },
+  size: {
+    type: String,
+    required: false,
+    default: 'min-w-[10rem] max-w-[10rem]',
+  },
 })
 
 const skeleton = ref(null)
@@ -55,15 +60,14 @@ const loadingDone = () => {
 </script>
 
 <template>
-  <div class="min-w-[8rem] max-w-[10rem] space-y-2">
+  <div class="mx-auto md:mx-0 space-y-2" :class="size">
     <NuxtLink :to="`/release/${id}`">
       <div class="group relative">
-        <div
-          ref="skeleton"
-          class="absolute z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
-        ></div>
+        <div ref="skeleton"
+          class="absolute z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse">
+        </div>
         <nuxt-img :src="image" :alt="name" quality="50" loading="lazy" @load="loadingDone"
-          class="aspect-square bg-zinc-500 max-h-[10rem] min-h-[8rem] w-full rounded object-cover drop-shadow-2xl" />
+          class="aspect-square bg-zinc-500 w-full rounded object-cover drop-shadow-2xl" :class="size" />
 
         <div v-if="displayDate"
           class="invisible absolute top-2 right-1.5 rounded bg-quinary bg-opacity-80 px-2 py-0.5 group-hover:visible">

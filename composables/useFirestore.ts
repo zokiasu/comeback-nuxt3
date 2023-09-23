@@ -92,7 +92,7 @@ export const fetchReleaseById = async (idRelease: String) => {
   return docs[0];
 }
 
-export const getRandomSong = async () => {
+export const getRandomSong = async (): Promise<any> => {
   const {$firestore: db} = useNuxtApp();
 
   //get number of releases in releases collection
@@ -117,7 +117,13 @@ export const getRandomSong = async () => {
       ...doc.data()
     };
   });
-  const randomMusic = Math.floor(Math.random() * musics.length);
+
+  let randomMusic = Math.floor(Math.random() * musics.length);
+
+  if(musics[randomMusic].name.toLowerCase().includes('inst')) {
+    return getRandomSong();
+  }
+
   return musics[randomMusic];
 }
 

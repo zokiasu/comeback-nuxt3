@@ -87,7 +87,7 @@ useHead({
       flex-col 
       justify-center
       text-center
-      min-h-[30rem] lg:max-h-[40rem]
+      h-[calc(100vh-60px)] sm:min-h-[30rem] lg:max-h-[40rem]
       bg-cover 
       bg-center 
       bg-no-repeat 
@@ -103,7 +103,7 @@ useHead({
         <icon-arrow-down class="animate-bounce w-5 h-5 mx-auto" />
       </p>
     </section>
-    <section class="container mx-auto max-w-7xl px-10 py-16 space-y-16">
+    <section class="container mx-auto px-10 py-16 space-y-16">
       <DiscoverMusic v-if="newsFetched" class="animate__animated animate__zoomIn" />
       <ComebackReported v-if="news.length && newsFetched" :news-t="news" class="animate__animated animate__fadeInUp" />
       <RecentReleases v-if="newsFetched" class="animate__animated animate__fadeInUp" />

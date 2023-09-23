@@ -23,7 +23,6 @@
 </template>
 
 <script lang="ts" setup>
-
 const idYoutubeVideo = useIdYoutubeVideo()
 const isPlayingVideo = useIsPlayingVideo()
 const release = ref<any>(null)
