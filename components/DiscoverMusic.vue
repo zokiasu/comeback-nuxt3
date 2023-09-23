@@ -8,7 +8,7 @@
       />
       <div class="absolute inset-0 bg-secondary/50 flex flex-col py-10 justify-evenly items-center gap-8">
         <p class="text-3xl font-semibold">Discover Music</p>
-        <IconPlay class="w-14 h-14 border border-tertiary rounded-full group-hover:border-quaternary group-hover:text-quaternary group-hover:bg-tertiary" />
+        <IconPlay class="w-14 h-14 border border-tertiary rounded-full group-hover:text-quaternary group-hover:bg-tertiary" />
         <div class="text-center space-y-3">
           <p class="text-2xl font-semibold">{{ release.name }}</p>
           <p>{{ release.album.name }}</p>

@@ -3,6 +3,7 @@ import { Timestamp, collection, doc, onSnapshot, query, where, orderBy, Document
 
 const { $firestore: db } = useNuxtApp();
 const news = ref([] as any[])
+const newsFetched = ref(false)
 
 const newsToday = computed(() => {
   return news.value.filter((news: any) => {
@@ -22,6 +23,7 @@ onMounted(() => {
       newsTmp.push(doc.data());
     });
     news.value = newsTmp;
+    newsFetched.value = true;
   });
 })
 
@@ -50,7 +52,7 @@ useHead({
 
 <template>
   <div>
-    <section v-if="newsToday.length > 1" class="animate__animated animate__fade">
+    <section v-if="newsToday.length && newsFetched" class="animate__animated animate__fadeInDown">
       <div class="relative">
         <div class="absolute z-10 pt-10">
           <p
@@ -75,11 +77,37 @@ useHead({
         </Swiper>
       </div>
     </section>
+    <section v-else-if="newsFetched && !newsToday.length"
+      class="
+      animate__animated 
+      animate__fade 
+      relative 
+      w-full 
+      flex 
+      flex-col 
+      justify-center
+      text-center
+      min-h-[30rem] lg:max-h-[40rem]
+      bg-cover 
+      bg-center 
+      bg-no-repeat 
+      bg-[url('https://www.blind-magazine.com/wp-content/uploads/2021/12/comment-photographier-un-concert-fr-1536x864.jpg.webp')]">
+      <div class="absolute inset-0 bg-black/60"></div>
+      <div class="z-10 space-y-1.5 xl:space-y-5">
+        <p class="text-[2rem] sm:text-[6vw] xl:text-7xl font-bold">
+          Don't miss any <span class="text-primary">Comeback</span>
+        </p>
+        <p class="text-[3vw] xl:text-3xl">Track every next release by your favorite artists</p>
+      </div>
+      <p class="absolute bottom-20 left-0 right-0 md:hidden">
+        <icon-arrow-down class="animate-bounce w-5 h-5 mx-auto" />
+      </p>
+    </section>
     <section class="container mx-auto max-w-7xl px-10 py-16 space-y-16">
-      <DiscoverMusic class="animate__animated animate__fadeInDown" />
-      <ComebackReported v-if="news" :news-t="news" class="animate__animated animate__fadeInUp" />
-      <RecentReleases class="animate__animated animate__fadeInUp" />
-      <ArtistAdded class="animate__animated animate__fadeInUp" />
+      <DiscoverMusic v-if="newsFetched" class="animate__animated animate__zoomIn" />
+      <ComebackReported v-if="news.length && newsFetched" :news-t="news" class="animate__animated animate__fadeInUp" />
+      <RecentReleases v-if="newsFetched" class="animate__animated animate__fadeInUp" />
+      <ArtistAdded v-if="newsFetched" class="animate__animated animate__fadeInUp" />
     </section>
   </div>
 </template>

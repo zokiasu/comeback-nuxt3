@@ -6,7 +6,7 @@ const releaseDate = new Date()
 releaseDate.setDate(releaseDate.getDate() - 8)
 
 onMounted(async () => {
-  releases.value = await fetchReleasesWithDateAndLimit(Timestamp.fromDate(releaseDate), 6)
+  releases.value = await fetchReleasesWithDateAndLimit(Timestamp.fromDate(releaseDate), 8)
 })
 </script>
 <template>
