@@ -22,7 +22,21 @@ export default defineNuxtConfig({
     'nuxt-vuefire',
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
+    'nuxt-swiper',
   ],
+
+  devtools: {
+    enabled: true,
+
+    timeline: {
+      enabled: true
+    }
+  },
+  
+  build:{
+    // vue-toastification - old commonjs module 
+    transpile: ['vue-toastification', '@vuepic/vue-datepicker'],
+  },
 
   vuefire: {
     auth: true,
@@ -50,18 +64,4 @@ export default defineNuxtConfig({
     injectPosition: 0,
     viewer: true,
   },
-
-  devtools: {
-    enabled: true,
-
-    timeline: {
-      enabled: true
-    }
-  },
-  
-  build:{
-    // vue-toastification - old commonjs module 
-    transpile: ['vue-toastification', '@vuepic/vue-datepicker'],
-  }
-
 })

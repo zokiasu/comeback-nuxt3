@@ -59,17 +59,12 @@ useHead({
               class="flex items-center justify-between gap-5"
             >
               <h3 class="font-semibold text-xl">{{ music.name }}</h3>
-              <div class="flex gap-2">
-                <a :href="`https://youtu.be/${music.videoId}`" target="_blank">
-                  <icon-youtube class="h-8 w-8" />
-                </a>
-                <button
-                  @click="playVideo(music.videoId)"
-                  class="rounded px-2 uppercase text-xs font-semibold hover:bg-tertiary hover:text-secondary transition-all ease-in-out duration-300"
-                >
-                  Play
-                </button>
-              </div>
+              <button
+                @click="playVideo(music.videoId)"
+                class="rounded px-2 uppercase text-xs font-semibold hover:bg-tertiary hover:text-secondary transition-all ease-in-out duration-300"
+              >
+                Play
+              </button>
             </li>
           </ul>
         </div>

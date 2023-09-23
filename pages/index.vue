@@ -1,5 +1,31 @@
-<script lang="ts" setup>
-import { Timestamp } from 'firebase/firestore';
+<script setup lang="ts">
+import { Timestamp, collection, doc, onSnapshot, query, where, orderBy, DocumentData } from 'firebase/firestore';
+
+const { $firestore: db } = useNuxtApp();
+const news = ref([] as any[])
+const newsFetched = ref(false)
+
+const newsToday = computed(() => {
+  return news.value.filter((news: any) => {
+    const newsDate = new Date(news.date.seconds * 1000);
+    const today = new Date();
+    return newsDate.getDate() === today.getDate() && newsDate.getMonth() === today.getMonth() && newsDate.getFullYear() === today.getFullYear();
+  })
+})
+
+onMounted(() => {
+  const newsDate = new Date();
+  newsDate.setDate(newsDate.getDate() - 1);
+  const q = query(collection(db as any, 'news'), where('date', '>=', Timestamp.fromDate(newsDate)), orderBy('date', 'asc'));
+  onSnapshot(q, (querySnapshot) => {
+    const newsTmp: any[] = [];
+    querySnapshot.forEach((doc) => {
+      newsTmp.push(doc.data());
+    });
+    news.value = newsTmp;
+    newsFetched.value = true;
+  });
+})
 
 useHead({
   title: 'Comeback',
@@ -22,27 +48,50 @@ useHead({
     { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
   ]
 })
-
-const news = ref([] as Object[])
-const artists = ref([] as Object[])
-const releases = ref([] as Object[])
-
-onMounted(async () => {
-  const artistDate = new Date()
-  const releaseDate = new Date()
-  releaseDate.setDate(releaseDate.getDate() - 7)
-  const newsDate = new Date()
-  newsDate.setDate(newsDate.getDate() - 1)
-  news.value = await fetchNews(Timestamp.fromDate(newsDate))
-  releases.value = await fetchReleasesWithDateAndLimit(Timestamp.fromDate(releaseDate), 8)
-  artists.value = await fetchArtistsWithLimit(Timestamp.fromDate(artistDate), 8)
-})
 </script>
 
 <template>
   <div>
-    <section
-      class="animate__animated animate__fadeInDown relative px-10 xl:px-40 w-full flex flex-col justify-center h-screen md:h-[calc(100vh-60px)] bg-cover bg-center bg-no-repeat bg-[url('https://www.blind-magazine.com/wp-content/uploads/2021/12/comment-photographier-un-concert-fr-1536x864.jpg.webp')]">
+    <section v-if="newsToday.length && newsFetched" class="animate__animated animate__fadeInDown">
+      <div class="relative">
+        <div class="absolute z-10 pt-10">
+          <p
+            class="bg-red-700 drop-shadow-lg w-fit text-xs pr-5 pl-8 py-1 lg:text-xl xl:text-2xl font-semibold uppercase">
+            Comeback Today
+          </p>
+        </div>
+
+        <Swiper :modules="[SwiperAutoplay, SwiperParallax]" :slides-per-view="1" :loop="true" :parallax="true" :autoplay="{
+          delay: 3500,
+          disableOnInteraction: false,
+        }">
+          <SwiperSlide v-for="news in newsToday" :key="news.id" class="relative swiper-slide">
+            <NuxtImg :src="news.artist.image" class="min-h-[20rem] lg:max-h-[40rem] w-full object-cover" />
+            <NuxtLink :to="`/artist/${news.artist.id}`"
+              class="absolute z-50 flex flex-col items-center justify-center inset-0 p-5 bg-secondary/30">
+              <p class="self-center text-3xl lg:text-5xl xl:text-7xl 2xl:text-9xl font-bold">
+                {{ news.artist.name }}
+              </p>
+            </NuxtLink>
+          </SwiperSlide>
+        </Swiper>
+      </div>
+    </section>
+    <section v-else-if="newsFetched && !newsToday.length"
+      class="
+      animate__animated 
+      animate__fade 
+      relative 
+      w-full 
+      flex 
+      flex-col 
+      justify-center
+      text-center
+      h-[calc(100vh-60px)] sm:min-h-[30rem] lg:max-h-[40rem]
+      bg-cover 
+      bg-center 
+      bg-no-repeat 
+      bg-[url('https://www.blind-magazine.com/wp-content/uploads/2021/12/comment-photographier-un-concert-fr-1536x864.jpg.webp')]">
       <div class="absolute inset-0 bg-black/60"></div>
       <div class="z-10 space-y-1.5 xl:space-y-5">
         <p class="text-[2rem] sm:text-[6vw] xl:text-7xl font-bold">
@@ -54,12 +103,11 @@ onMounted(async () => {
         <icon-arrow-down class="animate-bounce w-5 h-5 mx-auto" />
       </p>
     </section>
-    <section v-if="news.length > 0 || releases.length > 0 || artists.length > 0" class="container mx-auto py-10">
-      <div class="space-y-8">
-        <ComebackReported v-if="news.length > 0" :newsT="news" class="animate__animated animate__fadeInUp" />
-        <RecentReleases v-if="releases.length > 0" :releases="releases" class="animate__animated animate__fadeInUp" />
-        <ArtistAdded v-if="artists.length > 0" :artists="artists" class="animate__animated animate__fadeInUp" />
-      </div>
+    <section class="container mx-auto px-10 py-16 space-y-16">
+      <DiscoverMusic v-if="newsFetched" class="animate__animated animate__zoomIn" />
+      <ComebackReported v-if="news.length && newsFetched" :news-t="news" class="animate__animated animate__fadeInUp" />
+      <RecentReleases v-if="newsFetched" class="animate__animated animate__fadeInUp" />
+      <ArtistAdded v-if="newsFetched" class="animate__animated animate__fadeInUp" />
     </section>
   </div>
 </template>

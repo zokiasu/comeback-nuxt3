@@ -1,6 +1,5 @@
 <script setup>
 const routeN = useRoute()
-console.log(routeN.name)
 </script>
 
 <template>
