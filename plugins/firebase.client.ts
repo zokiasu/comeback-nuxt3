@@ -1,7 +1,7 @@
 import { getAnalytics } from 'firebase/analytics';
 import { getAuth } from 'firebase/auth';
 import { initializeApp } from "firebase/app";
-import { getFirestore } from 'firebase/firestore';
+import { doc, onSnapshot, getFirestore } from 'firebase/firestore';
 import { useUserStore } from '@/stores/user'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -21,20 +21,13 @@ export default defineNuxtPlugin((nuxtApp) => {
   const auth = getAuth(app);
   const firestore = getFirestore(app);
 
-  const { getDatabaseUser, setUserData, setFirebaseUser, setIsLogin, setIsAdmin, isAdminStore, isLoginStore } = useUserStore()
+  const { setUserData, setFirebaseUser, setIsLogin, setIsAdmin } = useUserStore()
   
   auth.onAuthStateChanged((userState) => {
     if (userState) {
       setFirebaseUser(userState)
       setIsLogin(true)
-      getDatabaseUser(userState.uid).then((result) => {
-        if (result) {
-          setUserData(result)
-          setIsAdmin(result.role ? true : false)
-        }
-      }).catch((error)=> {
-        console.error('Erreur lors de la récupération de l\'utilisateur de la base de données:', error);
-      })
+      getDatabaseUser(userState.uid)
     } else {
       setFirebaseUser(null)
       setIsLogin(false)
@@ -42,6 +35,16 @@ export default defineNuxtPlugin((nuxtApp) => {
       setIsAdmin(false)
     }
   });
+
+  const getDatabaseUser = async (uid: string) => {
+    const db = getFirestore()
+    const userRef = doc(db, "users", uid);
+    onSnapshot(userRef, (querySnapshot) => {
+      const user = querySnapshot.data();
+      setUserData(user);
+      setIsAdmin(user?.role ? true : false);
+    });
+  };
 
   nuxtApp.provide('auth', auth)
   nuxtApp.provide('firestore', firestore)

@@ -1,13 +1,24 @@
-<script setup>
+<script setup lang="ts">
 import 'animate.css';
 import { useUserStore } from '@/stores/user'
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
+const { $firestore: db } = useNuxtApp();
+const userStore = useUserStore();
+const isAdminStore = computed(() => userStore.isAdminStore)
+const isLoginStore = computed(() => userStore.isLoginStore)
 const isPlayingVideo = useIsPlayingVideo()
-const artistFetch = ref(null)
-const { isLoginStore, isAdminStore } = useUserStore();
+const artistFetch = ref([] as any[])
 
 onMounted(async () => {
-  artistFetch.value = await queryByCollection('artists')
+  const q = query(collection(db as any, 'artists'), orderBy('name', 'asc'));
+  onSnapshot(q, (querySnapshot) => {
+    const tmp: any[] = [];
+    querySnapshot.forEach((doc) => {
+      tmp.push(doc.data());
+    });
+    artistFetch.value = tmp
+  });
 })
 </script>
 
