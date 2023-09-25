@@ -1,8 +1,6 @@
-import { getAnalytics } from 'firebase/analytics';
 import { getAuth } from 'firebase/auth';
 import { initializeApp } from "firebase/app";
-import { doc, onSnapshot, getFirestore } from 'firebase/firestore';
-import { useUserStore } from '@/stores/user'
+import { getFirestore } from 'firebase/firestore';
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
@@ -20,31 +18,6 @@ export default defineNuxtPlugin((nuxtApp) => {
   
   const auth = getAuth(app);
   const firestore = getFirestore(app);
-
-  const { setUserData, setFirebaseUser, setIsLogin, setIsAdmin } = useUserStore()
-  
-  auth.onAuthStateChanged((userState) => {
-    if (userState) {
-      setFirebaseUser(userState)
-      setIsLogin(true)
-      getDatabaseUser(userState.uid)
-    } else {
-      setFirebaseUser(null)
-      setIsLogin(false)
-      setUserData(null)
-      setIsAdmin(false)
-    }
-  });
-
-  const getDatabaseUser = async (uid: string) => {
-    const db = getFirestore()
-    const userRef = doc(db, "users", uid);
-    onSnapshot(userRef, (querySnapshot) => {
-      const user = querySnapshot.data();
-      setUserData(user);
-      setIsAdmin(user?.role ? true : false);
-    });
-  };
 
   nuxtApp.provide('auth', auth)
   nuxtApp.provide('firestore', firestore)
