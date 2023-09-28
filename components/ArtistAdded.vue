@@ -1,16 +1,14 @@
-<script setup lang="ts">
-import { Timestamp } from 'firebase/firestore';
-
-const artistDate = new Date()
-const artists = ref([] as any[])
-
-onMounted(async () => {
-  artists.value = await fetchArtistsWithLimit(Timestamp.fromDate(artistDate), 8)
+<script setup>
+const { artists } = defineProps({
+  artists: {
+    type: Array,
+    required: true
+  }
 })
 </script>
 
 <template>
-  <CardDefault v-if="artists.length > 1" name="Artist added" :class="{ 'hidden': !artists }">
+  <CardDefault name="Artist added" :class="{ 'hidden': !artists }">
     <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-5 py-5">
       <CardArtist 
         v-for="artist in artists"

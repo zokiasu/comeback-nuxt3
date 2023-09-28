@@ -1,3 +1,44 @@
+<script setup>
+import { useUserStore } from './stores/user';
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
+
+const { $auth } = useNuxtApp();
+onMounted(() => {
+  const {
+    setUserData,
+    setFirebaseUser,
+    setIsLogin,
+    setIsAdmin,
+  } = useUserStore()
+
+  $auth.onAuthStateChanged((userState) => {
+    if (userState) {
+      setFirebaseUser(userState)
+      setIsLogin(true)
+      getDatabaseUser(userState.uid)
+    } else {
+      setFirebaseUser(null)
+      setIsLogin(false)
+      setUserData(null)
+      setIsAdmin(false)
+    }
+  });
+
+  const getDatabaseUser = async (uid) => {
+    const db = getFirestore()
+    const userRef = doc(db, "users", uid);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists()) {
+      const user = userSnap.data()
+      setUserData(user)
+      setIsAdmin(user?.role ? true : false)
+    } else {
+      console.log("No such document!");
+    }
+  };
+})
+</script>
+
 <template>
   <NuxtLayout>
     <NuxtPage />
