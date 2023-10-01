@@ -62,7 +62,6 @@ const newsFetching = () => {
       Timestamp.fromDate(newsDate),
     ),
     orderBy('date', 'asc'),
-    limit(8),
   )
   onSnapshot(q, (querySnapshot) => {
     const newsTmp: any[] = []
