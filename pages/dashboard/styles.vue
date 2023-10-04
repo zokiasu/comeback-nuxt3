@@ -7,7 +7,7 @@ import {
 } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
 
-const { $firestore: db } = useNuxtApp()
+const db = await useFirestore()
 const toast = useToast()
 
 const styleFetch = ref([] as any[])

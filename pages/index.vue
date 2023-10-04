@@ -11,7 +11,7 @@ import {
   limit,
 } from 'firebase/firestore'
 
-const { $firestore: db } = useNuxtApp()
+const db = await useFirestore()
 
 const news = ref([] as any[])
 const artists = ref([] as any[])
@@ -40,13 +40,23 @@ const newsToday = computed(() => {
 
 onMounted(async () => {
   newsFetching()
-  
-  const artistDate = new Date()
-  artists.value = await fetchArtistsWithLimit(Timestamp.fromDate(artistDate), 8)
 
-  const releaseDate = new Date();
-  releaseDate.setDate(releaseDate.getDate() - 8)
-  releases.value = await fetchReleasesWithDateAndLimit(Timestamp.fromDate(releaseDate), 8)
+  const artistDate = new Date()
+  artists.value =
+    await fetchArtistsWithLimit(
+      Timestamp.fromDate(artistDate),
+      8,
+    )
+
+  const releaseDate = new Date()
+  releaseDate.setDate(
+    releaseDate.getDate() - 8,
+  )
+  releases.value =
+    await fetchReleasesWithDateAndLimit(
+      Timestamp.fromDate(releaseDate),
+      8,
+    )
 })
 
 const newsFetching = () => {
@@ -239,7 +249,9 @@ useHead({
         class="animate__animated animate__zoomIn"
       />
       <ComebackReported
-        v-if="news.length && newsFetched"
+        v-if="
+          news.length && newsFetched
+        "
         :news-t="news"
         class="animate__animated animate__fadeInUp"
       />
