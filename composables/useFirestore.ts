@@ -105,10 +105,11 @@ export const fetchReleaseById = async (idRelease: String) => {
 }
 
 export const getRandomSong = async (): Promise<any> => {
-  const { firestore: db } = useNuxtApp()
+  const { $firestore: db } = useNuxtApp()
 
+  // @ts-ignore
+  const coll = collection(db, 'releases')
   //get number of releases in releases collection
-  const coll = collection(db as any, 'releases')
   const snapshot = await getCountFromServer(coll)
 
   // set a random number with snapshot.data().count as max

@@ -34,6 +34,7 @@ const playVideo = (videoId: any) => {
 
 onMounted(async () => {
   release.value = await getRandomSong()
+  console.log(release.value)
 })
 
 const reloadedSong = async () => {
