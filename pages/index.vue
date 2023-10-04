@@ -149,8 +149,8 @@ useHead({
       </p>
     </section>
     <section class="container mx-auto space-y-16 px-10 py-16">
-      <ComebackReported v-if="news.length && newsFetched" :news-t="news" class="animate__animated animate__fadeInUp" />
       <DiscoverMusic class="animate__animated animate__zoomIn" />
+      <ComebackReported v-if="news.length && newsFetched" :news-t="news" class="animate__animated animate__fadeInUp" />
       <RecentReleases v-if="releases.length" :releases="releases" class="animate__animated animate__fadeInUp" />
       <ArtistAdded v-if="artists.length" :artists="artists" class="animate__animated animate__fadeInUp" />
     </section>
