@@ -41,7 +41,7 @@ const signOut = async () => {
             Home
           </NuxtLink>
           <NuxtLink :to="`/calendar`" :class="routeN.name === 'calendar' ? 'text-white' : 'text-zinc-500'">
-            Calendrier
+            Calendar
           </NuxtLink>
           <NuxtLink :to="`/artist`" :class="routeN.name === 'artist' ? 'text-white' : 'text-zinc-500'">
             Artists
