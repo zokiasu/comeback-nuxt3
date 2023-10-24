@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Timestamp, collection, doc, onSnapshot, query, where, orderBy, DocumentData, limit } from 'firebase/firestore'
+import { Timestamp, collection, doc, onSnapshot, query, where, orderBy, limit } from 'firebase/firestore'
+import { GRAPHQL_ENDPOINT } from '@/constants/graphql'
 
 const db = useFirestore()
 
@@ -105,7 +106,8 @@ useHead({
 
 <template>
   <div>
-    <section v-if="newsToday.length && newsFetched" class="animate__animated animate__fadeInDown">
+    {{ GRAPHQL_ENDPOINT }}
+    <!-- <section v-if="newsToday.length && newsFetched">
       <div class="relative">
         <div class="absolute z-10 pt-10">
           <p class="w-fit bg-red-700 py-1 pl-8 pr-5 text-xs font-semibold uppercase drop-shadow-lg lg:text-xl xl:text-2xl">Comeback Today</p>
@@ -134,7 +136,7 @@ useHead({
     </section>
     <section
       v-else-if="newsFetched && !newsToday.length"
-      class="animate__animated animate__fade relative flex h-[calc(100vh-60px)] w-full flex-col justify-center bg-[url('https://www.blind-magazine.com/wp-content/uploads/2021/12/comment-photographier-un-concert-fr-1536x864.jpg.webp')] bg-cover bg-center bg-no-repeat text-center sm:min-h-[30rem] lg:max-h-[40rem]"
+      class="relative flex h-[calc(100vh-60px)] w-full flex-col justify-center bg-[url('https://www.blind-magazine.com/wp-content/uploads/2021/12/comment-photographier-un-concert-fr-1536x864.jpg.webp')] bg-cover bg-center bg-no-repeat text-center sm:min-h-[30rem] lg:max-h-[40rem]"
     >
       <div class="absolute inset-0 bg-black/60"></div>
       <div class="z-10 space-y-1.5 xl:space-y-5">
@@ -150,9 +152,9 @@ useHead({
     </section>
     <section class="container mx-auto space-y-16 px-10 py-16">
       <DiscoverMusic class="animate__animated animate__zoomIn" />
-      <ComebackReported v-if="news.length && newsFetched" :news-t="news" class="animate__animated animate__fadeInUp" />
-      <RecentReleases v-if="releases.length" :releases="releases" class="animate__animated animate__fadeInUp" />
-      <ArtistAdded v-if="artists.length" :artists="artists" class="animate__animated animate__fadeInUp" />
-    </section>
+      <ComebackReported v-if="news.length && newsFetched" :news-t="news" />
+      <RecentReleases v-if="releases.length" :releases="releases" />
+      <ArtistAdded v-if="artists.length" :artists="artists" />
+    </section> -->
   </div>
 </template>
