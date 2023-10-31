@@ -1,9 +1,5 @@
 <template>
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 172 172"
-    style="fill: #000000"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 172 172" style="fill: #000000">
     <g
       fill="none"
       fill-rule="nonzero"

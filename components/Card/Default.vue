@@ -3,14 +3,14 @@
 const { name } = defineProps({
   name: {
     type: String,
-    required: false
-  }
+    required: false,
+  },
 })
 </script>
 
 <template>
   <div>
-    <p class="text-sm font-semibold uppercase border-b border-zinc-800 pb-1">{{ name }}</p>
+    <p class="border-b border-zinc-800 pb-1 text-sm font-semibold uppercase">{{ name }}</p>
     <slot />
   </div>
 </template>

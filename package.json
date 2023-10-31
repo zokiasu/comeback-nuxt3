@@ -21,7 +21,7 @@
   "dependencies": {
     "@firebase/app-types": "^0.9.0",
     "@kouts/vue-modal": "^5.0.0",
-    "@pinia/nuxt": "^0.4.11",
+    "@pinia/nuxt": "^0.5.1",
     "@vuepic/vue-datepicker": "^5.4.0",
     "animate.css": "^4.1.1",
     "firebase": "^10.4.0",

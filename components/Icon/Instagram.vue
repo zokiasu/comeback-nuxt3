@@ -1,33 +1,9 @@
 <template>
   <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 36">
-    <rect
-      x="2.252"
-      y="2.888"
-      width="29.994"
-      height="29.994"
-      rx="6.427"
-      fill="url(#a)"
-    />
-    <rect
-      x="2.252"
-      y="2.888"
-      width="29.994"
-      height="29.994"
-      rx="6.427"
-      fill="url(#b)"
-    />
-    <rect
-      x="2.252"
-      y="2.888"
-      width="29.994"
-      height="29.994"
-      rx="6.427"
-      fill="url(#c)"
-    />
-    <path
-      d="M24.747 11.993a1.607 1.607 0 1 1-3.214 0 1.607 1.607 0 0 1 3.214 0Z"
-      fill="#fff"
-    />
+    <rect x="2.252" y="2.888" width="29.994" height="29.994" rx="6.427" fill="url(#a)" />
+    <rect x="2.252" y="2.888" width="29.994" height="29.994" rx="6.427" fill="url(#b)" />
+    <rect x="2.252" y="2.888" width="29.994" height="29.994" rx="6.427" fill="url(#c)" />
+    <path d="M24.747 11.993a1.607 1.607 0 1 1-3.214 0 1.607 1.607 0 0 1 3.214 0Z" fill="#fff" />
     <path
       fill-rule="evenodd"
       clip-rule="evenodd"
@@ -41,39 +17,18 @@
       fill="#fff"
     />
     <defs>
-      <radialGradient
-        id="a"
-        cx="0"
-        cy="0"
-        r="1"
-        gradientUnits="userSpaceOnUse"
-        gradientTransform="rotate(-55.376 30.668 .339) scale(27.3367)"
-      >
+      <radialGradient id="a" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="rotate(-55.376 30.668 .339) scale(27.3367)">
         <stop stop-color="#B13589" />
         <stop offset=".793" stop-color="#C62F94" />
         <stop offset="1" stop-color="#8A3AC8" />
       </radialGradient>
-      <radialGradient
-        id="b"
-        cx="0"
-        cy="0"
-        r="1"
-        gradientUnits="userSpaceOnUse"
-        gradientTransform="rotate(-65.136 32.524 7.667) scale(24.2031)"
-      >
+      <radialGradient id="b" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="rotate(-65.136 32.524 7.667) scale(24.2031)">
         <stop stop-color="#E0E8B7" />
         <stop offset=".445" stop-color="#FB8A2E" />
         <stop offset=".715" stop-color="#E2425C" />
         <stop offset="1" stop-color="#E2425C" stop-opacity="0" />
       </radialGradient>
-      <radialGradient
-        id="c"
-        cx="0"
-        cy="0"
-        r="1"
-        gradientUnits="userSpaceOnUse"
-        gradientTransform="rotate(-8.13 28.176 -2.56) scale(41.6601 8.91066)"
-      >
+      <radialGradient id="c" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="rotate(-8.13 28.176 -2.56) scale(41.6601 8.91066)">
         <stop offset=".157" stop-color="#406ADC" />
         <stop offset=".468" stop-color="#6A45BE" />
         <stop offset="1" stop-color="#6A45BE" stop-opacity="0" />

@@ -1,15 +1,10 @@
 <script setup>
-import { useUserStore } from './stores/user';
-import { doc, getDoc, getFirestore } from 'firebase/firestore';
+import { useUserStore } from './stores/user'
+import { doc, getDoc, getFirestore } from 'firebase/firestore'
 
-const { $auth } = useNuxtApp();
+const { $auth } = useNuxtApp()
 onMounted(() => {
-  const {
-    setUserData,
-    setFirebaseUser,
-    setIsLogin,
-    setIsAdmin,
-  } = useUserStore()
+  const { setUserData, setFirebaseUser, setIsLogin, setIsAdmin } = useUserStore()
 
   $auth.onAuthStateChanged((userState) => {
     if (userState) {
@@ -22,20 +17,20 @@ onMounted(() => {
       setUserData(null)
       setIsAdmin(false)
     }
-  });
+  })
 
   const getDatabaseUser = async (uid) => {
     const db = getFirestore()
-    const userRef = doc(db, "users", uid);
-    const userSnap = await getDoc(userRef);
+    const userRef = doc(db, 'users', uid)
+    const userSnap = await getDoc(userRef)
     if (userSnap.exists()) {
       const user = userSnap.data()
       setUserData(user)
       setIsAdmin(user?.role ? true : false)
     } else {
-      console.log("No such document!");
+      console.log('No such document!')
     }
-  };
+  }
 })
 </script>
 

@@ -1,6 +1,11 @@
 <template>
-  <NuxtLink v-if="href" rel="noopener" :to="checkUrl()" target="_blank"
-    class="flex items-center md:space-x-2 md:px-3 md:py-2 transition-all duration-300 ease-in-out hover:bg-secondary hover:drop-shadow-2xl">
+  <NuxtLink
+    v-if="href"
+    rel="noopener"
+    :to="checkUrl()"
+    target="_blank"
+    class="flex items-center transition-all duration-300 ease-in-out hover:bg-secondary hover:drop-shadow-2xl md:space-x-2 md:px-3 md:py-2"
+  >
     <component :is="icon" class="h-5 w-5" />
     <p class="hidden md:block">{{ text }}</p>
   </NuxtLink>
@@ -81,10 +86,7 @@ function extractRootDomain(url) {
   if (arrLen > 2) {
     domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1]
     // check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
-    if (
-      splitArr[arrLen - 2].length === 2 &&
-      splitArr[arrLen - 1].length === 2
-    ) {
+    if (splitArr[arrLen - 2].length === 2 && splitArr[arrLen - 1].length === 2) {
       // this is using a ccTLD
       domain = splitArr[arrLen - 3] + '.' + domain
     }
@@ -97,15 +99,7 @@ function extractRootDomain(url) {
   if (x === 'Qq') {
     x = domain.toUpperCase()
   }
-  if (
-    x === 'Youtube' ||
-    x === 'Apple' ||
-    x === 'Huawei' ||
-    x === 'Amazon' ||
-    x === 'Line' ||
-    x === 'QQ' ||
-    x === 'Stingray'
-  ) {
+  if (x === 'Youtube' || x === 'Apple' || x === 'Huawei' || x === 'Amazon' || x === 'Line' || x === 'QQ' || x === 'Stingray') {
     x = x + ' Music'
   }
   if (url.includes('www.youtube')) {

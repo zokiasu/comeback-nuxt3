@@ -70,8 +70,8 @@ const verifiedRelease = () => {
 </script>
 
 <template>
-  <div class="list-complete-item h-full bg-quaternary p-3 rounded space-y-1.5 relative">
-    <div class="flex text-sm w-full justify-between">
+  <div class="list-complete-item relative h-full space-y-1.5 rounded bg-quaternary p-3">
+    <div class="flex w-full justify-between text-sm">
       <div class="flex gap-1">
         <p>[ {{ type }} ]</p>
         <p>[ {{ yearReleased }} ]</p>
@@ -81,49 +81,39 @@ const verifiedRelease = () => {
       </p>
     </div>
 
-    <p v-if="needToBeVerified" class="absolute bg-red-500 text-xs rounded-full px-2 font-semibold z-50">Need To Be Verified</p>
-    
+    <p v-if="needToBeVerified" class="absolute z-50 rounded-full bg-red-500 px-2 text-xs font-semibold">Need To Be Verified</p>
+
     <div class="relative">
-      <div
-        ref="skeleton"
-        class="absolute z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
-      ></div>
-      <nuxt-img 
-        :src="image" 
-        :alt="name" 
-        quality="30" 
-        loading="lazy" 
-        class="rounded" 
-        @load="loadingDone"
-      />
+      <div ref="skeleton" class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"></div>
+      <nuxt-img :src="image" :alt="name" quality="30" loading="lazy" class="rounded" @load="loadingDone" />
     </div>
 
     <div>
-      <NuxtLink :to="'/release/' + id" target="_blank" class="font-semibold hover:text-primary transition-all ease-in-out duration-300">
+      <NuxtLink :to="'/release/' + id" target="_blank" class="font-semibold transition-all duration-300 ease-in-out hover:text-primary">
         {{ name }}
       </NuxtLink>
       <p class="border-t border-zinc-500">{{ artistsName }}</p>
     </div>
 
-    <div class="pt-2 space-y-2">
-      <p class="text-xs font-semibold uppercase border-b border-zinc-500 pb-1">Platforms</p>
+    <div class="space-y-2 pt-2">
+      <p class="border-b border-zinc-500 pb-1 text-xs font-semibold uppercase">Platforms</p>
       <div v-if="platforms.length" class="flex flex-col space-y-1">
-        <a v-for="platform in platforms" :key="platform" :href="platform" target="_blank" 
-        class="bg-quinary text-xs px-2 py-1 rounded truncate">
+        <a v-for="platform in platforms" :key="platform" :href="platform" target="_blank" class="truncate rounded bg-quinary px-2 py-1 text-xs">
           {{ platform }}
         </a>
       </div>
-      <p v-else class="bg-quinary text-xs text-center uppercase px-2 py-1 rounded">
-        No Platforms Link
-      </p>
+      <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">No Platforms Link</p>
     </div>
 
     <div class="flex w-full items-center justify-between">
-      <p class="text-xs uppercase">Release date : <span class="font-bold">{{ releaseDate }}</span></p>
+      <p class="text-xs uppercase">
+        Release date :
+        <span class="font-bold">{{ releaseDate }}</span>
+      </p>
       <div class="space-x-1">
         <!-- <NuxtLink :to="'/release/edit/' + id" target="_blank" class="bg-quinary uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Edit</NuxtLink> -->
-          <button @click="verifiedRelease" class="bg-quinary uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Verified</button>
-        <button @click="deleteRelease" class="bg-quinary uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Delete</button>
+        <button @click="verifiedRelease" class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500">Verified</button>
+        <button @click="deleteRelease" class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500">Delete</button>
       </div>
     </div>
   </div>

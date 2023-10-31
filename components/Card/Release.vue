@@ -2,23 +2,23 @@
 const { id, image, date, name, type, artistsId, artistsName, displayDate } = defineProps({
   id: {
     type: String,
-    required: true
+    required: true,
   },
   image: {
     type: String,
-    required: true
+    required: true,
   },
   date: {
     type: Object,
-    required: true
+    required: true,
   },
   name: {
     type: String,
-    required: true
+    required: true,
   },
   type: {
     type: String,
-    required: true
+    required: true,
   },
   artistsId: {
     type: String,
@@ -60,17 +60,21 @@ const loadingDone = () => {
 </script>
 
 <template>
-  <div class="mx-auto md:mx-0 space-y-2" :class="size">
+  <div class="mx-auto space-y-2 md:mx-0" :class="size">
     <NuxtLink :to="`/release/${id}`">
       <div class="group relative">
-        <div ref="skeleton"
-          class="absolute z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse">
-        </div>
-        <nuxt-img :src="image" :alt="name" quality="50" loading="lazy" @load="loadingDone"
-          class="aspect-square bg-zinc-500 w-full rounded object-cover drop-shadow-2xl" :class="size" />
+        <div ref="skeleton" class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"></div>
+        <nuxt-img
+          :src="image"
+          :alt="name"
+          quality="50"
+          loading="lazy"
+          @load="loadingDone"
+          class="aspect-square w-full rounded bg-zinc-500 object-cover drop-shadow-2xl"
+          :class="size"
+        />
 
-        <div v-if="displayDate"
-          class="invisible absolute top-2 right-1.5 rounded bg-quinary bg-opacity-80 px-2 py-0.5 group-hover:visible">
+        <div v-if="displayDate" class="invisible absolute right-1.5 top-2 rounded bg-quinary bg-opacity-80 px-2 py-0.5 group-hover:visible">
           <p class="text-center text-xs">
             {{ dateTimestamp }}
           </p>
@@ -78,11 +82,12 @@ const loadingDone = () => {
       </div>
     </NuxtLink>
     <div class="space-y-0.5">
-      <p class="truncate font-bold text-xs">{{ name }}</p>
+      <p class="truncate text-xs font-bold">{{ name }}</p>
       <div v-if="artistsId && artistsName" class="text-xs">
         <NuxtLink :to="`/artist/${artistsId}`" class="mt-1">
-          <p v-if="artistsName" class="hover-underline-animation truncate hover-underline-animation">
-            {{ artistsName }} <span v-if="yearReleased">- {{ yearReleased }}</span>
+          <p v-if="artistsName" class="hover-underline-animation hover-underline-animation truncate">
+            {{ artistsName }}
+            <span v-if="yearReleased">- {{ yearReleased }}</span>
           </p>
         </NuxtLink>
       </div>

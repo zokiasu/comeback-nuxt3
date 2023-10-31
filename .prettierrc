@@ -5,7 +5,5 @@
   "htmlWhitespaceSensitivity": "ignore",
   "printWidth": 160,
   "tabWidth": 2,
-  "plugins": [
-    "prettier-plugin-tailwindcss"
-  ]
+  "plugins": ["prettier-plugin-tailwindcss"]
 }

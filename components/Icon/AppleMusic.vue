@@ -12,40 +12,19 @@
       fill="url(#c)"
     />
     <defs>
-      <radialGradient
-        id="b"
-        cx="0"
-        cy="0"
-        r="1"
-        gradientUnits="userSpaceOnUse"
-        gradientTransform="matrix(18.47774 -26.51927 20.82533 14.5104 10.273 32.838)"
-      >
+      <radialGradient id="b" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(18.47774 -26.51927 20.82533 14.5104 10.273 32.838)">
         <stop stop-color="#7A66FB" />
         <stop offset=".44" stop-color="#52A2F4" />
         <stop offset=".702" stop-color="#FC5D6D" />
         <stop offset="1" stop-color="#E85E7B" />
       </radialGradient>
-      <radialGradient
-        id="c"
-        cx="0"
-        cy="0"
-        r="1"
-        gradientUnits="userSpaceOnUse"
-        gradientTransform="matrix(18.47774 -26.51927 20.82533 14.5104 10.273 32.838)"
-      >
+      <radialGradient id="c" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(18.47774 -26.51927 20.82533 14.5104 10.273 32.838)">
         <stop stop-color="#7A66FB" />
         <stop offset=".44" stop-color="#52A2F4" />
         <stop offset=".702" stop-color="#FC5D6D" />
         <stop offset="1" stop-color="#E85E7B" />
       </radialGradient>
-      <linearGradient
-        id="a"
-        x1="19.138"
-        y1="4.567"
-        x2="19.138"
-        y2="34.053"
-        gradientUnits="userSpaceOnUse"
-      >
+      <linearGradient id="a" x1="19.138" y1="4.567" x2="19.138" y2="34.053" gradientUnits="userSpaceOnUse">
         <stop stop-color="#fff" />
         <stop offset="1" stop-color="#DDE2E7" />
       </linearGradient>
