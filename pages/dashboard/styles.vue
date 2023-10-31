@@ -2,7 +2,7 @@
 import { Timestamp, doc, onSnapshot, setDoc } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
 
-const db = await useFirestore()
+const { $firestore: db } = useNuxtApp()
 const toast = useToast()
 
 const styleFetch = ref([] as any[])

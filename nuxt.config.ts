@@ -9,8 +9,7 @@ export default defineNuxtConfig({
       FIREBASE_MESSAGIN_SENDER_ID: process.env.FIREBASE_MESSAGIN_SENDER_ID,
       FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
       FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
-      STRAPI_URL: process.env.STRAPI_URL,
-    },
+    }
   },
 
   modules: [
@@ -26,12 +25,12 @@ export default defineNuxtConfig({
     enabled: true,
 
     timeline: {
-      enabled: true,
-    },
+      enabled: true
+    }
   },
-
-  build: {
-    // vue-toastification - old commonjs module
+  
+  build:{
+    // vue-toastification - old commonjs module 
     transpile: ['vue-toastification', '@vuepic/vue-datepicker'],
   },
 
@@ -49,10 +48,12 @@ export default defineNuxtConfig({
   },
 
   pinia: {
-    autoImports: ['defineStore'],
+    autoImports: [
+      'defineStore'
+    ],
   },
 
-  tailwindcss: {
+  tailwindcss:{
     cssPath: '~/assets/css/tailwind.css',
     configPath: 'tailwind.config.js',
     exposeConfig: false,

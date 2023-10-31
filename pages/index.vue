@@ -10,7 +10,7 @@ import {
   limit,
 } from 'firebase/firestore'
 
-const db = useFirestore()
+const { $firestore: db } = useNuxtApp()
 
 const news = ref([] as any[])
 const artists = ref([] as any[])
@@ -32,11 +32,11 @@ const newsToday = computed(() => {
 
 onMounted(async () => {
   newsFetching()
-
+  
   const artistDate = new Date()
   artists.value = await fetchArtistsWithLimit(Timestamp.fromDate(artistDate), 8)
 
-  const releaseDate = new Date()
+  const releaseDate = new Date();
   releaseDate.setDate(releaseDate.getDate() - 8)
   releases.value = await fetchReleasesWithDateAndLimit(Timestamp.fromDate(releaseDate), 8)
 })
@@ -167,11 +167,28 @@ useHead({
         <icon-arrow-down class="mx-auto h-5 w-5 animate-bounce" />
       </p>
     </section>
-    <section class="container mx-auto space-y-16 px-10 py-16">
-      <DiscoverMusic class="animate__animated animate__zoomIn" />
-      <ComebackReported v-if="news.length && newsFetched" :news-t="news" />
-      <RecentReleases v-if="releases.length" :releases="releases" />
-      <ArtistAdded v-if="artists.length" :artists="artists" />
+    <section
+      class="container mx-auto space-y-16 px-10 py-16"
+    >
+      <DiscoverMusic
+        v-if="newsFetched"
+        class="animate__animated animate__zoomIn"
+      />
+      <ComebackReported
+        v-if="news.length && newsFetched"
+        :news-t="news"
+        class="animate__animated animate__fadeInUp"
+      />
+      <RecentReleases
+        v-if="releases.length"
+        :releases="releases"
+        class="animate__animated animate__fadeInUp"
+      />
+      <ArtistAdded
+        v-if="artists.length"
+        :artists="artists"
+        class="animate__animated animate__fadeInUp"
+      />
     </section>
   </div>
 </template>
