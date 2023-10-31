@@ -124,7 +124,7 @@ useHead({
 
 <template>
   <div>
-    <!-- <section v-if="newsToday.length && newsFetched">
+    <section v-if="newsToday.length && newsFetched">
       <div class="relative">
         <div class="absolute z-10 pt-10">
           <p class="w-fit bg-red-700 py-1 pl-8 pr-5 text-xs font-semibold uppercase drop-shadow-lg lg:text-xl xl:text-2xl">Comeback Today</p>
@@ -172,6 +172,6 @@ useHead({
       <ComebackReported v-if="news.length && newsFetched" :news-t="news" />
       <RecentReleases v-if="releases.length" :releases="releases" />
       <ArtistAdded v-if="artists.length" :artists="artists" />
-    </section> -->
+    </section>
   </div>
 </template>
