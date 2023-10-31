@@ -64,15 +64,36 @@ useHead({
       />
 
       <div class="flex w-full justify-between space-x-2 sm:justify-center lg:w-fit">
-        <button @click="page = 1" :disabled="startAt == 0" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+        <button
+          @click="page = 1"
+          :disabled="startAt == 0"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
           First
         </button>
-        <button @click="page--" :disabled="startAt == 0" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">Prev</button>
-        <p class="inline-block whitespace-nowrap rounded border-none bg-quinary p-2 drop-shadow-xl transition-all duration-300 ease-in-out">
+        <button
+          @click="page--"
+          :disabled="startAt == 0"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
+          Prev
+        </button>
+        <p
+          class="inline-block whitespace-nowrap rounded border-none bg-quinary p-2 drop-shadow-xl transition-all duration-300 ease-in-out"
+        >
           {{ page }} / {{ nbPage }}
         </p>
-        <button @click="page++" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">Next</button>
-        <button @click="page = nbPage" :disabled="page == nbPage" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+        <button
+          @click="page++"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
+          Next
+        </button>
+        <button
+          @click="page = nbPage"
+          :disabled="page == nbPage"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
           Last
         </button>
       </div>
@@ -97,16 +118,41 @@ useHead({
         class="list-move"
       />
     </transition-group>
-    <p v-else class="w-full bg-quaternary p-5 text-center font-semibold uppercase">No artist found</p>
+    <p v-else class="w-full bg-quaternary p-5 text-center font-semibold uppercase">
+      No artist found
+    </p>
 
     <div class="flex w-full justify-between space-x-2 sm:justify-center">
-      <button @click="page = 1" :disabled="startAt == 0" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">First</button>
-      <button @click="page--" :disabled="startAt == 0" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">Prev</button>
-      <p class="inline-block whitespace-nowrap rounded border-none bg-quinary p-2 drop-shadow-xl transition-all duration-300 ease-in-out">
+      <button
+        @click="page = 1"
+        :disabled="startAt == 0"
+        class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+      >
+        First
+      </button>
+      <button
+        @click="page--"
+        :disabled="startAt == 0"
+        class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+      >
+        Prev
+      </button>
+      <p
+        class="inline-block whitespace-nowrap rounded border-none bg-quinary p-2 drop-shadow-xl transition-all duration-300 ease-in-out"
+      >
         {{ page }} / {{ nbPage }}
       </p>
-      <button @click="page++" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">Next</button>
-      <button @click="page = nbPage" :disabled="page == nbPage" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+      <button
+        @click="page++"
+        class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+      >
+        Next
+      </button>
+      <button
+        @click="page = nbPage"
+        :disabled="page == nbPage"
+        class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+      >
         Last
       </button>
     </div>

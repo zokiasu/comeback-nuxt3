@@ -52,7 +52,15 @@ const deleteNews = () => {
         <NuxtLink :to="'/artist/' + artist.id" target="_blank">{{ artist.id }}</NuxtLink>
       </div>
       <div class="relative">
-        <nuxt-img v-if="artist.image" :src="artist.image" :alt="artist.name" quality="30" loading="lazy" class="rounded" @load="loadingDone" />
+        <nuxt-img
+          v-if="artist.image"
+          :src="artist.image"
+          :alt="artist.name"
+          quality="30"
+          loading="lazy"
+          class="rounded"
+          @load="loadingDone"
+        />
       </div>
     </div>
     <div>
@@ -86,8 +94,18 @@ const deleteNews = () => {
     </div>
 
     <div class="grid grid-cols-2 gap-3">
-      <button disabled class="rounded bg-quinary px-3 py-1 transition-all duration-300 ease-in-out hover:bg-tertiary/30">Edit</button>
-      <button @click="deleteNews" class="rounded bg-quinary px-3 py-1 transition-all duration-300 ease-in-out hover:bg-tertiary/30">Delete</button>
+      <button
+        disabled
+        class="rounded bg-quinary px-3 py-1 transition-all duration-300 ease-in-out hover:bg-tertiary/30"
+      >
+        Edit
+      </button>
+      <button
+        @click="deleteNews"
+        class="rounded bg-quinary px-3 py-1 transition-all duration-300 ease-in-out hover:bg-tertiary/30"
+      >
+        Delete
+      </button>
     </div>
 
     <div class="flex w-full justify-between">

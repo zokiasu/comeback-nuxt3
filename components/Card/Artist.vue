@@ -14,7 +14,8 @@ const { id, image, name, dimension } = defineProps({
   },
   dimension: {
     type: String,
-    default: 'min-h-[5rem] min-w-[5rem] md:min-h-[8rem] md:min-w-[8rem] max-h-[5rem] max-w-[5rem] md:max-h-[8rem] md:max-w-[8rem]',
+    default:
+      'min-h-[5rem] min-w-[5rem] md:min-h-[8rem] md:min-w-[8rem] max-h-[5rem] max-w-[5rem] md:max-h-[8rem] md:max-w-[8rem]',
   },
 })
 
@@ -47,7 +48,10 @@ const loadingDone = () => {
     </NuxtLink>
     <div v-if="name" class="flex justify-center text-xs">
       <NuxtLink :to="`/artist/${id}`" class="mt-1">
-        <p v-if="name" class="hover-underline-animation mx-auto truncate text-center text-xs font-bold">
+        <p
+          v-if="name"
+          class="hover-underline-animation mx-auto truncate text-center text-xs font-bold"
+        >
           {{ name }}
         </p>
       </NuxtLink>

@@ -20,7 +20,11 @@ import {
 export const fetchNews = async (startDate: Timestamp) => {
   const firestore = await useFirestore()
   // @ts-ignore
-  const colRef = query(collection(firestore, 'news'), where('date', '>=', startDate), orderBy('date', 'asc'))
+  const colRef = query(
+    collection(firestore, 'news'),
+    where('date', '>=', startDate),
+    orderBy('date', 'asc'),
+  )
 
   const snapshot = await getDocs(colRef)
 
@@ -35,10 +39,18 @@ export const fetchNews = async (startDate: Timestamp) => {
 
 /** RELEASES FUNCTION **/
 
-export const fetchReleasesWithDateAndLimit = async (startDate: Timestamp, limitNumber: Number) => {
+export const fetchReleasesWithDateAndLimit = async (
+  startDate: Timestamp,
+  limitNumber: Number,
+) => {
   const firestore = await useFirestore()
   // @ts-ignore
-  const colRef = query(collection(firestore, 'releases'), where('date', '>=', startDate), orderBy('date', 'desc'), limit(limitNumber))
+  const colRef = query(
+    collection(firestore, 'releases'),
+    where('date', '>=', startDate),
+    orderBy('date', 'desc'),
+    limit(limitNumber),
+  )
 
   const snapshot = await getDocs(colRef)
 
@@ -58,7 +70,12 @@ export const fetchReleasesWithDateAndLimit = async (startDate: Timestamp, limitN
 export const fetchReleasesByMonth = async (startDate: Timestamp, endDate: Timestamp) => {
   const firestore = await useFirestore()
   // @ts-ignore
-  const colRef = query(collection(firestore, 'releases'), where('date', '>=', startDate), where('date', '<=', endDate), orderBy('date', 'desc'))
+  const colRef = query(
+    collection(firestore, 'releases'),
+    where('date', '>=', startDate),
+    where('date', '<=', endDate),
+    orderBy('date', 'desc'),
+  )
 
   const snapshot = await getDocs(colRef)
 
@@ -78,7 +95,10 @@ export const fetchReleasesByMonth = async (startDate: Timestamp, endDate: Timest
 export const fetchReleaseById = async (idRelease: String) => {
   const firestore = await useFirestore()
   // @ts-ignore
-  const colRelease = query(collection(firestore, 'releases'), where('id', '==', idRelease))
+  const colRelease = query(
+    collection(firestore, 'releases'),
+    where('id', '==', idRelease),
+  )
   // @ts-ignore
   const colMusic = query(collection(firestore, 'releases', idRelease, 'musics'))
 
@@ -158,10 +178,18 @@ export const getRandomSong = async (): Promise<any> => {
 
 /** ARTIST FUNCTION **/
 
-export const fetchArtistsWithLimit = async (startDate: Timestamp, limitNumber: Number) => {
+export const fetchArtistsWithLimit = async (
+  startDate: Timestamp,
+  limitNumber: Number,
+) => {
   const firestore = await useFirestore()
   // @ts-ignore
-  const colRef = query(collection(firestore, 'artists'), where('createdAt', '<=', startDate), orderBy('createdAt', 'desc'), limit(limitNumber))
+  const colRef = query(
+    collection(firestore, 'artists'),
+    where('createdAt', '<=', startDate),
+    orderBy('createdAt', 'desc'),
+    limit(limitNumber),
+  )
 
   const snapshot = await getDocs(colRef)
 
@@ -183,7 +211,10 @@ export const fetchArtistFullInfoById = async (idArtist: String) => {
   // @ts-ignore
   const colMember = query(collection(firestore, 'artists', idArtist, 'members'))
   // @ts-ignore
-  const colRelease = query(collection(firestore, 'releases'), where('artistsId', '==', idArtist))
+  const colRelease = query(
+    collection(firestore, 'releases'),
+    where('artistsId', '==', idArtist),
+  )
   // @ts-ignore
   const colNews = query(collection(firestore, 'news'), where('artist.id', '==', idArtist))
 

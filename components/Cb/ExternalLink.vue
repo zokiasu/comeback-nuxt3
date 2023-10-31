@@ -99,7 +99,15 @@ function extractRootDomain(url) {
   if (x === 'Qq') {
     x = domain.toUpperCase()
   }
-  if (x === 'Youtube' || x === 'Apple' || x === 'Huawei' || x === 'Amazon' || x === 'Line' || x === 'QQ' || x === 'Stingray') {
+  if (
+    x === 'Youtube' ||
+    x === 'Apple' ||
+    x === 'Huawei' ||
+    x === 'Amazon' ||
+    x === 'Line' ||
+    x === 'QQ' ||
+    x === 'Stingray'
+  ) {
     x = x + ' Music'
   }
   if (url.includes('www.youtube')) {

@@ -5,21 +5,37 @@ const { Modal } = Mdl
 const showModal = ref(false)
 const isPlayingVideo = useIsPlayingVideo()
 
-const { artistFetch, isAdmin, isLogin } = defineProps(['artistFetch', 'isAdmin', 'isLogin'])
+const { artistFetch, isAdmin, isLogin } = defineProps([
+  'artistFetch',
+  'isAdmin',
+  'isLogin',
+])
 </script>
 
 <template>
-  <div class="fixed w-full px-5 transition-all duration-300 ease-in-out" :class="isPlayingVideo ? 'bottom-20' : 'bottom-5'">
+  <div
+    class="fixed w-full px-5 transition-all duration-300 ease-in-out"
+    :class="isPlayingVideo ? 'bottom-20' : 'bottom-5'"
+  >
     <div
       class="flex w-full justify-between divide-x divide-zinc-700 overflow-hidden rounded-full border border-zinc-700 bg-secondary shadow shadow-zinc-700 drop-shadow-sm"
     >
-      <NuxtLink :to="`/`" class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50">
+      <NuxtLink
+        :to="`/`"
+        class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50"
+      >
         <IconHome class="mx-auto h-5 w-5" />
       </NuxtLink>
-      <NuxtLink :to="`/calendar`" class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50">
+      <NuxtLink
+        :to="`/calendar`"
+        class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50"
+      >
         <IconCalendar class="mx-auto h-5 w-5" />
       </NuxtLink>
-      <NuxtLink :to="`/artist`" class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50">
+      <NuxtLink
+        :to="`/artist`"
+        class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50"
+      >
         <IconSearch class="mx-auto h-5 w-5" />
       </NuxtLink>
       <NuxtLink
@@ -36,7 +52,11 @@ const { artistFetch, isAdmin, isLogin } = defineProps(['artistFetch', 'isAdmin',
       >
         <IconAccount class="mx-auto h-5 w-5" />
       </NuxtLink>
-      <button v-else @click="showModal = true" class="flex w-full items-center justify-center bg-primary/20 py-2 transition-all duration-500 ease-in-out">
+      <button
+        v-else
+        @click="showModal = true"
+        class="flex w-full items-center justify-center bg-primary/20 py-2 transition-all duration-500 ease-in-out"
+      >
         <IconComeback class="mx-auto h-5 w-5" />
       </button>
     </div>

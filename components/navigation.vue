@@ -1,7 +1,11 @@
 <script setup>
 import * as Mdl from '@kouts/vue-modal'
 
-const { artistFetch, isAdmin, isLogin } = defineProps(['artistFetch', 'isAdmin', 'isLogin'])
+const { artistFetch, isAdmin, isLogin } = defineProps([
+  'artistFetch',
+  'isAdmin',
+  'isLogin',
+])
 
 const { Modal } = Mdl
 
@@ -16,9 +20,21 @@ onMounted(async () => {
 
 function handleScroll() {
   if (window.scrollY > 50) {
-    navbar.value.classList.add('bg-secondary', 'border', 'border-zinc-700', 'shadow', 'shadow-zinc-700')
+    navbar.value.classList.add(
+      'bg-secondary',
+      'border',
+      'border-zinc-700',
+      'shadow',
+      'shadow-zinc-700',
+    )
   } else {
-    navbar.value.classList.remove('bg-secondary', 'border', 'border-zinc-700', 'shadow', 'shadow-zinc-700')
+    navbar.value.classList.remove(
+      'bg-secondary',
+      'border',
+      'border-zinc-700',
+      'shadow',
+      'shadow-zinc-700',
+    )
   }
 }
 
@@ -30,17 +46,43 @@ const signOut = async () => {
 </script>
 
 <template>
-  <div class="sticky top-0 z-50 px-3 py-2 transition-all duration-500 ease-in-out xl:py-3">
-    <div ref="navbar" class="animate__animated animate__fadeInDown rounded-full px-5 transition-all duration-500 ease-in-out">
+  <div
+    class="sticky top-0 z-50 px-3 py-2 transition-all duration-500 ease-in-out xl:py-3"
+  >
+    <div
+      ref="navbar"
+      class="animate__animated animate__fadeInDown rounded-full px-5 transition-all duration-500 ease-in-out"
+    >
       <div class="mx-auto flex justify-between py-3 2xl:container">
         <NuxtLink to="/">
           <img src="~/assets/image/logo.png" alt="Comeback" class="block h-8 w-auto" />
         </NuxtLink>
         <nav class="flex items-center justify-center space-x-5 text-sm">
-          <NuxtLink :to="`/`" :class="routeN.name === 'index' ? 'text-white' : 'text-zinc-500'">Home</NuxtLink>
-          <NuxtLink :to="`/calendar`" :class="routeN.name === 'calendar' ? 'text-white' : 'text-zinc-500'">Calendar</NuxtLink>
-          <NuxtLink :to="`/artist`" :class="routeN.name === 'artist' ? 'text-white' : 'text-zinc-500'">Artists</NuxtLink>
-          <NuxtLink v-if="isAdmin" :to="`/dashboard/artist`" :class="routeN.name === 'dashboard-index-*' ? 'text-white' : 'text-zinc-500'">Dashboard</NuxtLink>
+          <NuxtLink
+            :to="`/`"
+            :class="routeN.name === 'index' ? 'text-white' : 'text-zinc-500'"
+          >
+            Home
+          </NuxtLink>
+          <NuxtLink
+            :to="`/calendar`"
+            :class="routeN.name === 'calendar' ? 'text-white' : 'text-zinc-500'"
+          >
+            Calendar
+          </NuxtLink>
+          <NuxtLink
+            :to="`/artist`"
+            :class="routeN.name === 'artist' ? 'text-white' : 'text-zinc-500'"
+          >
+            Artists
+          </NuxtLink>
+          <NuxtLink
+            v-if="isAdmin"
+            :to="`/dashboard/artist`"
+            :class="routeN.name === 'dashboard-index-*' ? 'text-white' : 'text-zinc-500'"
+          >
+            Dashboard
+          </NuxtLink>
           <button
             v-if="isLogin && artistFetch"
             @click="showModal = true"
@@ -48,8 +90,20 @@ const signOut = async () => {
           >
             New Comeback
           </button>
-          <NuxtLink v-if="!isLogin" :to="`/authentification`" :class="routeN.name === 'authentification' ? 'text-white' : 'text-zinc-500'">Log In</NuxtLink>
-          <button v-else @click="signOut" :class="routeN.name === 'authentification' ? 'text-white' : 'text-zinc-500'">Log Out</button>
+          <NuxtLink
+            v-if="!isLogin"
+            :to="`/authentification`"
+            :class="routeN.name === 'authentification' ? 'text-white' : 'text-zinc-500'"
+          >
+            Log In
+          </NuxtLink>
+          <button
+            v-else
+            @click="signOut"
+            :class="routeN.name === 'authentification' ? 'text-white' : 'text-zinc-500'"
+          >
+            Log Out
+          </button>
         </nav>
       </div>
     </div>

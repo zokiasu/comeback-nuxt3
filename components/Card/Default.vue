@@ -10,7 +10,9 @@ const { name } = defineProps({
 
 <template>
   <div>
-    <p class="border-b border-zinc-800 pb-1 text-sm font-semibold uppercase">{{ name }}</p>
+    <p class="border-b border-zinc-800 pb-1 text-sm font-semibold uppercase">
+      {{ name }}
+    </p>
     <slot />
   </div>
 </template>

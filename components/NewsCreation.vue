@@ -58,7 +58,9 @@ const news = ref({
 
 watch([dateToDateFormat], () => {
   news.value.date = Timestamp.fromDate(new Date(dateToDateFormat.value))
-  news.value.message = `Next comeback on ${new Date(dateToDateFormat.value).toLocaleDateString()}`
+  news.value.message = `Next comeback on ${new Date(
+    dateToDateFormat.value,
+  ).toLocaleDateString()}`
 })
 
 watch([artistToSend], () => {

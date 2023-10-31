@@ -6,7 +6,14 @@
       fill="#fff"
     />
     <defs>
-      <linearGradient id="a" x1="17.14" y1="2.888" x2="17.14" y2="32.792" gradientUnits="userSpaceOnUse">
+      <linearGradient
+        id="a"
+        x1="17.14"
+        y1="2.888"
+        x2="17.14"
+        y2="32.792"
+        gradientUnits="userSpaceOnUse"
+      >
         <stop stop-color="#18ACFE" />
         <stop offset="1" stop-color="#0163E0" />
       </linearGradient>

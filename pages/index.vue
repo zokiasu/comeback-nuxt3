@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import { Timestamp, collection, doc, onSnapshot, query, where, orderBy, limit } from 'firebase/firestore'
-import { GRAPHQL_ENDPOINT } from '@/constants/graphql'
+import {
+  Timestamp,
+  collection,
+  doc,
+  onSnapshot,
+  query,
+  where,
+  orderBy,
+  limit,
+} from 'firebase/firestore'
 
 const db = useFirestore()
 
@@ -14,7 +22,11 @@ const newsToday = computed(() => {
   return news.value.filter((news: any) => {
     const newsDate = new Date(news.date.seconds * 1000)
     const today = new Date()
-    return newsDate.getDate() === today.getDate() && newsDate.getMonth() === today.getMonth() && newsDate.getFullYear() === today.getFullYear()
+    return (
+      newsDate.getDate() === today.getDate() &&
+      newsDate.getMonth() === today.getMonth() &&
+      newsDate.getFullYear() === today.getFullYear()
+    )
   })
 })
 
@@ -32,7 +44,11 @@ onMounted(async () => {
 const newsFetching = () => {
   const newsDate = new Date()
   newsDate.setDate(newsDate.getDate() - 1)
-  const q = query(collection(db as any, 'news'), where('date', '>=', Timestamp.fromDate(newsDate)), orderBy('date', 'asc'))
+  const q = query(
+    collection(db as any, 'news'),
+    where('date', '>=', Timestamp.fromDate(newsDate)),
+    orderBy('date', 'asc'),
+  )
   onSnapshot(q, (querySnapshot) => {
     const newsTmp: any[] = []
     querySnapshot.forEach((doc) => {
@@ -61,7 +77,8 @@ useHead({
     {
       hid: 'description',
       name: 'description',
-      content: "Don't miss any Comeback. Track every next release by your favorite artists.",
+      content:
+        "Don't miss any Comeback. Track every next release by your favorite artists.",
     },
     {
       hid: 'og:site_name',
@@ -81,7 +98,8 @@ useHead({
     {
       hid: 'og:description',
       property: 'og:description',
-      content: "Don't miss any Comeback. Track every next release by your favorite artists.",
+      content:
+        "Don't miss any Comeback. Track every next release by your favorite artists.",
     },
     {
       hid: 'og:url',
@@ -106,7 +124,6 @@ useHead({
 
 <template>
   <div>
-    {{ GRAPHQL_ENDPOINT }}
     <!-- <section v-if="newsToday.length && newsFetched">
       <div class="relative">
         <div class="absolute z-10 pt-10">

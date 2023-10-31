@@ -12,6 +12,11 @@ const { name, placeholder } = defineProps({
 </script>
 <template>
   <div>
-    <label class="text-sm font-semibold uppercase tracking-wide" :class="{ 'text-zinc-500': disabled }">{{ label }}</label>
+    <label
+      class="text-sm font-semibold uppercase tracking-wide"
+      :class="{ 'text-zinc-500': disabled }"
+    >
+      {{ label }}
+    </label>
   </div>
 </template>

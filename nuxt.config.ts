@@ -13,7 +13,14 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@nuxtjs/tailwindcss', '@nuxt/image', 'nuxt-vuefire', '@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt', 'nuxt-swiper'],
+  modules: [
+    '@nuxtjs/tailwindcss',
+    '@nuxt/image',
+    'nuxt-vuefire',
+    '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt',
+    'nuxt-swiper',
+  ],
 
   devtools: {
     enabled: true,

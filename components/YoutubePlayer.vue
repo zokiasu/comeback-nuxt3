@@ -156,8 +156,14 @@ setTimeout(() => {
 </script>
 
 <template>
-  <div v-if="isPlayingVideo" class="fixed bottom-0 z-50 flex w-full flex-col items-center justify-center space-y-3 sm:items-end sm:justify-end">
-    <div ref="playerContainer" class="hidden aspect-video w-1/4 min-w-[20rem] overflow-hidden rounded-lg px-2 lg:block"></div>
+  <div
+    v-if="isPlayingVideo"
+    class="fixed bottom-0 z-50 flex w-full flex-col items-center justify-center space-y-3 sm:items-end sm:justify-end"
+  >
+    <div
+      ref="playerContainer"
+      class="hidden aspect-video w-1/4 min-w-[20rem] overflow-hidden rounded-lg px-2 lg:block"
+    ></div>
     <div class="relative flex w-full items-center justify-between bg-secondary px-5 py-3">
       <div class="flex items-center space-x-2">
         <button class="hover:text-primary" @click="seek(-10)">
@@ -178,7 +184,14 @@ setTimeout(() => {
           <IconVolumeOn v-if="volumeOn" class="h-7 w-7" />
           <IconVolumeOff v-else class="h-7 w-7" />
         </button>
-        <input id="volume" type="range" min="0" max="100" v-model="volume" @input="setVolume(volume)" />
+        <input
+          id="volume"
+          type="range"
+          min="0"
+          max="100"
+          v-model="volume"
+          @input="setVolume(volume)"
+        />
       </div>
       <input
         type="range"
@@ -188,7 +201,12 @@ setTimeout(() => {
         @input="seekToTime"
         class="absolute -top-1 left-0 h-1 w-full cursor-pointer overflow-hidden bg-primary"
       />
-      <button class="absolute -top-6 left-2 rounded-t-lg bg-primary px-3 py-0.5 text-xs font-semibold uppercase" @click="closeYTPlayer">Close</button>
+      <button
+        class="absolute -top-6 left-2 rounded-t-lg bg-primary px-3 py-0.5 text-xs font-semibold uppercase"
+        @click="closeYTPlayer"
+      >
+        Close
+      </button>
     </div>
   </div>
 </template>

@@ -99,7 +99,10 @@ const filteredNewsList = computed(() => {
         }
       })
       .filter((news) => {
-        return news.user.name.toLowerCase().includes(search.value.toLowerCase()) || news.artist.name.toLowerCase().includes(search.value.toLowerCase())
+        return (
+          news.user.name.toLowerCase().includes(search.value.toLowerCase()) ||
+          news.artist.name.toLowerCase().includes(search.value.toLowerCase())
+        )
       })
   }
 })
@@ -148,19 +151,37 @@ watch([page], () => {
       </div>
 
       <div class="flex w-full justify-between space-x-2 sm:justify-end">
-        <button @click="page = 1" :disabled="startAt == 0" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+        <button
+          @click="page = 1"
+          :disabled="startAt == 0"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
           First
         </button>
-        <button @click="page--" :disabled="startAt == 0" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">Prev</button>
+        <button
+          @click="page--"
+          :disabled="startAt == 0"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
+          Prev
+        </button>
         <input
           type="text"
           class="w-10 rounded border-none bg-quinary p-2 text-center placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
           v-model.number="page"
         />
-        <button @click="page++" :disabled="page == nbPage" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+        <button
+          @click="page++"
+          :disabled="page == nbPage"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
           Next
         </button>
-        <button @click="page = nbPage" :disabled="page == nbPage" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+        <button
+          @click="page = nbPage"
+          :disabled="page == nbPage"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
           Last
         </button>
       </div>
@@ -205,19 +226,37 @@ watch([page], () => {
       </div>
 
       <div class="flex w-full justify-between space-x-2 sm:justify-end">
-        <button @click="page = 1" :disabled="startAt == 0" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+        <button
+          @click="page = 1"
+          :disabled="startAt == 0"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
           First
         </button>
-        <button @click="page--" :disabled="startAt == 0" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">Prev</button>
+        <button
+          @click="page--"
+          :disabled="startAt == 0"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
+          Prev
+        </button>
         <input
           type="text"
           class="w-10 rounded border-none bg-quinary p-2 text-center placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
           v-model.number="page"
         />
-        <button @click="page++" :disabled="page == nbPage" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+        <button
+          @click="page++"
+          :disabled="page == nbPage"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
           Next
         </button>
-        <button @click="page = nbPage" :disabled="page == nbPage" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+        <button
+          @click="page = nbPage"
+          :disabled="page == nbPage"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
           Last
         </button>
       </div>

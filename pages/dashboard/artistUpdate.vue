@@ -62,7 +62,11 @@ const confirmEdition = async (id, artist, index) => {
       tag="div"
       class="grid grid-cols-1 items-center justify-center gap-5 transition-all duration-300 ease-in-out"
     >
-      <div v-for="(artist, index) in artistUpdateList" :key="artist.id" class="list-complete-item h-full w-full space-y-2 bg-zinc-500 p-2">
+      <div
+        v-for="(artist, index) in artistUpdateList"
+        :key="artist.id"
+        class="list-complete-item h-full w-full space-y-2 bg-zinc-500 p-2"
+      >
         <CardDashboardArtistUpdate
           :id="artist.id"
           :taskId="artist.taskId"
@@ -93,6 +97,8 @@ const confirmEdition = async (id, artist, index) => {
         </div>
       </div>
     </transition-group>
-    <p v-else class="w-full bg-quaternary p-5 text-center font-semibold uppercase">No pending artist updates</p>
+    <p v-else class="w-full bg-quaternary p-5 text-center font-semibold uppercase">
+      No pending artist updates
+    </p>
   </div>
 </template>

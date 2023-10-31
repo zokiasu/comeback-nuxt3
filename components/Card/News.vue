@@ -60,7 +60,11 @@ function isSameDate(date) {
     throw new TypeError('Invalid date format')
   }
   // Compare les deux timestamps
-  return inputDate.getFullYear() === today.getFullYear() && inputDate.getMonth() === today.getMonth() && inputDate.getDate() === today.getDate()
+  return (
+    inputDate.getFullYear() === today.getFullYear() &&
+    inputDate.getMonth() === today.getMonth() &&
+    inputDate.getDate() === today.getDate()
+  )
 }
 
 const loadingDone = () => {
@@ -93,10 +97,27 @@ const loadingDone = () => {
         <p class="text-xs">{{ message }}</p>
       </div>
     </div>
-    <div class="-mt-0.5 flex min-w-[5rem] items-center justify-center bg-quaternary px-3 py-1 text-center md:mt-0 md:py-0">
-      <p v-if="!isDatePassed(date) && !isSameDate(date)" class="my-auto whitespace-nowrap text-xl font-bold">D-{{ daysUntil(date) }}</p>
-      <p v-if="isSameDate(date)" class="my-auto whitespace-nowrap font-medium text-primary">Today</p>
-      <p v-if="!isSameDate(date) && isDatePassed(date)" class="my-auto whitespace-nowrap font-medium text-primary">Outed</p>
+    <div
+      class="-mt-0.5 flex min-w-[5rem] items-center justify-center bg-quaternary px-3 py-1 text-center md:mt-0 md:py-0"
+    >
+      <p
+        v-if="!isDatePassed(date) && !isSameDate(date)"
+        class="my-auto whitespace-nowrap text-xl font-bold"
+      >
+        D-{{ daysUntil(date) }}
+      </p>
+      <p
+        v-if="isSameDate(date)"
+        class="my-auto whitespace-nowrap font-medium text-primary"
+      >
+        Today
+      </p>
+      <p
+        v-if="!isSameDate(date) && isDatePassed(date)"
+        class="my-auto whitespace-nowrap font-medium text-primary"
+      >
+        Outed
+      </p>
     </div>
   </NuxtLink>
 </template>
@@ -104,6 +125,7 @@ const loadingDone = () => {
 <style>
 .shadowCard {
   --tw-shadow: 5px 5px 5px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow);
 }
 </style>

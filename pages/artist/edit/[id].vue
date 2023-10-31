@@ -227,8 +227,13 @@ useHead({
 </script>
 
 <template>
-  <div v-if="artist" class="container mx-auto min-h-[calc(100vh-60px)] space-y-5 p-5 lg:px-10">
-    <p class="border-b border-zinc-700 pb-1 text-lg font-semibold uppercase lg:text-xl">Artist Edition : {{ artistToEdit.name }}</p>
+  <div
+    v-if="artist"
+    class="container mx-auto min-h-[calc(100vh-60px)] space-y-5 p-5 lg:px-10"
+  >
+    <p class="border-b border-zinc-700 pb-1 text-lg font-semibold uppercase lg:text-xl">
+      Artist Edition : {{ artistToEdit.name }}
+    </p>
     <div class="space-y-5">
       <!-- Picture -->
       <div class="flex flex-col gap-2">
@@ -250,21 +255,35 @@ useHead({
               class="focus:shadow-te-primary relative m-0 block w-full min-w-0 flex-auto cursor-pointer border-b border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] text-base font-normal text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem] hover:bg-tertiary focus:text-neutral-700 focus:outline-none"
               @change.prevent="uploadImageFile($event.target.files)"
             />
-            <p id="file_input_help" class="text-sm text-gray-500 dark:text-gray-300">PNG or JPG.</p>
+            <p id="file_input_help" class="text-sm text-gray-500 dark:text-gray-300">
+              PNG or JPG.
+            </p>
           </div>
         </div>
       </div>
       <!-- Name & Id -->
       <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
         <CbInput label="Name" :placeholder="artist.name" v-model="artistToEdit.name" />
-        <CbInput label="Unique Id" :placeholder="artist.id" v-model="artistToEdit.id" disabled />
+        <CbInput
+          label="Unique Id"
+          :placeholder="artist.id"
+          v-model="artistToEdit.id"
+          disabled
+        />
       </div>
       <!-- Id YTM & Type -->
       <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <CbInput label="Id Youtube Music" :placeholder="artist.idYoutubeMusic" v-model="artistToEdit.idYoutubeMusic" />
+        <CbInput
+          label="Id Youtube Music"
+          :placeholder="artist.idYoutubeMusic"
+          v-model="artistToEdit.idYoutubeMusic"
+        />
         <div class="grid grid-cols-1 gap-1">
           <CbLabel label="Type" />
-          <select v-model="artistToEdit.type" class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none">
+          <select
+            v-model="artistToEdit.type"
+            class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
+          >
             <option value="SOLO" class="text-secondary">SOLO</option>
             <option value="GROUP" class="text-secondary">GROUP</option>
           </select>
@@ -329,14 +348,25 @@ useHead({
         <!-- Platforms -->
         <div class="flex flex-col gap-2">
           <CbLabel label="Platforms" />
-          <div v-for="(platform, index) in artistToEdit.platforms" :key="platform" class="flex w-full gap-1">
+          <div
+            v-for="(platform, index) in artistToEdit.platforms"
+            :key="platform"
+            class="flex w-full gap-1"
+          >
             <input
               type="text"
               :value="platform"
               @input="artistToEdit.platforms[index] = $event.target.value"
               class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:bg-tertiary focus:p-1.5 focus:text-secondary focus:outline-none"
             />
-            <button class="rounded bg-red-900 p-1 text-xs" @click="artistToEdit.platforms.splice(artistToEdit.platforms.indexOf(platform), 1)">Delete</button>
+            <button
+              class="rounded bg-red-900 p-1 text-xs"
+              @click="
+                artistToEdit.platforms.splice(artistToEdit.platforms.indexOf(platform), 1)
+              "
+            >
+              Delete
+            </button>
           </div>
           <button
             class="rounded bg-primary py-1 text-sm font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
@@ -348,14 +378,25 @@ useHead({
         <!-- Socials -->
         <div class="flex flex-col gap-2">
           <CbLabel label="Socials" />
-          <div v-for="(social, index) in artistToEdit.socials" :key="social" class="flex w-full gap-1">
+          <div
+            v-for="(social, index) in artistToEdit.socials"
+            :key="social"
+            class="flex w-full gap-1"
+          >
             <input
               type="text"
               :value="social"
               @input="artistToEdit.socials[index] = $event.target.value"
               class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:bg-tertiary focus:p-1.5 focus:text-secondary focus:outline-none"
             />
-            <button class="rounded bg-red-900 p-1 text-xs" @click="artistToEdit.socials.splice(artistToEdit.socials.indexOf(platform), 1)">Delete</button>
+            <button
+              class="rounded bg-red-900 p-1 text-xs"
+              @click="
+                artistToEdit.socials.splice(artistToEdit.socials.indexOf(platform), 1)
+              "
+            >
+              Delete
+            </button>
           </div>
           <button
             class="rounded bg-primary py-1 text-sm font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"

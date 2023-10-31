@@ -150,19 +150,37 @@ watch([page], () => {
         </button>
       </div>
       <div class="flex w-full justify-between space-x-2 sm:justify-end">
-        <button @click="page = 1" :disabled="startAt == 0" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+        <button
+          @click="page = 1"
+          :disabled="startAt == 0"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
           First
         </button>
-        <button @click="page--" :disabled="startAt == 0" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">Prev</button>
+        <button
+          @click="page--"
+          :disabled="startAt == 0"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
+          Prev
+        </button>
         <input
           type="text"
           class="w-10 rounded border-none bg-quinary p-2 text-center placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
           v-model.number="page"
         />
-        <button @click="page++" :disabled="page == nbPage" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+        <button
+          @click="page++"
+          :disabled="page == nbPage"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
           Next
         </button>
-        <button @click="page = nbPage" :disabled="page == nbPage" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+        <button
+          @click="page = nbPage"
+          :disabled="page == nbPage"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
           Last
         </button>
       </div>
@@ -190,7 +208,9 @@ watch([page], () => {
         @deleteArtist="deleteArtist"
       />
     </transition-group>
-    <p v-else class="w-full bg-quaternary p-5 text-center font-semibold uppercase">No artist found</p>
+    <p v-else class="w-full bg-quaternary p-5 text-center font-semibold uppercase">
+      No artist found
+    </p>
     <section class="flex w-full flex-col gap-1.5 sm:flex-row sm:justify-between">
       <div class="flex space-x-2">
         <select
@@ -210,19 +230,37 @@ watch([page], () => {
         </button>
       </div>
       <div class="flex w-full justify-between space-x-2 sm:justify-end">
-        <button @click="page = 1" :disabled="startAt == 0" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+        <button
+          @click="page = 1"
+          :disabled="startAt == 0"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
           First
         </button>
-        <button @click="page--" :disabled="startAt == 0" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">Prev</button>
+        <button
+          @click="page--"
+          :disabled="startAt == 0"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
+          Prev
+        </button>
         <input
           type="text"
           class="w-10 rounded border-none bg-quinary p-2 text-center placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
           v-model.number="page"
         />
-        <button @click="page++" :disabled="page == nbPage" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+        <button
+          @click="page++"
+          :disabled="page == nbPage"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
           Next
         </button>
-        <button @click="page = nbPage" :disabled="page == nbPage" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">
+        <button
+          @click="page = nbPage"
+          :disabled="page == nbPage"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+        >
           Last
         </button>
       </div>

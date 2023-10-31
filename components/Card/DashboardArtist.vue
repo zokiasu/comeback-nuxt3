@@ -1,5 +1,16 @@
 <script setup>
-const { id, image, name, description, type, idYoutubeMusic, styles, socials, platforms, createdAt } = defineProps({
+const {
+  id,
+  image,
+  name,
+  description,
+  type,
+  idYoutubeMusic,
+  styles,
+  socials,
+  platforms,
+  createdAt,
+} = defineProps({
   id: {
     type: String,
     required: true,
@@ -63,13 +74,27 @@ const loadingDone = () => {
 <template>
   <div class="list-complete-item relative h-full space-y-3 rounded bg-quaternary p-3">
     <div class="relative">
-      <div ref="skeleton" class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"></div>
-      <nuxt-img :src="image" :alt="name" quality="30" loading="lazy" @load="loadingDone" class="aspect-video w-full rounded bg-zinc-500 object-cover" />
+      <div
+        ref="skeleton"
+        class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"
+      ></div>
+      <nuxt-img
+        :src="image"
+        :alt="name"
+        quality="30"
+        loading="lazy"
+        @load="loadingDone"
+        class="aspect-video w-full rounded bg-zinc-500 object-cover"
+      />
     </div>
     <div class="flex w-full items-center justify-between">
       <div>
         <p class="space-x-1">
-          <NuxtLink :to="'/artist/' + id" target="_blank" class="font-semibold hover:text-primary">
+          <NuxtLink
+            :to="'/artist/' + id"
+            target="_blank"
+            class="font-semibold hover:text-primary"
+          >
             {{ name }}
           </NuxtLink>
           <span class="text-xs">[ {{ type }} ]</span>
@@ -79,13 +104,28 @@ const loadingDone = () => {
         </p>
       </div>
       <div class="space-x-1">
-        <NuxtLink :to="'/artist/edit/' + id" target="_blank" class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500">Edit</NuxtLink>
-        <button @click="deleteArtist" class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500">Delete</button>
+        <NuxtLink
+          :to="'/artist/edit/' + id"
+          target="_blank"
+          class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+        >
+          Edit
+        </NuxtLink>
+        <button
+          @click="deleteArtist"
+          class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+        >
+          Delete
+        </button>
       </div>
     </div>
 
     <div v-if="styles" class="flex gap-1">
-      <p v-for="style in styles" :key="style.name" class="rounded bg-quinary px-2 py-1 text-xs uppercase">
+      <p
+        v-for="style in styles"
+        :key="style.name"
+        class="rounded bg-quinary px-2 py-1 text-xs uppercase"
+      >
         {{ style.name }}
       </p>
     </div>
@@ -97,21 +137,39 @@ const loadingDone = () => {
     <div class="space-y-2">
       <p class="border-b border-zinc-500 pb-1 text-sm font-semibold uppercase">Socials</p>
       <div v-if="socials.length" class="flex flex-col space-y-1">
-        <a v-for="social in socials" :key="social" :href="social" target="_blank" class="rounded bg-quinary px-2 py-1 text-xs">
+        <a
+          v-for="social in socials"
+          :key="social"
+          :href="social"
+          target="_blank"
+          class="rounded bg-quinary px-2 py-1 text-xs"
+        >
           {{ social }}
         </a>
       </div>
-      <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">No Socials Link</p>
+      <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
+        No Socials Link
+      </p>
     </div>
 
     <div class="space-y-2">
-      <p class="border-b border-zinc-500 pb-1 text-sm font-semibold uppercase">Platforms</p>
+      <p class="border-b border-zinc-500 pb-1 text-sm font-semibold uppercase">
+        Platforms
+      </p>
       <div v-if="platforms.length" class="flex flex-col space-y-1 overflow-hidden">
-        <a v-for="platform in platforms" :key="platform" :href="platform" target="_blank" class="rounded bg-quinary px-2 py-1 text-xs">
+        <a
+          v-for="platform in platforms"
+          :key="platform"
+          :href="platform"
+          target="_blank"
+          class="rounded bg-quinary px-2 py-1 text-xs"
+        >
           {{ platform }}
         </a>
       </div>
-      <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">No Platforms Link</p>
+      <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
+        No Platforms Link
+      </p>
     </div>
 
     <p>

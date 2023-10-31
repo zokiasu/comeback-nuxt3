@@ -63,7 +63,10 @@ const loadingDone = () => {
   <div class="mx-auto space-y-2 md:mx-0" :class="size">
     <NuxtLink :to="`/release/${id}`">
       <div class="group relative">
-        <div ref="skeleton" class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"></div>
+        <div
+          ref="skeleton"
+          class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"
+        ></div>
         <nuxt-img
           :src="image"
           :alt="name"
@@ -74,7 +77,10 @@ const loadingDone = () => {
           :class="size"
         />
 
-        <div v-if="displayDate" class="invisible absolute right-1.5 top-2 rounded bg-quinary bg-opacity-80 px-2 py-0.5 group-hover:visible">
+        <div
+          v-if="displayDate"
+          class="invisible absolute right-1.5 top-2 rounded bg-quinary bg-opacity-80 px-2 py-0.5 group-hover:visible"
+        >
           <p class="text-center text-xs">
             {{ dateTimestamp }}
           </p>
@@ -85,7 +91,10 @@ const loadingDone = () => {
       <p class="truncate text-xs font-bold">{{ name }}</p>
       <div v-if="artistsId && artistsName" class="text-xs">
         <NuxtLink :to="`/artist/${artistsId}`" class="mt-1">
-          <p v-if="artistsName" class="hover-underline-animation hover-underline-animation truncate">
+          <p
+            v-if="artistsName"
+            class="hover-underline-animation hover-underline-animation truncate"
+          >
             {{ artistsName }}
             <span v-if="yearReleased">- {{ yearReleased }}</span>
           </p>

@@ -43,10 +43,19 @@ const createStyle = async () => {
         placeholder="Add new style"
         class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
       />
-      <button @click="createStyle" class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit">Send</button>
+      <button
+        @click="createStyle"
+        class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+      >
+        Send
+      </button>
     </section>
     <div class="flex flex-wrap gap-2">
-      <div v-for="style in styleFetch" :key="style.name" class="rounded bg-quaternary px-2.5 py-1">
+      <div
+        v-for="style in styleFetch"
+        :key="style.name"
+        class="rounded bg-quaternary px-2.5 py-1"
+      >
         {{ style.name }}
       </div>
     </div>
