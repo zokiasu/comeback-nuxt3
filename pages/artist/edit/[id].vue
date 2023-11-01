@@ -239,11 +239,11 @@ useHead({
       <div class="flex flex-col gap-2">
         <CbLabel label="Image" />
         <div class="space-y-5">
-          <nuxt-img
+          <NuxtImg
             v-if="artistToEdit.image"
             :src="artistToEdit.image"
             :alt="artistToEdit.name"
-            quality="80"
+            format="webp"
             loading="lazy"
             class="w-full rounded object-cover md:w-auto md:max-w-lg xl:max-w-xl"
           />

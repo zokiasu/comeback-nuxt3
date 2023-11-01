@@ -35,10 +35,10 @@ const loadingDone = () => {
           :class="dimension"
           class="absolute inset-0 z-10 mx-auto aspect-square animate-pulse rounded-full bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"
         ></div>
-        <nuxt-img
+        <NuxtImg
           :src="image"
           :alt="name"
-          quality="50"
+          format="webp"
           loading="lazy"
           @load="loadingDone"
           class="mx-auto aspect-square rounded-full bg-zinc-500 object-cover"

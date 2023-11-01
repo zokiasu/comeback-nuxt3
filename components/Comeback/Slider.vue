@@ -1,7 +1,7 @@
 <template>
   <div class="relative overflow-hidden">
     <div
-      class="absolute inset-0 z-10 max-h-[20rem] min-h-[20rem] w-full bg-primary object-cover transition-all duration-500 ease-in-out md:max-h-[30rem] md:min-h-[30rem] lg:aspect-video lg:max-h-[40rem] lg:min-h-[40rem]"
+      class="absolute inset-0 z-10 max-h-[20rem] min-h-[20rem] w-full bg-quinary object-cover transition-all duration-500 ease-in-out md:max-h-[30rem] md:min-h-[30rem] lg:aspect-video lg:max-h-[40rem] lg:min-h-[40rem]"
       :class="imageLoaded ? 'opacity-0' : 'opacity-100'"
     ></div>
     <NuxtImg

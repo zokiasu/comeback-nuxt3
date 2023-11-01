@@ -91,10 +91,10 @@ const loadingDoneChanged = () => {
           ref="skeleton"
           class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"
         ></div>
-        <nuxt-img
+        <NuxtImg
           :src="artist.image"
           :alt="artist.name"
-          quality="30"
+          format="webp"
           loading="lazy"
           @load="loadingDone"
           class="rounded bg-zinc-500"
@@ -223,10 +223,10 @@ const loadingDoneChanged = () => {
           ref="skeleton_changed"
           class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"
         ></div>
-        <nuxt-img
+        <NuxtImg
           :src="image"
           alt="image changed"
-          quality="30"
+          format="webp"
           loading="lazy"
           @load="loadingDoneChanged"
           class="rounded bg-zinc-500"

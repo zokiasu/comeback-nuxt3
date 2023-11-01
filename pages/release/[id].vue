@@ -57,10 +57,10 @@ useHead({
       </div>
       <div class="flex w-fit flex-col gap-10 lg:flex-row">
         <div class="mx-auto h-fit w-fit">
-          <nuxt-img
+          <NuxtImg
             :src="release.image"
             :alt="release.name"
-            quality="80"
+            format="webp"
             loading="lazy"
             class="h-1/3 rounded-md bg-gray-300 shadow-2xl shadow-quinary"
           />

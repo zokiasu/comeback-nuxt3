@@ -67,10 +67,10 @@ const loadingDone = () => {
           ref="skeleton"
           class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"
         ></div>
-        <nuxt-img
+        <NuxtImg
           :src="image"
           :alt="name"
-          quality="50"
+          format="webp"
           loading="lazy"
           @load="loadingDone"
           class="aspect-square w-full rounded bg-zinc-500 object-cover drop-shadow-2xl"

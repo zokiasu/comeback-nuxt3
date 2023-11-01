@@ -41,10 +41,10 @@ useHead({
     <section
       class="background-top relative h-[20vh] overflow-hidden bg-cover bg-no-repeat md:h-[30vh] lg:h-[40vh] xl:h-[50vh] 2xl:h-[70vh]"
     >
-      <nuxt-img
+      <NuxtImg
         :src="imageBackground"
         :alt="artist.name + '_back'"
-        quality="80"
+        format="webp"
         loading="lazy"
         class="absolute inset-0 h-full w-full object-cover"
       />
@@ -53,10 +53,10 @@ useHead({
       >
         <div class="flex items-center space-x-5">
           <div class="relative hidden overflow-hidden xl:block">
-            <nuxt-img
+            <NuxtImg
               :src="imageBackground"
               :alt="artist.name"
-              quality="80"
+              format="webp"
               loading="lazy"
               class="aspect-video h-80 rounded-md object-cover drop-shadow-2xl transition-all duration-150 hover:scale-105"
             />
@@ -101,7 +101,7 @@ useHead({
           <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
             <LazyCardArtist
               v-for="soloMember in members"
-              :key="`artistMembers_`+soloMember.id"
+              :key="`artistMembers_` + soloMember.id"
               :id="soloMember.id"
               :image="soloMember.image"
               :name="soloMember.name"
@@ -118,7 +118,7 @@ useHead({
           >
             <LazyCardRelease
               v-for="release in artist.releases"
-              :key="`artistRelease_`+release.id"
+              :key="`artistRelease_` + release.id"
               :id="release.id"
               :image="release.image"
               :date="release.date"
@@ -137,7 +137,7 @@ useHead({
           <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
             <LazyCardArtist
               v-for="groupMember in subUnitMembers"
-              :key="`artistSubunit_`+groupMember.id"
+              :key="`artistSubunit_` + groupMember.id"
               :id="groupMember.id"
               :image="groupMember.image"
               :name="groupMember.name"
@@ -150,7 +150,7 @@ useHead({
           <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
             <LazyCardArtist
               v-for="group in artist.groups"
-              :key="`artistGroup_`+group.id"
+              :key="`artistGroup_` + group.id"
               :id="group.id"
               :image="group.image"
               :name="group.name"
@@ -167,7 +167,7 @@ useHead({
           >
             <LazyCardNews
               v-for="news in artist.news"
-              :key="`comeback_`+news.artist.id+`_`+news.date"
+              :key="`comeback_` + news.artist.id + `_` + news.date"
               :message="news.message"
               :date="news.date"
               :artist="news.artist"

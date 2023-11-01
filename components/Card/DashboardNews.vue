@@ -52,11 +52,11 @@ const deleteNews = () => {
         <NuxtLink :to="'/artist/' + artist.id" target="_blank">{{ artist.id }}</NuxtLink>
       </div>
       <div class="relative">
-        <nuxt-img
+        <NuxtImg
           v-if="artist.image"
           :src="artist.image"
           :alt="artist.name"
-          quality="30"
+          format="webp"
           loading="lazy"
           class="rounded"
           @load="loadingDone"
@@ -71,11 +71,10 @@ const deleteNews = () => {
             ref="skeletonUser"
             class="absolute h-14 z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
           ></div>
-          <nuxt-img 
+          <NuxtImg 
             v-if="user.picture"
             :src="user.picture" 
-            :alt="user.name" 
-            quality="30" 
+            :alt="user.name" format="webp"
             loading="lazy" 
             class="rounded h-14 object-cover" 
             @load="loadingUserDone"
