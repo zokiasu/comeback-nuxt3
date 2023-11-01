@@ -19,8 +19,8 @@ onMounted(async () => {
   const route = useRoute()
   release.value = (await fetchReleaseById(route.params.id as string)) as Release
   console.log(release.value)
-  title.value = release.value.name + ' by ' + release.value.artistsName
-  description.value = release.value.name + ' by ' + release.value.artistsName
+  title.value = release.value.name
+  description.value = release.value.name
 })
 
 useHead({
@@ -50,9 +50,9 @@ useHead({
         </NuxtLink>
       </div>
       <SkeletonDefault v-else class="h-5 w-2/5 rounded" />
-    </section>
+    </section> -->
     <!-- Tracks List -->
-    <section id="tracks">
+    <!-- <section id="tracks">
       <div v-if="release.musics" class="space-y-5">
         <button
           v-for="music in release.musics.reverse()"
