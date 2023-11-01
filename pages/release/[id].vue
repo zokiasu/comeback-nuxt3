@@ -52,7 +52,7 @@ useHead({
       <SkeletonDefault v-else class="h-5 w-2/5 rounded" />
     </section>
     <!-- Tracks List -->
-    <!-- <section id="tracks">
+    <section id="tracks">
       <div v-if="release.musics" class="space-y-5">
         <button
           v-for="music in release.musics.reverse()"
@@ -73,6 +73,6 @@ useHead({
       <div v-else class="space-y-2">
         <SkeletonDefault v-for="i in 8" :key="`tracks_` + i" class="h-8 w-full rounded" />
       </div>
-    </section> -->
+    </section>
   </div>
 </template>
