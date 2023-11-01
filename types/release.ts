@@ -1,3 +1,4 @@
+import type { Timestamp } from 'firebase/firestore'
 import { type Artist } from './artist'
 import { type Music } from './music'
 
@@ -7,10 +8,11 @@ export interface Release {
   name: string
   type: string
   year: Number
-  verified: boolean
-  platforms: Object
-  dateRelease: string
-  images: string[]
-  artists: Artist[]
-  music: Music[]
+  needToBeVerified: boolean
+  platforms: string[]
+  date: Timestamp
+  image: string
+  artistsId: string
+  artistsName: string
+  musics: any[]
 }

@@ -95,7 +95,7 @@ export function useFirebaseFunction() {
 
     let randomMusic = Math.floor(Math.random() * musics.length)
 
-    if (musics[randomMusic].name.toLowerCase().includes('inst')) {
+    if (musics[randomMusic]?.name.toLowerCase().includes('inst')) {
       return getRandomMusic()
     }
 
@@ -107,6 +107,6 @@ export function useFirebaseFunction() {
     getNextComebacks,
     getLastReleases,
     getLastArtistsAdded,
-    getRandomMusic
+    getRandomMusic,
   }
 }

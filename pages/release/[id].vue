@@ -1,18 +1,21 @@
-<script setup>
+<script setup lang="ts">
+import { type Release } from '@/types/release'
 const idYoutubeVideo = useIdYoutubeVideo()
 const isPlayingVideo = useIsPlayingVideo()
 const title = ref('Release Page')
 const description = ref('Release')
-const release = ref(null)
+const release = ref<Release>({} as Release)
+const imageLoaded = ref(false)
 
-const playVideo = (videoId) => {
+const playVideo = (videoId: string) => {
   idYoutubeVideo.value = videoId
   isPlayingVideo.value = true
 }
 
 onMounted(async () => {
   const route = useRoute()
-  release.value = await fetchReleaseById(route.params.id)
+  release.value = (await fetchReleaseById(route.params.id as string)) as Release
+  console.log(release.value)
   title.value = release.value.name + ' by ' + release.value.artistsName
   description.value = release.value.name + ' by ' + release.value.artistsName
 })
@@ -30,60 +33,74 @@ useHead({
 
 <template>
   <div
-    v-if="release"
-    class="container mx-auto min-h-[calc(100vh-60px)] w-full p-5 lg:flex lg:items-center"
+    class="mx-auto w-full space-y-12 px-10 py-12 2xl:container xl:flex xl:min-h-[100vh-100px] xl:flex-col xl:items-center xl:justify-center"
   >
-    <div class="mx-auto w-fit space-y-5">
-      <div class="space-y-1">
-        <h1 class="text-3xl font-semibold">{{ release.name }}</h1>
-        <div class="flex gap-2">
-          <p>{{ release.type }} -</p>
-          <nuxt-link :to="`/artist/${release.artistsId}`">
-            <h2 class="hover-underline-animation">
-              {{ release.artistsName }}
-            </h2>
-          </nuxt-link>
-        </div>
-        <div v-if="release.platforms" class="flex flex-wrap gap-3">
-          <a
-            v-for="(platform, index) in release.platforms"
-            :key="platform + '_' + index"
-            :href="platform"
-            target="_blank"
-          >
-            <icon-youtube-music class="h-6 w-6" />
-          </a>
-        </div>
+    <!-- Title & Link -->
+    <section id="title" class="mx-auto w-[16rem] space-y-2 sm:w-[30rem] xl:w-full">
+      <h1 v-if="release.name" class="text-2xl font-semibold xl:text-4xl">
+        {{ release.name }}
+      </h1>
+      <SkeletonDefault v-else class="h-8 w-3/4 rounded" />
+      <div v-if="release.name" class="flex gap-2">
+        <p>{{ release.type }}</p>
+        <p>-</p>
+        <NuxtLink :to="`/artist/${release.artistsId}`" class="hover-underline-animation">
+          {{ release.artistsName }}
+        </NuxtLink>
       </div>
-      <div class="flex w-fit flex-col gap-10 lg:flex-row">
-        <div class="mx-auto h-fit w-fit">
+      <SkeletonDefault v-else class="h-5 w-2/5 rounded" />
+    </section>
+    <div
+      class="mx-auto w-fit space-y-12 xl:flex xl:w-full xl:justify-between xl:gap-10 xl:space-y-0"
+    >
+      <!-- Image -->
+      <section id="image" class="xl:h-full xl:w-full">
+        <div v-if="release.image" class="relative">
+          <div
+            class="absolute inset-0 z-50 aspect-square w-[16rem] bg-quinary sm:w-[30rem] sm:rounded-md"
+            :class="imageLoaded ? 'opacity-0' : 'opacity-100'"
+          ></div>
           <NuxtImg
-            :src="release.image"
-            :alt="release.name"
             format="webp"
             loading="lazy"
-            class="h-1/3 rounded-md bg-gray-300 shadow-2xl shadow-quinary"
+            :src="release.image"
+            :alt="release.name"
+            @load="imageLoaded = true"
+            class="aspect-square w-[16rem] object-cover shadow-2xl shadow-quinary sm:w-[30rem] sm:rounded-md"
           />
         </div>
-        <div class="overflow-hidden pb-2 pr-5 lg:h-[34rem] lg:w-[30rem]">
-          <ul class="space-y-5">
-            <li
-              v-for="music in release.musics.slice().reverse()"
-              :key="music.id"
-              target="_blank"
-              class="flex items-center justify-between gap-5"
+        <SkeletonDefault
+          v-else
+          class="aspect-square w-[16rem] rounded sm:w-[30rem] sm:rounded-md"
+        />
+      </section>
+      <!-- Tracks List -->
+      <section id="tracks" class="w-[16rem] sm:w-[30rem] xl:h-full xl:w-full">
+        <ul v-if="release.musics" class="space-y-5">
+          <button
+            v-for="music in release.musics.reverse()"
+            :key="`music_` + music.id"
+            target="_blank"
+            @click="playVideo(music.videoId)"
+            class="group flex w-full items-center justify-between gap-5"
+          >
+            <h3 class="text-xl font-semibold">{{ music.name }}</h3>
+            <button
+              @click="playVideo(music.videoId)"
+              class="rounded px-2 text-xs font-semibold uppercase transition-all duration-300 ease-in-out group-hover:bg-tertiary group-hover:text-secondary"
             >
-              <h3 class="text-xl font-semibold">{{ music.name }}</h3>
-              <button
-                @click="playVideo(music.videoId)"
-                class="rounded px-2 text-xs font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-secondary"
-              >
-                Play
-              </button>
-            </li>
-          </ul>
+              <IconPlay class="h-6 w-6" />
+            </button>
+          </button>
+        </ul>
+        <div v-else class="space-y-2">
+          <SkeletonDefault
+            v-for="i in 8"
+            :key="`tracks_` + i"
+            class="h-8 w-full rounded"
+          />
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>
