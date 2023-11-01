@@ -49,7 +49,8 @@ export const fetchReleasesWithDateAndLimit = async (
     collection($firestore as any, 'releases'),
     where('date', '>=', startDate),
     orderBy('date', 'desc'),
-    limit(limitNumber))
+    limit(limitNumber),
+  )
 
   const snapshot = await getDocs(colRef)
 
@@ -356,7 +357,10 @@ export const updateArtist = async (id: string, document: any) => {
     if (artistGroups.value.length === 0) return
 
     artistGroups.value?.forEach(async (group: Object) => {
-      await setDoc(doc($firestore as any, 'artists', document.id, 'groups', group.id), group)
+      await setDoc(
+        doc($firestore as any, 'artists', document.id, 'groups', group.id),
+        group,
+      )
       fetchArtistLimitedInfoById(document.id).then((artist) => {
         setDoc(doc($firestore as any, 'artists', group.id, 'members', artist.id), artist)
       })
@@ -379,7 +383,10 @@ export const updateArtist = async (id: string, document: any) => {
     })
 
     artistMembers.value?.forEach(async (member: Object) => {
-      await setDoc(doc($firestore as any, 'artists', document.id, 'members', member.id), member)
+      await setDoc(
+        doc($firestore as any, 'artists', document.id, 'members', member.id),
+        member,
+      )
       fetchArtistLimitedInfoById(document.id).then((artist) => {
         setDoc(doc($firestore as any, 'artists', member.id, 'groups', artist.id), artist)
       })

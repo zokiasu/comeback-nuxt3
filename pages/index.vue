@@ -1,22 +1,13 @@
 <script setup lang="ts">
-import {
-  Timestamp,
-  collection,
-  doc,
-  onSnapshot,
-  query,
-  where,
-  orderBy,
-  limit,
-} from 'firebase/firestore'
+import { Timestamp } from 'firebase/firestore'
 
-const { $firestore: db } = useNuxtApp()
+const { getNextComebacks, getLastReleases, getLastArtistsAdded, getRandomMusic } =
+  useFirebaseFunction()
 
 const comebacks = ref([] as any[])
 const artists = ref([] as any[])
 const releases = ref([] as any[])
-
-const comebacksFetched = ref(false)
+const music = ref({} as any)
 
 const comebacksToday = computed(() => {
   return comebacks.value.filter((comebacks: any) => {
@@ -31,7 +22,11 @@ const comebacksToday = computed(() => {
 })
 
 onMounted(async () => {
-  comebacksFetching()
+  const comebacksDate = new Date()
+  comebacksDate.setDate(comebacksDate.getDate() - 1)
+  comebacks.value = await getNextComebacks(Timestamp.fromDate(comebacksDate))
+
+  music.value = await getRandomMusic()
 
   const releaseDate = new Date()
   releaseDate.setDate(releaseDate.getDate() - 8)
@@ -40,24 +35,6 @@ onMounted(async () => {
   const artistDate = new Date()
   artists.value = await fetchArtistsWithLimit(Timestamp.fromDate(artistDate), 8)
 })
-
-const comebacksFetching = () => {
-  const comebacksDate = new Date()
-  comebacksDate.setDate(comebacksDate.getDate() - 1)
-  const q = query(
-    collection(db as any, 'comebacks'),
-    where('date', '>=', Timestamp.fromDate(comebacksDate)),
-    orderBy('date', 'asc'),
-  )
-  onSnapshot(q, (querySnapshot) => {
-    const comebacksTmp: any[] = []
-    querySnapshot.forEach((doc) => {
-      comebacksTmp.push(doc.data())
-    })
-    comebacks.value = comebacksTmp
-    comebacksFetched.value = true
-  })
-}
 
 useHead({
   title: 'Comeback',
@@ -104,7 +81,7 @@ useHead({
     {
       hid: 'og:url',
       property: 'og:url',
-      content: 'https://nuxt-firebase-auth.vercel.app/',
+      content: 'https://come-back.netlify.app/',
     },
     {
       hid: 'og:image',
@@ -123,15 +100,18 @@ useHead({
 </script>
 
 <template>
-  <div>
+  <div class="container mx-auto">
     <!-- Home Header -->
     <HomeSlider :news-today="comebacksToday" />
     <!-- Home Body -->
-    <section class="container mx-auto space-y-16 px-10 py-16">
+    <section class="space-y-16 px-10 py-16">
       <!-- Comeback Reported List -->
       <ComebackReported :comebackList="comebacks" />
+      <!-- <pre>
+        {{ music }}
+      </pre> -->
       <!-- Discover Music -->
-      <DiscoverMusic class="animate__animated animate__zoomIn" />
+      <DiscoverMusic :music="music" />
       <!-- Recent Release -->
       <RecentReleases :releases="releases" />
       <!-- Last Artist Added -->
