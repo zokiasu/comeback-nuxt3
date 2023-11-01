@@ -32,11 +32,11 @@ const newsToday = computed(() => {
 
 onMounted(async () => {
   newsFetching()
-  
+
   const artistDate = new Date()
   artists.value = await fetchArtistsWithLimit(Timestamp.fromDate(artistDate), 8)
 
-  const releaseDate = new Date();
+  const releaseDate = new Date()
   releaseDate.setDate(releaseDate.getDate() - 8)
   releases.value = await fetchReleasesWithDateAndLimit(Timestamp.fromDate(releaseDate), 8)
 })
@@ -127,7 +127,11 @@ useHead({
     <section v-if="newsToday.length && newsFetched">
       <div class="relative">
         <div class="absolute z-10 pt-10">
-          <p class="w-fit bg-red-700 py-1 pl-8 pr-5 text-xs font-semibold uppercase drop-shadow-lg lg:text-xl xl:text-2xl">Comeback Today</p>
+          <p
+            class="w-fit bg-red-700 py-1 pl-8 pr-5 text-xs font-semibold uppercase drop-shadow-lg lg:text-xl xl:text-2xl"
+          >
+            Comeback Today
+          </p>
         </div>
 
         <Swiper
@@ -140,10 +144,22 @@ useHead({
             disableOnInteraction: false,
           }"
         >
-          <SwiperSlide v-for="news in newsToday" :key="news.id" class="swiper-slide relative">
-            <NuxtImg :src="news.artist.image" class="min-h-[20rem] w-full object-cover lg:max-h-[40rem]" />
-            <NuxtLink :to="`/artist/${news.artist.id}`" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-secondary/30 p-5">
-              <p class="self-center text-3xl font-bold lg:text-5xl xl:text-7xl 2xl:text-9xl">
+          <SwiperSlide
+            v-for="news in newsToday"
+            :key="news.id"
+            class="swiper-slide relative"
+          >
+            <NuxtImg
+              :src="news.artist.image"
+              class="min-h-[20rem] w-full object-cover lg:max-h-[40rem]"
+            />
+            <NuxtLink
+              :to="`/artist/${news.artist.id}`"
+              class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-secondary/30 p-5"
+            >
+              <p
+                class="self-center text-3xl font-bold lg:text-5xl xl:text-7xl 2xl:text-9xl"
+              >
                 {{ news.artist.name }}
               </p>
             </NuxtLink>
@@ -161,19 +177,16 @@ useHead({
           Don't miss any
           <span class="text-primary">Comeback</span>
         </p>
-        <p class="text-[3vw] xl:text-3xl">Track every next release by your favorite artists</p>
+        <p class="text-[3vw] xl:text-3xl">
+          Track every next release by your favorite artists
+        </p>
       </div>
       <p class="absolute bottom-20 left-0 right-0 md:hidden">
         <icon-arrow-down class="mx-auto h-5 w-5 animate-bounce" />
       </p>
     </section>
-    <section
-      class="container mx-auto space-y-16 px-10 py-16"
-    >
-      <DiscoverMusic
-        v-if="newsFetched"
-        class="animate__animated animate__zoomIn"
-      />
+    <section class="container mx-auto space-y-16 px-10 py-16">
+      <DiscoverMusic v-if="newsFetched" class="animate__animated animate__zoomIn" />
       <ComebackReported
         v-if="news.length && newsFetched"
         :news-t="news"
