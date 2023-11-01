@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { type Release } from '@/types/release'
+
 const idYoutubeVideo = useIdYoutubeVideo()
 const isPlayingVideo = useIsPlayingVideo()
+
 const title = ref('Release Page')
 const description = ref('Release')
+
 const release = ref<Release>({} as Release)
 const imageLoaded = ref(false)
 
@@ -76,7 +79,7 @@ useHead({
       </section>
       <!-- Tracks List -->
       <section id="tracks" class="w-[16rem] sm:w-[30rem] xl:h-full xl:w-full">
-        <ul v-if="release.musics" class="space-y-5">
+        <div v-if="release.musics" class="space-y-5">
           <button
             v-for="music in release.musics.reverse()"
             :key="`music_` + music.id"
@@ -85,14 +88,13 @@ useHead({
             class="group flex w-full items-center justify-between gap-5"
           >
             <h3 class="text-xl font-semibold">{{ music.name }}</h3>
-            <button
-              @click="playVideo(music.videoId)"
+            <div
               class="rounded px-2 text-xs font-semibold uppercase transition-all duration-300 ease-in-out group-hover:bg-tertiary group-hover:text-secondary"
             >
               <IconPlay class="h-6 w-6" />
-            </button>
+            </div>
           </button>
-        </ul>
+        </div>
         <div v-else class="space-y-2">
           <SkeletonDefault
             v-for="i in 8"
