@@ -193,6 +193,7 @@ const updateArtist = async () => {
       console.log('Document successfully written!')
       isUploadingEdit.value = false
       toast.success('Artist Update', toastOption)
+      router.push(`/artist/${route.params.id}`)
     })
     .catch((error) => {
       console.error('Error writing document: ', error)
