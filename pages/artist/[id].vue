@@ -101,8 +101,8 @@ useHead({
           <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
             <LazyCardArtist
               v-for="soloMember in members"
+              :key="`artistMembers_`+soloMember.id"
               :id="soloMember.id"
-              :key="soloMember.id"
               :image="soloMember.image"
               :name="soloMember.name"
             />
@@ -118,7 +118,7 @@ useHead({
           >
             <LazyCardRelease
               v-for="release in artist.releases"
-              :key="release.id"
+              :key="`artistRelease_`+release.id"
               :id="release.id"
               :image="release.image"
               :date="release.date"
@@ -137,8 +137,8 @@ useHead({
           <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
             <LazyCardArtist
               v-for="groupMember in subUnitMembers"
+              :key="`artistSubunit_`+groupMember.id"
               :id="groupMember.id"
-              :key="groupMember.id"
               :image="groupMember.image"
               :name="groupMember.name"
             />
@@ -150,8 +150,8 @@ useHead({
           <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
             <LazyCardArtist
               v-for="group in artist.groups"
+              :key="`artistGroup_`+group.id"
               :id="group.id"
-              :key="group.id"
               :image="group.image"
               :name="group.name"
             />
@@ -167,7 +167,7 @@ useHead({
           >
             <LazyCardNews
               v-for="news in artist.news"
-              :key="news.id"
+              :key="`comeback_`+news.artist.id+`_`+news.date"
               :message="news.message"
               :date="news.date"
               :artist="news.artist"

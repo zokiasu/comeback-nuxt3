@@ -5,6 +5,7 @@
       class="group relative aspect-square max-h-96 w-full overflow-hidden rounded-lg bg-quinary drop-shadow-lg"
     >
       <NuxtImg
+        format="webp"
         :src="release.thumbnails[3].url"
         loading="lazy"
         class="h-full w-full rounded object-cover"

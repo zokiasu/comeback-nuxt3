@@ -10,6 +10,13 @@ module.exports = {
         quaternary: '#2B2B2B', // gray
         quinary: '#3A3A3A', // gray medium
       },
+      keyframes: {
+        shimmer: {
+          '100%': {
+            transform: 'translateX(100%)',
+          },
+        },
+      },
     },
   },
 }

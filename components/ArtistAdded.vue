@@ -8,8 +8,8 @@ const { artists } = defineProps({
 </script>
 
 <template>
-  <CardDefault name="Artist added" :class="{ hidden: !artists }">
-    <div class="grid grid-cols-2 gap-5 py-5 md:grid-cols-4 xl:grid-cols-8">
+  <CardDefault name="Artist added">
+    <div v-if="artists.length" class="grid grid-cols-2 gap-5 py-5 md:grid-cols-4 xl:grid-cols-8">
       <CardArtist
         v-for="artist in artists"
         :key="artist.id"
@@ -17,6 +17,9 @@ const { artists } = defineProps({
         :image="artist.image"
         :id="artist.id"
       />
+    </div>
+    <div v-else class="grid grid-cols-2 gap-5 py-5 md:grid-cols-4 xl:grid-cols-8">
+      <SkeletonArtist v-for="i in 8" :key="`skeleton_artist_` + i" />
     </div>
   </CardDefault>
 </template>
