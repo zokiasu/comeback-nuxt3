@@ -55,7 +55,7 @@ useHead({
     <section id="tracks">
       <div v-if="release.musics" class="space-y-5">
         <button
-          v-for="music in release.musics.reverse()"
+          v-for="music in release.musics"
           :key="`music_` + music.id"
           target="_blank"
           @click="playVideo(music.videoId)"
