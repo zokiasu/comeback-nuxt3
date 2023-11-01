@@ -42,7 +42,7 @@ onMounted(async () => {
     <main class="min-h-[calc(100vh-60px)]">
       <slot />
     </main>
-    <!-- <LazyFooter />
+    <LazyFooter />
     <LazyMobileNavigation
       class="md:hidden"
       :artistFetch="artistFetch"
@@ -53,6 +53,6 @@ onMounted(async () => {
       ref="YTPlayer"
       v-if="isPlayingVideo"
       class="animate__animated animate__fadeInUp fixed bottom-0"
-    /> -->
+    />
   </div>
 </template>

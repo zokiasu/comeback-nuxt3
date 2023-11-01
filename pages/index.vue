@@ -100,11 +100,11 @@ useHead({
 </script>
 
 <template>
-  <div class="container mx-auto">
+  <div class="2xl:container 2xl:mx-auto">
     <!-- Home Header -->
     <HomeSlider :news-today="comebacksToday" />
     <!-- Home Body -->
-    <section class="space-y-16 px-10 py-16">
+    <section class="container mx-auto space-y-16 px-10 py-16">
       <!-- Comeback Reported List -->
       <ComebackReported :comebackList="comebacks" />
       <!-- <pre>

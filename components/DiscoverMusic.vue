@@ -51,11 +51,8 @@ const isPlayingVideo = useIsPlayingVideo()
 const imageLoaded = ref(false)
 
 const playVideo = (videoId: any) => {
+  console.log('playVideo', videoId)
   idYoutubeVideo.value = videoId
   isPlayingVideo.value = true
 }
-
-onMounted(async () => {
-  console.log(music.value)
-})
 </script>

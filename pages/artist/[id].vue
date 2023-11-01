@@ -1,16 +1,20 @@
-<script setup>
+<script setup lang="ts">
 import { useUserStore } from '@/stores/user'
+import { type Artist } from '@/types/artist'
 const { isAdminStore } = useUserStore()
 
 const title = ref('Artist Page')
 const description = ref('Artist')
 const route = useRoute()
-const artist = ref(null)
-const imageBackground = ref(null)
+const artist = ref<Artist>({} as Artist)
+const imageBackground = ref('')
 const editLink = ref('/artist/edit/' + route.params.id)
+const imageBackLoaded = ref(false)
+const imageLoaded = ref(false)
 
 onMounted(async () => {
-  artist.value = await fetchArtistFullInfoById(route.params.id)
+  artist.value = (await fetchArtistFullInfoById(route.params.id as any)) as Artist
+  console.log(artist.value)
   imageBackground.value = artist.value.image
   title.value = artist.value.name
   description.value = artist.value.description
@@ -18,11 +22,11 @@ onMounted(async () => {
 
 // computed members
 const members = computed(() => {
-  return artist.value.members.filter((member) => member.type === 'SOLO')
+  return artist.value?.members?.filter((member) => member.type === 'SOLO') || []
 })
 // computed subUnitMembers
 const subUnitMembers = computed(() => {
-  return artist.value.members.filter((member) => member.type === 'GROUP')
+  return artist.value?.members?.filter((member) => member.type === 'GROUP') || []
 })
 
 useHead({
@@ -37,46 +41,70 @@ useHead({
 </script>
 
 <template>
-  <div v-if="artist">
+  <div>
     <section
       class="background-top relative h-[20vh] overflow-hidden bg-cover bg-no-repeat md:h-[30vh] lg:h-[40vh] xl:h-[50vh] 2xl:h-[70vh]"
     >
       <NuxtImg
+        v-if="imageBackground"
         :src="imageBackground"
         :alt="artist.name + '_back'"
         format="webp"
         loading="lazy"
+        @load="imageBackLoaded = true"
         class="absolute inset-0 h-full w-full object-cover"
       />
       <div
-        class="absolute inset-0 flex items-center bg-secondary/60 p-5 lg:p-10 xl:p-14 xl:px-32"
+        class="absolute inset-0 flex items-center p-5 transition-all duration-500 ease-in-out lg:p-10 xl:p-14 xl:px-32"
+        :class="imageBackLoaded ? 'bg-secondary/60' : 'bg-quinary'"
       >
         <div class="flex items-center space-x-5">
-          <div class="relative hidden overflow-hidden xl:block">
+          <div v-if="artist.name" class="relative hidden overflow-hidden xl:block">
+            <div
+              class="absolute inset-0 z-10 aspect-video h-80 rounded-md bg-red-500 transition-all duration-500 ease-in-out"
+              :class="imageLoaded ? 'opacity-0' : 'opacity-100'"
+            ></div>
             <NuxtImg
               :src="imageBackground"
               :alt="artist.name"
               format="webp"
               loading="lazy"
+              @load="imageLoaded = true"
               class="aspect-video h-80 rounded-md object-cover drop-shadow-2xl transition-all duration-150 hover:scale-105"
             />
           </div>
+          <SkeletonDefault v-else class="hidden aspect-video h-80 rounded-md xl:block" />
           <div class="space-y-2">
-            <h1 class="text-3xl font-semibold md:text-6xl lg:text-7xl">
+            <h1 v-if="artist.name" class="text-3xl font-semibold md:text-6xl lg:text-7xl">
               {{ artist.name }}
             </h1>
-            <div v-if="artist.platforms.length" class="flex flex-wrap gap-3 md:gap-3">
+            <SkeletonDefault v-else class="h-14 w-80 rounded" />
+            <div v-if="artist.platforms" class="flex flex-wrap gap-3 md:gap-3">
               <LazyCbExternalLink
                 v-for="link in artist.platforms"
                 :key="link"
                 :href="link"
               />
             </div>
-            <div v-if="artist.socials.length" class="flex flex-wrap gap-3 md:gap-3">
+            <div v-else class="flex gap-2">
+              <SkeletonDefault
+                v-for="i in 3"
+                :key="`skeleton_platforms_` + i"
+                class="h-6 w-20 rounded"
+              />
+            </div>
+            <div v-if="artist.socials" class="flex flex-wrap gap-3 md:gap-3">
               <LazyCbExternalLink
                 v-for="link in artist.socials"
                 :key="link"
                 :href="link"
+              />
+            </div>
+            <div v-else class="flex gap-2">
+              <SkeletonDefault
+                v-for="i in 3"
+                :key="`skeleton_socials_` + i"
+                class="h-6 w-20 rounded"
               />
             </div>
             <div v-if="isAdminStore">
@@ -93,6 +121,12 @@ useHead({
     </section>
 
     <section class="container mx-auto space-y-8 p-5">
+      <div v-if="!artist.name" class="space-y-2">
+        <SkeletonDefault class="h-5 w-3/4 rounded" />
+        <SkeletonDefault class="h-5 w-2/4 rounded" />
+        <SkeletonDefault class="h-5 w-2/6 rounded" />
+        <SkeletonDefault class="h-5 w-2/5 rounded" />
+      </div>
       <p v-if="artist.description" class="whitespace-pre-line">
         {{ artist.description }}
       </p>
@@ -154,23 +188,6 @@ useHead({
               :id="group.id"
               :image="group.image"
               :name="group.name"
-            />
-          </transition-group>
-        </CardDefault>
-      </div>
-      <div v-if="artist.news?.length">
-        <CardDefault name="Comeback Reported">
-          <transition-group
-            name="list-complete"
-            tag="div"
-            class="grid grid-cols-1 gap-2 py-3 md:grid-cols-2 xl:grid-cols-3"
-          >
-            <LazyCardNews
-              v-for="news in artist.news"
-              :key="`comeback_` + news.artist.id + `_` + news.date"
-              :message="news.message"
-              :date="news.date"
-              :artist="news.artist"
             />
           </transition-group>
         </CardDefault>

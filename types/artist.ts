@@ -6,11 +6,10 @@ export interface Artist {
   idYoutubeMusic: string
   description: string
   type: string
-  images: string[]
-  styles: string[]
-  socials: Object
-  platforms: Object
+  image: string
+  styles: Object[]
+  socials: string[]
+  platforms: string[]
   members: Artist[]
   groups: Artist[]
-  releases: Release[]
 }

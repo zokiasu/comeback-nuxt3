@@ -215,10 +215,6 @@ export const fetchArtistFullInfoById = async (idArtist: string) => {
     collection($firestore as any, 'releases'),
     where('artistsId', '==', idArtist),
   )
-  const colNews = query(
-    collection($firestore as any, 'news'),
-    where('artist.id', '==', idArtist),
-  )
 
   const snapshot = await getDocs(colArtist)
 
@@ -252,12 +248,6 @@ export const fetchArtistFullInfoById = async (idArtist: string) => {
     .sort((a, b) => {
       return b.date - a.date
     })
-
-  docs[0].news = Array.from((await getDocs(colNews)).docs).map((doc) => {
-    return {
-      ...doc.data(),
-    }
-  })
 
   return docs[0]
 }

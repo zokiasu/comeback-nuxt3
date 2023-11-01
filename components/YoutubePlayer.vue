@@ -11,7 +11,7 @@ const duration = ref(0)
 const playerContainer = ref(null)
 const player = ref(null)
 const volumeOn = ref(true)
-const volume = ref(30)
+const volume = ref(3)
 
 onMounted(() => {
   if (document.readyState === 'complete') {
@@ -77,6 +77,7 @@ const createYTPlayer = () => {
 const onPlayerReady = (event) => {
   duration.value = event.target.getDuration()
   event.target.playVideo()
+  setVolume(volume.value)
 }
 
 const onPlayerStateChange = (event) => {
@@ -111,7 +112,7 @@ const seekToTime = () => {
   }
 }
 
-const setVolume = (volume) => {
+const setVolume = (newVolume) => {
   if (player.value) {
     player.value.setVolume(newVolume)
     volume.value = newVolume // Met à jour la valeur réactive
