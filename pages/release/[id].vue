@@ -37,7 +37,7 @@ useHead({
 <template>
   <div class="container mx-auto space-y-5 p-5">
     <!-- Title & Link -->
-    <section id="title">
+    <!-- <section id="title">
       <h1 v-if="release.name" class="text-2xl font-semibold xl:text-4xl">
         {{ release.name }}
       </h1>
@@ -73,6 +73,6 @@ useHead({
       <div v-else class="space-y-2">
         <SkeletonDefault v-for="i in 8" :key="`tracks_` + i" class="h-8 w-full rounded" />
       </div>
-    </section>
+    </section> -->
   </div>
 </template>
