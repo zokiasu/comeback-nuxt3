@@ -37,7 +37,7 @@ useHead({
 <template>
   <div class="container mx-auto space-y-5 p-5">
     <!-- Title & Link -->
-    <!-- <section id="title">
+    <section id="title">
       <h1 v-if="release.name" class="text-2xl font-semibold xl:text-4xl">
         {{ release.name }}
       </h1>
@@ -50,7 +50,7 @@ useHead({
         </NuxtLink>
       </div>
       <SkeletonDefault v-else class="h-5 w-2/5 rounded" />
-    </section> -->
+    </section>
     <!-- Tracks List -->
     <!-- <section id="tracks">
       <div v-if="release.musics" class="space-y-5">

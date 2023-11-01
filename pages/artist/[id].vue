@@ -14,7 +14,6 @@ const imageLoaded = ref(false)
 
 onMounted(async () => {
   artist.value = (await fetchArtistFullInfoById(route.params.id as any)) as Artist
-  console.log(artist.value)
   imageBackground.value = artist.value.image
   title.value = artist.value.name
   description.value = artist.value.description
