@@ -91,10 +91,18 @@ const showModal = ref(false)
 const dateToChange = ref(null)
 const yearToChange = ref(null)
 
-const releaseDate = new Date(date.seconds * 1000).toLocaleDateString('fr-FR', {
-  day: '2-digit',
-  month: '2-digit',
-  year: '2-digit',
+const releaseDate = computed(() => {
+  let dateComputed = new Date()
+  if (date.value) dateComputed = new Date(date.value.seconds * 1000)
+  // return dateComputed format to DD-MM-YYYY
+  return `${dateComputed.getDate()}-${dateComputed.getMonth() + 1}-${dateComputed.getFullYear()}`
+})
+
+const dateToTestYear = date.value ? new Date(date.value.seconds * 1000) : new Date()
+
+const doubleCheckYear = computed(() => {
+  if (yearReleased !== dateToTestYear.getFullYear()) return true
+  return false
 })
 
 const loadingDone = () => {
@@ -145,7 +153,7 @@ const validVerifiedRelease = () => {
     </div>
 
     <p
-      v-if="needToBeVerified"
+      v-if="needToBeVerified || doubleCheckYear"
       class="absolute z-50 rounded-full bg-red-500 px-2 text-xs font-semibold"
     >
       Need To Be Verified
@@ -205,7 +213,7 @@ const validVerifiedRelease = () => {
       <div class="space-x-1">
         <!-- <NuxtLink :to="'/release/edit/' + id" target="_blank" class="bg-quinary uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Edit</NuxtLink> -->
         <button
-          v-if="needToBeVerified"
+          v-if="needToBeVerified || doubleCheckYear"
           @click="showUpdateVerifiedRelease"
           class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
         >
