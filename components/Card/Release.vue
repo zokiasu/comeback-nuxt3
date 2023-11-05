@@ -85,6 +85,13 @@ const loadingDone = () => {
             {{ dateTimestamp }}
           </p>
         </div>
+        <div
+          class="invisible absolute bottom-2 left-1.5 rounded bg-quinary bg-opacity-80 px-2 py-0.5 group-hover:visible"
+        >
+          <p class="text-center text-xs">
+            {{ type }}
+          </p>
+        </div>
       </div>
     </NuxtLink>
     <div class="space-y-0.5">

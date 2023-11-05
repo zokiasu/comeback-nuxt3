@@ -75,7 +75,7 @@ const loadingDone = () => {
 <template>
   <NuxtLink
     :to="`/artist/${artist.id}`"
-    class="flex w-full flex-col overflow-hidden rounded-lg transition-all duration-500 ease-in-out hover:z-20 hover:scale-110 hover:drop-shadow-lg md:flex-row"
+    class="group flex w-full flex-col overflow-hidden rounded-lg transition-all duration-500 ease-in-out hover:drop-shadow-lg md:flex-row"
   >
     <div class="flex h-full w-full items-center space-x-5 bg-quinary py-3 md:p-3">
       <div class="relative hidden lg:block">
@@ -93,7 +93,11 @@ const loadingDone = () => {
         />
       </div>
       <div>
-        <h2 class="text-xs font-semibold lg:text-sm">{{ artist.name }}'s news</h2>
+        <h2
+          class="text-xs font-semibold transition-all duration-300 ease-in-out group-hover:text-primary lg:text-sm"
+        >
+          {{ artist.name }}'s news
+        </h2>
         <p class="text-xs">{{ message }}</p>
       </div>
     </div>
