@@ -1,4 +1,5 @@
 <script setup>
+import { collection, onSnapshot } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
 const toast = useToast()
 const toastOption = {
@@ -18,11 +19,17 @@ const toastOption = {
   maxToasts: 5,
   newestOnTop: true,
 }
+const { $firestore: db } = useNuxtApp()
 
 const artistFetch = ref(null)
 
 onMounted(async () => {
-  artistFetch.value = await queryByCollection('artists')
+  // artistFetch.value = await queryByCollection('artists')
+  onSnapshot(collection(db, 'artists'), (snapshot) => {
+    artistFetch.value = snapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() }
+    })
+  })
 })
 
 const deleteArtist = async (id) => {
