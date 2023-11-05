@@ -74,7 +74,15 @@ const closeModal = () => {
   emit('closeModal')
 }
 
+const { getComebackExist } = useFirebaseFunction()
+
 const createNews = () => {
+  if (getComebackExist(news.value.date, news.value.artist.name)) {
+    toast.error('Comeback already exist', toastOption)
+    closeModal()
+    return
+  }
+
   sendNews.value = true
   add('news', news.value)
     .then(() => {

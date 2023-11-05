@@ -14,6 +14,7 @@ import {
   limit,
   getCountFromServer,
 } from 'firebase/firestore'
+import _ from 'lodash'
 
 export function useFirebaseFunction() {
   const { $firestore: database } = useNuxtApp()
@@ -104,10 +105,40 @@ export function useFirebaseFunction() {
 
   /** Release **/
   const updateReleaseNeedToBeVerified = async (id: string, data: any) => {
-    console.log('updateReleaseNeedToBeVerified', id, data)
     const docRef = doc(database as any, 'releases', id)
 
     await updateDoc(docRef, data)
+  }
+
+  /** Comeback **/
+  const getComebackExist = async (
+    date: Timestamp,
+    artistName: string,
+  ): Promise<boolean> => {
+    const today = new Date()
+    //convert today to timestamp
+    const todayInTimestamp = Timestamp.fromDate(today)
+    //fetch all comeback after today
+    const comebackList = await getNextComebacks(todayInTimestamp)
+    
+    //verify if comeback exist in list
+    const comebackExist = comebackList.find((comeback: any) => {
+      const cbDate = new Date(comeback.date.seconds * 1000)
+      //format cbDate to test to DD-MM-YYYY
+      cbDate.setHours(0, 0, 0, 0)
+      const dateToTest = new Date(date.seconds * 1000)
+      dateToTest.setHours(0, 0, 0, 0)
+      
+      if (
+        comeback.artist.name.toLowerCase() === artistName.toLowerCase() &&
+        _.isEqual(cbDate, dateToTest)
+      )
+        return true
+    })
+    
+    //if comeback exist return true
+    if (comebackExist) return true
+    return false
   }
 
   return {
@@ -117,5 +148,6 @@ export function useFirebaseFunction() {
     getLastArtistsAdded,
     getRandomMusic,
     updateReleaseNeedToBeVerified,
+    getComebackExist,
   }
 }
