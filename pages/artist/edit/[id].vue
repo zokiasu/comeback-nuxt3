@@ -1,5 +1,4 @@
 <script setup>
-import * as fire from 'firebase/storage'
 import VueMultiselect from 'vue-multiselect'
 import { Timestamp } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
@@ -30,7 +29,7 @@ const toastOption = {
   maxToasts: 5,
   newestOnTop: true,
 }
-const isUploadingImage = ref(false)
+
 const isUploadingEdit = ref(false)
 const artist = ref(null)
 const groupList = ref(null)
@@ -50,38 +49,6 @@ const artistToEdit = ref({
   groups: [],
   members: [],
 })
-
-const uploadImageFile = async (files) => {
-  // verify if files exist
-  if (!files.length) return
-
-  isUploadingImage.value = true
-  const file = files[0]
-  const storageRef = ref(null)
-  const fileRef = ref(null)
-  const downloadUrl = ref(null)
-  const storage = fire.getStorage()
-  const metadata = {
-    contentType: file.type,
-  }
-
-  storageRef.value = fire.ref(storage, `images/artist/${new Date()}`)
-
-  fire
-    .uploadBytes(storageRef.value, file, metadata)
-    .then(async (snapshot) => {
-      fileRef.value = snapshot.ref
-      downloadUrl.value = await fire.getDownloadURL(fileRef.value)
-      artistToEdit.value.image = downloadUrl.value
-      isUploadingImage.value = false
-      toast.success('Image Upload', toastOption)
-    })
-    .catch((error) => {
-      console.error('error', error)
-      isUploadingImage.value = false
-      toast.warning('Image Upload Failed', toastOption)
-    })
-}
 
 const updateArtist = async () => {
   isUploadingEdit.value = true
@@ -240,28 +207,14 @@ useHead({
       <!-- Picture -->
       <div class="flex flex-col gap-2">
         <CbLabel label="Image" />
-        <div class="space-y-5">
-          <NuxtImg
-            v-if="artistToEdit.image"
-            :src="artistToEdit.image"
-            :alt="artistToEdit.name"
-            format="webp"
-            loading="lazy"
-            class="w-full rounded object-cover md:w-auto md:max-w-lg xl:max-w-xl"
-          />
-          <div>
-            <input
-              ref="imageFile"
-              type="file"
-              accept="image/png, image/jpeg"
-              class="focus:shadow-te-primary relative m-0 block w-full min-w-0 flex-auto cursor-pointer border-b border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] text-base font-normal text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem] hover:bg-tertiary focus:text-neutral-700 focus:outline-none"
-              @change.prevent="uploadImageFile($event.target.files)"
-            />
-            <p id="file_input_help" class="text-sm text-gray-500 dark:text-gray-300">
-              PNG or JPG.
-            </p>
-          </div>
-        </div>
+        <NuxtImg
+          v-if="artistToEdit.image"
+          :src="artistToEdit.image"
+          :alt="artistToEdit.name"
+          format="webp"
+          loading="lazy"
+          class="w-full rounded object-cover md:w-auto md:max-w-lg xl:max-w-xl"
+        />
       </div>
       <!-- Name & Id -->
       <div class="grid grid-cols-1 gap-5 md:grid-cols-2">

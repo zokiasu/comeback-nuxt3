@@ -1,5 +1,5 @@
-import type { Artist } from "./artist"
-import type { User } from "./user"
+import type { Artist } from './artist'
+import type { User } from './user'
 
 export interface Comeback {
   id: string
