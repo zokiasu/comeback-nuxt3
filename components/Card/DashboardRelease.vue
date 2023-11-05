@@ -1,4 +1,9 @@
 <script setup>
+import * as Mdl from '@kouts/vue-modal'
+import VueDatePicker from '@vuepic/vue-datepicker'
+import { useToast } from 'vue-toastification'
+import { Timestamp } from 'firebase/firestore'
+
 const {
   id,
   artistsName,
@@ -58,7 +63,33 @@ const {
   },
 })
 
+const emit = defineEmits(['deleteRelease'])
+const toast = useToast()
+const { updateReleaseNeedToBeVerified } = useFirebaseFunction()
+const toastOption = {
+  position: 'top-right',
+  timeout: 5000,
+  closeOnClick: true,
+  pauseOnFocusLoss: false,
+  pauseOnHover: true,
+  draggable: true,
+  draggablePercent: 0.6,
+  showCloseButtonOnHover: false,
+  hideProgressBar: false,
+  closeButton: 'button',
+  icon: true,
+  rtl: false,
+  transition: 'Vue-Toastification__bounce',
+  maxToasts: 5,
+  newestOnTop: true,
+}
+
+const { Modal } = Mdl
 const skeleton = ref(null)
+const showModal = ref(false)
+
+const dateToChange = ref(null)
+const yearToChange = ref(null)
 
 const releaseDate = new Date(date.seconds * 1000).toLocaleDateString('fr-FR', {
   day: '2-digit',
@@ -70,14 +101,34 @@ const loadingDone = () => {
   skeleton.value.classList.add('opacity-0')
 }
 
-const emit = defineEmits(['deleteRelease', 'verifiedRelease'])
-
 const deleteRelease = () => {
   emit('deleteRelease', id)
 }
 
-const verifiedRelease = () => {
-  emit('verifiedRelease', id)
+const showUpdateVerifiedRelease = () => {
+  showModal.value = true
+}
+
+const validVerifiedRelease = () => {
+  const dataToChange = {}
+  dataToChange['id'] = id
+
+  if (dateToChange.value) {
+    // add dataToChange
+    dataToChange['date'] = Timestamp.fromDate(new Date(dateToChange.value))
+  }
+
+  if (yearToChange.value) {
+    // add yearToChange
+    dataToChange['year'] = yearToChange.value
+  }
+
+  dataToChange['needToBeVerified'] = false
+
+  updateReleaseNeedToBeVerified(id, dataToChange).then(() => {
+    showModal.value = false
+    toast.success('Release Updated', toastOption)
+  })
 }
 </script>
 
@@ -110,7 +161,7 @@ const verifiedRelease = () => {
         :alt="name"
         format="webp"
         loading="lazy"
-        class="rounded"
+        class="w-full rounded"
         @load="loadingDone"
       />
     </div>
@@ -154,7 +205,8 @@ const verifiedRelease = () => {
       <div class="space-x-1">
         <!-- <NuxtLink :to="'/release/edit/' + id" target="_blank" class="bg-quinary uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Edit</NuxtLink> -->
         <button
-          @click="verifiedRelease"
+          v-if="needToBeVerified"
+          @click="showUpdateVerifiedRelease"
           class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
         >
           Verified
@@ -167,5 +219,34 @@ const verifiedRelease = () => {
         </button>
       </div>
     </div>
+
+    <Modal
+      v-model="showModal"
+      :title="`Fix Release ${artistsName} - ${name}`"
+      wrapper-class="animate__animated modal-wrapper"
+      :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
+      :in-class="`animate__fadeInDown`"
+      :out-class="`animate__bounceOut`"
+      bg-class="animate__animated"
+      :bg-in-class="`animate__fadeInUp`"
+      :bg-out-class="`animate__fadeOutDown`"
+    >
+      <div class="space-y-2">
+        <p>Actual Date : {{ releaseDate }}</p>
+        <VueDatePicker v-model="dateToChange" auto-apply :enable-time-picker="false" />
+        <p>Actual Year : {{ yearReleased }}</p>
+        <CbInput
+          label="Year"
+          :placeholder="yearReleased.toString()"
+          v-model="yearToChange"
+        />
+        <button
+          @click="validVerifiedRelease"
+          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+        >
+          Verified
+        </button>
+      </div>
+    </Modal>
   </div>
 </template>

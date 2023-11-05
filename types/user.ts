@@ -1,4 +1,4 @@
-import type { Comeback } from "./comeback"
+import type { Comeback } from './comeback'
 
 export interface User {
   id: string

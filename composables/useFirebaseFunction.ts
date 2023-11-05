@@ -102,11 +102,20 @@ export function useFirebaseFunction() {
     return musics[randomMusic]
   }
 
+  /** Release **/
+  const updateReleaseNeedToBeVerified = async (id: string, data: any) => {
+    console.log('updateReleaseNeedToBeVerified', id, data)
+    const docRef = doc(database as any, 'releases', id)
+
+    await updateDoc(docRef, data)
+  }
+
   return {
     database,
     getNextComebacks,
     getLastReleases,
     getLastArtistsAdded,
     getRandomMusic,
+    updateReleaseNeedToBeVerified,
   }
 }

@@ -87,6 +87,7 @@ const loadingDone = () => {
         class="aspect-video w-full rounded bg-zinc-500 object-cover"
       />
     </div>
+
     <div class="flex w-full items-center justify-between">
       <div>
         <p class="space-x-1">

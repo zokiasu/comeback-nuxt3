@@ -1,13 +1,14 @@
 <script setup>
-import * as fire from 'firebase/storage'
 import VueMultiselect from 'vue-multiselect'
 import { Timestamp } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
+import _ from 'lodash'
 
 definePageMeta({
-  middleware: 'admin',
+  middleware: 'auth',
 })
 
+const { isAdminStore } = useUserStore()
 const title = ref('Edit Artist Page')
 const description = ref('Edit Artist Page')
 const route = useRoute()
@@ -30,7 +31,7 @@ const toastOption = {
   maxToasts: 5,
   newestOnTop: true,
 }
-const isUploadingImage = ref(false)
+
 const isUploadingEdit = ref(false)
 const artist = ref(null)
 const groupList = ref(null)
@@ -51,155 +52,57 @@ const artistToEdit = ref({
   members: [],
 })
 
-const uploadImageFile = async (files) => {
-  // verify if files exist
-  if (!files.length) return
-
-  isUploadingImage.value = true
-  const file = files[0]
-  const storageRef = ref(null)
-  const fileRef = ref(null)
-  const downloadUrl = ref(null)
-  const storage = fire.getStorage()
-  const metadata = {
-    contentType: file.type,
-  }
-
-  storageRef.value = fire.ref(storage, `images/artist/${new Date()}`)
-
-  fire
-    .uploadBytes(storageRef.value, file, metadata)
-    .then(async (snapshot) => {
-      fileRef.value = snapshot.ref
-      downloadUrl.value = await fire.getDownloadURL(fileRef.value)
-      artistToEdit.value.image = downloadUrl.value
-      isUploadingImage.value = false
-      toast.success('Image Upload', toastOption)
-    })
-    .catch((error) => {
-      console.error('error', error)
-      isUploadingImage.value = false
-      toast.warning('Image Upload Failed', toastOption)
-    })
+const compareFields = (field1, field2) => {
+  return _.isEqual(field1, field2)
 }
 
-const updateArtist = async () => {
-  isUploadingEdit.value = true
-  // verify each field from artistToEdit is not equal to artist's field
-  if (
-    artistToEdit.value.name == artist.value.name &&
-    artistToEdit.value.idYoutubeMusic == artist.value.idYoutubeMusic &&
-    artistToEdit.value.type == artist.value.type &&
-    artistToEdit.value.description == artist.value.description &&
-    artistToEdit.value.image == artist.value.image &&
-    artistToEdit.value.platforms == artist.value.platforms &&
-    artistToEdit.value.socials == artist.value.socials &&
-    artistToEdit.value.styles == artist.value.styles &&
-    artistToEdit.value.groups == artist.value.groups &&
-    artistToEdit.value.members == artist.value.members
-  ) {
-    console.log('No changes')
-    isUploadingEdit.value = false
+const sendUpdateArtist = async () => {
+  // isUploadingEdit.value = true
+  const updatedFields = {}
+
+  Object.keys(artistToEdit.value).forEach((key) => {
+    if (!compareFields(artistToEdit.value[key], artist.value[key])) {
+      updatedFields[key] = artistToEdit.value[key]
+    }
+  })
+
+  // if artistToEdit doesn't have any field to update then return
+  if (Object.keys(updatedFields).length == 0) {
+    console.log('updatedFields', updatedFields)
     return
-  }
-
-  if (artistToEdit.value.name == artist.value.name) {
-    delete artistToEdit.value.name
-  }
-
-  if (artistToEdit.value.idYoutubeMusic == artist.value.idYoutubeMusic) {
-    delete artistToEdit.value.idYoutubeMusic
-  }
-
-  if (artistToEdit.value.type == artist.value.type) {
-    delete artistToEdit.value.type
-  }
-
-  if (artistToEdit.value.description == artist.value.description) {
-    delete artistToEdit.value.description
-  }
-
-  if (artistToEdit.value.image == artist.value.image) {
-    delete artistToEdit.value.image
-  }
-
-  if (artistToEdit.value.platforms.length == artist.value.platforms.length) {
-    let isSame = true
-    artistToEdit.value.platforms.forEach((platform) => {
-      if (!artist.value.platforms.includes(platform)) {
-        isSame = false
-      }
-    })
-    if (isSame) {
-      delete artistToEdit.value.platforms
-    }
-  }
-
-  if (artistToEdit.value.socials.length == artist.value.socials.length) {
-    let isSame = true
-    artistToEdit.value.socials.forEach((social) => {
-      if (!artist.value.socials.includes(social)) {
-        isSame = false
-      }
-    })
-    if (isSame) {
-      delete artistToEdit.value.socials
-    }
-  }
-
-  if (artistToEdit.value.styles.length == artist.value.styles.length) {
-    let isSame = true
-    artistToEdit.value.styles.forEach((style) => {
-      if (!artist.value.styles.includes(style)) {
-        isSame = false
-      }
-    })
-    if (isSame) {
-      delete artistToEdit.value.styles
-    }
-  }
-
-  if (artistToEdit.value.groups.length == artist.value.groups.length) {
-    let isSame = true
-    artistToEdit.value.groups.forEach((group) => {
-      if (!artist.value.groups.includes(group)) {
-        isSame = false
-      }
-    })
-    if (isSame) {
-      delete artistToEdit.value.groups
-    }
-  }
-
-  if (artistToEdit.value.members.length == artist.value.members.length) {
-    let isSame = true
-    artistToEdit.value.members.forEach((member) => {
-      if (!artist.value.members.includes(member)) {
-        isSame = false
-      }
-    })
-    if (isSame) {
-      delete artistToEdit.value.members
-    }
   }
 
   const today = new Date()
   today.setDate(today.getDate())
+  // set hour to 00:00:00
+  today.setHours(0, 0, 0, 0)
+  console.log('today', today)
   const todayTimestamp = Timestamp.fromDate(today)
-  artistToEdit.value.updatedAt = todayTimestamp
+  updatedFields['updatedAt'] = todayTimestamp
 
-  add('updateArtistPending', artistToEdit.value)
-    .then(() => {
-      console.log('Document successfully written!')
-      isUploadingEdit.value = false
-      toast.success('Artist Update', toastOption)
+  if (isAdminStore) {
+    // update artist without verifying
+    updatedFields['id'] = artist.value.id
+    updateArtist(updatedFields).then(async () => {
+      toast.success('Artist Updated', toastOption)
       const router = useRouter()
       router.push(`/artist/${route.params.id}`)
     })
-    .catch((error) => {
-      console.error('Error writing document: ', error)
-      toast.warning('Artist Update Failed', toastOption)
-    })
+  } else {
+    //addd pending artist
+    add('updateArtistPending', updatedFields)
+      .then(() => {
+        console.log('Document successfully written!')
+        isUploadingEdit.value = false
+        toast.success('Artist Update', toastOption)
+        const router = useRouter()
+        router.push(`/artist/${route.params.id}`)
+      })
+      .catch((error) => {
+        console.error('Error writing document: ', error)
+        toast.warning('Artist Update Failed', toastOption)
+      })
+  }
 }
 
 onMounted(async () => {
@@ -240,28 +143,14 @@ useHead({
       <!-- Picture -->
       <div class="flex flex-col gap-2">
         <CbLabel label="Image" />
-        <div class="space-y-5">
-          <NuxtImg
-            v-if="artistToEdit.image"
-            :src="artistToEdit.image"
-            :alt="artistToEdit.name"
-            format="webp"
-            loading="lazy"
-            class="w-full rounded object-cover md:w-auto md:max-w-lg xl:max-w-xl"
-          />
-          <div>
-            <input
-              ref="imageFile"
-              type="file"
-              accept="image/png, image/jpeg"
-              class="focus:shadow-te-primary relative m-0 block w-full min-w-0 flex-auto cursor-pointer border-b border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] text-base font-normal text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem] hover:bg-tertiary focus:text-neutral-700 focus:outline-none"
-              @change.prevent="uploadImageFile($event.target.files)"
-            />
-            <p id="file_input_help" class="text-sm text-gray-500 dark:text-gray-300">
-              PNG or JPG.
-            </p>
-          </div>
-        </div>
+        <NuxtImg
+          v-if="artistToEdit.image"
+          :src="artistToEdit.image"
+          :alt="artistToEdit.name"
+          format="webp"
+          loading="lazy"
+          class="w-full rounded object-cover md:w-auto md:max-w-lg xl:max-w-xl"
+        />
       </div>
       <!-- Name & Id -->
       <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -411,7 +300,7 @@ useHead({
     </div>
     <div class="border-t border-zinc-700 pt-3">
       <button
-        @click="updateArtist"
+        @click="sendUpdateArtist"
         :disabled="isUploadingEdit"
         class="w-full rounded bg-primary py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
       >

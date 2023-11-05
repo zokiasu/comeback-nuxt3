@@ -9,7 +9,10 @@ const { artists } = defineProps({
 
 <template>
   <CardDefault name="Artist added">
-    <div v-if="artists.length" class="grid grid-cols-2 gap-5 py-5 md:grid-cols-4 xl:grid-cols-8">
+    <div
+      v-if="artists.length"
+      class="grid grid-cols-2 gap-5 py-5 md:grid-cols-4 xl:grid-cols-8"
+    >
       <CardArtist
         v-for="artist in artists"
         :key="artist.id"

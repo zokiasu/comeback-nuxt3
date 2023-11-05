@@ -30,7 +30,7 @@ const deleteEdition = async (id, index) => {
 }
 
 const confirmEdition = async (id, artist, index) => {
-  updateArtist(id, artist).then(async () => {
+  updateArtist(artist).then(async () => {
     await deletebyDoc('updateArtistPending', id)
     artistUpdateList.value.splice(index, 1)
     toast.success('Artist Updated', {
