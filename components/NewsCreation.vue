@@ -57,7 +57,7 @@ const news = ref({
 })
 
 watch([dateToDateFormat], () => {
-  news.value.date = Timestamp.fromDate(new Date(dateToDateFormat.value))
+  news.value.date = Timestamp.fromDate(new Date(dateToDateFormat.value).setHours(0, 0, 0, 0))
   news.value.message = `Next comeback on ${new Date(
     dateToDateFormat.value,
   ).toLocaleDateString()}`
