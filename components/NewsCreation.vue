@@ -57,7 +57,7 @@ const news = ref({
 })
 
 watch([dateToDateFormat], () => {
-  news.value.date = Timestamp.fromDate(new Date(dateToDateFormat.value))
+  news.value.date = Timestamp.fromDate(new Date(dateToDateFormat.value).setHours(0, 0, 0, 0))
   news.value.message = `Next comeback on ${new Date(
     dateToDateFormat.value,
   ).toLocaleDateString()}`
@@ -74,7 +74,15 @@ const closeModal = () => {
   emit('closeModal')
 }
 
+const { getComebackExist } = useFirebaseFunction()
+
 const createNews = () => {
+  if (getComebackExist(news.value.date, news.value.artist.name)) {
+    toast.error('Comeback already exist', toastOption)
+    closeModal()
+    return
+  }
+
   sendNews.value = true
   add('news', news.value)
     .then(() => {

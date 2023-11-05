@@ -9,7 +9,15 @@ export interface Artist {
   image: string
   styles: Object[]
   socials: string[]
+  socialObjects: {
+    name: string
+    link: string
+  }[]
   platforms: string[]
-  members: Artist[]
-  groups: Artist[]
+  platformObjects: {
+    name: string
+    link: string
+  }[]
+  members: Partial<Artist>[]
+  groups: Partial<Artist>[]
 }

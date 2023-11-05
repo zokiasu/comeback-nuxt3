@@ -306,7 +306,7 @@ export const fetchArtistLimitedInfoById = async (idArtist: String) => {
   return docs[0]
 }
 
-export const updateArtist = async (id: string, document: any) => {
+export const updateArtist = async (document: any) => {
   const { $firestore } = useNuxtApp()
   const artistGroups = ref(null)
   const artistMembers = ref(null)

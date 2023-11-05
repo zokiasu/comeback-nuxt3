@@ -1,5 +1,8 @@
 <script setup>
-import { useToast } from 'vue-toastification'
+import { collection, onSnapshot } from 'firebase/firestore';
+import { useToast } from 'vue-toastification';
+
+const { $firestore: db } = useNuxtApp()
 const toast = useToast()
 const toastOption = {
   position: 'top-right',
@@ -18,6 +21,7 @@ const toastOption = {
   maxToasts: 5,
   newestOnTop: true,
 }
+
 const releaseFetch = ref(null)
 
 const search = ref('')
@@ -31,7 +35,16 @@ const page = ref(1)
 const needToBeVerifiedFilter = ref(false)
 
 onMounted(async () => {
-  releaseFetch.value = await queryByCollection('releases')
+  // releaseFetch.value = await queryByCollection('releases')
+  
+  onSnapshot(collection(db, 'releases'), (querySnapshot) => {
+    releaseFetch.value = querySnapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      }
+    })
+  })
 })
 
 const deleteRelease = async (id) => {

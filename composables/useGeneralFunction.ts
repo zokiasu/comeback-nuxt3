@@ -3,7 +3,6 @@ import type { Release } from '~/types/release'
 import type { Music } from '~/types/music'
 
 export function useGeneralFunction() {
-
   const formatArtistData = async (artistData: any) => {
     if (!artistData) return {} as Artist
 
