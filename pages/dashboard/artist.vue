@@ -1,4 +1,5 @@
 <script setup>
+import { collection, onSnapshot } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
 const toast = useToast()
 const toastOption = {
@@ -18,11 +19,17 @@ const toastOption = {
   maxToasts: 5,
   newestOnTop: true,
 }
+const { $firestore: db } = useNuxtApp()
 
 const artistFetch = ref(null)
 
 onMounted(async () => {
-  artistFetch.value = await queryByCollection('artists')
+  // artistFetch.value = await queryByCollection('artists')
+  onSnapshot(collection(db, 'artists'), (snapshot) => {
+    artistFetch.value = snapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() }
+    })
+  })
 })
 
 const deleteArtist = async (id) => {
@@ -68,24 +75,31 @@ const startAt = ref(0)
 const endAt = ref(9)
 const page = ref(1)
 
+const noDesc = ref(false)
+
 const filteredArtistList = computed(() => {
   if (page != 1) page.value = 1
   if (!artistFetch.value) return artistFetch.value
   if (!search.value) {
-    return artistFetch.value.sort((a, b) => {
-      if (sort.value === 'createdAt') {
-        if (!invertSort.value) return a.createdAt - b.createdAt
-        return b.createdAt - a.createdAt
-      }
-      if (sort.value === 'type') {
-        if (!invertSort.value) return a.type.localeCompare(b.type)
-        return b.type.localeCompare(a.type)
-      }
-      if (sort.value === 'name') {
-        if (!invertSort.value) return a.name.localeCompare(b.name)
-        return b.name.localeCompare(a.name)
-      }
-    })
+    return artistFetch.value
+      .sort((a, b) => {
+        if (sort.value === 'createdAt') {
+          if (!invertSort.value) return a.createdAt - b.createdAt
+          return b.createdAt - a.createdAt
+        }
+        if (sort.value === 'type') {
+          if (!invertSort.value) return a.type.localeCompare(b.type)
+          return b.type.localeCompare(a.type)
+        }
+        if (sort.value === 'name') {
+          if (!invertSort.value) return a.name.localeCompare(b.name)
+          return b.name.localeCompare(a.name)
+        }
+      })
+      .filter((artist) => {
+        if (noDesc.value) return artist.description === ''
+        return true
+      })
   } else {
     return artistFetch.value
       .sort((a, b) => {
@@ -104,6 +118,10 @@ const filteredArtistList = computed(() => {
       })
       .filter((artist) => {
         return artist.name.toLowerCase().includes(search.value.toLowerCase())
+      })
+      .filter((artist) => {
+        if (noDesc.value) return artist.description === ''
+        return true
       })
   }
 })
@@ -147,6 +165,13 @@ watch([page], () => {
         >
           <icon-sort v-if="!invertSort" class="h-6 w-6 text-tertiary" />
           <icon-sort-reverse v-else class="h-6 w-6 text-tertiary" />
+        </button>
+        <button
+          @click="noDesc = !noDesc"
+          :class="noDesc ? 'bg-zinc-500' : ''"
+          class="whitespace-nowrap rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+        >
+          No Desc
         </button>
       </div>
       <div class="flex w-full justify-between space-x-2 sm:justify-end">

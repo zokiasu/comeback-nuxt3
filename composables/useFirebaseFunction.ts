@@ -120,24 +120,29 @@ export function useFirebaseFunction() {
     const todayInTimestamp = Timestamp.fromDate(today)
     //fetch all comeback after today
     const comebackList = await getNextComebacks(todayInTimestamp)
-    
+
     //verify if comeback exist in list
-    const comebackExist = comebackList.find((comeback: any) => {
+    let comebackExist: boolean = false
+
+    comebackList.map((comeback: any) => {
       const cbDate = new Date(comeback.date.seconds * 1000)
       //format cbDate to test to DD-MM-YYYY
       cbDate.setHours(0, 0, 0, 0)
       const dateToTest = new Date(date.seconds * 1000)
       dateToTest.setHours(0, 0, 0, 0)
-      
+
       if (
         comeback.artist.name.toLowerCase() === artistName.toLowerCase() &&
         _.isEqual(cbDate, dateToTest)
-      )
-        return true
+      ) {
+        comebackExist = true
+      }
     })
     
     //if comeback exist return true
-    if (comebackExist) return true
+    if (comebackExist) {
+      return true
+    }
     return false
   }
 
