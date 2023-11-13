@@ -100,7 +100,7 @@ useHead({
 </script>
 
 <template>
-  <div class="2xl:container 2xl:mx-auto">
+  <div>
     <!-- Home Header -->
     <HomeSlider :news-today="comebacksToday" />
     <!-- Home Body -->
