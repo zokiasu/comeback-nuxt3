@@ -46,7 +46,7 @@ useHead({
 <template>
   <div>
     <section
-      class="background-top relative h-[20vh] overflow-hidden bg-cover bg-no-repeat md:h-[30vh] lg:h-[40vh] xl:h-[50vh] 2xl:h-[70vh]"
+      class="background-top relative overflow-hidden bg-cover bg-no-repeat h-[30vh] lg:h-[40vh] xl:h-[50vh] 2xl:h-[70vh]"
     >
       <NuxtImg
         v-if="imageBackground"
@@ -58,7 +58,7 @@ useHead({
         class="absolute inset-0 h-full w-full object-cover"
       />
       <div
-        class="absolute inset-0 flex items-center p-5 transition-all duration-500 ease-in-out lg:p-10 xl:p-14 xl:px-32"
+        class="absolute inset-0 flex items-end p-5 transition-all duration-500 ease-in-out lg:p-10 xl:p-14 xl:px-32"
         :class="imageBackLoaded ? 'bg-secondary/60' : 'bg-quinary'"
       >
         <div class="space-y-5">
