@@ -187,7 +187,7 @@ const convertDuration = (duration) => {
       class="hidden aspect-video w-1/4 min-w-[20rem] overflow-hidden rounded-lg px-2 lg:absolute lg:-top-72 lg:right-0 lg:z-50 lg:block lg:h-72"
     ></div>
     <div class="relative flex w-full items-center justify-between bg-secondary px-5 py-3">
-      <div class="flex items-center space-x-2">
+      <div class="flex w-full items-center space-x-2 sm:w-fit">
         <button class="hover:text-primary" @click="seek(-10)">
           <IconBackward10 class="h-7 w-7" />
         </button>
@@ -206,14 +206,14 @@ const convertDuration = (duration) => {
           <p>{{ convertDuration(duration) }}</p>
         </div>
       </div>
-      <div v-if="!errorDetected">
+      <div v-if="!errorDetected" class="w-full sm:w-fit">
         <p class="font-semibold">{{ authorNamePlaying }}</p>
         <p class="text-xs">{{ musicNamePlaying }}</p>
       </div>
-      <div v-else>
+      <div v-else class="w-full sm:w-fit">
         <p class="font-bold text-primary">Video is restricted or unavailable.</p>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="hidden items-center gap-2 sm:flex">
         <button @click="muteVolume">
           <IconVolumeOn v-if="volumeOn" class="h-7 w-7" />
           <IconVolumeOff v-else class="h-7 w-7" />
