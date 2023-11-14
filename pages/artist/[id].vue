@@ -46,7 +46,7 @@ useHead({
 <template>
   <div>
     <section
-      class="background-top relative overflow-hidden bg-cover bg-no-repeat h-[30vh] lg:h-[40vh] xl:h-[50vh] 2xl:h-[70vh]"
+      class="background-top relative h-[30vh] overflow-hidden bg-cover bg-no-repeat lg:h-[40vh] xl:h-[50vh] 2xl:h-[70vh]"
     >
       <NuxtImg
         v-if="imageBackground"
@@ -61,8 +61,11 @@ useHead({
         class="absolute inset-0 flex items-end p-5 transition-all duration-500 ease-in-out lg:p-10 xl:p-14 xl:px-32"
         :class="imageBackLoaded ? 'bg-secondary/60' : 'bg-quinary'"
       >
-        <div class="space-y-5">
-          <h1 v-if="artist.name" class="text-3xl py-3 font-semibold md:text-6xl lg:text-7xl">
+        <div class="space-y-5 lg:container lg:mx-auto lg:px-5">
+          <h1
+            v-if="artist.name"
+            class="py-3 text-3xl font-semibold md:text-6xl lg:text-7xl"
+          >
             {{ artist.name }}
           </h1>
           <SkeletonDefault v-if="isFetchingArtist" class="h-14 w-80 rounded" />
