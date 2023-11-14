@@ -65,7 +65,7 @@ const {
 
 const emit = defineEmits(['deleteRelease'])
 const toast = useToast()
-const { updateReleaseNeedToBeVerified } = useFirebaseFunction()
+const { updateRelease } = useFirebaseFunction()
 const toastOption = {
   position: 'top-right',
   timeout: 5000,
@@ -95,7 +95,9 @@ const releaseDate = computed(() => {
   let dateComputed = new Date()
   if (date.value) dateComputed = new Date(date.value.seconds * 1000)
   // return dateComputed format to DD-MM-YYYY
-  return `${dateComputed.getDate()}-${dateComputed.getMonth() + 1}-${dateComputed.getFullYear()}`
+  return `${dateComputed.getDate()}-${
+    dateComputed.getMonth() + 1
+  }-${dateComputed.getFullYear()}`
 })
 
 const dateToTestYear = date.value ? new Date(date.value.seconds * 1000) : new Date()
@@ -133,7 +135,7 @@ const validVerifiedRelease = () => {
 
   dataToChange['needToBeVerified'] = false
 
-  updateReleaseNeedToBeVerified(id, dataToChange).then(() => {
+  updateRelease(id, dataToChange).then(() => {
     showModal.value = false
     toast.success('Release Updated', toastOption)
   })

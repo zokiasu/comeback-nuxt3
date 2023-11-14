@@ -1,21 +1,51 @@
 <script setup lang="ts">
+import * as Mdl from '@kouts/vue-modal'
+
+const { Modal } = Mdl
+const showModal = ref(false)
+const sendNewStreamingPlatform = ref(false)
+const newStreamingPlatform = ref({
+  name: '',
+  link: '',
+})
+
 import { type Release } from '@/types/release'
 import { type Artist } from '@/types/artist'
+import { useUserStore } from '@/stores/user'
+const { isAdminStore } = useUserStore()
 
 const title = ref('Release Page')
 const description = ref('Release')
-const { getReleaseByArtistId } = useFirebaseFunction()
+const { getReleaseByArtistId, updateRelease } = useFirebaseFunction()
 
 const release = ref<Release>({} as Release)
 const artistRelease = ref<Release[]>([] as Release[])
 const artist = ref<Artist>({} as Artist)
 const imageLoaded = ref(false)
 
+const createNewPlatformStreaming = async () => {
+  sendNewStreamingPlatform.value = true
+  const tmp = [...release.value.platformList]
+  tmp.push(newStreamingPlatform.value)
+  await updateRelease(release.value.id, {
+    platformList: tmp,
+  })
+  sendNewStreamingPlatform.value = false
+  showModal.value = false
+  newStreamingPlatform.value = {
+    name: '',
+    link: '',
+  }
+}
+
 onMounted(async () => {
   const route = useRoute()
   release.value = (await fetchReleaseById(route.params.id as string)) as Release
   artist.value = (await fetchArtistLimitedInfoById(release.value.artistsId)) as Artist
-  artistRelease.value = (await getReleaseByArtistId(release.value.artistsId)).sort((a,b) => b.date - a.date).filter((rel) => rel.id !== release.value.id).slice(0,8) as Release[]
+  artistRelease.value = (await getReleaseByArtistId(release.value.artistsId))
+    .sort((a, b) => b.date - a.date)
+    .filter((rel) => rel.id !== release.value.id)
+    .slice(0, 8) as Release[]
   console.log('artistRelease', artistRelease.value)
   console.log('release', release.value)
   console.log('artist', artist.value)
@@ -117,15 +147,6 @@ useHead({
               <SkeletonDefault class="h-3 w-60 rounded-full" />
               <SkeletonDefault class="h-3 w-60 rounded-full" />
             </div>
-            <!-- Buttons -->
-            <!-- <div class="flex flex-wrap gap-2 text-xs">
-              <NuxtLink
-                :to="`/release/edit/` + release.id"
-                class="w-20 bg-quaternary py-1 text-center hover:bg-quinary"
-              >
-                <p>Edit</p>
-              </NuxtLink>
-            </div> -->
           </div>
         </div>
       </div>
@@ -149,6 +170,14 @@ useHead({
             :name="social.name"
             :link="social.link"
           />
+          <button
+            v-if="isAdminStore"
+            @click="showModal = true"
+            class="flex items-center gap-2 rounded bg-quaternary px-3.5 py-2.5 text-sm hover:bg-quinary"
+          >
+            <IconPlus class="h-5 w-5" />
+            <p>Add Streaming Platform</p>
+          </button>
         </div>
       </section>
       <!-- Musics -->
@@ -171,7 +200,7 @@ useHead({
       </section>
       <!-- Release -->
       <section v-if="artistRelease.length" class="space-y-2">
-        <p class="font-black">Other releases of {{ release.artistsName }}</p>
+        <p class="font-black">Other releases by {{ release.artistsName }}</p>
         <section
           class="remove-scrollbar flex gap-5 overflow-hidden overflow-x-scroll scroll-smooth px-5 md:px-0 lg:justify-between lg:gap-2"
         >
@@ -191,5 +220,29 @@ useHead({
         </section>
       </section>
     </section>
+    <Modal
+      v-model="showModal"
+      title="Add a Streaming Platforms"
+      wrapper-class="animate__animated modal-wrapper"
+      :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
+      :in-class="`animate__fadeInDown`"
+      :out-class="`animate__bounceOut`"
+      bg-class="animate__animated"
+      :bg-in-class="`animate__fadeInUp`"
+      :bg-out-class="`animate__fadeOutDown`"
+    >
+      <div class="space-y-3">
+        <CbInput v-model="newStreamingPlatform.name" label="Name" />
+        <CbInput v-model="newStreamingPlatform.link" label="Link" />
+    <button
+      @click="createNewPlatformStreaming"
+      :disabled="sendNewStreamingPlatform"
+      class="w-full rounded bg-primary py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+    >
+      <p v-if="sendNewStreamingPlatform">Sending...</p>
+      <p v-else>Send News</p>
+    </button>
+      </div>
+    </Modal>
   </div>
 </template>
