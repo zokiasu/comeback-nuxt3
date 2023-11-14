@@ -10,13 +10,17 @@ const artist = ref<Artist>({} as Artist)
 const imageBackground = ref('')
 const editLink = ref('/artist/edit/' + route.params.id)
 const imageBackLoaded = ref(false)
-const imageLoaded = ref(false)
+const isFetchingArtist = ref(true)
 
 onMounted(async () => {
-  artist.value = (await fetchArtistFullInfoById(route.params.id as any)) as Artist
-  imageBackground.value = artist.value.image
-  title.value = artist.value.name
-  description.value = artist.value.description
+  try {
+    artist.value = (await fetchArtistFullInfoById(route.params.id as any)) as Artist
+    imageBackground.value = artist.value.image
+    title.value = artist.value.name
+    description.value = artist.value.description
+  } finally {
+    isFetchingArtist.value = false
+  }
 })
 
 // computed members
@@ -57,76 +61,61 @@ useHead({
         class="absolute inset-0 flex items-center p-5 transition-all duration-500 ease-in-out lg:p-10 xl:p-14 xl:px-32"
         :class="imageBackLoaded ? 'bg-secondary/60' : 'bg-quinary'"
       >
-        <div class="flex items-center space-x-5">
-          <div v-if="artist.name" class="relative hidden overflow-hidden xl:block">
-            <div
-              class="absolute inset-0 z-10 aspect-video h-80 rounded-md bg-red-500 transition-all duration-500 ease-in-out"
-              :class="imageLoaded ? 'opacity-0' : 'opacity-100'"
-            ></div>
-            <NuxtImg
-              :src="imageBackground"
-              :alt="artist.name"
-              format="webp"
-              loading="lazy"
-              @load="imageLoaded = true"
-              class="aspect-video h-80 rounded-md object-cover drop-shadow-2xl transition-all duration-150 hover:scale-105"
+        <div class="space-y-5">
+          <h1 v-if="artist.name" class="text-3xl py-3 font-semibold md:text-6xl lg:text-7xl">
+            {{ artist.name }}
+          </h1>
+          <SkeletonDefault v-if="isFetchingArtist" class="h-14 w-80 rounded" />
+          <div v-if="artist.platformList" class="flex flex-wrap gap-3 md:gap-3">
+            <LazyComebackExternalLink
+              v-for="platform in artist.platformList"
+              :key="platform.link"
+              :name="platform.name"
+              :link="platform.link"
             />
           </div>
-          <SkeletonDefault v-else class="hidden aspect-video h-80 rounded-md xl:block" />
-          <div class="space-y-2">
-            <h1 v-if="artist.name" class="text-3xl font-semibold md:text-6xl lg:text-7xl">
-              {{ artist.name }}
-            </h1>
-            <SkeletonDefault v-else class="h-14 w-80 rounded" />
-            <div v-if="artist.platforms" class="flex flex-wrap gap-3 md:gap-3">
-              <LazyCbExternalLink
-                v-for="link in artist.platforms"
-                :key="link"
-                :href="link"
-              />
-            </div>
-            <div v-else class="flex gap-2">
-              <SkeletonDefault
-                v-for="i in 3"
-                :key="`skeleton_platforms_` + i"
-                class="h-6 w-20 rounded"
-              />
-            </div>
-            <div v-if="artist.socials" class="flex flex-wrap gap-3 md:gap-3">
-              <LazyCbExternalLink
-                v-for="link in artist.socials"
-                :key="link"
-                :href="link"
-              />
-            </div>
-            <div v-else class="flex gap-2">
-              <SkeletonDefault
-                v-for="i in 3"
-                :key="`skeleton_socials_` + i"
-                class="h-6 w-20 rounded"
-              />
-            </div>
-            <div v-if="isAdminStore">
-              <NuxtLink
-                :to="editLink"
-                class="bg-secondary px-2 py-1 text-xs font-semibold uppercase"
-              >
-                Edit Artist
-              </NuxtLink>
-            </div>
+          <div v-if="isFetchingArtist" class="flex gap-2">
+            <SkeletonDefault
+              v-for="i in 3"
+              :key="`skeleton_platforms_` + i"
+              class="h-6 w-20 rounded"
+            />
+          </div>
+          <div v-if="artist.socialList?.length" class="flex flex-wrap gap-3 md:gap-3">
+            <LazyComebackExternalLink
+              v-for="social in artist.socialList"
+              :key="social.link"
+              :name="social.name"
+              :link="social.link"
+            />
+          </div>
+          <div v-if="isFetchingArtist" class="flex gap-2">
+            <SkeletonDefault
+              v-for="i in 3"
+              :key="`skeleton_socials_` + i"
+              class="h-6 w-20 rounded"
+            />
+          </div>
+          <div v-if="isAdminStore">
+            <NuxtLink
+              :to="editLink"
+              class="bg-secondary px-2 py-1 text-xs font-semibold uppercase"
+            >
+              Edit Artist
+            </NuxtLink>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="container mx-auto space-y-8 p-5">
+    <section class="container mx-auto space-y-8 p-5 py-8 lg:space-y-14 lg:py-14">
       <div v-if="!artist.name" class="space-y-2">
         <SkeletonDefault class="h-5 w-3/4 rounded" />
         <SkeletonDefault class="h-5 w-2/4 rounded" />
         <SkeletonDefault class="h-5 w-2/6 rounded" />
         <SkeletonDefault class="h-5 w-2/5 rounded" />
       </div>
-      <p v-if="artist.description" class="max-w-4xl whitespace-pre-line leading-8">
+      <p v-if="artist.description" class="max-w-6xl whitespace-pre-line leading-8">
         {{ artist.description }}
       </p>
       <div v-if="members?.length">

@@ -10,6 +10,10 @@ export interface Release {
   year: Number
   needToBeVerified: boolean
   platforms: string[]
+  platformList: {
+    name: string
+    link: string
+  }[]
   date: Timestamp
   image: string
   artistsId: string

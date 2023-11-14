@@ -110,6 +110,18 @@ export function useFirebaseFunction() {
     await updateDoc(docRef, data)
   }
 
+  // get release by artist id
+  const getReleaseByArtistId = async (artistId: string) => {
+    const colRef = query(
+      collection(database as any, 'releases'),
+      where('artistsId', '==', artistId),
+    )
+
+    const snapshot = await getDocs(colRef)
+
+    return snapshotResultToArray(snapshot)
+  }
+
   /** Comeback **/
   const getComebackExist = async (
     date: Timestamp,
@@ -152,5 +164,6 @@ export function useFirebaseFunction() {
     getRandomMusic,
     updateReleaseNeedToBeVerified,
     getComebackExist,
+    getReleaseByArtistId,
   }
 }
