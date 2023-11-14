@@ -31,7 +31,7 @@ const createPlayer = () => {
       playsinline: 1,
       rel: 0,
       showinfo: 0,
-      host: 'https://www.youtube.com' || 'https://localhost:3000',
+      host: 'https://come-back.netlify.app/' || 'https://localhost:3000',
     },
     events: {
       onReady: onPlayerReady,
@@ -228,12 +228,13 @@ const convertDuration = (duration) => {
         />
       </div>
       <input
+        id="progressTime"
         type="range"
         min="0"
         :max="duration"
         v-model="currentTime"
         @input="seekToTime"
-        class="absolute -top-1 left-0 h-1 w-full cursor-pointer overflow-hidden bg-primary"
+        class="absolute -top-1 left-0 h-1 w-full cursor-pointer overflow-hidden"
       />
       <button
         class="absolute -top-6 left-2 rounded-t-lg bg-primary px-3 py-0.5 text-xs font-semibold uppercase"
