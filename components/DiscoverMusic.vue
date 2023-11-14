@@ -20,14 +20,14 @@
           />
         </div>
         <div
-          class="absolute inset-0 flex flex-col items-center justify-evenly gap-8 bg-quinary/50 py-10"
+          class="absolute inset-0 flex flex-col items-center justify-evenly gap-8 bg-quinary/50 py-5"
         >
           <p class="text-3xl font-semibold">Discover Music</p>
           <IconPlay
             class="h-14 w-14 rounded-full border border-tertiary group-hover:bg-tertiary group-hover:text-quaternary"
           />
           <div class="space-y-3 text-center">
-            <p class="text-2xl font-semibold">{{ music.name }}</p>
+            <p class="text-xl font-semibold">{{ music.name }}</p>
             <p>{{ music.album.name }}</p>
             <p>{{ music.artists[0].name }}</p>
           </div>
@@ -39,11 +39,11 @@
 </template>
 
 <script lang="ts" setup>
-const { music } = defineProps({
-  music: {
-    type: Object,
-    required: true,
-  },
+const { getRandomMusic } = useFirebaseFunction()
+const music = ref({} as any)
+
+onMounted(async () => {
+  music.value = await getRandomMusic()
 })
 
 const idYoutubeVideo = useIdYoutubeVideo()

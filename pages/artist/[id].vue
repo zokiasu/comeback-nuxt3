@@ -126,7 +126,7 @@ useHead({
         <SkeletonDefault class="h-5 w-2/6 rounded" />
         <SkeletonDefault class="h-5 w-2/5 rounded" />
       </div>
-      <p v-if="artist.description" class="whitespace-pre-line">
+      <p v-if="artist.description" class="max-w-4xl whitespace-pre-line leading-8">
         {{ artist.description }}
       </p>
       <div v-if="members?.length">

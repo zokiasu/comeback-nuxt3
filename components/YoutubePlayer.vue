@@ -11,7 +11,7 @@ const duration = ref(0)
 const playerContainer = ref(null)
 const player = ref(null)
 const volumeOn = ref(true)
-const volume = ref(3)
+const volume = ref(20)
 
 onMounted(() => {
   if (document.readyState === 'complete') {

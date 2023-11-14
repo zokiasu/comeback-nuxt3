@@ -116,17 +116,15 @@ export function useFirebaseFunction() {
     artistName: string,
   ): Promise<boolean> => {
     const today = new Date()
-    //convert today to timestamp
     const todayInTimestamp = Timestamp.fromDate(today)
-    //fetch all comeback after today
+
     const comebackList = await getNextComebacks(todayInTimestamp)
 
-    //verify if comeback exist in list
     let comebackExist: boolean = false
 
     comebackList.map((comeback: any) => {
       const cbDate = new Date(comeback.date.seconds * 1000)
-      //format cbDate to test to DD-MM-YYYY
+
       cbDate.setHours(0, 0, 0, 0)
       const dateToTest = new Date(date.seconds * 1000)
       dateToTest.setHours(0, 0, 0, 0)
@@ -138,7 +136,7 @@ export function useFirebaseFunction() {
         comebackExist = true
       }
     })
-    
+
     //if comeback exist return true
     if (comebackExist) {
       return true
