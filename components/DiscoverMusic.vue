@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="music.name">
+    <div v-if="music">
       <button
         @click="playVideo(music.videoId)"
         class="group relative aspect-square max-h-96 w-full overflow-hidden rounded-lg bg-quinary drop-shadow-lg"
@@ -27,9 +27,11 @@
             class="h-14 w-14 rounded-full border border-tertiary group-hover:bg-tertiary group-hover:text-quaternary"
           />
           <div class="space-y-3 text-center">
-            <p class="text-xl font-semibold">{{ music.name }}</p>
-            <p>{{ music.album.name }}</p>
-            <p>{{ music.artists[0].name }}</p>
+            <p v-if="music.name" class="text-xl font-semibold">{{ music.name }}</p>
+            <p v-if="music.album && music.album.name">{{ music.album.name }}</p>
+            <p v-if="music.artists && music.artists.length > 0">
+              {{ music.artists[0].name }}
+            </p>
           </div>
         </div>
       </button>
@@ -48,11 +50,15 @@ onMounted(async () => {
 
 const idYoutubeVideo = useIdYoutubeVideo()
 const isPlayingVideo = useIsPlayingVideo()
+const musicNamePlaying = useMusicNamePlaying()
+const authorNamePlaying = useAuthorNamePlaying()
 const imageLoaded = ref(false)
 
 const playVideo = (videoId: any) => {
   console.log('playVideo', videoId)
   idYoutubeVideo.value = videoId
   isPlayingVideo.value = true
+  musicNamePlaying.value = music.value.name
+  authorNamePlaying.value = music.value.artists[0].name
 }
 </script>

@@ -16,9 +16,11 @@ const {
   },
   artistName: {
     type: String,
+    required: true,
   },
   artistId: {
     type: String,
+    required: true,
   },
   albumId: {
     type: String,
@@ -31,6 +33,7 @@ const {
   },
   artistImage: {
     type: String,
+    required: true,
   },
   musicImage: {
     type: String,
@@ -43,10 +46,14 @@ const {
 })
 const idYoutubeVideo = useIdYoutubeVideo()
 const isPlayingVideo = useIsPlayingVideo()
+const musicNamePlaying = useMusicNamePlaying()
+const authorNamePlaying = useAuthorNamePlaying()
 
 const playVideo = (videoId: any) => {
   idYoutubeVideo.value = videoId
   isPlayingVideo.value = true
+  musicNamePlaying.value = musicName
+  authorNamePlaying.value = artistName || ''
 }
 
 const convertDuration = (duration: any) => {
