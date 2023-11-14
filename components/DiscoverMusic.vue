@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="music.name">
+    <div v-if="music">
       <button
         @click="playVideo(music.videoId)"
         class="group relative aspect-square max-h-96 w-full overflow-hidden rounded-lg bg-quinary drop-shadow-lg"
@@ -20,16 +20,18 @@
           />
         </div>
         <div
-          class="absolute inset-0 flex flex-col items-center justify-evenly gap-8 bg-quinary/50 py-10"
+          class="absolute inset-0 flex flex-col items-center justify-evenly gap-8 bg-quinary/50 py-5"
         >
           <p class="text-3xl font-semibold">Discover Music</p>
           <IconPlay
             class="h-14 w-14 rounded-full border border-tertiary group-hover:bg-tertiary group-hover:text-quaternary"
           />
           <div class="space-y-3 text-center">
-            <p class="text-2xl font-semibold">{{ music.name }}</p>
-            <p>{{ music.album.name }}</p>
-            <p>{{ music.artists[0].name }}</p>
+            <p v-if="music.name" class="text-xl font-semibold">{{ music.name }}</p>
+            <p v-if="music.album && music.album.name">{{ music.album.name }}</p>
+            <p v-if="music.artists && music.artists.length > 0">
+              {{ music.artists[0].name }}
+            </p>
           </div>
         </div>
       </button>
@@ -39,20 +41,24 @@
 </template>
 
 <script lang="ts" setup>
-const { music } = defineProps({
-  music: {
-    type: Object,
-    required: true,
-  },
+const { getRandomMusic } = useFirebaseFunction()
+const music = ref({} as any)
+
+onMounted(async () => {
+  music.value = await getRandomMusic()
 })
 
 const idYoutubeVideo = useIdYoutubeVideo()
 const isPlayingVideo = useIsPlayingVideo()
+const musicNamePlaying = useMusicNamePlaying()
+const authorNamePlaying = useAuthorNamePlaying()
 const imageLoaded = ref(false)
 
 const playVideo = (videoId: any) => {
   console.log('playVideo', videoId)
   idYoutubeVideo.value = videoId
   isPlayingVideo.value = true
+  musicNamePlaying.value = music.value.name
+  authorNamePlaying.value = music.value.artists[0].name
 }
 </script>

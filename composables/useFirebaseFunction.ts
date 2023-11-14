@@ -104,10 +104,22 @@ export function useFirebaseFunction() {
   }
 
   /** Release **/
-  const updateReleaseNeedToBeVerified = async (id: string, data: any) => {
+  const updateRelease = async (id: string, data: any) => {
     const docRef = doc(database as any, 'releases', id)
 
     await updateDoc(docRef, data)
+  }
+
+  // get release by artist id
+  const getReleaseByArtistId = async (artistId: string) => {
+    const colRef = query(
+      collection(database as any, 'releases'),
+      where('artistsId', '==', artistId),
+    )
+
+    const snapshot = await getDocs(colRef)
+
+    return snapshotResultToArray(snapshot)
   }
 
   /** Comeback **/
@@ -116,17 +128,15 @@ export function useFirebaseFunction() {
     artistName: string,
   ): Promise<boolean> => {
     const today = new Date()
-    //convert today to timestamp
     const todayInTimestamp = Timestamp.fromDate(today)
-    //fetch all comeback after today
+
     const comebackList = await getNextComebacks(todayInTimestamp)
 
-    //verify if comeback exist in list
     let comebackExist: boolean = false
 
     comebackList.map((comeback: any) => {
       const cbDate = new Date(comeback.date.seconds * 1000)
-      //format cbDate to test to DD-MM-YYYY
+
       cbDate.setHours(0, 0, 0, 0)
       const dateToTest = new Date(date.seconds * 1000)
       dateToTest.setHours(0, 0, 0, 0)
@@ -138,7 +148,7 @@ export function useFirebaseFunction() {
         comebackExist = true
       }
     })
-    
+
     //if comeback exist return true
     if (comebackExist) {
       return true
@@ -152,7 +162,8 @@ export function useFirebaseFunction() {
     getLastReleases,
     getLastArtistsAdded,
     getRandomMusic,
-    updateReleaseNeedToBeVerified,
+    updateRelease,
     getComebackExist,
+    getReleaseByArtistId,
   }
 }

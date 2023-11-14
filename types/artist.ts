@@ -9,12 +9,12 @@ export interface Artist {
   image: string
   styles: Object[]
   socials: string[]
-  socialObjects: {
+  socialList: {
     name: string
     link: string
   }[]
   platforms: string[]
-  platformObjects: {
+  platformList: {
     name: string
     link: string
   }[]

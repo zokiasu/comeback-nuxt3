@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.remove-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .hover-underline-animation {
   display: inline-block;
   position: relative;

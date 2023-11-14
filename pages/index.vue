@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { Timestamp } from 'firebase/firestore'
 
-const { getNextComebacks, getLastReleases, getLastArtistsAdded, getRandomMusic } =
-  useFirebaseFunction()
+const { getNextComebacks } = useFirebaseFunction()
 
 const comebacks = ref([] as any[])
 const artists = ref([] as any[])
 const releases = ref([] as any[])
-const music = ref({} as any)
 
 const comebacksToday = computed(() => {
   return comebacks.value.filter((comebacks: any) => {
@@ -25,8 +23,6 @@ onMounted(async () => {
   const comebacksDate = new Date()
   comebacksDate.setDate(comebacksDate.getDate() - 1)
   comebacks.value = await getNextComebacks(Timestamp.fromDate(comebacksDate))
-
-  music.value = await getRandomMusic()
 
   const releaseDate = new Date()
   releaseDate.setDate(releaseDate.getDate() - 8)
@@ -100,7 +96,7 @@ useHead({
 </script>
 
 <template>
-  <div class="2xl:container 2xl:mx-auto">
+  <div>
     <!-- Home Header -->
     <HomeSlider :news-today="comebacksToday" />
     <!-- Home Body -->
@@ -111,7 +107,12 @@ useHead({
         {{ music }}
       </pre> -->
       <!-- Discover Music -->
-      <DiscoverMusic :music="music" />
+      <div class="grid grid-cols-2 gap-5 xl:grid-cols-4">
+        <DiscoverMusic />
+        <DiscoverMusic />
+        <DiscoverMusic />
+        <DiscoverMusic />
+      </div>
       <!-- Recent Release -->
       <RecentReleases :releases="releases" />
       <!-- Last Artist Added -->

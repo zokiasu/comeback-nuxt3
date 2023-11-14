@@ -1,24 +1,54 @@
 <script setup lang="ts">
-import { type Release } from '@/types/release'
+import * as Mdl from '@kouts/vue-modal'
 
-const idYoutubeVideo = useIdYoutubeVideo()
-const isPlayingVideo = useIsPlayingVideo()
+const { Modal } = Mdl
+const showModal = ref(false)
+const sendNewStreamingPlatform = ref(false)
+const newStreamingPlatform = ref({
+  name: '',
+  link: '',
+})
+
+import { type Release } from '@/types/release'
+import { type Artist } from '@/types/artist'
+import { useUserStore } from '@/stores/user'
+const { isAdminStore } = useUserStore()
 
 const title = ref('Release Page')
 const description = ref('Release')
+const { getReleaseByArtistId, updateRelease } = useFirebaseFunction()
 
 const release = ref<Release>({} as Release)
+const artistRelease = ref<Release[]>([] as Release[])
+const artist = ref<Artist>({} as Artist)
 const imageLoaded = ref(false)
 
-const playVideo = (videoId: string) => {
-  idYoutubeVideo.value = videoId
-  isPlayingVideo.value = true
+const createNewPlatformStreaming = async () => {
+  sendNewStreamingPlatform.value = true
+  const tmp = [...release.value.platformList]
+  tmp.push(newStreamingPlatform.value)
+  await updateRelease(release.value.id, {
+    platformList: tmp,
+  })
+  sendNewStreamingPlatform.value = false
+  showModal.value = false
+  newStreamingPlatform.value = {
+    name: '',
+    link: '',
+  }
 }
 
 onMounted(async () => {
   const route = useRoute()
   release.value = (await fetchReleaseById(route.params.id as string)) as Release
-  console.log(release.value)
+  artist.value = (await fetchArtistLimitedInfoById(release.value.artistsId)) as Artist
+  artistRelease.value = (await getReleaseByArtistId(release.value.artistsId))
+    .sort((a, b) => b.date - a.date)
+    .filter((rel) => rel.id !== release.value.id)
+    .slice(0, 8) as Release[]
+  console.log('artistRelease', artistRelease.value)
+  console.log('release', release.value)
+  console.log('artist', artist.value)
   title.value = release.value.name + ' by ' + release.value.artistsName
   description.value = release.value.name + ' by ' + release.value.artistsName
 })
@@ -35,74 +65,184 @@ useHead({
 </script>
 
 <template>
-  <div
-    class="mx-auto w-full space-y-12 px-10 py-12 2xl:container xl:flex xl:min-h-[100vh-100px] xl:flex-col xl:items-center xl:justify-center"
-  >
-    <!-- Title & Link -->
-    <section id="title" class="mx-auto w-[16rem] space-y-2 sm:w-[30rem] xl:w-full">
-      <h1 v-if="release.name" class="text-2xl font-semibold xl:text-4xl">
-        {{ release.name }}
-      </h1>
-      <SkeletonDefault v-else class="h-8 w-3/4 rounded" />
-      <div v-if="release.name" class="flex gap-2">
-        <p>{{ release.type }}</p>
-        <p>-</p>
-        <NuxtLink :to="`/artist/${release.artistsId}`" class="hover-underline-animation">
-          {{ release.artistsName }}
-        </NuxtLink>
-      </div>
-      <SkeletonDefault v-else class="h-5 w-2/5 rounded" />
-    </section>
-    <div
-      class="mx-auto w-fit space-y-12 xl:flex xl:w-full xl:justify-between xl:gap-10 xl:space-y-0"
-    >
-      <!-- Image -->
-      <section id="image" class="xl:h-full xl:w-full">
-        <div v-if="release.image" class="relative">
-          <div
-            class="absolute inset-0 z-50 aspect-square w-[16rem] bg-quinary sm:w-[30rem] sm:rounded-md"
-            :class="imageLoaded ? 'opacity-0' : 'opacity-100'"
-          ></div>
-          <NuxtImg
-            format="webp"
-            loading="lazy"
-            :src="release.image"
-            :alt="release.name"
-            @load="imageLoaded = true"
-            class="aspect-square w-[16rem] object-cover shadow-2xl shadow-quinary sm:w-[30rem] sm:rounded-md"
-          />
-        </div>
-        <SkeletonDefault
-          v-else
-          class="aspect-square w-[16rem] rounded sm:w-[30rem] sm:rounded-md"
+  <div>
+    <!--  Header Release -->
+    <section class="relative h-fit">
+      <!-- Header Image -->
+      <div class="relative h-fit min-h-[20rem] lg:max-h-[30rem] lg:min-h-[30rem]">
+        <div
+          class="absolute inset-0 min-h-[20rem] w-full transition-all duration-700 ease-in-out lg:max-h-[30rem] lg:min-h-[30rem]"
+          :class="imageLoaded ? 'bg-black opacity-30' : ' bg-primary opacity-100'"
         />
+        <NuxtImg
+          v-if="release.image"
+          format="webp"
+          preload
+          :src="release.image"
+          :alt="release.name"
+          @load="imageLoaded = true"
+          class="max-h-[20rem] min-h-[20rem] w-full object-cover lg:max-h-[30rem] lg:min-h-[30rem]"
+        />
+      </div>
+      <!-- Header Data-->
+      <div
+        class="z-10 flex flex-col justify-end space-y-3 p-5 transition-all duration-300 ease-in-out md:absolute md:inset-0 md:min-h-full md:justify-center md:bg-secondary/50"
+      >
+        <div class="container mx-auto flex items-center gap-5 space-y-2.5 lg:items-end">
+          <NuxtImg
+            v-if="release.image"
+            format="webp"
+            preload
+            :alt="release.name"
+            :src="release.image"
+            class="hidden aspect-square max-w-[12rem] rounded bg-primary md:block lg:max-w-[20rem]"
+          />
+          <SkeletonDefault
+            v-else
+            class="hidden aspect-square min-w-[12rem] max-w-[12rem] rounded md:block lg:min-w-[20rem] lg:max-w-[20rem]"
+          />
+          <div class="mt-auto space-y-3">
+            <!-- Data Fetched -->
+            <div v-if="release.name" class="space-y-2">
+              <h1 class="text-2xl font-black lg:text-5xl 2xl:text-7xl">
+                {{ release.name }}
+              </h1>
+              <div class="flex items-center gap-2">
+                <NuxtLink
+                  :to="`/artist/${artist.id}`"
+                  class="flex items-center gap-2 rounded-full transition-all duration-300 ease-in-out hover:bg-secondary hover:px-3 hover:py-0.5"
+                >
+                  <NuxtImg
+                    v-if="artist.image"
+                    format="webp"
+                    preload
+                    :src="artist.image"
+                    :alt="artist.name"
+                    class="h-3 w-3 rounded-full"
+                  />
+                  <p class="text-sm font-semibold">
+                    {{ artist.name }}
+                  </p>
+                </NuxtLink>
+                <p>-</p>
+                <p>{{ release.type }}</p>
+                <p>-</p>
+                <p>{{ release.year }}</p>
+              </div>
+              <!-- <div class="space-y-2 text-xs">
+                <p>1, 054, 258, 031 streams on Youtube Music</p>
+                <p>1, 054, 258, 031 streams on Youtube Music</p>
+                <p>1, 054, 258, 031 streams on Youtube Music</p>
+              </div> -->
+            </div>
+            <!-- Skeleton -->
+            <div v-else class="space-y-2.5">
+              <SkeletonDefault class="h-5 w-40 rounded-full" />
+              <div class="flex gap-2">
+                <SkeletonDefault class="h-3 w-14 rounded" />
+                <SkeletonDefault class="h-3 w-14 rounded" />
+                <SkeletonDefault class="h-3 w-14 rounded" />
+              </div>
+              <SkeletonDefault class="h-3 w-60 rounded-full" />
+              <SkeletonDefault class="h-3 w-60 rounded-full" />
+              <SkeletonDefault class="h-3 w-60 rounded-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="container mx-auto space-y-12 p-5 py-5 lg:px-0">
+      <!-- Skeleton -->
+      <section v-if="!release.name" class="space-y-2">
+        <SkeletonDefault class="h-3 w-3/4 rounded-full" />
+        <SkeletonDefault class="h-3 w-full rounded-full" />
+        <SkeletonDefault class="h-3 w-full rounded-full" />
+        <SkeletonDefault class="h-3 w-3/4 rounded-full" />
+        <SkeletonDefault class="h-3 w-2/4 rounded-full" />
       </section>
-      <!-- Tracks List -->
-      <section id="tracks" class="w-[16rem] sm:w-[30rem] xl:h-full xl:w-full">
-        <div v-if="release.musics" class="space-y-5">
+      <!-- Platforms -->
+      <section v-if="release.platformList?.length" class="space-y-2">
+        <p class="font-black">Streaming Platforms</p>
+        <div class="flex gap-2">
+          <ComebackExternalLink
+            v-for="social in release.platformList"
+            :key="social.name"
+            :name="social.name"
+            :link="social.link"
+          />
           <button
-            v-for="music in release.musics"
-            :key="`music_` + music.id"
-            target="_blank"
-            @click="playVideo(music.videoId)"
-            class="group flex w-full items-center justify-between gap-5"
+            v-if="isAdminStore"
+            @click="showModal = true"
+            class="flex items-center gap-2 rounded bg-quaternary px-3.5 py-2.5 text-sm hover:bg-quinary"
           >
-            <h3 class="text-xl font-semibold">{{ music.name }}</h3>
-            <di
-              class="rounded px-2 text-xs font-semibold uppercase transition-all duration-300 ease-in-out group-hover:bg-tertiary group-hover:text-secondary"
-            >
-              <IconPlay class="h-6 w-6" />
-            </di>
+            <IconPlus class="h-5 w-5" />
+            <p>Add Streaming Platform</p>
           </button>
         </div>
-        <div v-else class="space-y-2">
-          <SkeletonDefault
-            v-for="i in 8"
-            :key="`tracks_` + i"
-            class="h-8 w-full rounded"
+      </section>
+      <!-- Musics -->
+      <section v-if="release.musics?.length" class="space-y-2">
+        <p class="font-black">Tracks</p>
+        <div class="space-y-2">
+          <MusicDisplay
+            v-for="song in release.musics"
+            :key="song.videoId"
+            :artistId="release.artistsId"
+            :artistName="release.artistsName"
+            :artistImage="artist.image"
+            :musicId="song.videoId"
+            :musicName="song.name"
+            :musicImage="song.thumbnails[2].url"
+            :duration="song.duration.toString()"
+            class="w-full bg-quinary"
           />
         </div>
       </section>
-    </div>
+      <!-- Release -->
+      <section v-if="artistRelease.length" class="space-y-2">
+        <p class="font-black">Other releases by {{ release.artistsName }}</p>
+        <section
+          class="remove-scrollbar flex gap-5 overflow-hidden overflow-x-scroll scroll-smooth px-5 md:px-0 lg:justify-between lg:gap-2"
+        >
+          <LazyCardRelease
+            v-for="artRelease in artistRelease"
+            :key="`artistRelease_` + artRelease.id"
+            :id="artRelease.id"
+            :image="artRelease.image"
+            :date="artRelease.date"
+            :name="artRelease.name"
+            :type="artRelease.type"
+            :artistsId="artRelease.artistsId"
+            :artistsName="artRelease.artistsName"
+            :displayDate="true"
+            :yearReleased="artRelease.year"
+          />
+        </section>
+      </section>
+    </section>
+    <Modal
+      v-model="showModal"
+      title="Add a Streaming Platforms"
+      wrapper-class="animate__animated modal-wrapper"
+      :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
+      :in-class="`animate__fadeInDown`"
+      :out-class="`animate__bounceOut`"
+      bg-class="animate__animated"
+      :bg-in-class="`animate__fadeInUp`"
+      :bg-out-class="`animate__fadeOutDown`"
+    >
+      <div class="space-y-3">
+        <CbInput v-model="newStreamingPlatform.name" label="Name" />
+        <CbInput v-model="newStreamingPlatform.link" label="Link" />
+    <button
+      @click="createNewPlatformStreaming"
+      :disabled="sendNewStreamingPlatform"
+      class="w-full rounded bg-primary py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+    >
+      <p v-if="sendNewStreamingPlatform">Sending...</p>
+      <p v-else>Send News</p>
+    </button>
+      </div>
+    </Modal>
   </div>
 </template>
