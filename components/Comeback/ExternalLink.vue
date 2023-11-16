@@ -6,7 +6,7 @@
     target="_blank"
     class="flex h-fit w-fit items-center gap-2 rounded bg-quaternary px-3.5 py-2.5 text-sm hover:bg-quinary"
   >
-    <NuxtImg :src="icon" :alt="name" class="h-5 w-5" />
+    <NuxtImg provider="netlify" :src="icon" :alt="name" class="h-5 w-5" />
     <p class="hidden text-xs font-semibold uppercase md:block">{{ name }}</p>
   </NuxtLink>
 </template>

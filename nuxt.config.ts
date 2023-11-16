@@ -38,13 +38,6 @@ export default defineNuxtConfig({
     autoImports: ['defineStore'],
   },
 
-  image: {
-    provider: 'netlify',
-    netlify: {
-      baseURl: process.env.IMAGES_URL,
-    },
-  },
-
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.css',
     configPath: 'tailwind.config.js',
