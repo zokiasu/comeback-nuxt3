@@ -38,10 +38,6 @@ export default defineNuxtConfig({
     autoImports: ['defineStore'],
   },
 
-  image: {
-    provider: 'static',
-  },
-
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.css',
     configPath: 'tailwind.config.js',
