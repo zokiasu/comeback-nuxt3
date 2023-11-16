@@ -13,10 +13,25 @@ const player = ref(null)
 const volumeOn = ref(true)
 const volume = ref(20)
 const errorDetected = ref(false)
+const isVideoDisplay = ref(false)
+
+
+const displayVideo = () => {
+  const iframe = document.getElementById('playerContainer')
+  if (iframe) {
+    if (isVideoDisplay.value) {
+      iframe.classList.remove('hidden')
+      isVideoDisplay.value = false
+    } else {
+      iframe.classList.add('hidden')
+      isVideoDisplay.value = true
+    }
+  }
+}
 
 // Création du lecteur YouTube
 const createPlayer = () => {
-  player.value = new window.YT.Player(playerContainer.value, {
+  player.value = new window.YT.Player('playerContainer', {
     videoId: idYoutubeVideo.value,
     height: '100%',
     width: '100%',
@@ -31,23 +46,21 @@ const createPlayer = () => {
       playsinline: 1,
       rel: 0,
       showinfo: 0,
-      host: 'https://come-back.netlify.app/' || 'https://localhost:3000',
+      host: 'https://www.youtube.com/' || 'https://localhost:3000',
     },
     events: {
       onReady: onPlayerReady,
       onStateChange: onPlayerStateChange,
-      onError: onPlayerError, // Ajoutez ceci
+      onError: onPlayerError,
     },
   })
 }
 
-// Gestion de l'état prêt du lecteur
 const onPlayerReady = async (event) => {
   duration.value = event.target.getDuration()
   setVolume(volume.value)
 }
 
-// Gestion du changement d'état du lecteur
 const onPlayerStateChange = (event) => {
   isPlaying.value = event.data === window.YT.PlayerState.PLAYING
   if (isPlaying.value) {
@@ -107,6 +120,7 @@ onMounted(() => {
   initYTPlayer()
   intervalId = setInterval(updateCurrentTime, 1000)
 })
+
 onBeforeUnmount(() => {
   if (intervalId) {
     clearInterval(intervalId)
@@ -183,8 +197,9 @@ const convertDuration = (duration) => {
     class="fixed bottom-0 z-50 flex w-full flex-col items-center justify-center space-y-3 sm:items-end sm:justify-end"
   >
     <div
+      id="playerContainer"
       ref="playerContainer"
-      class="hidden aspect-video w-1/4 min-w-[20rem] overflow-hidden rounded-lg px-2 lg:absolute lg:-top-72 lg:right-0 lg:z-50 lg:block lg:h-72"
+      class="hidden aspect-video w-1/4 min-w-[20rem] overflow-hidden rounded-lg px-2 lg:absolute lg:-top-72 lg:right-0 lg:z-50 lg:h-72"
     ></div>
     <div class="relative flex w-full items-center justify-between bg-secondary px-5 py-3">
       <div class="flex w-full items-center space-x-2 sm:w-fit">
@@ -214,6 +229,9 @@ const convertDuration = (duration) => {
         <p class="font-bold text-primary">Video is restricted or unavailable.</p>
       </div>
       <div class="hidden items-center gap-2 sm:flex">
+        <button @click="displayVideo" class="aspect-square rounded bg-red-500 p-1">
+          D
+        </button>
         <button @click="muteVolume">
           <IconVolumeOn v-if="volumeOn" class="h-7 w-7" />
           <IconVolumeOff v-else class="h-7 w-7" />
