@@ -46,7 +46,9 @@ const artistToEdit = ref({
   description: '',
   image: '',
   platforms: [],
+  platformList: [],
   socials: [],
+  socialList: [],
   styles: [],
   groups: [],
   members: [],
@@ -234,68 +236,88 @@ useHead({
           :preserve-search="false"
         />
       </div>
-      <!-- Platforms & Socials -->
-      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <!-- Platforms -->
-        <div class="flex flex-col gap-2">
-          <CbLabel label="Platforms" />
-          <div
-            v-for="(platform, index) in artistToEdit.platforms"
-            :key="platform"
-            class="flex w-full gap-1"
-          >
+      <!-- Platforms -->
+      <div class="w-full space-y-2">
+        <ComebackLabel label="Platforms" />
+        <div
+          v-for="(platform, index) in artistToEdit.platformList"
+          :key="platform"
+          class="flex w-full gap-1"
+        >
+          <div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
             <input
               type="text"
-              :value="platform"
-              @input="artistToEdit.platforms[index] = $event.target.value"
-              class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:bg-tertiary focus:p-1.5 focus:text-secondary focus:outline-none"
+              :value="platform.name"
+              placeholder="Platform's Name"
+              @input="artistToEdit.platformList[index].name = $event.target.value"
+              class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
             />
-            <button
-              class="rounded bg-red-900 p-1 text-xs"
-              @click="
-                artistToEdit.platforms.splice(artistToEdit.platforms.indexOf(platform), 1)
-              "
-            >
-              Delete
-            </button>
-          </div>
-          <button
-            class="rounded bg-primary py-1 text-sm font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
-            @click="artistToEdit.platforms.push('')"
-          >
-            Add Platforms
-          </button>
-        </div>
-        <!-- Socials -->
-        <div class="flex flex-col gap-2">
-          <CbLabel label="Socials" />
-          <div
-            v-for="(social, index) in artistToEdit.socials"
-            :key="social"
-            class="flex w-full gap-1"
-          >
             <input
               type="text"
-              :value="social"
-              @input="artistToEdit.socials[index] = $event.target.value"
-              class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:bg-tertiary focus:p-1.5 focus:text-secondary focus:outline-none"
+              :value="platform.link"
+              placeholder="Platform's Link"
+              @input="artistToEdit.platformList[index].link = $event.target.value"
+              class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
             />
-            <button
-              class="rounded bg-red-900 p-1 text-xs"
-              @click="
-                artistToEdit.socials.splice(artistToEdit.socials.indexOf(platform), 1)
-              "
-            >
-              Delete
-            </button>
           </div>
           <button
-            class="rounded bg-primary py-1 text-sm font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
-            @click="artistToEdit.socials.push('')"
+            class="rounded bg-primary p-5 text-xs hover:bg-red-900"
+            @click="
+              artistToEdit.platformList.splice(
+                artistToEdit.platformList.indexOf(platform),
+                1,
+              )
+            "
           >
-            Add Socials
+            Delete
           </button>
         </div>
+        <button
+          class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
+          @click="artistToEdit.platformList.push({ name: '', link: '' })"
+        >
+          Add Platforms
+        </button>
+      </div>
+      <!-- Socials -->
+      <div class="w-full space-y-2">
+        <ComebackLabel label="Socials" />
+        <div
+          v-for="(social, index) in artistToEdit.socialList"
+          :key="social"
+          class="flex w-full gap-2"
+        >
+          <div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
+            <input
+              type="text"
+              :value="social.name"
+              placeholder="Social's Name"
+              @input="artistToEdit.socialList[index].name = $event.target.value"
+              class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+            />
+            <input
+              type="text"
+              :value="social.link"
+              placeholder="Social's Link"
+              @input="artistToEdit.socialList[index].link = $event.target.value"
+              class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+            />
+          </div>
+          <button
+            class="rounded bg-primary p-5 text-xs hover:bg-red-900"
+            @click="
+              artistToEdit.socialList.splice(artistToEdit.socialList.indexOf(platform), 1)
+            "
+          >
+            Delete
+          </button>
+        </div>
+        <button
+          class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
+          @click="artistToEdit.socialList.push({ name: '', link: '' })"
+        >
+          Add Socials
+        </button>
       </div>
     </div>
     <div class="border-t border-zinc-700 pt-3">
