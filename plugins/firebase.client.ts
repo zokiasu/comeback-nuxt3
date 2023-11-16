@@ -1,6 +1,7 @@
 import { getAuth } from 'firebase/auth'
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
+import { getAnalytics } from 'firebase/analytics'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
@@ -15,6 +16,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     measurementId: config.public.FIREBASE_MEASUREMENT_ID,
   }
   const app = initializeApp(firebaseConfig)
+  const analytics = getAnalytics(app)
 
   const auth = getAuth(app)
   const firestore = getFirestore(app)
