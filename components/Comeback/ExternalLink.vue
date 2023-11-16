@@ -25,33 +25,33 @@ const { link, name } = defineProps({
 
 const icon = computed(() => {
   if (link.includes('youtube') && link.includes('music.')) {
-    return '/youtube_music.png'
+    return 'https://come-back.netlify.app/youtube_music.png'
   } else if (link.includes('youtube')) {
-    return '/youtube.png'
+    return 'https://come-back.netlify.app/youtube.png'
   } else if (link.includes('apple') && link.includes('music')) {
-    return '/apple_music.png'
+    return 'https://come-back.netlify.app/apple_music.png'
   } else if (link.includes('spotify')) {
-    return '/spotify.png'
+    return 'https://come-back.netlify.app/spotify.png'
   } else if (link.includes('tidal')) {
-    return '/tidal.png'
+    return 'https://come-back.netlify.app/tidal.png'
   } else if (link.includes('soundcloud')) {
-    return '/sound_cloud.png'
+    return 'https://come-back.netlify.app/sound_cloud.png'
   } else if (link.includes('facebook')) {
-    return '/facebook.png'
+    return 'https://come-back.netlify.app/facebook.png'
   } else if (link.includes('instagram')) {
-    return '/instagram.png'
+    return 'https://come-back.netlify.app/instagram.png'
   } else if (link.includes('twitter') || link.includes('x.com')) {
-    return '/x.png'
+    return 'https://come-back.netlify.app/x.png'
   } else if (link.includes('tiktok')) {
-    return '/tiktok.png'
+    return 'https://come-back.netlify.app/tiktok.png'
   } else if (link.includes('snapchat')) {
-    return '/snapchat.png'
+    return 'https://come-back.netlify.app/snapchat.png'
   } else if (link.includes('weibo')) {
-    return '/weibo.png'
+    return 'https://come-back.netlify.app/weibo.png'
   } else if (link.includes('deezer')) {
-    return '/deezer.png'
+    return 'https://come-back.netlify.app/deezer.png'
   } else {
-    return '/default.png'
+    return 'https://come-back.netlify.app/default.png'
   }
 })
 </script>
