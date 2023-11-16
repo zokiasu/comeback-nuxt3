@@ -229,9 +229,9 @@ const convertDuration = (duration) => {
         <p class="font-bold text-primary">Video is restricted or unavailable.</p>
       </div>
       <div class="hidden items-center gap-2 sm:flex">
-        <button @click="displayVideo" class="aspect-square rounded bg-red-500 p-1">
+        <!-- <button @click="displayVideo" class="aspect-square rounded bg-red-500 p-1">
           D
-        </button>
+        </button> -->
         <button @click="muteVolume">
           <IconVolumeOn v-if="volumeOn" class="h-7 w-7" />
           <IconVolumeOff v-else class="h-7 w-7" />
