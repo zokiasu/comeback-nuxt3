@@ -46,7 +46,7 @@ const createPlayer = () => {
       playsinline: 1,
       rel: 0,
       showinfo: 0,
-      host: 'https://www.youtube.com/' || 'https://localhost:3000',
+      host: 'https://come-back.netlify.app' || 'https://localhost:3000',
     },
     events: {
       onReady: onPlayerReady,
