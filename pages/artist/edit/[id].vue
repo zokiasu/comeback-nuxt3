@@ -70,7 +70,7 @@ const sendUpdateArtist = async () => {
 
   // if artistToEdit doesn't have any field to update then return
   if (Object.keys(updatedFields).length == 0) {
-    console.log('updatedFields', updatedFields)
+    // console.log('updatedFields', updatedFields)
     return
   }
 
@@ -78,7 +78,7 @@ const sendUpdateArtist = async () => {
   today.setDate(today.getDate())
   // set hour to 00:00:00
   today.setHours(0, 0, 0, 0)
-  console.log('today', today)
+  // console.log('today', today)
   const todayTimestamp = Timestamp.fromDate(today)
   updatedFields['updatedAt'] = todayTimestamp
 

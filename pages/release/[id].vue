@@ -46,9 +46,6 @@ onMounted(async () => {
     .sort((a, b) => b.date - a.date)
     .filter((rel) => rel.id !== release.value.id)
     .slice(0, 8) as Release[]
-  console.log('artistRelease', artistRelease.value)
-  console.log('release', release.value)
-  console.log('artist', artist.value)
   title.value = release.value.name + ' by ' + release.value.artistsName
   description.value = release.value.name + ' by ' + release.value.artistsName
 })

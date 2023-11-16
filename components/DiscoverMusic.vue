@@ -70,7 +70,7 @@ const authorNamePlaying = useAuthorNamePlaying()
 const imageLoaded = ref(false)
 
 const playVideo = (videoId: any) => {
-  console.log('playVideo', videoId)
+  // console.log('playVideo', videoId)
   idYoutubeVideo.value = videoId
   isPlayingVideo.value = true
   musicNamePlaying.value = music.value.name

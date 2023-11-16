@@ -70,7 +70,7 @@ const onPlayerStateChange = (event) => {
 }
 
 const onPlayerError = (event) => {
-  console.log('event', event.data)
+  // console.log('event', event.data)
   switch (event.data) {
     case 100:
     case 101:
@@ -106,9 +106,9 @@ watch(
   (newId) => {
     if (player.value) {
       player.value.loadVideoById(newId)
-      console.log('isPlaying', isPlaying.value)
+      // console.log('isPlaying', isPlaying.value)
       if (isPlaying.value) {
-        console.log('player.value', player.value)
+        // console.log('player.value', player.value)
         player.value.playVideo()
       }
     }
