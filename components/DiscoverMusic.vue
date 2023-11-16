@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="music">
+    <div v-if="music && music?.artists">
       <button
         @click="playVideo(music.videoId)"
         class="group relative aspect-square max-h-96 w-full overflow-hidden rounded-lg bg-quinary drop-shadow-lg"
@@ -20,23 +20,38 @@
           />
         </div>
         <div
-          class="absolute inset-0 flex flex-col items-center justify-evenly gap-8 bg-quinary/50 py-5"
+          class="absolute inset-0 flex flex-col items-center justify-around bg-quinary/70 lg:py-5"
         >
-          <p class="text-3xl font-semibold">Discover Music</p>
+          <p
+            v-if="music.artists && music.artists.length > 0"
+            class="font-semibold md:text-xl lg:text-2xl"
+          >
+            {{ music.artists[0].name }}
+          </p>
           <IconPlay
-            class="h-14 w-14 rounded-full border border-tertiary group-hover:bg-tertiary group-hover:text-quaternary"
+            class="h-5 w-5 rounded-full border border-tertiary group-hover:bg-tertiary group-hover:text-quaternary md:h-10 md:w-10 lg:h-14 lg:w-14"
           />
           <div class="space-y-3 text-center">
-            <p v-if="music.name" class="text-xl font-semibold">{{ music.name }}</p>
-            <p v-if="music.album && music.album.name">{{ music.album.name }}</p>
-            <p v-if="music.artists && music.artists.length > 0">
-              {{ music.artists[0].name }}
+            <p v-if="music.name" class="font-bold lg:text-2xl">
+              {{ music.name }}
             </p>
+            <p v-if="music.album && music.album.name" class="hidden md:block">
+              {{ music.album.name }}
+            </p>
+            <!-- <p
+              v-if="music.artists && music.artists.length > 0"
+              class="text-xs md:text-base"
+            >
+              {{ music.artists[0].name }}
+            </p> -->
           </div>
         </div>
       </button>
     </div>
-    <SkeletonDefault v-else class="h-96 w-full rounded-lg bg-quinary drop-shadow-lg" />
+    <SkeletonDefault
+      v-else
+      class="aspect-square h-full max-h-96 w-full rounded-lg bg-quinary drop-shadow-lg"
+    />
   </div>
 </template>
 

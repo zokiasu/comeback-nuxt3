@@ -18,6 +18,7 @@ import _ from 'lodash'
 
 export function useFirebaseFunction() {
   const { $firestore: database } = useNuxtApp()
+  const config = useRuntimeConfig()
 
   /** GENERAL FUNCTION FOR FIREBASE FUNCTION **/
   const snapshotResultToArray = (result: any) => {
@@ -28,6 +29,32 @@ export function useFirebaseFunction() {
     })
 
     return docs
+  }
+
+  const getVideoDetails = async (videoId: string, apiKey: string) => {
+    const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails,status&key=${apiKey}`
+
+    try {
+      const response = await fetch(url)
+      const data = await response.json()
+      return data.items && data.items.length ? data.items[0] : null
+    } catch (error) {
+      console.error('Erreur lors de la récupération des détails de la vidéo:', error)
+      return null
+    }
+  }
+
+  const canVideoBeEmbedded = async (videoId: string, apiKey: string) => {
+    const videoDetails = await getVideoDetails(videoId, apiKey)
+
+    if (!videoDetails) {
+      return false
+    }
+
+    const isEmbeddable = videoDetails.status.embeddable
+    const hasRestriction = videoDetails.contentDetails.regionRestriction
+
+    return isEmbeddable && !hasRestriction
   }
 
   /** HOME FUNCTION **/
@@ -71,36 +98,36 @@ export function useFirebaseFunction() {
 
   const getRandomMusic = async (): Promise<any> => {
     const colRef = query(collection(database as any, 'releases'))
-
     const snapshot = await getDocs(colRef)
+    const releases = Array.from(snapshot.docs).map((doc) => doc.data())
 
-    const docs = Array.from(snapshot.docs).map((doc) => {
-      return {
-        ...doc.data(),
+    let selectedMusic = null
+
+    while (!selectedMusic) {
+      const randomReleaseIndex = Math.floor(Math.random() * releases.length)
+      const colMusic = query(
+        collection(
+          database as any,
+          'releases',
+          releases[randomReleaseIndex].id,
+          'musics',
+        ),
+      )
+      const snapshotMusic = await getDocs(colMusic)
+      const musics = Array.from(snapshotMusic.docs).map((doc) => doc.data())
+
+      for (let music of musics) {
+        if (
+          !music.name.toLowerCase().includes('inst') &&
+          (await canVideoBeEmbedded(music.videoId, config.public.YOUTUBE_API_KEY))
+        ) {
+          selectedMusic = music
+          break
+        }
       }
-    })
-
-    const random = Math.floor(Math.random() * docs.length)
-
-    const colMusic = query(
-      collection(database as any, 'releases', docs[random].id, 'musics'),
-    )
-
-    const snapshotMusic = await getDocs(colMusic)
-
-    const musics = Array.from(snapshotMusic.docs).map((doc) => {
-      return {
-        ...doc.data(),
-      }
-    })
-
-    let randomMusic = Math.floor(Math.random() * musics.length)
-
-    if (musics[randomMusic]?.name.toLowerCase().includes('inst')) {
-      return getRandomMusic()
     }
 
-    return musics[randomMusic]
+    return selectedMusic
   }
 
   /** Release **/

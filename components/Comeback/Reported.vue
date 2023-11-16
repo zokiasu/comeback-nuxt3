@@ -6,6 +6,30 @@ const { comebackList } = defineProps({
   },
 })
 const maxDisplay = ref(9)
+
+const setMaxDisplay = () => {
+  const width = window.innerWidth
+
+  if (width < 768) {
+    // Pour les petits écrans
+    maxDisplay.value = 3
+  } else if (width < 1280) {
+    // Pour les écrans moyens
+    maxDisplay.value = 6
+  } else {
+    // Pour les grands écrans
+    maxDisplay.value = 9
+  }
+}
+
+onMounted(() => {
+  setMaxDisplay()
+  window.addEventListener('resize', setMaxDisplay)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', setMaxDisplay)
+})
 </script>
 
 <template>

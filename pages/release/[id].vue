@@ -182,7 +182,10 @@ useHead({
       </section>
       <!-- Musics -->
       <section v-if="release.musics?.length" class="space-y-2">
-        <p class="font-black">Tracks</p>
+        <p class="font-black">
+          Tracks
+          <span class="font-mono">({{ release.musics?.length }})</span>
+        </p>
         <div class="space-y-2">
           <MusicDisplay
             v-for="song in release.musics"
@@ -234,14 +237,14 @@ useHead({
       <div class="space-y-3">
         <CbInput v-model="newStreamingPlatform.name" label="Name" />
         <CbInput v-model="newStreamingPlatform.link" label="Link" />
-    <button
-      @click="createNewPlatformStreaming"
-      :disabled="sendNewStreamingPlatform"
-      class="w-full rounded bg-primary py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
-    >
-      <p v-if="sendNewStreamingPlatform">Sending...</p>
-      <p v-else>Send News</p>
-    </button>
+        <button
+          @click="createNewPlatformStreaming"
+          :disabled="sendNewStreamingPlatform"
+          class="w-full rounded bg-primary py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+        >
+          <p v-if="sendNewStreamingPlatform">Sending...</p>
+          <p v-else>Send News</p>
+        </button>
       </div>
     </Modal>
   </div>
