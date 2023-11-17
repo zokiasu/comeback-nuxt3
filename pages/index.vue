@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { Timestamp } from 'firebase/firestore'
 
-const { getNextComebacks } = useFirebaseFunction()
+const { getNextComebacks, getLastReleases, getLastArtistsAdded } = useFirebaseFunction()
 
 const comebacks = ref([] as any[])
 const artists = ref([] as any[])
 const releases = ref([] as any[])
+
+const unsubscribeComeback = ref(null as any)
+const unsubscribeRelease = ref(null as any)
+const unsubscribeArtist = ref(null as any)
 
 const comebacksToday = computed(() => {
   return comebacks.value.filter((comebacks: any) => {
@@ -21,15 +25,33 @@ const comebacksToday = computed(() => {
 
 onMounted(async () => {
   const comebacksDate = new Date()
-  comebacksDate.setDate(comebacksDate.getDate()-1)
-  comebacks.value = await getNextComebacks(Timestamp.fromDate(comebacksDate))
+  comebacksDate.setDate(comebacksDate.getDate() - 1)
+  unsubscribeComeback.value = getNextComebacks(
+    Timestamp.fromDate(comebacksDate),
+    (cb: any) => {
+      comebacks.value = cb
+    },
+  )
 
   const releaseDate = new Date()
   releaseDate.setDate(releaseDate.getDate() - 8)
-  releases.value = await fetchReleasesWithDateAndLimit(Timestamp.fromDate(releaseDate), 8)
+  unsubscribeRelease.value = getLastReleases(
+    Timestamp.fromDate(releaseDate),
+    8,
+    (rel: any) => {
+      releases.value = rel
+    },
+  )
 
-  const artistDate = new Date()
-  artists.value = await fetchArtistsWithLimit(Timestamp.fromDate(artistDate), 8)
+  unsubscribeArtist.value = getLastArtistsAdded(8, (art: any) => {
+    artists.value = art
+  })
+})
+
+onBeforeUnmount(() => {
+  unsubscribeComeback.value()
+  unsubscribeRelease.value()
+  unsubscribeArtist.value()
 })
 
 useHead({

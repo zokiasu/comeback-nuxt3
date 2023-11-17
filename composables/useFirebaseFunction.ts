@@ -13,6 +13,7 @@ import {
   orderBy,
   limit,
   getCountFromServer,
+  onSnapshot,
 } from 'firebase/firestore'
 import _ from 'lodash'
 
@@ -58,19 +59,28 @@ export function useFirebaseFunction() {
   }
 
   /** HOME FUNCTION **/
-  const getNextComebacks = async (startDate: Timestamp) => {
+  const getNextComebacks = (startDate: Timestamp, callback: Function) => {
     const colRef = query(
       collection(database as any, 'news'),
       where('date', '>=', startDate),
       orderBy('date', 'asc'),
     )
 
-    const snapshot = await getDocs(colRef)
+    // Écoute en temps réel des modifications dans la collection
+    const unsubscribe = onSnapshot(colRef, (snapshot) => {
+      const comebacks = snapshotResultToArray(snapshot)
+      callback(comebacks)
+    })
 
-    return snapshotResultToArray(snapshot)
+    // Retourne la fonction pour se désabonner de l'écouteur
+    return unsubscribe
   }
 
-  const getLastReleases = async (startDate: Timestamp, limitNumber: number) => {
+  const getLastReleases = (
+    startDate: Timestamp,
+    limitNumber: number,
+    callback: Function,
+  ) => {
     const colRef = query(
       collection(database as any, 'releases'),
       where('date', '>=', startDate),
@@ -79,22 +89,32 @@ export function useFirebaseFunction() {
       limit(limitNumber),
     )
 
-    const snapshot = await getDocs(colRef)
+    // Écoute en temps réel des modifications dans la collection
+    const unsubscribe = onSnapshot(colRef, (snapshot) => {
+      const releases = snapshotResultToArray(snapshot)
+      callback(releases)
+    })
 
-    return snapshotResultToArray(snapshot)
+    // Retourne la fonction pour se désabonner de l'écouteur
+    return unsubscribe
   }
 
-  const getLastArtistsAdded = async (limitNumber: number) => {
-    const colRef = query(
-      collection(database as any, 'artists'),
-      orderBy('createdAt', 'desc'),
-      limit(limitNumber),
-    )
+const getLastArtistsAdded = (limitNumber: number, callback: Function) => {
+  const colRef = query(
+    collection(database as any, 'artists'),
+    orderBy('createdAt', 'desc'),
+    limit(limitNumber),
+  )
 
-    const snapshot = await getDocs(colRef)
+  // Écoute en temps réel des modifications dans la collection
+  const unsubscribe = onSnapshot(colRef, (snapshot) => {
+    const artists = snapshotResultToArray(snapshot)
+    callback(artists)
+  })
 
-    return snapshotResultToArray(snapshot)
-  }
+  // Retourne la fonction pour se désabonner de l'écouteur
+  return unsubscribe
+}
 
   const getRandomMusic = async (): Promise<any> => {
     const colRef = query(collection(database as any, 'releases'))

@@ -28,7 +28,12 @@
           >
             {{ music.artists[0].name }}
           </p>
+          <IconPause
+            v-if="isPlayingVideo && idYoutubeVideo === music.videoId"
+            class="h-5 w-5 rounded-full border border-tertiary group-hover:bg-tertiary group-hover:text-quaternary md:h-10 md:w-10 lg:h-14 lg:w-14"
+          />
           <IconPlay
+            v-else
             class="h-5 w-5 rounded-full border border-tertiary group-hover:bg-tertiary group-hover:text-quaternary md:h-10 md:w-10 lg:h-14 lg:w-14"
           />
           <div class="space-y-3 text-center">
