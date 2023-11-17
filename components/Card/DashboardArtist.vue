@@ -7,8 +7,8 @@ const {
   type,
   idYoutubeMusic,
   styles,
-  socials,
-  platforms,
+  socialList,
+  platformList,
   createdAt,
 } = defineProps({
   id: {
@@ -39,11 +39,11 @@ const {
     type: Array,
     required: true,
   },
-  socials: {
+  socialList: {
     type: Array,
     required: true,
   },
-  platforms: {
+  platformList: {
     type: Array,
     required: true,
   },
@@ -137,15 +137,16 @@ const loadingDone = () => {
 
     <div class="space-y-2">
       <p class="border-b border-zinc-500 pb-1 text-sm font-semibold uppercase">Socials</p>
-      <div v-if="socials.length" class="flex flex-col space-y-1">
+      <div v-if="socialList.length" class="flex flex-col space-y-1.5">
         <a
-          v-for="social in socials"
+          v-for="social in socialList"
           :key="social"
-          :href="social"
+          :href="social.link"
           target="_blank"
-          class="rounded bg-quinary px-2 py-1 text-xs"
+          class="overflow-hidden rounded bg-quinary text-xs"
         >
-          {{ social }}
+          <p class="bg-secondary px-1.5 py-1 uppercase">{{ social.name }}</p>
+          <p class="px-1.5 py-1">{{ social.link }}</p>
         </a>
       </div>
       <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
@@ -157,15 +158,16 @@ const loadingDone = () => {
       <p class="border-b border-zinc-500 pb-1 text-sm font-semibold uppercase">
         Platforms
       </p>
-      <div v-if="platforms.length" class="flex flex-col space-y-1 overflow-hidden">
+      <div v-if="platformList.length" class="flex flex-col space-y-1 overflow-hidden">
         <a
-          v-for="platform in platforms"
+          v-for="platform in platformList"
           :key="platform"
-          :href="platform"
+          :href="platform.link"
           target="_blank"
-          class="rounded bg-quinary px-2 py-1 text-xs"
+          class="overflow-hidden rounded bg-quinary text-xs"
         >
-          {{ platform }}
+          <p class="bg-secondary px-1.5 py-1 uppercase">{{ platform.name }}</p>
+          <p class="px-1.5 py-1">{{ platform.link }}</p>
         </a>
       </div>
       <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">

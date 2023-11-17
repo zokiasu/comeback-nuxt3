@@ -13,7 +13,7 @@ const {
   image,
   name,
   needToBeVerified,
-  platforms,
+  platformList,
   type,
   yearReleased,
 } = defineProps({
@@ -49,7 +49,7 @@ const {
     type: Boolean,
     required: true,
   },
-  platforms: {
+  platformList: {
     type: Array,
     required: true,
   },
@@ -191,15 +191,16 @@ const validVerifiedRelease = () => {
       <p class="border-b border-zinc-500 pb-1 text-xs font-semibold uppercase">
         Platforms
       </p>
-      <div v-if="platforms.length" class="flex flex-col space-y-1">
+      <div v-if="platformList.length" class="flex flex-col space-y-1">
         <a
-          v-for="platform in platforms"
+          v-for="platform in platformList"
           :key="platform"
-          :href="platform"
+          :href="platform.link"
           target="_blank"
-          class="truncate rounded bg-quinary px-2 py-1 text-xs"
+          class="overflow-hidden rounded bg-quinary text-xs"
         >
-          {{ platform }}
+          <p class="bg-secondary px-1.5 py-1 uppercase">{{ platform.name }}</p>
+          <p class="truncate px-1.5 py-1">{{ platform.link }}</p>
         </a>
       </div>
       <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">

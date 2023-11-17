@@ -1,6 +1,6 @@
 <script setup>
-import { collection, onSnapshot } from 'firebase/firestore';
-import { useToast } from 'vue-toastification';
+import { collection, onSnapshot } from 'firebase/firestore'
+import { useToast } from 'vue-toastification'
 
 const { $firestore: db } = useNuxtApp()
 const toast = useToast()
@@ -36,7 +36,7 @@ const needToBeVerifiedFilter = ref(false)
 
 onMounted(async () => {
   // releaseFetch.value = await queryByCollection('releases')
-  
+
   onSnapshot(collection(db, 'releases'), (querySnapshot) => {
     releaseFetch.value = querySnapshot.docs.map((doc) => {
       return {
@@ -270,7 +270,7 @@ watch([page], () => {
         :image="release.image"
         :name="release.name"
         :needToBeVerified="release.needToBeVerified"
-        :platforms="release.platforms"
+        :platformList="release.platformList"
         :type="release.type"
         :yearReleased="release.year"
         @deleteRelease="deleteRelease"

@@ -227,8 +227,8 @@ watch([page], () => {
         :type="artist.type"
         :idYoutubeMusic="artist.idYoutubeMusic"
         :styles="artist.styles"
-        :socials="artist.socials"
-        :platforms="artist.platforms"
+        :socialList="artist.socialList"
+        :platformList="artist.platformList"
         :createdAt="artist.createdAt"
         @deleteArtist="deleteArtist"
       />

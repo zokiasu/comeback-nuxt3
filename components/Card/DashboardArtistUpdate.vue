@@ -8,8 +8,8 @@ const {
   type,
   idYoutubeMusic,
   styles,
-  socials,
-  platforms,
+  socialList,
+  platformList,
   groups,
   members,
 } = defineProps({
@@ -45,11 +45,11 @@ const {
     type: Array,
     required: false,
   },
-  socials: {
+  socialList: {
     type: Array,
     required: false,
   },
-  platforms: {
+  platformList: {
     type: Array,
     required: false,
   },
@@ -142,15 +142,16 @@ const loadingDoneChanged = () => {
         <p class="border-b border-zinc-500 pb-1 text-sm font-semibold uppercase">
           Socials
         </p>
-        <div v-if="artist.socials.length" class="flex flex-col space-y-1">
+        <div v-if="artist.socialList.length" class="flex flex-col space-y-1">
           <a
-            v-for="social in artist.socials"
+            v-for="social in artist.socialList"
             :key="social"
-            :href="social"
+            :href="social.link"
             target="_blank"
-            class="truncate rounded bg-quinary px-2 py-1 text-xs"
+            class="overflow-hidden rounded bg-quinary text-xs"
           >
-            {{ social }}
+            <p class="bg-secondary px-1.5 py-1 uppercase">{{ platform.name }}</p>
+            <p class="truncate px-1.5 py-1">{{ platform.link }}</p>
           </a>
         </div>
         <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
@@ -162,15 +163,16 @@ const loadingDoneChanged = () => {
         <p class="border-b border-zinc-500 pb-1 text-sm font-semibold uppercase">
           Platforms
         </p>
-        <div v-if="artist.platforms.length" class="flex flex-col space-y-1">
+        <div v-if="artist.platformList.length" class="flex flex-col space-y-1">
           <a
-            v-for="platform in artist.platforms"
+            v-for="platform in artist.platformList"
             :key="platform"
-            :href="platform"
+            :href="platform.link"
             target="_blank"
-            class="truncate rounded bg-quinary px-2 py-1 text-xs"
+            class="overflow-hidden rounded bg-quinary text-xs"
           >
-            {{ platform }}
+            <p class="bg-secondary px-1.5 py-1 uppercase">{{ platform.name }}</p>
+            <p class="truncate px-1.5 py-1">{{ platform.link }}</p>
           </a>
         </div>
         <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
@@ -270,19 +272,19 @@ const loadingDoneChanged = () => {
         </p>
       </div>
       <!-- Socials -->
-      <div v-if="socials" class="space-y-2">
+      <div v-if="socialLink" class="space-y-2">
         <p class="border-b border-zinc-500 pb-1 text-sm font-semibold uppercase">
           Socials
         </p>
-        <div v-if="socials.length" class="flex flex-col space-y-1">
+        <div v-if="socialLink.length" class="flex flex-col space-y-1">
           <a
-            v-for="social in socials"
+            v-for="social in socialLink"
             :key="social"
-            :href="social"
+            :href="social.link"
             target="_blank"
             class="truncate rounded bg-quinary px-2 py-1 text-xs"
           >
-            {{ social }}
+            {{ social.link }}
           </a>
         </div>
         <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
@@ -290,19 +292,19 @@ const loadingDoneChanged = () => {
         </p>
       </div>
       <!-- Platforms -->
-      <div v-if="platforms" class="space-y-2">
+      <div v-if="platformList" class="space-y-2">
         <p class="border-b border-zinc-500 pb-1 text-sm font-semibold uppercase">
           Platforms
         </p>
-        <div v-if="platforms.length" class="flex flex-col space-y-1">
+        <div v-if="platformList.length" class="flex flex-col space-y-1">
           <a
-            v-for="platform in platforms"
+            v-for="platform in platformList"
             :key="platform"
-            :href="platform"
+            :href="platform.link"
             target="_blank"
             class="truncate rounded bg-quinary px-2 py-1 text-xs"
           >
-            {{ platform }}
+            {{ platform.link }}
           </a>
         </div>
         <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
@@ -324,7 +326,7 @@ const loadingDoneChanged = () => {
           </p>
         </div>
         <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
-          No Platforms Link
+          No Members
         </p>
       </div>
       <!-- Groups -->
@@ -342,7 +344,7 @@ const loadingDoneChanged = () => {
           </p>
         </div>
         <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
-          No Platforms Link
+          No Groups
         </p>
       </div>
     </section>
