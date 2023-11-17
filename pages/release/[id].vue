@@ -160,7 +160,7 @@ useHead({
       <!-- Platforms -->
       <section v-if="release.platformList?.length" class="space-y-2">
         <p class="font-black">Streaming Platforms</p>
-        <div class="flex gap-2">
+        <div class="flex gap-1.5">
           <ComebackExternalLink
             v-for="social in release.platformList"
             :key="social.name"

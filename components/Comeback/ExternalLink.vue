@@ -4,9 +4,9 @@
     rel="noopener"
     :to="link"
     target="_blank"
-    class="flex h-fit w-fit items-center gap-2 rounded bg-quaternary px-3.5 py-2.5 text-sm hover:bg-quinary"
+    class="flex h-fit w-fit items-center gap-2 rounded bg-quaternary px-3.5 py-2.5 text-xs hover:bg-quinary"
   >
-    <img :src="icon" :alt="name" class="h-5 w-5" />
+    <img :src="icon" :alt="name" class="h-4 w-4" />
     <p class="hidden text-xs font-semibold uppercase md:block">{{ name }}</p>
   </NuxtLink>
 </template>

@@ -69,7 +69,7 @@ useHead({
             {{ artist.name }}
           </h1>
           <SkeletonDefault v-if="isFetchingArtist" class="h-14 w-80 rounded" />
-          <div v-if="artist.platformList" class="flex flex-wrap gap-3 md:gap-3">
+          <div v-if="artist.platformList" class="flex flex-wrap gap-1.5">
             <LazyComebackExternalLink
               v-for="platform in artist.platformList"
               :key="platform.link"
@@ -84,7 +84,7 @@ useHead({
               class="h-6 w-20 rounded"
             />
           </div>
-          <div v-if="artist.socialList?.length" class="flex flex-wrap gap-3 md:gap-3">
+          <div v-if="artist.socialList?.length" class="flex flex-wrap gap-1.5">
             <LazyComebackExternalLink
               v-for="social in artist.socialList"
               :key="social.link"
