@@ -214,7 +214,12 @@ const validVerifiedRelease = () => {
         <span class="font-bold">{{ releaseDate }}</span>
       </p>
       <div class="space-x-1">
-        <!-- <NuxtLink :to="'/release/edit/' + id" target="_blank" class="bg-quinary uppercase text-xs px-2 py-1 rounded hover:bg-zinc-500">Edit</NuxtLink> -->
+        <button
+          @click="showUpdateVerifiedRelease"
+          class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+        >
+          Edit
+        </button>
         <button
           v-if="needToBeVerified || doubleCheckYear"
           @click="showUpdateVerifiedRelease"
