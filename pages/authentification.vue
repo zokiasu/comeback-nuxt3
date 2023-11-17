@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { UserCredential } from '@firebase/auth'
 const router = useRouter()
 
 const email = ref('')
@@ -8,10 +7,7 @@ const passwordConfirm = ref('')
 const signUpVersion = ref(false)
 
 const signIn = async () => {
-  const userCredential: UserCredential | null = await signInWithEAndP(
-    email.value,
-    password.value,
-  )
+  const userCredential: any = await signInWithEAndP(email.value, password.value)
   if (userCredential) {
     router.push('/')
   }
@@ -23,10 +19,7 @@ const signUp = async () => {
     return
   }
 
-  const userCredential: UserCredential | null = await signUpWithEAndP(
-    email.value,
-    password.value,
-  )
+  const userCredential: any = await signUpWithEAndP(email.value, password.value)
   if (userCredential) {
     router.push('/')
   }
@@ -62,7 +55,7 @@ useHead({
         class="flex flex-col items-center justify-center space-y-5"
       >
         <div class="w-full">
-          <CbLabel label="Email" />
+          <ComebackLabel label="Email" />
           <input
             type="email"
             placeholder="Email"
@@ -71,7 +64,7 @@ useHead({
           />
         </div>
         <div class="w-full">
-          <CbLabel label="Password" />
+          <ComebackLabel label="Password" />
           <input
             type="password"
             placeholder="Password"
@@ -93,7 +86,7 @@ useHead({
         class="flex flex-col items-center justify-center space-y-5"
       >
         <div class="w-full">
-          <CbLabel label="Email" />
+          <ComebackLabel label="Email" />
           <input
             type="email"
             placeholder="Email"
@@ -102,7 +95,7 @@ useHead({
           />
         </div>
         <div class="w-full">
-          <CbLabel label="Password" />
+          <ComebackLabel label="Password" />
           <input
             type="password"
             placeholder="Password"
@@ -111,7 +104,7 @@ useHead({
           />
         </div>
         <div class="w-full">
-          <CbLabel label="Password Verification" />
+          <ComebackLabel label="Password Verification" />
           <input
             type="password"
             placeholder="Password Verification"

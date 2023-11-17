@@ -245,7 +245,7 @@ const validVerifiedRelease = () => {
         <p>Actual Date : {{ releaseDate }}</p>
         <VueDatePicker v-model="dateToChange" auto-apply :enable-time-picker="false" />
         <p>Actual Year : {{ yearReleased }}</p>
-        <CbInput
+        <ComebackInput
           label="Year"
           :placeholder="yearReleased.toString()"
           v-model="yearToChange"

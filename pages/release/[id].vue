@@ -232,8 +232,8 @@ useHead({
       :bg-out-class="`animate__fadeOutDown`"
     >
       <div class="space-y-3">
-        <CbInput v-model="newStreamingPlatform.name" label="Name" />
-        <CbInput v-model="newStreamingPlatform.link" label="Link" />
+        <ComebackInput v-model="newStreamingPlatform.name" label="Name" />
+        <ComebackInput v-model="newStreamingPlatform.link" label="Link" />
         <button
           @click="createNewPlatformStreaming"
           :disabled="sendNewStreamingPlatform"

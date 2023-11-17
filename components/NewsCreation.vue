@@ -118,7 +118,7 @@ const createNews = async () => {
 <template>
   <div class="space-y-5 py-2">
     <div class="flex flex-col gap-1">
-      <CbLabel label="Artist" />
+      <ComebackLabel label="Artist" />
       <VueMultiselect
         v-model="artistToSend"
         label="name"
@@ -132,11 +132,11 @@ const createNews = async () => {
       />
     </div>
     <div class="flex flex-col gap-1">
-      <CbLabel label="Date" />
+      <ComebackLabel label="Date" />
       <VueDatePicker v-model="dateToDateFormat" auto-apply :enable-time-picker="false" />
     </div>
     <div class="flex flex-col gap-1">
-      <CbInput label="Your News" placeholder="Your News" v-model="news.message" />
+      <ComebackInput label="Your News" placeholder="Your News" v-model="news.message" />
     </div>
     <button
       @click="createNews"

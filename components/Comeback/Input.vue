@@ -26,14 +26,14 @@ const { name, placeholder, modelValue } = defineProps({
 
 <template>
   <div class="flex flex-col gap-1">
-    <CbLabel v-if="label" :disabled="disabled" :label="label" />
+    <ComebackLabel v-if="label" :disabled="disabled" :label="label" />
     <input
       :type="type"
       :placeholder="placeholder"
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
       :disabled="disabled"
-      class="appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:bg-tertiary focus:p-1.5 focus:text-secondary focus:outline-none"
+      class="appearance-none border-b bg-transparent p-1.5 transition-all duration-150 ease-in-out focus:rounded focus:bg-tertiary focus:text-secondary focus:outline-none"
       :class="{ 'border-zinc-500 text-zinc-500': disabled }"
     />
   </div>

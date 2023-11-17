@@ -144,7 +144,7 @@ useHead({
     <div class="space-y-5">
       <!-- Picture -->
       <div class="flex flex-col gap-2">
-        <CbLabel label="Image" />
+        <ComebackLabel label="Image" />
         <NuxtImg
           v-if="artistToEdit.image"
           :src="artistToEdit.image"
@@ -156,8 +156,12 @@ useHead({
       </div>
       <!-- Name & Id -->
       <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <CbInput label="Name" :placeholder="artist.name" v-model="artistToEdit.name" />
-        <CbInput
+        <ComebackInput
+          label="Name"
+          :placeholder="artist.name"
+          v-model="artistToEdit.name"
+        />
+        <ComebackInput
           label="Unique Id"
           :placeholder="artist.id"
           v-model="artistToEdit.id"
@@ -166,13 +170,13 @@ useHead({
       </div>
       <!-- Id YTM & Type -->
       <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <CbInput
+        <ComebackInput
           label="Id Youtube Music"
           :placeholder="artist.idYoutubeMusic"
           v-model="artistToEdit.idYoutubeMusic"
         />
         <div class="grid grid-cols-1 gap-1">
-          <CbLabel label="Type" />
+          <ComebackLabel label="Type" />
           <select
             v-model="artistToEdit.type"
             class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
@@ -184,7 +188,7 @@ useHead({
       </div>
       <!-- Styles -->
       <div v-if="stylesList" class="flex flex-col gap-1">
-        <CbLabel label="Styles" />
+        <ComebackLabel label="Styles" />
         <VueMultiselect
           v-model="artistToEdit.styles"
           label="name"
@@ -199,7 +203,7 @@ useHead({
       </div>
       <!-- Description -->
       <div class="flex flex-col gap-1">
-        <CbLabel label="Description" />
+        <ComebackLabel label="Description" />
         <textarea
           :placeholder="artistToEdit.description || 'Description'"
           v-model="artistToEdit.description"
@@ -208,7 +212,7 @@ useHead({
       </div>
       <!-- Group -->
       <div v-if="groupList" class="flex flex-col gap-1">
-        <CbLabel label="Group" />
+        <ComebackLabel label="Group" />
         <VueMultiselect
           v-model="artistToEdit.groups"
           label="name"
@@ -223,7 +227,7 @@ useHead({
       </div>
       <!-- Members -->
       <div v-if="membersList && artistToEdit.type != 'SOLO'" class="flex flex-col gap-1">
-        <CbLabel label="Members" />
+        <ComebackLabel label="Members" />
         <VueMultiselect
           v-model="artistToEdit.members"
           label="name"

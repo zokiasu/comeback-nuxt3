@@ -65,7 +65,7 @@ const deleteNews = () => {
     </div>
     <div>
       <!-- <div class="space-y-2">
-        <CbLabel label="User" class="border-b border-zinc-500" />
+        <ComebackLabel label="User" class="border-b border-zinc-500" />
         <div class="relative">
           <div
             ref="skeletonUser"
@@ -88,7 +88,7 @@ const deleteNews = () => {
     </div>
 
     <div>
-      <CbLabel label="Message" class="border-b border-zinc-500" />
+      <ComebackLabel label="Message" class="border-b border-zinc-500" />
       <p>{{ message }}</p>
     </div>
 
