@@ -21,7 +21,7 @@ const comebacksToday = computed(() => {
 
 onMounted(async () => {
   const comebacksDate = new Date()
-  comebacksDate.setDate(comebacksDate.getDate())
+  comebacksDate.setDate(comebacksDate.getDate()-1)
   comebacks.value = await getNextComebacks(Timestamp.fromDate(comebacksDate))
 
   const releaseDate = new Date()
