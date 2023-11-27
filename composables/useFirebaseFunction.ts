@@ -99,22 +99,22 @@ export function useFirebaseFunction() {
     return unsubscribe
   }
 
-const getLastArtistsAdded = (limitNumber: number, callback: Function) => {
-  const colRef = query(
-    collection(database as any, 'artists'),
-    orderBy('createdAt', 'desc'),
-    limit(limitNumber),
-  )
+  const getLastArtistsAdded = (limitNumber: number, callback: Function) => {
+    const colRef = query(
+      collection(database as any, 'artists'),
+      orderBy('createdAt', 'desc'),
+      limit(limitNumber),
+    )
 
-  // Écoute en temps réel des modifications dans la collection
-  const unsubscribe = onSnapshot(colRef, (snapshot) => {
-    const artists = snapshotResultToArray(snapshot)
-    callback(artists)
-  })
+    // Écoute en temps réel des modifications dans la collection
+    const unsubscribe = onSnapshot(colRef, (snapshot) => {
+      const artists = snapshotResultToArray(snapshot)
+      callback(artists)
+    })
 
-  // Retourne la fonction pour se désabonner de l'écouteur
-  return unsubscribe
-}
+    // Retourne la fonction pour se désabonner de l'écouteur
+    return unsubscribe
+  }
 
   const getRandomMusic = async (): Promise<any> => {
     const colRef = query(collection(database as any, 'releases'))
@@ -176,31 +176,31 @@ const getLastArtistsAdded = (limitNumber: number, callback: Function) => {
   ): Promise<boolean> => {
     const today = new Date()
     const todayInTimestamp = Timestamp.fromDate(today)
+    const colRef = query(
+      collection(database as any, 'news'),
+      where('date', '>=', todayInTimestamp),
+      orderBy('date', 'asc'),
+    )
 
-    const comebackList = await getNextComebacks(todayInTimestamp)
+    try {
+      const snapshot = await getDocs(colRef)
+      const comebacks = snapshotResultToArray(snapshot)
 
-    let comebackExist: boolean = false
+      return comebacks.some((comeback: any) => {
+        const cbDate = new Date(comeback.date.seconds * 1000)
+        cbDate.setHours(0, 0, 0, 0)
+        const dateToTest = new Date(date.seconds * 1000)
+        dateToTest.setHours(0, 0, 0, 0)
 
-    comebackList.map((comeback: any) => {
-      const cbDate = new Date(comeback.date.seconds * 1000)
-
-      cbDate.setHours(0, 0, 0, 0)
-      const dateToTest = new Date(date.seconds * 1000)
-      dateToTest.setHours(0, 0, 0, 0)
-
-      if (
-        comeback.artist.name.toLowerCase() === artistName.toLowerCase() &&
-        _.isEqual(cbDate, dateToTest)
-      ) {
-        comebackExist = true
-      }
-    })
-
-    //if comeback exist return true
-    if (comebackExist) {
-      return true
+        return (
+          comeback.artist.name.toLowerCase() === artistName.toLowerCase() &&
+          _.isEqual(cbDate, dateToTest)
+        )
+      })
+    } catch (error) {
+      console.error("Erreur lors de la vérification de l'existence du comeback:", error)
+      return false
     }
-    return false
   }
 
   return {
