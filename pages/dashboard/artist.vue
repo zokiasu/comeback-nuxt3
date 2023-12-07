@@ -39,7 +39,7 @@ const deleteArtist = async (id) => {
     await deletebyDoc('artists', id)
       .then(() => {
         console.log('Document successfully deleted!')
-        artistFetch.value.splice(index, 1)
+        // artistFetch.value.splice(index, 1)
         toast.success('Artist Deleted', toastOption)
       })
       .catch((error) => {

@@ -54,7 +54,7 @@ const deleteRelease = async (id) => {
     await deletebyDoc('releases', id)
       .then(() => {
         console.log('Document successfully deleted!')
-        releaseFetch.value.splice(index, 1)
+        // releaseFetch.value.splice(index, 1)
         toast.success('Release Deleted', toastOption)
       })
       .catch((error) => {
