@@ -5,7 +5,7 @@ const { comebackList } = defineProps({
     required: true,
   },
 })
-const maxDisplay = ref(12)
+const maxDisplay = ref(9)
 
 const setMaxDisplay = () => {
   const width = window.innerWidth
@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
       />
     </div>
     <button
-      v-if="comebackList.length > 9 && comebackList.length != maxDisplay"
+      v-if="comebackList.length != maxDisplay"
       class="w-full text-center font-semibold"
       @click="maxDisplay = comebackList.length"
     >
@@ -62,7 +62,7 @@ onBeforeUnmount(() => {
       <IconArrowDown class="mx-auto h-5 w-5" />
     </button>
     <button
-      v-if="comebackList.length == maxDisplay"
+      v-if="comebackList.length == maxDisplay && comebackList.length >= 9"
       class="w-full text-center font-semibold"
       @click="maxDisplay = 9"
     >
