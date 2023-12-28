@@ -5,7 +5,7 @@ const { comebackList } = defineProps({
     required: true,
   },
 })
-const maxDisplay = ref(9)
+const maxDisplay = ref(12)
 
 const setMaxDisplay = () => {
   const width = window.innerWidth
