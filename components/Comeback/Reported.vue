@@ -6,6 +6,7 @@ const { comebackList } = defineProps({
   },
 })
 const maxDisplay = ref(9)
+const minDisplay = ref(3)
 
 const setMaxDisplay = () => {
   const width = window.innerWidth
@@ -13,12 +14,15 @@ const setMaxDisplay = () => {
   if (width < 768) {
     // Pour les petits écrans
     maxDisplay.value = 3
+    minDisplay.value = 3
   } else if (width < 1280) {
     // Pour les écrans moyens
     maxDisplay.value = 6
+    minDisplay.value = 6
   } else {
     // Pour les grands écrans
     maxDisplay.value = 9
+    minDisplay.value = 9
   }
 }
 
@@ -54,7 +58,7 @@ onBeforeUnmount(() => {
       />
     </div>
     <button
-      v-if="comebackList.length != maxDisplay"
+      v-if="comebackList.length != maxDisplay && comebackList.length >= maxDisplay"
       class="w-full text-center font-semibold"
       @click="maxDisplay = comebackList.length"
     >
@@ -62,9 +66,9 @@ onBeforeUnmount(() => {
       <IconArrowDown class="mx-auto h-5 w-5" />
     </button>
     <button
-      v-if="comebackList.length == maxDisplay && comebackList.length >= 9"
+      v-if="comebackList.length == maxDisplay && comebackList.length >= maxDisplay"
       class="w-full text-center font-semibold"
-      @click="maxDisplay = 9"
+      @click="maxDisplay = minDisplay"
     >
       <IconArrowUp class="mx-auto h-5 w-5" />
       <p>See Less</p>
