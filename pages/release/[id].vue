@@ -193,6 +193,7 @@ useHead({
             :musicId="song.videoId"
             :musicName="song.name"
             :musicImage="song.thumbnails[2].url"
+            :duration="song?.duration?.toString() || '0'"
             class="w-full bg-quinary"
           />
         </div>
