@@ -8,16 +8,15 @@ export interface Artist {
   type: string
   image: string
   styles: Object[]
-  socials: string[]
   socialList: {
     name: string
     link: string
   }[]
-  platforms: string[]
   platformList: {
     name: string
     link: string
   }[]
   members: Partial<Artist>[]
   groups: Partial<Artist>[]
+  releases: Partial<Release>[]
 }

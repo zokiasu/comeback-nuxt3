@@ -14,16 +14,12 @@ export function useGeneralFunction() {
       name: attributes.name,
       description: attributes.description || '',
       type: attributes.type,
-      images: attributes.images || [],
+      image: attributes.image,
       styles: attributes.styles || [],
-      socials: attributes.socials || [],
-      platforms: attributes.platforms || [],
-      members: attributes.members
-        ? await formatArray(attributes.members.data, formatArtistData)
-        : [],
-      groups: attributes.groups
-        ? await formatArray(attributes.groups.data, formatArtistData)
-        : [],
+      socialList: attributes.socialList || [],
+      platformList: attributes.platformList || [],
+      members: attributes.members ? await formatArray(attributes.members.data, formatArtistData) : [],
+      groups: attributes.groups ? await formatArray(attributes.groups.data, formatArtistData) : [],
       releases: [],
     }
 
@@ -41,17 +37,18 @@ export function useGeneralFunction() {
       name: attributes.name,
       type: attributes.type,
       year: attributes.year,
-      verified: attributes.verified,
-      platforms: attributes.platforms || [],
-      dateRelease: attributes.dateRelease,
-      images: attributes.images || [],
-
+      needToBeVerified: attributes.needToBeVerified,
+      platformList: attributes.platformList || [],
+      date: attributes.date,
+      image: attributes.image || [],
       artists: attributes.artists
         ? await formatArray(attributes.artists.data, formatArtistData)
         : [],
-      music: attributes.music
+      musics: attributes.musics
         ? await formatArray(attributes.music.data, formatMusicData)
         : [],
+      artistsId: '', // Add the missing property 'artistsId'
+      artistsName: '', // Add the missing property 'artistsName'
     }
 
     return releaseTmp

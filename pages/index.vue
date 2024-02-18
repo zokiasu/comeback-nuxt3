@@ -125,9 +125,21 @@ useHead({
     <section class="container mx-auto space-y-16 px-10 py-16 2xl:space-y-20">
       <!-- Comeback Reported List -->
       <ComebackReported :comebackList="comebacks" />
-      <!-- <pre>
-        {{ music }}
-      </pre> -->
+      <!-- <div class="relative w-full flex gap-5 snap-x snap-mandatory overflow-x-auto pb-5">
+        <div v-for="i in 10" :key="i" class="snap-start w-fit h-fit space-y-1 min-w-20">
+          <div class="relative">
+            <img
+              class="w-full aspect-[9/16] object-cover min-w-10 max-w-20"
+              src="https://picsum.photos/200/300"
+              alt="Discover Music"
+            />
+            <div class="absolute inset-0 top-0 left-0 z-10 flex items-center justify-center font-bold text-lg bg-black/30">
+              <p>D-500</p>
+            </div>
+          </div>
+          <p class="text-xs text-center">Artist Name</p>
+        </div>
+      </div> -->
       <!-- Discover Music -->
       <div class="space-y-5 xl:space-y-8 2xl:space-y-14">
         <p class="text-center text-xl font-bold lg:text-4xl">Discover Music</p>

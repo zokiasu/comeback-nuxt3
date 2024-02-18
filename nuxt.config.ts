@@ -13,6 +13,13 @@ export default defineNuxtConfig({
     },
   },
 
+  plugins: [
+    '~/plugins/firebase.client.ts',
+    '~/plugins/toast.js',
+    '~/plugins/VueDatePicker.js',
+    '~/plugins/vueModal.js',
+  ],
+
   modules: [
     '@nuxtjs/tailwindcss',
     '@nuxt/image',
