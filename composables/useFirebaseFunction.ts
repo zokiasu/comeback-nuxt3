@@ -38,7 +38,7 @@ export function useFirebaseFunction() {
     try {
       const response = await fetch(url)
       const data = await response.json()
-      return data.items && data.items.length ? data.items[0] : null
+      return (data.items && data.items.length) ? data.items[0] : null
     } catch (error) {
       console.error('Erreur lors de la récupération des détails de la vidéo:', error)
       return null
@@ -116,39 +116,40 @@ export function useFirebaseFunction() {
     return unsubscribe
   }
 
+  const shuffleArray = (array: any) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]]; // échange les éléments
+    }
+    return array;
+  };
+  
   const getRandomMusic = async (): Promise<any> => {
-    const colRef = query(collection(database as any, 'releases'))
-    const snapshot = await getDocs(colRef)
-    const releases = Array.from(snapshot.docs).map((doc) => doc.data())
-
-    let selectedMusic = null
-
-    while (!selectedMusic) {
-      const randomReleaseIndex = Math.floor(Math.random() * releases.length)
-      const colMusic = query(
-        collection(
-          database as any,
-          'releases',
-          releases[randomReleaseIndex].id,
-          'musics',
-        ),
-      )
-      const snapshotMusic = await getDocs(colMusic)
-      const musics = Array.from(snapshotMusic.docs).map((doc) => doc.data())
-
+    const colRef = query(collection(database as any, 'releases'));
+    const snapshot = await getDocs(colRef);
+    let releases = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  
+    releases = shuffleArray(releases); // Mélange les releases
+  
+    for (let release of releases) {
+      const colMusic = query(collection(database as any, 'releases', release.id, 'musics'));
+      const snapshotMusic = await getDocs(colMusic);
+      const musics = snapshotMusic.docs.map((doc) => doc.data());
+  
       for (let music of musics) {
-        if (
-          !music.name.toLowerCase().includes('inst') &&
-          (await canVideoBeEmbedded(music.videoId, config.public.YOUTUBE_API_KEY))
-        ) {
-          selectedMusic = music
-          break
+        const isEmbeddable = await canVideoBeEmbedded(music.videoId, config.public.YOUTUBE_API_KEY);
+        if (!music.name.toLowerCase().includes('inst') && isEmbeddable) {
+          return music; // Retourne immédiatement dès qu'une musique correspondante est trouvée
         }
       }
     }
-
-    return selectedMusic
-  }
+  
+    // Si aucune musique correspondante n'est trouvée après avoir parcouru toutes les releases
+    return null;
+  };
+  
+  
+  
 
   /** Release **/
   const updateRelease = async (id: string, data: any) => {

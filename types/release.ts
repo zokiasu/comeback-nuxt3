@@ -9,7 +9,6 @@ export interface Release {
   type: string
   year: Number
   needToBeVerified: boolean
-  platforms: string[]
   platformList: {
     name: string
     link: string
@@ -18,5 +17,6 @@ export interface Release {
   image: string
   artistsId: string
   artistsName: string
-  musics: any[]
+  artists: Partial<Artist>[]
+  musics: Partial<Music>[]
 }
