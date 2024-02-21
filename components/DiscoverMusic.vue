@@ -36,7 +36,7 @@ const playVideo = (videoId: any) => {
           />
           <NuxtImg
             :alt="music.name"
-            :src="music.thumbnails[3].url"
+            :src="music.thumbnails[2].url"
             @load="imageLoaded = true"
             class="h-full w-full rounded object-cover"
           />
@@ -50,6 +50,9 @@ const playVideo = (videoId: any) => {
               {{ music.artists[0].name }}
             </p>
           </div>
+      <div>
+        {{ music.thumbnails[2].url }}
+      </div>
           <div class="flex justify-end">
             <IconPause
               v-if="isPlayingVideo && idYoutubeVideo === music.videoId"
