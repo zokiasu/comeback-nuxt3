@@ -70,6 +70,28 @@
   position: absolute;
 }
 
+/* Personnalisation globale de la scrollbar */
+.scrollBarLight::-webkit-scrollbar {
+  width: 5px; /* Largeur de la scrollbar */
+}
+
+/* Le fond de la track de la scrollbar (partie sur laquelle la thumb se déplace) */
+.scrollBarLight::-webkit-scrollbar-track {
+    background: transparent; /* Rend le fond de la track transparent */
+}
+
+/* La thumb de la scrollbar (la partie que l'on déplace) */
+.scrollBarLight::-webkit-scrollbar-thumb {
+    background: white; /* Couleur de la thumb */
+    border-radius: 2.5px; /* Arrondi les bords de la thumb pour un aspect plus doux */
+}
+
+/* Pour Firefox */
+.scrollBarLight {
+  scrollbar-width: thin; /* "auto" ou "thin" */
+  scrollbar-color: white transparent; /* Couleur de la thumb et de la track */
+}
+
 /**VUE MULTISELECT**/
 
 fieldset[disabled] .multiselect {

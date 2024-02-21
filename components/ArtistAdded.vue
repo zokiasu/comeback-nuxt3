@@ -11,7 +11,7 @@ const { artists } = defineProps({
   <CardDefault name="Artist added">
     <div
       v-if="artists.length"
-      class="grid grid-cols-2 gap-5 py-5 md:grid-cols-4 xl:grid-cols-8"
+      class="relative w-full flex gap-5 snap-x snap-mandatory overflow-x-auto py-5 scrollBarLight"
     >
       <CardArtist
         v-for="artist in artists"
@@ -21,7 +21,7 @@ const { artists } = defineProps({
         :id="artist.id"
       />
     </div>
-    <div v-else class="grid grid-cols-2 gap-5 py-5 md:grid-cols-4 xl:grid-cols-8">
+    <div v-else class="relative w-full flex gap-5 snap-x snap-mandatory overflow-x-auto py-5 scrollBarLight">
       <SkeletonArtist v-for="i in 8" :key="`skeleton_artist_` + i" />
     </div>
   </CardDefault>
