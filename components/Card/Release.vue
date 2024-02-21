@@ -65,7 +65,8 @@ const loadingDone = () => {
       <div class="group relative">
         <div
           ref="skeleton"
-          class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"
+          class="absolute w-full h-full inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"
+          :class="size"
         ></div>
         <NuxtImg
           :src="image"

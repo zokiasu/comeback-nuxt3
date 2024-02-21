@@ -10,9 +10,9 @@ const { releases } = defineProps({
   <CardDefault name="Recent Releases">
     <div
       v-if="releases.length > 0"
-      class="grid grid-cols-2 gap-5 py-5 md:grid-cols-4 xl:grid-cols-8"
+      class="relative w-full flex gap-5 snap-x snap-mandatory overflow-x-auto py-5 scrollBarLight"
     >
-      <CardRelease
+      <!-- <CardRelease
         v-for="release in releases"
         :key="release.id"
         :id="release.id"
@@ -23,11 +23,15 @@ const { releases } = defineProps({
         :artistsId="release.artistsId"
         :artistsName="release.artistsName"
         :displayDate="true"
-        size="min-w-[8rem] max-w-[10rem]"
+        size="min-w-[8rem] max-w-[10rem] snap-start"
+      /> -->
+      <CardObject 
+        v-for="release in releases"
+        :key="release.id"
       />
     </div>
-    <div v-else class="grid grid-cols-2 gap-5 py-5 md:grid-cols-4 xl:grid-cols-8">
-      <SkeletonRelease v-for="i in 8" :key="`skeleton_release_` + i" />
+    <div v-else class="relative w-full flex gap-5 snap-x snap-mandatory overflow-x-auto py-5 scrollBarLight">
+      <SkeletonRelease v-for="i in 8" :key="`skeleton_release_` + i" class="snap-start min-w-[10rem] max-w-[10rem]" />
     </div>
   </CardDefault>
 </template>
