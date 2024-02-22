@@ -75,13 +75,13 @@ const loadingDone = () => {
 <template>
   <NuxtLink
     :to="`/artist/${artist.id}`"
-    class="group flex w-full flex-col overflow-hidden rounded-lg transition-all duration-500 ease-in-out hover:drop-shadow-lg md:flex-row"
+    class="group flex w-full overflow-hidden rounded transition-all duration-500 ease-in-out hover:drop-shadow-lg"
   >
-    <div class="flex h-full w-full items-center space-x-5 bg-quinary py-3 md:p-3">
-      <div class="relative hidden lg:block">
+    <div class="flex h-full min-w-[82%] md:max-w-[82%] overflow-hidden items-center md:space-x-3 bg-quinary py-1 px-3 sm:p-2">
+      <div class="relative hidden sm:block">
         <div
           ref="skeleton"
-          class="absolute inset-0 z-10 mx-auto aspect-square h-10 w-10 animate-pulse rounded-full bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"
+          class="absolute inset-0 z-10 mx-auto aspect-square h-8 w-8 rounded-lg bg-primary object-cover transition-all duration-1000 ease-in-out"
         ></div>
         <NuxtImg
           :src="artist.image"
@@ -89,24 +89,25 @@ const loadingDone = () => {
           format="webp"
           loading="lazy"
           @load="loadingDone"
-          class="shadowCard h-10 w-10 rounded-full object-cover"
+          class="h-8 w-8 min-w-8 rounded-full object-cover"
         />
       </div>
-      <div>
+      <div class="flex gap-1 w-full md:pr-5 items-center">
         <h2
           class="text-xs font-semibold transition-all duration-300 ease-in-out group-hover:text-primary lg:text-sm"
         >
-          {{ artist.name }}'s news
+          {{ artist.name }}
         </h2>
-        <p class="text-xs">{{ message }}</p>
+        <p>-</p>
+        <p class="text-xs truncate">{{ message }}</p>
       </div>
     </div>
     <div
-      class="-mt-0.5 flex min-w-[5rem] items-center justify-center bg-quaternary px-3 py-1 text-center md:mt-0 md:py-0"
+      class="-mt-0.5 flex min-w-[18%] items-center justify-center bg-quaternary px-3 py-1 text-center md:mt-0 md:py-0"
     >
       <p
         v-if="!isDatePassed(date) && !isSameDate(date)"
-        class="my-auto whitespace-nowrap text-xl font-bold"
+        class="my-auto whitespace-nowrap text-lg md:text-xl font-bold"
       >
         D-{{ daysUntil(date) }}
       </p>

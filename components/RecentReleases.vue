@@ -10,7 +10,7 @@ const { releases } = defineProps({
   <CardDefault name="Recent Releases">
     <div
       v-if="releases.length > 0"
-      class="relative w-full flex gap-5 snap-x snap-mandatory overflow-x-auto py-5 scrollBarLight"
+      class="relative w-full pb-5 flex justify-between gap-5 snap-x snap-mandatory overflow-x-auto scrollBarLight"
     >
       <!-- <CardRelease
         v-for="release in releases"
@@ -30,7 +30,7 @@ const { releases } = defineProps({
         :key="release.id"
       />
     </div>
-    <div v-else class="relative w-full flex gap-5 snap-x snap-mandatory overflow-x-auto py-5 scrollBarLight">
+    <div v-else class="relative w-full pb-5 flex justify-between gap-5 snap-x snap-mandatory overflow-x-auto scrollBarLight">
       <SkeletonRelease v-for="i in 8" :key="`skeleton_release_` + i" class="snap-start min-w-[10rem] max-w-[10rem]" />
     </div>
   </CardDefault>

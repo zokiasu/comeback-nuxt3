@@ -50,9 +50,6 @@ const playVideo = (videoId: any) => {
               {{ music.artists[0].name }}
             </p>
           </div>
-      <div>
-        {{ music.thumbnails[2].url }}
-      </div>
           <div class="flex justify-end">
             <IconPause
               v-if="isPlayingVideo && idYoutubeVideo === music.videoId"
