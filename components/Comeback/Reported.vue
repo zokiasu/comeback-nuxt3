@@ -36,7 +36,7 @@ onBeforeUnmount(() => {
   <CardDefault name="Comeback reported" :class="{ hidden: !comebackList }">
     <div
       v-if="comebackList.length"
-      class="grid grid-cols-1 gap-2 md:grid-cols-2 2xl:grid-cols-3"
+      class="grid grid-cols-1 gap-2 md:grid-cols-2 2xl:grid-cols-3 mb-5"
     >
       <CardNews
         v-for="comeback in comebackList.slice(0, maxDisplay)"
@@ -53,22 +53,24 @@ onBeforeUnmount(() => {
         class="h-12 rounded"
       />
     </div>
-    <div class="mt-5 text-center">
+    <div class="flex w-full justify-center">
       <button
         v-if="comebackList.length != maxDisplay && comebackList.length >= maxDisplay"
-        class="w-fit font-semibold"
+        type="button"
+        class="flex gap-1 items-center w-fit font-semibold border border-tertiary rounded p-1"
         @click="maxDisplay = comebackList.length"
       >
-        <p>See More</p>
-        <IconArrowDown class="mx-auto h-5 w-5" />
+        <!-- <p>See More</p> -->
+        <IconPlus class="mx-auto h-3 w-3" />
       </button>
       <button
         v-if="comebackList.length == maxDisplay && comebackList.length >= maxDisplay"
-        class="w-fit font-semibold"
+        type="button"
+        class="flex gap-1 items-center w-fit font-semibold border border-tertiary rounded p-1"
         @click="maxDisplay = minDisplay"
       >
-        <IconArrowUp class="mx-auto h-5 w-5" />
-        <p>See Less</p>
+        <!-- <p>See Less</p> -->
+        <IconMinus class="mx-auto h-3 w-3" />
       </button>
     </div>
   </CardDefault>

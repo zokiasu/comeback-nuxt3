@@ -77,7 +77,7 @@ const loadingDone = () => {
     :to="`/artist/${artist.id}`"
     class="group flex w-full overflow-hidden rounded transition-all duration-500 ease-in-out hover:drop-shadow-lg"
   >
-    <div class="flex h-full min-w-[82%] md:max-w-[82%] overflow-hidden items-center md:space-x-3 bg-quinary py-1 px-3 sm:p-2">
+    <div class="flex gap-2 h-full min-w-[82%] md:max-w-[82%] overflow-hidden items-center md:space-x-3 bg-quinary py-1 px-3 sm:p-2">
       <div class="relative hidden sm:block">
         <div
           ref="skeleton"

@@ -4,7 +4,6 @@ const music = ref({} as any)
 
 onMounted(async () => {
   music.value = await getRandomMusic()
-  console.log('music', music.value)
 })
 
 const idYoutubeVideo = useIdYoutubeVideo()
@@ -20,6 +19,11 @@ const playVideo = (videoId: any) => {
   musicNamePlaying.value = music.value.name
   authorNamePlaying.value = music.value.artists[0].name
 }
+
+defineExpose({
+  getRandomMusic,
+  music
+})
 </script>
 
 <template>
