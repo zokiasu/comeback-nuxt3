@@ -24,6 +24,11 @@ const { artists } = defineProps({
         v-for="artist in artists"
         :key="artist.id"
         isArtist
+        :artistId="artist.id"
+        :mainTitle="artist.name"
+        :subTitle="artist.type"
+        :image="artist.image"
+        :objectLink="`/artist/${artist.id}`"
         class="snap-start"
       />
     </div>

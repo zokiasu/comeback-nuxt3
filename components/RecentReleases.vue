@@ -5,6 +5,8 @@ const { releases } = defineProps({
     required: true,
   },
 })
+
+console.log('releases', releases)
 </script>
 <template>
   <CardDefault name="Recent Releases">
@@ -12,22 +14,15 @@ const { releases } = defineProps({
       v-if="releases.length > 0"
       class="relative w-full pb-5 flex justify-between gap-5 snap-x snap-mandatory overflow-x-auto scrollBarLight"
     >
-      <!-- <CardRelease
-        v-for="release in releases"
-        :key="release.id"
-        :id="release.id"
-        :image="release.image"
-        :date="release.date"
-        :name="release.name"
-        :type="release.type"
-        :artistsId="release.artistsId"
-        :artistsName="release.artistsName"
-        :displayDate="true"
-        size="min-w-[8rem] max-w-[10rem] snap-start"
-      /> -->
       <CardObject 
         v-for="release in releases"
         :key="release.id"
+        :artistId="release.artistsId"
+        :mainTitle="release.name"
+        :subTitle="release.artistsName"
+        :image="release.image"
+        :releaseDate="release.date"
+        :objectLink="`/release/${release.id}`"
       />
     </div>
     <div v-else class="relative w-full pb-5 flex justify-between gap-5 snap-x snap-mandatory overflow-x-auto scrollBarLight">

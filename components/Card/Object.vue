@@ -15,16 +15,26 @@
         @load="imageLoaded = true"
         :class="isArtist ? 'rounded-full' : 'rounded'"
       />
+      <div v-if="!isArtist && releaseDate" class="absolute top-1 left-1 text-xs uppercase bg-quaternary px-1.5 rounded opacity-0 group-hover:opacity-100">
+        <p>
+          {{ formatDate(releaseDate) }}
+        </p>
+      </div>
+      <div v-if="!isArtist && releaseType" class="absolute bottom-1 right-1 text-xs uppercase bg-quaternary px-1.5 rounded opacity-0 group-hover:opacity-100">
+        <p>
+          {{ releaseType }}
+        </p>
+      </div>
     </div>
-    <div class="space-y-1.5">
+    <div class="space-y-1.5 text-xs">
       <p class="font-semibol truncate group-hover:underline">
         {{ mainTitle }}
       </p>
-      <p v-if="isArtist || isReleaseDisplay" class="truncate text-sm">{{ subTitle }}</p>
+      <p v-if="isArtist || isReleaseDisplay" class="truncate">{{ subTitle }}</p>
       <LazyNuxtLink
         v-else
         :to="`/artist/${artistId}`"
-        class="truncate text-sm hover:underline lg:text-base"
+        class="truncate hover:underline"
       >
         {{ subTitle }}
       </LazyNuxtLink>
@@ -57,10 +67,22 @@ const { isArtist, artistId, mainTitle, subTitle, image, objectLink } = definePro
     type: String,
     default: '/',
   },
+  releaseDate: {
+    type: Object
+  },
+  releaseType: {
+    type: String,
+    default: 'album',
+  },
   isReleaseDisplay: {
     type: Boolean,
     default: false,
   },
 })
 const imageLoaded = ref(false)
+
+const formatDate = (date) => {
+  const options = { day: '2-digit', month: '2-digit', year: '2-digit' }
+  return new Date(date.seconds * 1000).toLocaleDateString('fr-FR', options)
+}
 </script>
