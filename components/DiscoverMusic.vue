@@ -4,7 +4,6 @@ const music = ref({} as any)
 
 onMounted(async () => {
   music.value = await getRandomMusic()
-  console.log('music', music.value)
 })
 
 const idYoutubeVideo = useIdYoutubeVideo()
@@ -20,6 +19,11 @@ const playVideo = (videoId: any) => {
   musicNamePlaying.value = music.value.name
   authorNamePlaying.value = music.value.artists[0].name
 }
+
+defineExpose({
+  getRandomMusic,
+  music
+})
 </script>
 
 <template>
@@ -50,9 +54,6 @@ const playVideo = (videoId: any) => {
               {{ music.artists[0].name }}
             </p>
           </div>
-      <div>
-        {{ music.thumbnails[2].url }}
-      </div>
           <div class="flex justify-end">
             <IconPause
               v-if="isPlayingVideo && idYoutubeVideo === music.videoId"

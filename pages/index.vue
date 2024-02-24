@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Timestamp } from 'firebase/firestore'
 
-const { getNextComebacks, getLastReleases, getLastArtistsAdded } = useFirebaseFunction()
+const { getNextComebacks, getLastReleases, getLastArtistsAdded, getRandomMusic } = useFirebaseFunction()
 
 const comebacks = ref([] as any[])
 const artists = ref([] as any[])
@@ -122,17 +122,17 @@ useHead({
     <!-- Home Header -->
     <HomeSlider :news-today="comebacksToday" />
     <!-- Home Body -->
-    <section class="container mx-auto space-y-16 px-10 py-16 2xl:space-y-20">
+    <section class="container mx-auto space-y-16 px-10 py-16 2xl:space-y-28">
       <!-- Comeback Reported List -->
       <ComebackReported :comebackList="comebacks" />
       <!-- Discover Music -->
-      <div class="space-y-5 xl:space-y-8 2xl:space-y-14">
+      <div class="space-y-8 xl:space-y-110 2xl:space-y-14">
         <p class="text-center text-xl font-bold lg:text-4xl">Discover Music</p>
         <div class="grid grid-cols-2 gap-5 xl:grid-cols-4">
-          <LazyDiscoverMusic />
-          <LazyDiscoverMusic />
-          <LazyDiscoverMusic />
-          <LazyDiscoverMusic />
+          <LazyDiscoverMusic ref="discoverOne" />
+          <LazyDiscoverMusic ref="discoverTwo" />
+          <LazyDiscoverMusic ref="discoverThree" />
+          <LazyDiscoverMusic ref="discoverFour" />
         </div>
       </div>
       <!-- Recent Release -->
