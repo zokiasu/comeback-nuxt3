@@ -13,13 +13,6 @@ const { artists } = defineProps({
       v-if="artists.length"
       class="relative w-full pb-5 flex justify-between gap-5 snap-x snap-mandatory overflow-x-auto scrollBarLight"
     >
-      <!-- <CardArtist
-        v-for="artist in artists"
-        :key="artist.id"
-        :name="artist.name"
-        :image="artist.image"
-        :id="artist.id"
-      /> -->
       <CardObject 
         v-for="artist in artists"
         :key="artist.id"

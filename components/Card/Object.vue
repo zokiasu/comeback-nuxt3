@@ -15,12 +15,20 @@
         @load="imageLoaded = true"
         :class="isArtist ? 'rounded-full' : 'rounded'"
       />
-      <div v-if="!isArtist && releaseDate" class="absolute top-1 left-1 text-xs uppercase bg-quaternary px-1.5 rounded opacity-0 group-hover:opacity-100">
+      <div 
+      v-if="!isArtist && releaseDate" 
+      class="absolute top-1 left-1 text-xs uppercase bg-quaternary px-1.5 rounded"
+      :class="dateAlwaysDisplay ? '':'opacity-0 group-hover:opacity-100'"
+      >
         <p>
           {{ formatDate(releaseDate) }}
         </p>
       </div>
-      <div v-if="!isArtist && releaseType" class="absolute bottom-1 right-1 text-xs uppercase bg-quaternary px-1.5 rounded opacity-0 group-hover:opacity-100">
+      <div 
+      v-if="!isArtist && releaseType" 
+      class="absolute bottom-1 right-1 text-xs uppercase bg-quaternary px-1.5 rounded"
+      :class="dateAlwaysDisplay ? '':'opacity-0 group-hover:opacity-100'"
+      >
         <p>
           {{ releaseType }}
         </p>
@@ -78,6 +86,10 @@ const { isArtist, artistId, mainTitle, subTitle, image, objectLink } = definePro
     type: Boolean,
     default: false,
   },
+  dateAlwaysDisplay: {
+    type: Boolean,
+    default: false
+  }
 })
 const imageLoaded = ref(false)
 

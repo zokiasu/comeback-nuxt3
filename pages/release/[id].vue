@@ -204,23 +204,17 @@ useHead({
         <section
           class="remove-scrollbar flex gap-5 overflow-hidden overflow-x-scroll scroll-smooth px-5 md:px-0 lg:justify-between lg:gap-2"
         >
-          <!-- <LazyCardRelease
-            v-for="artRelease in artistRelease"
-            :key="`artistRelease_` + artRelease.id"
-            :id="artRelease.id"
-            :image="artRelease.image"
-            :date="artRelease.date"
-            :name="artRelease.name"
-            :type="artRelease.type"
-            :artistsId="artRelease.artistsId"
-            :artistsName="artRelease.artistsName"
-            :displayDate="true"
-            :yearReleased="artRelease.year"
-          /> -->
           <CardObject 
-            v-for="artRelease in artistRelease"
-            :key="`artistRelease_` + artRelease.id"
-          />
+              v-for="release in artistRelease"
+              :key="release.id"
+              :artistId="release.artistsId"
+              :mainTitle="release.name"
+              :subTitle="release.artistsName"
+              :image="release.image"
+              :releaseDate="release.date"
+              :objectLink="`/release/${release.id}`"
+              isReleaseDisplay
+            />
         </section>
       </section>
     </section>
