@@ -45,9 +45,9 @@ defineExpose({
             class="h-full w-full rounded object-cover"
           />
         </div>
-        <div class="absolute inset-0 flex flex-col justify-between bg-quinary/70 p-3">
+        <div class="absolute inset-0 flex flex-col justify-between bg-quinary/70 p-2 lg:p-3">
           <div class="space-y-1 text-left">
-            <p v-if="music.name" class="font-semibold text-xl">
+            <p v-if="music.name" class="font-semibold lg:text-xl">
               {{ music.name }}
             </p>
             <p v-if="music.artists && music.artists.length > 0">
@@ -57,11 +57,11 @@ defineExpose({
           <div class="flex justify-end">
             <IconPause
               v-if="isPlayingVideo && idYoutubeVideo === music.videoId"
-              class="h-10 w-10 group-hover:text-primary transition-all duration-500 ease-in-out"
+              class="h-8 w-8 md:h-10 md:w-10 group-hover:text-primary transition-all duration-500 ease-in-out"
             />
             <IconPlay
               v-else
-              class="h-10 w-10 group-hover:text-primary transition-all duration-500 ease-in-out"
+              class="h-8 w-8 md:h-10 md:w-10 group-hover:text-primary transition-all duration-500 ease-in-out"
             />
           </div>
         </div>

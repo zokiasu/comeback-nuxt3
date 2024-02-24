@@ -26,7 +26,16 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
     'nuxt-swiper',
+    '@nuxtjs/algolia'
   ],
+
+  algolia: {
+    applicationId: process.env.ALGOLIA_APPLICATION_ID,
+    apiKey: process.env.ALGOLIA_API_KEY,
+    indexName: process.env.ALGOLIA_INDEX_NAME,
+    useFetch: true,
+    instantSearch: true,
+  },
 
   devtools: {
     enabled: true,

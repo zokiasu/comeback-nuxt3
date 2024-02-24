@@ -77,7 +77,7 @@ useHead({
         v-for="year in yearList"
         :key="year"
         @click="currentYear = year"
-        class="w-full h-full px-4 py-2.5 snap-start"
+        class="w-full h-full px-4 py-2.5 rounded snap-start"
         :class="(currentYear == year) ? 'bg-primary':'bg-quaternary'"
       >
         {{ year }}
@@ -89,7 +89,7 @@ useHead({
         v-for="(month, index) in monthList"
         :key="month.original"
         @click="currentMonth = index"
-        class="w-full h-full px-4 py-2.5 snap-start"
+        class="w-full h-full px-4 py-2.5 rounded snap-start"
         :class="(currentMonth == index) ? 'bg-primary':'bg-quaternary'"
       >
         <p class="block md:hidden">{{ month.minify }}</p>
@@ -99,6 +99,8 @@ useHead({
     <transition-group
       name="fade"
       tag="div"
+      @before-enter="beforeEnter"
+      @beforeLeave="beforeLeave"
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-5 md:gap-3.5 pt-5"
     >
       <CardObject
@@ -116,9 +118,9 @@ useHead({
       />
     </transition-group>
     <div class="sticky w-full text-end bottom-16 md:bottom-5 xl:bottom-0">
-      <button ref="backTop" class="bg-quaternary w-fit shadow shadow-zinc-700 xl:absolute xl:bottom-3 lg:-right-20 2xl:-right-28 px-4 py-2.5 text-xs font-semibold hidden">
+      <a href="#" ref="backTop" class="bg-quaternary w-fit shadow shadow-zinc-700 xl:absolute xl:bottom-3 lg:-right-20 2xl:-right-28 px-4 py-2.5 text-xs font-semibold hidden">
         Back to top
-      </button>
+      </a>
     </div>
   </div>
 </template>
