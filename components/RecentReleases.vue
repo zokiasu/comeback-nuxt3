@@ -22,6 +22,7 @@ console.log('releases', releases)
         :subTitle="release.artistsName"
         :image="release.image"
         :releaseDate="release.date"
+        :releaseType="release.type"
         :objectLink="`/release/${release.id}`"
       />
     </div>
