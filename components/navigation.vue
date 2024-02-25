@@ -100,9 +100,9 @@ const signOut = async () => {
           <NuxtLink
             v-if="!isLogin"
             :to="`/authentification`"
-            class="bg-quaternary p-2 rounded"
+            class="bg-quaternary px-2 py-1 text-[0.875rem] rounded"
           >
-            <IconLogin class="w-3.5 h-3.5" />
+            Login
           </NuxtLink>
           <button
             v-else

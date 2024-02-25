@@ -202,7 +202,7 @@ useHead({
       <section v-if="artistRelease.length" class="space-y-2">
         <p class="font-black">Other releases by {{ release.artistsName }}</p>
         <section
-          class="remove-scrollbar flex gap-5 overflow-hidden overflow-x-scroll scroll-smooth px-5 md:px-0 lg:justify-between lg:gap-2"
+          class="remove-scrollbar flex gap-5 overflow-hidden overflow-x-scroll scroll-smooth lg:gap-3"
         >
           <CardObject 
               v-for="release in artistRelease"

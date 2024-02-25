@@ -1,5 +1,6 @@
 <script setup>
 import { Timestamp } from 'firebase/firestore'
+
 const releases = ref(null)
 const backTop = ref(null)
 const currentYear = ref(new Date().getFullYear())
@@ -75,8 +76,8 @@ useHead({
 </script>
 
 <template>
-  <div class="container mx-auto min-h-screen w-full h-fit space-y-1 p-3 md:p-5">
-    <div class="flex w-full gap-1 text-xs font-semibold snap-x snap-mandatory overflow-x-auto">
+  <div id="calendarPage" class="container mx-auto min-h-screen w-full h-fit space-y-1 p-3 md:p-5">
+    <div class="flex w-full gap-1 text-xs font-semibold snap-x snap-mandatory overflow-x-auto pb-1 scrollBarLight">
       <button
         :id="year" 
         v-for="year in yearList"
@@ -88,7 +89,7 @@ useHead({
         {{ year }}
       </button>
     </div>
-    <div class="flex w-full gap-1 text-xs font-semibold snap-x snap-mandatory overflow-x-auto">
+    <div v-if="yearList.length" class="flex w-full gap-1 text-xs font-semibold snap-x snap-mandatory overflow-x-auto pb-1 scrollBarLight">
       <button
         :id="month.original" 
         v-for="(month, index) in monthList"

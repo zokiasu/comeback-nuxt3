@@ -128,7 +128,7 @@ useHead({
           <transition-group 
             name="list-complete" 
             tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:grid-rows-1 xl:justify-start"
           >
             <CardObject 
               v-for="soloMember in members"
@@ -138,7 +138,6 @@ useHead({
               :mainTitle="soloMember.name"
               :image="soloMember.image"
               :objectLink="`/artist/${soloMember.id}`"
-              class="!min-w-20 !max-w-20 !p-1"
             />
           </transition-group>
         </CardDefault>
@@ -148,7 +147,7 @@ useHead({
           <transition-group
             name="list-complete"
             tag="div"
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:grid-rows-1 xl:justify-start"
           >
             <CardObject 
               v-for="release in artist.releases"
@@ -169,7 +168,7 @@ useHead({
           <transition-group 
             name="list-complete" 
             tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:grid-rows-1 xl:justify-start"
           >
             <CardObject 
               v-for="groupMember in subUnitMembers"
@@ -179,7 +178,6 @@ useHead({
               :mainTitle="groupMember.name"
               :image="groupMember.image"
               :objectLink="`/artist/${groupMember.id}`"
-              class="!min-w-20 !max-w-20 !p-1"
             />
           </transition-group>
         </CardDefault>
