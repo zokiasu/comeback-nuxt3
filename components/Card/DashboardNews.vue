@@ -27,14 +27,18 @@ const { id, message, artist, date, user, verified } = defineProps({
 })
 
 const skeleton = ref(null)
-const skeletonUser = ref(null)
 
 const loadingDone = () => {
-  skeleton.value.classList.add('opacity-0')
+  if(skeleton.value) skeleton.value.classList.add('opacity-0')
 }
 
-const loadingUserDone = () => {
-  skeletonUser.value.classList.add('opacity-0')
+const convertDate = (timestamp) => {
+  const date = new Date(timestamp?.seconds * 1000)
+  return date.toLocaleDateString('fr-FR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
 }
 
 const emit = defineEmits(['deleteNews'])
@@ -51,45 +55,25 @@ const deleteNews = () => {
         <p class="font-semibold">{{ artist.name }}</p>
         <NuxtLink :to="'/artist/' + artist.id" target="_blank">{{ artist.id }}</NuxtLink>
       </div>
-      <div class="relative">
-        <NuxtImg
-          v-if="artist.image"
-          :src="artist.image"
-          :alt="artist.name"
-          format="webp"
-          loading="lazy"
-          class="rounded"
-          @load="loadingDone"
-        />
-      </div>
-    </div>
-    <div>
-      <!-- <div class="space-y-2">
-        <ComebackLabel label="User" class="border-b border-zinc-500" />
-        <div class="relative">
-          <div
-            ref="skeletonUser"
-            class="absolute h-14 z-10 inset-0 rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out animate-pulse"
-          ></div>
-          <NuxtImg 
-            v-if="user.picture"
-            :src="user.picture" 
-            :alt="user.name" format="webp"
-            loading="lazy" 
-            class="rounded h-14 object-cover" 
-            @load="loadingUserDone"
-          />
-        </div>
-        <div>
-          <p class="font-semibold">{{ user.name }}</p>
-          <p class="text-xs truncate">{{ user.id }}</p>
-        </div>
-      </div> -->
+      <NuxtImg
+        v-if="artist.image"
+        :src="artist.image"
+        :alt="artist.name"
+        format="webp"
+        loading="lazy"
+        class="rounded"
+        @load="loadingDone"
+      />
     </div>
 
     <div>
       <ComebackLabel label="Message" class="border-b border-zinc-500" />
       <p>{{ message }}</p>
+    </div>
+
+    <div>
+      <ComebackLabel label="Date" class="border-b border-zinc-500" />
+      <p>{{ convertDate(date) }}</p>
     </div>
 
     <div class="grid grid-cols-2 gap-3">
@@ -105,11 +89,6 @@ const deleteNews = () => {
       >
         Delete
       </button>
-    </div>
-
-    <div class="flex w-full justify-between">
-      <p>{{ user.name }}</p>
-      <p></p>
     </div>
   </div>
 </template>

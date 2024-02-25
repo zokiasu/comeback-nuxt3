@@ -24,12 +24,12 @@ const { $firestore: db } = useNuxtApp()
 const artistFetch = ref(null)
 
 onMounted(async () => {
-  // artistFetch.value = await queryByCollection('artists')
-  onSnapshot(collection(db, 'artists'), (snapshot) => {
-    artistFetch.value = snapshot.docs.map((doc) => {
-      return { id: doc.id, ...doc.data() }
-    })
-  })
+  artistFetch.value = await queryByCollection('artists')
+  // onSnapshot(collection(db, 'artists'), (snapshot) => {
+  //   artistFetch.value = snapshot.docs.map((doc) => {
+  //     return { id: doc.id, ...doc.data() }
+  //   })
+  // })
 })
 
 const deleteArtist = async (id) => {
@@ -39,7 +39,7 @@ const deleteArtist = async (id) => {
     await deletebyDoc('artists', id)
       .then(() => {
         console.log('Document successfully deleted!')
-        // artistFetch.value.splice(index, 1)
+        artistFetch.value.splice(index, 1)
         toast.success('Artist Deleted', toastOption)
       })
       .catch((error) => {
