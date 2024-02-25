@@ -1,3 +1,49 @@
+<script setup>
+const { isArtist, artistId, mainTitle, subTitle, image, objectLink } = defineProps({
+  isArtist: {
+    type: Boolean,
+    default: false,
+  },
+  artistId: {
+    type: String,
+  },
+  mainTitle: {
+    type: String,
+  },
+  subTitle: {
+    type: String,
+  },
+  image: {
+    type: String,
+    default: 'https://picsum.photos/200/200',
+  },
+  objectLink: {
+    type: String,
+  },
+  releaseDate: {
+    type: Object
+  },
+  releaseType: {
+    type: String,
+    default: 'album',
+  },
+  isReleaseDisplay: {
+    type: Boolean,
+    default: false,
+  },
+  dateAlwaysDisplay: {
+    type: Boolean,
+    default: false
+  }
+})
+const imageLoaded = ref(false)
+
+const formatDate = (date) => {
+  const options = { day: '2-digit', month: '2-digit', year: '2-digit' }
+  return new Date(date.seconds * 1000).toLocaleDateString('fr-FR', options)
+}
+</script>
+
 <template>
   <NuxtLink
     :to="objectLink"
@@ -49,52 +95,3 @@
     </div>
   </NuxtLink>
 </template>
-
-<script setup>
-const { isArtist, artistId, mainTitle, subTitle, image, objectLink } = defineProps({
-  isArtist: {
-    type: Boolean,
-    default: false,
-  },
-  artistId: {
-    type: String,
-  },
-  mainTitle: {
-    type: String,
-    default: 'Main Title',
-  },
-  subTitle: {
-    type: String,
-    default: 'Subtitle',
-  },
-  image: {
-    type: String,
-    default: 'https://picsum.photos/200/200',
-  },
-  objectLink: {
-    type: String,
-    default: '/',
-  },
-  releaseDate: {
-    type: Object
-  },
-  releaseType: {
-    type: String,
-    default: 'album',
-  },
-  isReleaseDisplay: {
-    type: Boolean,
-    default: false,
-  },
-  dateAlwaysDisplay: {
-    type: Boolean,
-    default: false
-  }
-})
-const imageLoaded = ref(false)
-
-const formatDate = (date) => {
-  const options = { day: '2-digit', month: '2-digit', year: '2-digit' }
-  return new Date(date.seconds * 1000).toLocaleDateString('fr-FR', options)
-}
-</script>

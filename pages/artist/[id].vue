@@ -120,12 +120,16 @@ useHead({
         <SkeletonDefault class="h-5 w-2/6 rounded" />
         <SkeletonDefault class="h-5 w-2/5 rounded" />
       </div>
-      <p v-if="artist.description" class="max-w-6xl whitespace-pre-line leading-8">
+      <p v-if="artist.description" class="max-w-6xl whitespace-pre-line leading-6 md:leading-8 text-xs md:text-base">
         {{ artist.description }}
       </p>
       <div v-if="members?.length">
-        <CardDefault name="Members" class="space-y-3">
-          <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
+        <CardDefault name="Members">
+          <transition-group 
+            name="list-complete" 
+            tag="div" 
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:grid-rows-1 xl:justify-start"
+          >
             <CardObject 
               v-for="soloMember in members"
               :key="`artistMembers_` + soloMember.id"
@@ -134,35 +138,38 @@ useHead({
               :mainTitle="soloMember.name"
               :image="soloMember.image"
               :objectLink="`/artist/${soloMember.id}`"
-              class="snap-start"
             />
           </transition-group>
         </CardDefault>
       </div>
       <div v-if="artist.releases?.length">
-        <CardDefault name="Releases" class="space-y-3">
+        <CardDefault name="Releases">
           <transition-group
             name="list-complete"
             tag="div"
-            class="flex flex-wrap justify-between gap-3 lg:justify-start"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:pb-1 xl:grid-rows-1 xl:justify-start"
           >
             <CardObject 
               v-for="release in artist.releases"
               :key="release.id"
               :artistId="release.artistsId"
               :mainTitle="release.name"
-              :subTitle="release.artistsName"
               :image="release.image"
               :releaseDate="release.date"
               :objectLink="`/release/${release.id}`"
               isReleaseDisplay
+              dateAlwaysDisplay
             />
           </transition-group>
         </CardDefault>
       </div>
       <div v-if="subUnitMembers?.length">
-        <CardDefault name="Subunit" class="space-y-3">
-          <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
+        <CardDefault name="Subunit">
+          <transition-group 
+            name="list-complete" 
+            tag="div" 
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:pb-1 xl:grid-rows-1 xl:justify-start"
+          >
             <CardObject 
               v-for="groupMember in subUnitMembers"
               :key="`artistMembers_` + groupMember.id"
@@ -171,14 +178,17 @@ useHead({
               :mainTitle="groupMember.name"
               :image="groupMember.image"
               :objectLink="`/artist/${groupMember.id}`"
-              class="snap-start"
             />
           </transition-group>
         </CardDefault>
       </div>
       <div v-if="artist.groups?.length">
-        <CardDefault name="Group" class="space-y-3">
-          <transition-group name="list-complete" tag="div" class="flex flex-wrap gap-3">
+        <CardDefault name="Group">
+          <transition-group 
+            name="list-complete" 
+            tag="div" 
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 pb-1"
+          >
             <CardObject 
               v-for="group in artist.groups"
               :key="`artistMembers_` + group.id"
@@ -187,7 +197,7 @@ useHead({
               :mainTitle="group.name"
               :image="group.image"
               :objectLink="`/artist/${group.id}`"
-              class="snap-start"
+              class="!min-w-20 !max-w-20 !p-1"
             />
           </transition-group>
         </CardDefault>

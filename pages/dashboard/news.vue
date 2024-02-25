@@ -1,23 +1,7 @@
 <script setup>
 import { useToast } from 'vue-toastification'
+
 const toast = useToast()
-const toastOption = {
-  position: 'top-right',
-  timeout: 5000,
-  closeOnClick: true,
-  pauseOnFocusLoss: false,
-  pauseOnHover: true,
-  draggable: true,
-  draggablePercent: 0.6,
-  showCloseButtonOnHover: false,
-  hideProgressBar: false,
-  closeButton: 'button',
-  icon: true,
-  rtl: false,
-  transition: 'Vue-Toastification__bounce',
-  maxToasts: 5,
-  newestOnTop: true,
-}
 const newsFetch = ref(null)
 
 const search = ref('')
@@ -40,15 +24,15 @@ const deleteNews = async (id) => {
     await deletebyDoc('news', id)
       .then(async () => {
         console.log('Document successfully deleted!')
-        // newsFetch.value.splice(index, 1)
-        toast.success('News deleted', toastOption)
+        newsFetch.value.splice(index, 1)
+        toast.success('News deleted')
       })
       .catch((error) => {
         console.error('Error removing document: ', error)
-        toast.error('Error Removing News', toastOption)
+        toast.error('Error Removing News')
       })
   } else {
-    toast.error('News Not Found', toastOption)
+    toast.error('News Not Found')
   }
 }
 
@@ -56,14 +40,15 @@ const filteredNewsList = computed(() => {
   if (page != 1) page.value = 1
   if (!newsFetch.value) return newsFetch.value
   if (!search.value) {
+    console.log('newsFetch.value', newsFetch.value)
     return newsFetch.value.sort((a, b) => {
       if (sort.value === 'createdAt') {
         if (!invertSort.value) return a.createdAt - b.createdAt
         return b.createdAt - a.createdAt
       }
       if (sort.value === 'date') {
-        const aDate = new Date(a.date.seconds * 1000)
-        const bDate = new Date(b.date.seconds * 1000)
+        const aDate = new Date(a?.date?.seconds * 1000)
+        const bDate = new Date(b?.date?.seconds * 1000)
         if (!invertSort.value) return aDate - bDate
         return bDate - aDate
       }
@@ -84,8 +69,8 @@ const filteredNewsList = computed(() => {
           return b.createdAt - a.createdAt
         }
         if (sort.value === 'date') {
-          const aDate = new Date(a.date.seconds * 1000)
-          const bDate = new Date(b.date.seconds * 1000)
+          const aDate = new Date(a?.date?.seconds * 1000)
+          const bDate = new Date(b?.date?.seconds * 1000)
           if (!invertSort.value) return aDate - bDate
           return bDate - aDate
         }

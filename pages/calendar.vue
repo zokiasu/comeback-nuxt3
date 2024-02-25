@@ -1,5 +1,6 @@
 <script setup>
 import { Timestamp } from 'firebase/firestore'
+
 const releases = ref(null)
 const backTop = ref(null)
 const currentYear = ref(new Date().getFullYear())
@@ -49,6 +50,11 @@ function handleScrollCalendar() {
   }
 }
 
+function beforeEnter(el) {
+  el.style.opacity = 0
+  el.style.transform = 'translateY(30px)'
+}
+
 watch([currentYear, currentMonth], async () => {
   startDate.value = new Date(currentYear.value, currentMonth.value, 1)
   endDate.value = new Date(currentYear.value, currentMonth.value + 1, 0)
@@ -70,26 +76,26 @@ useHead({
 </script>
 
 <template>
-  <div class="container mx-auto min-h-screen w-full h-fit space-y-1 p-3 md:p-5">
-    <div class="flex w-full gap-1 text-xs font-semibold snap-x snap-mandatory overflow-x-auto">
+  <div id="calendarPage" class="container mx-auto min-h-screen w-full h-fit space-y-1 p-3 md:p-5">
+    <div class="flex w-full gap-1 text-xs font-semibold snap-x snap-mandatory overflow-x-auto pb-1 scrollBarLight">
       <button
         :id="year" 
         v-for="year in yearList"
         :key="year"
         @click="currentYear = year"
-        class="w-full h-full px-4 py-2.5 snap-start"
+        class="w-full h-full px-4 py-2.5 rounded snap-start"
         :class="(currentYear == year) ? 'bg-primary':'bg-quaternary'"
       >
         {{ year }}
       </button>
     </div>
-    <div class="flex w-full gap-1 text-xs font-semibold snap-x snap-mandatory overflow-x-auto">
+    <div v-if="yearList.length" class="flex w-full gap-1 text-xs font-semibold snap-x snap-mandatory overflow-x-auto pb-1 scrollBarLight">
       <button
         :id="month.original" 
         v-for="(month, index) in monthList"
         :key="month.original"
         @click="currentMonth = index"
-        class="w-full h-full px-4 py-2.5 snap-start"
+        class="w-full h-full px-4 py-2.5 rounded snap-start"
         :class="(currentMonth == index) ? 'bg-primary':'bg-quaternary'"
       >
         <p class="block md:hidden">{{ month.minify }}</p>
@@ -97,8 +103,9 @@ useHead({
       </button>
     </div>
     <transition-group
-      name="fade"
       tag="div"
+      leave-active-class="animate__bounceOut"
+      enter-active-class="animate__bounceIn"
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-5 md:gap-3.5 pt-5"
     >
       <CardObject
@@ -115,34 +122,10 @@ useHead({
         class="!min-w-full"
       />
     </transition-group>
-    <div class="sticky w-full text-end bottom-16 md:bottom-5 xl:bottom-0">
-      <button ref="backTop" class="bg-quaternary w-fit shadow shadow-zinc-700 xl:absolute xl:bottom-3 lg:-right-20 2xl:-right-28 px-4 py-2.5 text-xs font-semibold hidden">
+    <div class="sticky w-full text-center py-5 lg:py-0 lg:text-end bottom-16 md:bottom-5 xl:bottom-0">
+      <a href="#" ref="backTop" class="bg-quaternary w-fit shadow shadow-zinc-700 xl:absolute xl:bottom-3 lg:-right-20 2xl:-right-28 px-4 py-2.5 text-xs font-semibold hidden">
         Back to top
-      </button>
+      </a>
     </div>
   </div>
 </template>
-
-<style scoped>
-.list-move,
-/* apply transition to moving elements */
-.list-enter-active {
-  transition: all 1s ease;
-}
-
-.list-leave-active {
-  transition: all 0.5s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-/* ensure leaving items are taken out of layout flow so that moving
-   animations can be calculated correctly. */
-.list-leave-active {
-  position: absolute;
-}
-</style>
