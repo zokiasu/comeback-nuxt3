@@ -156,6 +156,7 @@ useHead({
               :mainTitle="release.name"
               :image="release.image"
               :releaseDate="release.date"
+              :releaseType="release.type"
               :objectLink="`/release/${release.id}`"
               isReleaseDisplay
               dateAlwaysDisplay
