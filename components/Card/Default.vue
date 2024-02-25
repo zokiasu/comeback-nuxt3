@@ -5,12 +5,16 @@ const { name } = defineProps({
     type: String,
     required: false,
   },
+  additionalClass: {
+    type: String,
+    required: false,
+  },
 })
 </script>
 
 <template>
   <div>
-    <p class="border-b border-zinc-800 pb-1 text-sm font-semibold uppercase">
+    <p class="pb-2 text-sm font-semibold uppercase" :class="additionalClass">
       {{ name }}
     </p>
     <slot />

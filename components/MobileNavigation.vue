@@ -3,6 +3,7 @@ import * as Mdl from '@kouts/vue-modal'
 
 const { Modal } = Mdl
 const showModal = ref(false)
+const showModalAlgolia = ref(false)
 const isPlayingVideo = useIsPlayingVideo()
 
 const { artistFetch, isAdmin, isLogin } = defineProps([
@@ -32,12 +33,12 @@ const { artistFetch, isAdmin, isLogin } = defineProps([
       >
         <IconCalendar class="mx-auto h-5 w-5" />
       </NuxtLink>
-      <NuxtLink
-        :to="`/artist`"
+      <button
+        @click="showModalAlgolia = true"
         class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50"
       >
         <IconSearch class="mx-auto h-5 w-5" />
-      </NuxtLink>
+      </button>
       <NuxtLink
         v-if="isAdmin"
         :to="`/dashboard/artist`"
@@ -72,6 +73,20 @@ const { artistFetch, isAdmin, isLogin } = defineProps([
       :bg-out-class="`animate__fadeOutDown`"
     >
       <NewsCreation :artistList="artistFetch" @close-modal="showModal = false" />
+    </Modal>
+    <Modal
+      v-model="showModalAlgolia"
+      title="Search Artist"
+      wrapper-class="modal-wrapper"
+      :modal-class="`modal-lg`"
+      :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
+      :in-class="`animate__bounceIn`"
+      :out-class="`animate__bounceOut`"
+      bg-class="animate__animated"
+      :bg-in-class="`animate__fadeInUp`"
+      :bg-out-class="`animate__fadeOutDown`"
+    >
+      <Algolia ref="algolia" @close-modal="showModalAlgolia = false" />
     </Modal>
   </div>
 </template>

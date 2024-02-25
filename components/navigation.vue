@@ -12,7 +12,9 @@ const { Modal } = Mdl
 const routeN = useRoute()
 
 const navbar = ref(null)
+const algolia = ref(null)
 const showModal = ref(false)
+const showModalAlgolia = ref(false)
 
 onMounted(async () => {
   window.addEventListener('scroll', handleScroll)
@@ -57,7 +59,7 @@ const signOut = async () => {
         <NuxtLink to="/">
           <img src="~/assets/image/logo.png" alt="Comeback" class="block h-8 w-auto" />
         </NuxtLink>
-        <nav class="flex items-center justify-center space-x-5 text-sm">
+        <nav class="flex items-center justify-center gap-x-5 text-sm">
           <NuxtLink
             :to="`/`"
             :class="routeN.name === 'index' ? 'text-white' : 'text-zinc-500'"
@@ -70,12 +72,12 @@ const signOut = async () => {
           >
             Calendar
           </NuxtLink>
-          <NuxtLink
+          <!-- <NuxtLink
             :to="`/artist`"
             :class="routeN.name === 'artist' ? 'text-white' : 'text-zinc-500'"
           >
             Artists
-          </NuxtLink>
+          </NuxtLink> -->
           <NuxtLink
             v-if="isAdmin"
             :to="`/dashboard/artist`"
@@ -83,28 +85,33 @@ const signOut = async () => {
           >
             Dashboard
           </NuxtLink>
+        </nav>
+        <div class="flex items-center justify-center gap-x-2 text-sm">
+          <button @click="showModalAlgolia = true" class="bg-quaternary p-2 rounded">
+            <IconSearch class="w-3.5 h-3.5" />
+          </button>
           <button
             v-if="isLogin && artistFetch"
             @click="showModal = true"
-            class="font-bold text-primary transition-all duration-300 ease-in-out hover:scale-110 hover:text-red-500"
+            class="font-semibold bg-primary rounded px-2 py-1 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50"
           >
             New Comeback
           </button>
           <NuxtLink
             v-if="!isLogin"
             :to="`/authentification`"
-            :class="routeN.name === 'authentification' ? 'text-white' : 'text-zinc-500'"
+            class="bg-quaternary px-2 py-1 text-[0.875rem] rounded"
           >
-            Log In
+            Login
           </NuxtLink>
           <button
             v-else
             @click="signOut"
-            :class="routeN.name === 'authentification' ? 'text-white' : 'text-zinc-500'"
+            class="bg-quaternary p-2 rounded"
           >
-            Log Out
+            <IconLogout class="w-3.5 h-3.5" />
           </button>
-        </nav>
+        </div>
       </div>
     </div>
     <Modal
@@ -119,6 +126,20 @@ const signOut = async () => {
       :bg-out-class="`animate__fadeOutDown`"
     >
       <NewsCreation :artistList="artistFetch" @close-modal="showModal = false" />
+    </Modal>
+    <Modal
+      v-model="showModalAlgolia"
+      title="Search Artist"
+      wrapper-class="modal-wrapper"
+      :modal-class="`modal-lg`"
+      :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
+      :in-class="`animate__bounceIn`"
+      :out-class="`animate__bounceOut`"
+      bg-class="animate__animated"
+      :bg-in-class="`animate__fadeInUp`"
+      :bg-out-class="`animate__fadeOutDown`"
+    >
+      <Algolia ref="algolia" @close-modal="showModalAlgolia = false" />
     </Modal>
   </div>
 </template>

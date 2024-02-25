@@ -202,21 +202,19 @@ useHead({
       <section v-if="artistRelease.length" class="space-y-2">
         <p class="font-black">Other releases by {{ release.artistsName }}</p>
         <section
-          class="remove-scrollbar flex gap-5 overflow-hidden overflow-x-scroll scroll-smooth px-5 md:px-0 lg:justify-between lg:gap-2"
+          class="remove-scrollbar flex gap-5 overflow-hidden overflow-x-scroll scroll-smooth lg:gap-3"
         >
-          <LazyCardRelease
-            v-for="artRelease in artistRelease"
-            :key="`artistRelease_` + artRelease.id"
-            :id="artRelease.id"
-            :image="artRelease.image"
-            :date="artRelease.date"
-            :name="artRelease.name"
-            :type="artRelease.type"
-            :artistsId="artRelease.artistsId"
-            :artistsName="artRelease.artistsName"
-            :displayDate="true"
-            :yearReleased="artRelease.year"
-          />
+          <CardObject 
+              v-for="release in artistRelease"
+              :key="release.id"
+              :artistId="release.artistsId"
+              :mainTitle="release.name"
+              :subTitle="release.artistsName"
+              :image="release.image"
+              :releaseDate="release.date"
+              :objectLink="`/release/${release.id}`"
+              isReleaseDisplay
+            />
         </section>
       </section>
     </section>
