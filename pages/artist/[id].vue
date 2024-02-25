@@ -147,7 +147,7 @@ useHead({
           <transition-group
             name="list-complete"
             tag="div"
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:grid-rows-1 xl:justify-start"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:pb-1 xl:grid-rows-1 xl:justify-start"
           >
             <CardObject 
               v-for="release in artist.releases"
@@ -168,7 +168,7 @@ useHead({
           <transition-group 
             name="list-complete" 
             tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:grid-rows-1 xl:justify-start"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:pb-1 xl:grid-rows-1 xl:justify-start"
           >
             <CardObject 
               v-for="groupMember in subUnitMembers"
@@ -187,7 +187,7 @@ useHead({
           <transition-group 
             name="list-complete" 
             tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 pb-1"
           >
             <CardObject 
               v-for="group in artist.groups"
