@@ -122,11 +122,11 @@ useHead({
     <!-- Home Header -->
     <HomeSlider :news-today="comebacksToday" />
     <!-- Home Body -->
-    <section class="container mx-auto space-y-16 px-10 py-16 2xl:space-y-28">
+    <section class="container mx-auto space-y-16 p-5 py-10 2xl:space-y-28">
       <!-- Comeback Reported List -->
       <ComebackReported :comebackList="comebacks" />
       <!-- Discover Music -->
-      <div class="space-y-8 xl:space-y-110 2xl:space-y-14">
+      <div class="space-y-8 xl:space-y-10 2xl:space-y-14">
         <p class="text-center text-xl font-bold lg:text-4xl">Discover Music</p>
         <div class="grid grid-cols-2 gap-5 xl:grid-cols-4">
           <LazyDiscoverMusic ref="discoverOne" />
