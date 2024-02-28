@@ -19,9 +19,13 @@ import _ from 'lodash'
 
 export function useFirebaseFunction() {
   const { $firestore: database } = useNuxtApp()
+  const { shuffleArray } = useGeneralFunction()
   const config = useRuntimeConfig()
 
-  /** GENERAL FUNCTION FOR FIREBASE FUNCTION **/
+  /** 
+   * GENERAL FUNCTION FOR FIREBASE FUNCTION 
+  **/
+  //TODO: Add comment
   const snapshotResultToArray = (result: any) => {
     const docs = Array.from(result.docs).map((doc: any) => {
       return {
@@ -31,7 +35,7 @@ export function useFirebaseFunction() {
 
     return docs
   }
-
+  //TODO: Add comment
   const getVideoDetails = async (videoId: string, apiKey: string) => {
     const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails,status&key=${apiKey}`
 
@@ -44,7 +48,7 @@ export function useFirebaseFunction() {
       return null
     }
   }
-
+  //TODO: Add comment
   const canVideoBeEmbedded = async (videoId: string, apiKey: string) => {
     const videoDetails = await getVideoDetails(videoId, apiKey)
 
@@ -58,8 +62,11 @@ export function useFirebaseFunction() {
     return isEmbeddable && !hasRestriction
   }
 
-  /** HOME FUNCTION **/
-  const getNextComebacks = (startDate: Timestamp, callback: Function) => {
+  /** 
+   * HOMEPAGE FUNCTION 
+  **/
+  //TODO: Add comment
+  const getRealtimeNextComebacks = async (startDate: Timestamp, callback: Function) => {
     const colRef = query(
       collection(database as any, 'news'),
       where('date', '>=', startDate),
@@ -75,12 +82,8 @@ export function useFirebaseFunction() {
     // Retourne la fonction pour se désabonner de l'écouteur
     return unsubscribe
   }
-
-  const getLastReleases = (
-    startDate: Timestamp,
-    limitNumber: number,
-    callback: Function,
-  ) => {
+  //TODO: Add comment
+  const getRealtimeLastestReleases = async (startDate: Timestamp, limitNumber: number, callback: Function) => {
     const colRef = query(
       collection(database as any, 'releases'),
       where('date', '>=', startDate),
@@ -98,8 +101,8 @@ export function useFirebaseFunction() {
     // Retourne la fonction pour se désabonner de l'écouteur
     return unsubscribe
   }
-
-  const getLastArtistsAdded = (limitNumber: number, callback: Function) => {
+  //TODO: Add comment
+  const getRealtimeLastestArtistsAdded = async (limitNumber: number, callback: Function) => {
     const colRef = query(
       collection(database as any, 'artists'),
       orderBy('createdAt', 'desc'),
@@ -115,15 +118,7 @@ export function useFirebaseFunction() {
     // Retourne la fonction pour se désabonner de l'écouteur
     return unsubscribe
   }
-
-  const shuffleArray = (array: any) => {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]]; // échange les éléments
-    }
-    return array;
-  };
-  
+  //TODO: Add comment
   const getRandomMusic = async (): Promise<any> => {
     const colRef = query(collection(database as any, 'releases'));
     const snapshot = await getDocs(colRef);
@@ -147,34 +142,52 @@ export function useFirebaseFunction() {
     // Si aucune musique correspondante n'est trouvée après avoir parcouru toutes les releases
     return null;
   };
-  
-  
-  
 
-  /** Release **/
+  /**
+   * CALENDAR PAGE FUNCTION
+  **/
+  //TODO: Add comment
+  const getReleasesBetweenDates = async (startDate: Timestamp, endDate: Timestamp) => {
+    // TODO
+  }
+
+  /** 
+   * Release's Function
+  **/
+  //TODO: Add comment
   const updateRelease = async (id: string, data: any) => {
     const docRef = doc(database as any, 'releases', id)
-
     await updateDoc(docRef, data)
   }
-
   // get release by artist id
   const getReleaseByArtistId = async (artistId: string) => {
-    const colRef = query(
-      collection(database as any, 'releases'),
-      where('artistsId', '==', artistId),
-    )
+    const colRef = query(collection(database as any, 'releases'), where('artistsId', '==', artistId));
 
-    const snapshot = await getDocs(colRef)
+    const snapshot = await getDocs(colRef);
 
-    return snapshotResultToArray(snapshot)
+    return snapshotResultToArray(snapshot);
+  }
+  //TODO: Add comment
+  const getReleaseById = async (id: string) => {
+    //TODO
   }
 
-  /** Comeback **/
-  const getComebackExist = async (
-    date: Timestamp,
-    artistName: string,
-  ): Promise<boolean> => {
+  /** 
+   * Artist's Function
+  **/
+  //TODO: Add comment
+  const getArtistById = async (id: string) => {
+    //TODO
+  }
+  const updateArtist = async (id: string, data: any) => {
+    //TODO
+  }
+
+  /** 
+   * Comeback's Function
+  **/
+  //TODO: Add comment
+  const getComebackExist = async (date: Timestamp, artistName: string): Promise<boolean> => {
     const today = new Date()
     const todayInTimestamp = Timestamp.fromDate(today)
     const colRef = query(
@@ -203,12 +216,13 @@ export function useFirebaseFunction() {
       return false
     }
   }
+  
 
   return {
     database,
-    getNextComebacks,
-    getLastReleases,
-    getLastArtistsAdded,
+    getRealtimeNextComebacks,
+    getRealtimeLastestReleases,
+    getRealtimeLastestArtistsAdded,
     getRandomMusic,
     updateRelease,
     getComebackExist,

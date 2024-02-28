@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Timestamp } from 'firebase/firestore'
 
-const { getNextComebacks, getLastReleases, getLastArtistsAdded, getRandomMusic } = useFirebaseFunction()
+const { getRealtimeNextComebacks, getRealtimeLastestReleases, getRealtimeLastestArtistsAdded, getRandomMusic } = useFirebaseFunction()
 
 const comebacks = ref([] as any[])
 const artists = ref([] as any[])
@@ -26,7 +26,7 @@ const comebacksToday = computed(() => {
 onMounted(async () => {
   const comebacksDate = new Date()
   comebacksDate.setDate(comebacksDate.getDate() - 1)
-  unsubscribeComeback.value = getNextComebacks(
+  unsubscribeComeback.value = getRealtimeNextComebacks(
     Timestamp.fromDate(comebacksDate),
     (cb: any) => {
       comebacks.value = cb
@@ -35,7 +35,7 @@ onMounted(async () => {
 
   const releaseDate = new Date()
   releaseDate.setDate(releaseDate.getDate() - 8)
-  unsubscribeRelease.value = getLastReleases(
+  unsubscribeRelease.value = getRealtimeLastestReleases(
     Timestamp.fromDate(releaseDate),
     8,
     (rel: any) => {
@@ -43,7 +43,7 @@ onMounted(async () => {
     },
   )
 
-  unsubscribeArtist.value = getLastArtistsAdded(8, (art: any) => {
+  unsubscribeArtist.value = getRealtimeLastestArtistsAdded(8, (art: any) => {
     artists.value = art
   })
 })

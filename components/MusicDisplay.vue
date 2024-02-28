@@ -33,7 +33,6 @@ const {
   },
   artistImage: {
     type: String,
-    required: true,
   },
   musicImage: {
     type: String,

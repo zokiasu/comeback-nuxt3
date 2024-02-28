@@ -3,6 +3,7 @@ import type { Release } from '~/types/release'
 import type { Music } from '~/types/music'
 
 export function useGeneralFunction() {
+  //TODO: Add comment
   const formatArtistData = async (artistData: any) => {
     if (!artistData) return {} as Artist
 
@@ -25,7 +26,7 @@ export function useGeneralFunction() {
 
     return artistTmp
   }
-
+  //TODO: Add comment
   const formatReleaseData = async (releaseData: any) => {
     if (!releaseData) return {} as Release
 
@@ -53,7 +54,7 @@ export function useGeneralFunction() {
 
     return releaseTmp
   }
-
+  //TODO: Add comment
   const formatMusicData = async (musicData: any) => {
     if (!musicData) return {} as Music
 
@@ -75,14 +76,23 @@ export function useGeneralFunction() {
 
     return musicTmp
   }
-
+  //TODO: Add comment
   const formatArray = async (array: any[], formatter: Function) => {
     return await Promise.all(array.map(async (item) => await formatter(item)))
   }
+  //TODO: Add comment
+  const shuffleArray = (array: any) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]]; // échange les éléments
+    }
+    return array;
+  };
 
   return {
     formatArtistData,
     formatReleaseData,
     formatMusicData,
+    shuffleArray
   }
 }

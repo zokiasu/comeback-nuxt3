@@ -15,6 +15,7 @@ const isFetchingArtist = ref(true)
 onMounted(async () => {
   try {
     artist.value = (await fetchArtistFullInfoById(route.params.id as any)) as Artist
+    console.log(artist.value.releases)
     imageBackground.value = artist.value.image
     title.value = artist.value.name
     description.value = artist.value.description
@@ -30,6 +31,14 @@ const members = computed(() => {
 // computed subUnitMembers
 const subUnitMembers = computed(() => {
   return artist.value?.members?.filter((member) => member.type === 'GROUP') || []
+})
+
+const singleRelease = computed(() => {
+  return artist.value?.releases?.filter((release) => release.type === 'SINGLE') || []
+})
+
+const albumEpRelease = computed(() => {
+  return artist.value?.releases?.filter((release) => release.type !== 'SINGLE') || []
 })
 
 useHead({
@@ -128,7 +137,7 @@ useHead({
           <transition-group 
             name="list-complete" 
             tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:grid-rows-1 xl:justify-start"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 xl:pb-1 xl:grid-rows-1 xl:justify-start"
           >
             <CardObject 
               v-for="soloMember in members"
@@ -143,14 +152,36 @@ useHead({
         </CardDefault>
       </div>
       <div v-if="artist.releases?.length">
-        <CardDefault name="Releases">
+        <CardDefault name="Albums/Eps">
           <transition-group
             name="list-complete"
             tag="div"
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:pb-1 xl:grid-rows-1 xl:justify-start"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 xl:pb-1 xl:grid-rows-1 xl:justify-start"
           >
             <CardObject 
-              v-for="release in artist.releases"
+              v-for="release in albumEpRelease"
+              :key="release.id"
+              :artistId="release.artistsId"
+              :mainTitle="release.name"
+              :image="release.image"
+              :releaseDate="release.date"
+              :releaseType="release.type"
+              :objectLink="`/release/${release.id}`"
+              isReleaseDisplay
+              dateAlwaysDisplay
+            />
+          </transition-group>
+        </CardDefault>
+      </div>
+      <div v-if="artist.releases?.length">
+        <CardDefault name="Singles">
+          <transition-group
+            name="list-complete"
+            tag="div"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 xl:pb-1 xl:grid-rows-1 xl:justify-start"
+          >
+            <CardObject 
+              v-for="release in singleRelease"
               :key="release.id"
               :artistId="release.artistsId"
               :mainTitle="release.name"
@@ -169,7 +200,7 @@ useHead({
           <transition-group 
             name="list-complete" 
             tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:pb-1 xl:grid-rows-1 xl:justify-start"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 xl:pb-1 xl:grid-rows-1 xl:justify-start"
           >
             <CardObject 
               v-for="groupMember in subUnitMembers"
@@ -188,7 +219,7 @@ useHead({
           <transition-group 
             name="list-complete" 
             tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 pb-1"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 pb-1"
           >
             <CardObject 
               v-for="group in artist.groups"
