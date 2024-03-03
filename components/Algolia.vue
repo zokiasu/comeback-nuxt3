@@ -13,7 +13,6 @@ const { result, search } = useAlgoliaSearch('Artists');
 const debouncedSearch = debounce(async (query) => {
   await useAsyncData('ssr-search-results', () => search({ query }));
   datas.value = result.value.hits.slice(0, 10);
-  // console.log(result.value.hits);
 }, 500); // Attend 500ms après le dernier appel avant d'exécuter la fonction
 
 watchEffect(() => {

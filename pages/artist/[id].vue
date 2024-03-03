@@ -15,7 +15,6 @@ const isFetchingArtist = ref(true)
 onMounted(async () => {
   try {
     artist.value = (await fetchArtistFullInfoById(route.params.id as any)) as Artist
-    console.log(artist.value.releases)
     imageBackground.value = artist.value.image
     title.value = artist.value.name
     description.value = artist.value.description
@@ -151,7 +150,7 @@ useHead({
           </transition-group>
         </CardDefault>
       </div>
-      <div v-if="artist.releases?.length">
+      <div v-if="albumEpRelease?.length">
         <CardDefault name="Albums/Eps">
           <transition-group
             name="list-complete"
@@ -173,7 +172,7 @@ useHead({
           </transition-group>
         </CardDefault>
       </div>
-      <div v-if="artist.releases?.length">
+      <div v-if="singleRelease?.length">
         <CardDefault name="Singles">
           <transition-group
             name="list-complete"
