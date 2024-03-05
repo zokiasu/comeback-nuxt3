@@ -15,57 +15,7 @@ import {
   getCountFromServer,
 } from 'firebase/firestore'
 
-/** NEWS FUNCTION **/
-
-export const fetchNews = async (startDate: Timestamp) => {
-  const { $firestore } = useNuxtApp()
-
-  const colRef = query(
-    collection($firestore as any, 'news'),
-    where('date', '>=', startDate),
-    orderBy('date', 'asc'),
-  )
-
-  const snapshot = await getDocs(colRef)
-
-  const docs = Array.from(snapshot.docs).map((doc) => {
-    return {
-      ...doc.data(),
-    }
-  })
-
-  return docs
-}
-
 /** RELEASES FUNCTION **/
-
-export const fetchReleasesWithDateAndLimit = async (
-  startDate: Timestamp,
-  limitNumber: number,
-) => {
-  const { $firestore } = useNuxtApp()
-
-  const colRef = query(
-    collection($firestore as any, 'releases'),
-    where('date', '>=', startDate),
-    orderBy('date', 'desc'),
-    limit(limitNumber),
-  )
-
-  const snapshot = await getDocs(colRef)
-
-  const docs = Array.from(snapshot.docs)
-    .map((doc) => {
-      return {
-        ...doc.data(),
-      }
-    })
-    .filter((doc) => {
-      return doc.needToBeVerified === false
-    })
-
-  return docs
-}
 
 export const fetchReleasesByMonth = async (startDate: Timestamp, endDate: Timestamp) => {
   const { $firestore } = useNuxtApp()
@@ -124,81 +74,7 @@ export const fetchReleaseById = async (idRelease: string) => {
   return docs[0]
 }
 
-export const getRandomSong = async (): Promise<any> => {
-  const { firestore: db } = useNuxtApp()
-
-  const coll = collection(db, 'releases')
-  const snapshot = await getCountFromServer(coll)
-
-  // set a random number with snapshot.data().count as max
-  const random = Math.floor(Math.random() * snapshot.data().count)
-
-  // get the release with the random number
-  const colRef = query(coll)
-
-  const snapshot2 = await getDocs(colRef)
-  const doc = snapshot2.docs[random].data()
-
-  const colMusic = query(collection(db, 'releases', doc.id, 'musics'))
-  const snapshotMusic = await getDocs(colMusic)
-
-  const musics = Array.from(snapshotMusic.docs).map((doc) => {
-    return {
-      ...doc.data(),
-    }
-  })
-
-  let randomMusic = Math.floor(Math.random() * musics.length)
-
-  if (musics[randomMusic].name.toLowerCase().includes('inst')) {
-    return getRandomSong()
-  }
-
-  return musics[randomMusic]
-}
-
-// export const fetchReleaseByArtistId = async (idArtist: String) => {
-//   const {$firestore} = useNuxtApp();
-//
-//   const colRelease = query(collection($firestore as any, 'releases'), where('artistsId', '==', idArtist));
-
-//   const snapshotRelease = await getDocs(colRelease);
-
-//   const docs = Array.from(snapshotRelease.docs).map((doc) => {
-//     return {
-//       ...doc.data()
-//     };
-//   }).filter((doc) => {return doc.needToBeVerified === false});
-
-//   return docs;
-// }
-
 /** ARTIST FUNCTION **/
-
-export const fetchArtistsWithLimit = async (
-  startDate: Timestamp,
-  limitNumber: number,
-) => {
-  const { $firestore } = useNuxtApp()
-
-  const colRef = query(
-    collection($firestore as any, 'artists'),
-    where('createdAt', '<=', startDate),
-    orderBy('createdAt', 'desc'),
-    limit(limitNumber),
-  )
-
-  const snapshot = await getDocs(colRef)
-
-  const docs = Array.from(snapshot.docs).map((doc) => {
-    return {
-      ...doc.data(),
-    }
-  })
-
-  return docs
-}
-
 export const fetchArtistFullInfoById = async (idArtist: string) => {
   const { $firestore } = useNuxtApp()
 

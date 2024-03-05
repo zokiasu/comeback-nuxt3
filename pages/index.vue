@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { Timestamp } from 'firebase/firestore'
 
-const { getNextComebacks, getLastReleases, getLastArtistsAdded, getRandomMusic } = useFirebaseFunction()
+const { getRealtimeNextComebacks, getRealtimeLastestReleases, getRealtimeLastestArtistsAdded, getRandomMusic } = useFirebaseFunction()
 
 const comebacks = ref([] as any[])
 const artists = ref([] as any[])
 const releases = ref([] as any[])
 
-const unsubscribeComeback = ref(null as any)
-const unsubscribeRelease = ref(null as any)
-const unsubscribeArtist = ref(null as any)
+const discoverOne = ref(null)
+const discoverTwo = ref(null)
+const discoverThree = ref(null)
+const discoverFour = ref(null)
 
 const comebacksToday = computed(() => {
   return comebacks.value.filter((comebacks: any) => {
@@ -26,33 +27,21 @@ const comebacksToday = computed(() => {
 onMounted(async () => {
   const comebacksDate = new Date()
   comebacksDate.setDate(comebacksDate.getDate() - 1)
-  unsubscribeComeback.value = getNextComebacks(
-    Timestamp.fromDate(comebacksDate),
-    (cb: any) => {
-      comebacks.value = cb
-    },
-  )
+  await getRealtimeNextComebacks(Timestamp.fromDate(comebacksDate), (cb: any) => { comebacks.value = cb })
 
   const releaseDate = new Date()
   releaseDate.setDate(releaseDate.getDate() - 8)
-  unsubscribeRelease.value = getLastReleases(
-    Timestamp.fromDate(releaseDate),
-    8,
-    (rel: any) => {
-      releases.value = rel
-    },
-  )
+  await getRealtimeLastestReleases(Timestamp.fromDate(releaseDate), 8, (rel: any) => { releases.value = rel })
 
-  unsubscribeArtist.value = getLastArtistsAdded(8, (art: any) => {
-    artists.value = art
-  })
+  await getRealtimeLastestArtistsAdded(8, (art: any) => { artists.value = art })
 })
 
-onBeforeUnmount(() => {
-  unsubscribeComeback.value()
-  unsubscribeRelease.value()
-  unsubscribeArtist.value()
-})
+const reloadDiscoverMusic = async () => {
+  discoverOne.value?.reloadRandomMusic()
+  discoverTwo.value?.reloadRandomMusic()
+  discoverThree.value?.reloadRandomMusic()
+  discoverFour.value?.reloadRandomMusic()
+}
 
 useHead({
   title: 'Comeback',
@@ -126,14 +115,17 @@ useHead({
       <!-- Comeback Reported List -->
       <ComebackReported :comebackList="comebacks" />
       <!-- Discover Music -->
-      <div class="space-y-8 xl:space-y-10 2xl:space-y-14">
-        <p class="text-center text-xl font-bold lg:text-4xl">Discover Music</p>
+      <div class="text-center space-y-8 xl:space-y-10 2xl:space-y-14">
+        <p class="text-xl font-bold lg:text-4xl">Discover Music</p>
         <div class="grid grid-cols-2 gap-5 xl:grid-cols-4">
           <LazyDiscoverMusic ref="discoverOne" />
           <LazyDiscoverMusic ref="discoverTwo" />
           <LazyDiscoverMusic ref="discoverThree" />
           <LazyDiscoverMusic ref="discoverFour" />
         </div>
+        <button @click="reloadDiscoverMusic()" class="px-3 py-1 rounded bg-quaternary">
+          Reload
+        </button>
       </div>
       <!-- Recent Release -->
       <RecentReleases :releases="releases" />

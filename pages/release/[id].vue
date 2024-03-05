@@ -10,7 +10,6 @@ const newStreamingPlatform = ref({
 })
 
 import { type Release } from '@/types/release'
-import { type Artist } from '@/types/artist'
 import { useUserStore } from '@/stores/user'
 const { isAdminStore } = useUserStore()
 
@@ -20,7 +19,6 @@ const { getReleaseByArtistId, updateRelease } = useFirebaseFunction()
 
 const release = ref<Release>({} as Release)
 const artistRelease = ref<Release[]>([] as Release[])
-const artist = ref<Artist>({} as Artist)
 const imageLoaded = ref(false)
 
 const createNewPlatformStreaming = async () => {
@@ -41,7 +39,6 @@ const createNewPlatformStreaming = async () => {
 onMounted(async () => {
   const route = useRoute()
   release.value = (await fetchReleaseById(route.params.id as string)) as Release
-  artist.value = (await fetchArtistLimitedInfoById(release.value.artistsId)) as Artist
   artistRelease.value = (await getReleaseByArtistId(release.value.artistsId))
     .sort((a, b) => b.date - a.date)
     .filter((rel) => rel.id !== release.value.id)
@@ -106,19 +103,11 @@ useHead({
               </h1>
               <div class="flex items-center gap-2">
                 <NuxtLink
-                  :to="`/artist/${artist.id}`"
+                  :to="`/artist/${release.artistsId}`"
                   class="flex items-center gap-2 rounded-full transition-all duration-300 ease-in-out hover:bg-secondary hover:px-3 hover:py-0.5"
                 >
-                  <NuxtImg
-                    v-if="artist.image"
-                    format="webp"
-                    preload
-                    :src="artist.image"
-                    :alt="artist.name"
-                    class="h-3 w-3 rounded-full"
-                  />
                   <p class="text-sm font-semibold">
-                    {{ artist.name }}
+                    {{ release.artistsName }}
                   </p>
                 </NuxtLink>
                 <p>-</p>
@@ -189,7 +178,6 @@ useHead({
             :key="song.videoId"
             :artistId="release.artistsId"
             :artistName="release.artistsName"
-            :artistImage="artist.image"
             :musicId="song.videoId"
             :musicName="song.name"
             :musicImage="song.thumbnails[2].url"

@@ -1,145 +1,145 @@
 <script setup>
-import * as Mdl from '@kouts/vue-modal'
-import VueDatePicker from '@vuepic/vue-datepicker'
-import { useToast } from 'vue-toastification'
-import { Timestamp } from 'firebase/firestore'
+  import * as Mdl from '@kouts/vue-modal'
+  import VueDatePicker from '@vuepic/vue-datepicker'
+  import { useToast } from 'vue-toastification'
+  import { Timestamp } from 'firebase/firestore'
 
-const {
-  id,
-  artistsName,
-  createdAt,
-  date,
-  idYoutubeMusic,
-  image,
-  name,
-  needToBeVerified,
-  platformList,
-  type,
-  yearReleased,
-} = defineProps({
-  id: {
-    type: String,
-    required: true,
-  },
-  artistsName: {
-    type: String,
-    required: true,
-  },
-  createdAt: {
-    type: Object,
-    required: true,
-  },
-  date: {
-    type: Object,
-    required: true,
-  },
-  idYoutubeMusic: {
-    type: String,
-    required: true,
-  },
-  image: {
-    type: String,
-    required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  needToBeVerified: {
-    type: Boolean,
-    required: true,
-  },
-  platformList: {
-    type: Array,
-    required: true,
-  },
-  type: {
-    type: String,
-    required: true,
-  },
-  yearReleased: {
-    type: Number,
-    required: true,
-  },
-})
-
-const emit = defineEmits(['deleteRelease'])
-const toast = useToast()
-const { updateRelease } = useFirebaseFunction()
-const toastOption = {
-  position: 'top-right',
-  timeout: 5000,
-  closeOnClick: true,
-  pauseOnFocusLoss: false,
-  pauseOnHover: true,
-  draggable: true,
-  draggablePercent: 0.6,
-  showCloseButtonOnHover: false,
-  hideProgressBar: false,
-  closeButton: 'button',
-  icon: true,
-  rtl: false,
-  transition: 'Vue-Toastification__bounce',
-  maxToasts: 5,
-  newestOnTop: true,
-}
-
-const { Modal } = Mdl
-const skeleton = ref(null)
-const showModal = ref(false)
-
-const dateToChange = ref(null)
-const yearToChange = ref(null)
-
-const releaseDate = computed(() => {
-  let dateComputed = new Date()
-  if (date.value) dateComputed = new Date(date.value.seconds * 1000)
-  // return dateComputed format to DD-MM-YYYY
-  return `${dateComputed.getDate()}-${
-    dateComputed.getMonth() + 1
-  }-${dateComputed.getFullYear()}`
-})
-
-const dateToTestYear = date.value ? new Date(date.value.seconds * 1000) : new Date()
-
-const doubleCheckYear = computed(() => {
-  if (yearReleased !== dateToTestYear.getFullYear()) return true
-  return false
-})
-
-const loadingDone = () => {
-  skeleton.value.classList.add('opacity-0')
-}
-
-const deleteRelease = () => {
-  emit('deleteRelease', id)
-}
-
-const showUpdateVerifiedRelease = () => {
-  showModal.value = true
-}
-
-const validVerifiedRelease = () => {
-  const dataToChange = {}
-  dataToChange['id'] = id
-
-  if (dateToChange.value) {
-    // add dataToChange
-    dataToChange['date'] = Timestamp.fromDate(new Date(dateToChange.value))
-  }
-
-  if (yearToChange.value) {
-    // add yearToChange
-    dataToChange['year'] = yearToChange.value
-  }
-
-  dataToChange['needToBeVerified'] = false
-
-  updateRelease(id, dataToChange).then(() => {
-    showModal.value = false
-    toast.success('Release Updated', toastOption)
+  const {
+    id,
+    artistsName,
+    createdAt,
+    date,
+    idYoutubeMusic,
+    image,
+    name,
+    needToBeVerified,
+    platformList,
+    type,
+    yearReleased,
+  } = defineProps({
+    id: {
+      type: String,
+      required: true,
+    },
+    artistsName: {
+      type: String,
+      required: true,
+    },
+    createdAt: {
+      type: Object,
+      required: true,
+    },
+    date: {
+      type: Object,
+      required: true,
+    },
+    idYoutubeMusic: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    needToBeVerified: {
+      type: Boolean,
+      required: true,
+    },
+    platformList: {
+      type: Array,
+      required: true,
+    },
+    type: {
+      type: String,
+      required: true,
+    },
+    yearReleased: {
+      type: Number,
+      required: true,
+    },
   })
-}
+
+  const emit = defineEmits(['deleteRelease'])
+  const toast = useToast()
+  const { updateRelease } = useFirebaseFunction()
+  const toastOption = {
+    position: 'top-right',
+    timeout: 5000,
+    closeOnClick: true,
+    pauseOnFocusLoss: false,
+    pauseOnHover: true,
+    draggable: true,
+    draggablePercent: 0.6,
+    showCloseButtonOnHover: false,
+    hideProgressBar: false,
+    closeButton: 'button',
+    icon: true,
+    rtl: false,
+    transition: 'Vue-Toastification__bounce',
+    maxToasts: 5,
+    newestOnTop: true,
+  }
+
+  const { Modal } = Mdl
+  const skeleton = ref(null)
+  const showModal = ref(false)
+
+  const dateToChange = ref(null)
+  const yearToChange = ref(null)
+
+  const releaseDate = computed(() => {
+    let dateComputed = new Date()
+    if (date.value) dateComputed = new Date(date.value.seconds * 1000)
+    // return dateComputed format to DD-MM-YYYY
+    return `${dateComputed.getDate()}-${
+      dateComputed.getMonth() + 1
+    }-${dateComputed.getFullYear()}`
+  })
+
+  const dateToTestYear = date.value ? new Date(date.value.seconds * 1000) : new Date()
+
+  const doubleCheckYear = computed(() => {
+    if (yearReleased !== dateToTestYear.getFullYear()) return true
+    return false
+  })
+
+  const loadingDone = () => {
+    skeleton.value.classList.add('opacity-0')
+  }
+
+  const deleteRelease = () => {
+    emit('deleteRelease', id)
+  }
+
+  const showUpdateVerifiedRelease = () => {
+    showModal.value = true
+  }
+
+  const validVerifiedRelease = () => {
+    const dataToChange = {}
+    dataToChange['id'] = id
+
+    if (dateToChange.value) {
+      // add dataToChange
+      dataToChange['date'] = Timestamp.fromDate(new Date(dateToChange.value))
+    }
+
+    if (yearToChange.value) {
+      // add yearToChange
+      dataToChange['year'] = yearToChange.value
+    }
+
+    dataToChange['needToBeVerified'] = false
+
+    updateRelease(id, dataToChange).then(() => {
+      showModal.value = false
+      toast.success('Release Updated', toastOption)
+    })
+  }
 </script>
 
 <template>

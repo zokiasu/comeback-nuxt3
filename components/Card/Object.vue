@@ -88,9 +88,9 @@ const formatDate = (date) => {
       <LazyNuxtLink
         v-else
         :to="`/artist/${artistId}`"
-        class="truncate hover:underline"
+        class="hover:underline"
       >
-        {{ subTitle }}
+        <p class="truncate">{{ subTitle }}</p>
       </LazyNuxtLink>
     </div>
   </NuxtLink>
