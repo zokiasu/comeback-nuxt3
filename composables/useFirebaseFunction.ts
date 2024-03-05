@@ -216,7 +216,6 @@ export function useFirebaseFunction() {
       return false
     }
   }
-  
 
   return {
     database,
