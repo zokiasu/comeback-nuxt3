@@ -1,46 +1,54 @@
 <script setup lang="ts">
-import { useUserStore } from '@/stores/user'
-import { type Artist } from '@/types/artist'
-const { isAdminStore } = useUserStore()
+  import { useUserStore } from '@/stores/user'
+  import { type Artist } from '@/types/artist'
+  const { isAdminStore } = useUserStore()
 
-const title = ref('Artist Page')
-const description = ref('Artist')
-const route = useRoute()
-const artist = ref<Artist>({} as Artist)
-const imageBackground = ref('')
-const editLink = ref('/artist/edit/' + route.params.id)
-const imageBackLoaded = ref(false)
-const isFetchingArtist = ref(true)
+  const title = ref('Artist Page')
+  const description = ref('Artist')
+  const route = useRoute()
+  const artist = ref<Artist>({} as Artist)
+  const imageBackground = ref('')
+  const editLink = ref('/artist/edit/' + route.params.id)
+  const imageBackLoaded = ref(false)
+  const isFetchingArtist = ref(true)
 
-onMounted(async () => {
-  try {
-    artist.value = (await fetchArtistFullInfoById(route.params.id as any)) as Artist
-    imageBackground.value = artist.value.image
-    title.value = artist.value.name
-    description.value = artist.value.description
-  } finally {
-    isFetchingArtist.value = false
-  }
-})
+  onMounted(async () => {
+    try {
+      artist.value = (await fetchArtistFullInfoById(route.params.id as any)) as Artist
+      imageBackground.value = artist.value.image
+      title.value = artist.value.name
+      description.value = artist.value.description
+    } finally {
+      isFetchingArtist.value = false
+    }
+  })
 
-// computed members
-const members = computed(() => {
-  return artist.value?.members?.filter((member) => member.type === 'SOLO') || []
-})
-// computed subUnitMembers
-const subUnitMembers = computed(() => {
-  return artist.value?.members?.filter((member) => member.type === 'GROUP') || []
-})
+  // computed members
+  const members = computed(() => {
+    return artist.value?.members?.filter((member) => member.type === 'SOLO') || []
+  })
+  // computed subUnitMembers
+  const subUnitMembers = computed(() => {
+    return artist.value?.members?.filter((member) => member.type === 'GROUP') || []
+  })
 
-useHead({
-  title,
-  meta: [
-    {
-      name: 'description',
-      content: description,
-    },
-  ],
-})
+  const singleRelease = computed(() => {
+    return artist.value?.releases?.filter((release) => release.type === 'SINGLE') || []
+  })
+
+  const albumEpRelease = computed(() => {
+    return artist.value?.releases?.filter((release) => release.type !== 'SINGLE') || []
+  })
+
+  useHead({
+    title,
+    meta: [
+      {
+        name: 'description',
+        content: description,
+      },
+    ],
+  })
 </script>
 
 <template>
@@ -58,13 +66,13 @@ useHead({
         class="absolute inset-0 h-full w-full object-cover"
       />
       <div
-        class="absolute inset-0 flex items-end p-5 transition-all duration-500 ease-in-out lg:p-10 xl:p-14 xl:px-32"
+        class="absolute inset-0 flex items-end p-5 transition-all duration-500 ease-in-out lg:p-10 xl:p-14 2xl:px-32"
         :class="imageBackLoaded ? 'bg-secondary/60' : 'bg-quinary'"
       >
         <div class="space-y-5 lg:container lg:mx-auto lg:px-5">
           <h1
             v-if="artist.name"
-            class="py-3 text-3xl font-semibold md:text-6xl lg:text-7xl"
+            class="py-3 text-3xl font-semibold md:text-6xl xl:text-7xl"
           >
             {{ artist.name }}
           </h1>
@@ -120,15 +128,17 @@ useHead({
         <SkeletonDefault class="h-5 w-2/6 rounded" />
         <SkeletonDefault class="h-5 w-2/5 rounded" />
       </div>
+
       <p v-if="artist.description" class="max-w-6xl whitespace-pre-line leading-6 md:leading-8 text-xs md:text-base">
         {{ artist.description }}
       </p>
+
       <div v-if="members?.length">
         <CardDefault name="Members">
           <transition-group 
             name="list-complete" 
             tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:grid-rows-1 xl:justify-start"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 lg:pb-1 lg:grid-rows-1 lg:justify-start"
           >
             <CardObject 
               v-for="soloMember in members"
@@ -142,15 +152,16 @@ useHead({
           </transition-group>
         </CardDefault>
       </div>
-      <div v-if="artist.releases?.length">
-        <CardDefault name="Releases">
+
+      <div v-if="albumEpRelease?.length">
+        <CardDefault name="Albums/Eps">
           <transition-group
             name="list-complete"
             tag="div"
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:pb-1 xl:grid-rows-1 xl:justify-start"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 lg:pb-1 lg:grid-rows-1 lg:justify-start"
           >
             <CardObject 
-              v-for="release in artist.releases"
+              v-for="release in albumEpRelease"
               :key="release.id"
               :artistId="release.artistsId"
               :mainTitle="release.name"
@@ -164,12 +175,36 @@ useHead({
           </transition-group>
         </CardDefault>
       </div>
+
+      <div v-if="singleRelease?.length">
+        <CardDefault name="Singles">
+          <transition-group
+            name="list-complete"
+            tag="div"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 lg:pb-1 lg:grid-rows-1 lg:justify-start"
+          >
+            <CardObject 
+              v-for="release in singleRelease"
+              :key="release.id"
+              :artistId="release.artistsId"
+              :mainTitle="release.name"
+              :image="release.image"
+              :releaseDate="release.date"
+              :releaseType="release.type"
+              :objectLink="`/release/${release.id}`"
+              isReleaseDisplay
+              dateAlwaysDisplay
+            />
+          </transition-group>
+        </CardDefault>
+      </div>
+
       <div v-if="subUnitMembers?.length">
         <CardDefault name="Subunit">
           <transition-group 
             name="list-complete" 
             tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 xl:pb-1 xl:grid-rows-1 xl:justify-start"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 lg:pb-1 lg:grid-rows-1 lg:justify-start"
           >
             <CardObject 
               v-for="groupMember in subUnitMembers"
@@ -183,12 +218,13 @@ useHead({
           </transition-group>
         </CardDefault>
       </div>
+
       <div v-if="artist.groups?.length">
         <CardDefault name="Group">
           <transition-group 
             name="list-complete" 
             tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col grid-rows-2 gap-3 pb-1"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 lg:pb-1 lg:grid-rows-1 lg:justify-start"
           >
             <CardObject 
               v-for="group in artist.groups"
@@ -198,7 +234,6 @@ useHead({
               :mainTitle="group.name"
               :image="group.image"
               :objectLink="`/artist/${group.id}`"
-              class="!min-w-20 !max-w-20 !p-1"
             />
           </transition-group>
         </CardDefault>

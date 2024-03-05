@@ -13,15 +13,20 @@ const authorNamePlaying = useAuthorNamePlaying()
 const imageLoaded = ref(false)
 
 const playVideo = (videoId: any) => {
-  // console.log('playVideo', videoId)
   idYoutubeVideo.value = videoId
   isPlayingVideo.value = true
   musicNamePlaying.value = music.value.name
   authorNamePlaying.value = music.value.artists[0].name
 }
 
+const reloadRandomMusic = async () => {
+  music.value = {}
+  music.value = await getRandomMusic()
+  imageLoaded.value = false
+}
+
 defineExpose({
-  getRandomMusic,
+  reloadRandomMusic,
   music
 })
 </script>

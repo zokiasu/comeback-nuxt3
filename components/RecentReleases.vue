@@ -5,8 +5,6 @@ const { releases } = defineProps({
     required: true,
   },
 })
-
-console.log('releases', releases)
 </script>
 <template>
   <CardDefault name="Recent Releases">
