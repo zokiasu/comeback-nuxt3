@@ -75,9 +75,9 @@ const loadingDone = () => {
 <template>
   <NuxtLink
     :to="`/artist/${artist.id}`"
-    class="group flex w-full overflow-hidden rounded transition-all duration-500 ease-in-out hover:drop-shadow-lg"
+    class="group flex justify-between w-full overflow-hidden rounded transition-all duration-500 ease-in-out hover:drop-shadow-lg"
   >
-    <div class="flex gap-2 h-full min-w-[82%] md:max-w-[82%] overflow-hidden items-center md:space-x-3 bg-quinary py-1 px-3 sm:p-2">
+    <div class="flex gap-2 h-full min-w-[85%] md:max-w-[85%] overflow-hidden items-center md:space-x-3 bg-quinary py-1 px-3 sm:p-2">
       <div class="relative hidden sm:block">
         <div
           ref="skeleton"
@@ -94,7 +94,7 @@ const loadingDone = () => {
       </div>
       <div class="flex gap-1 w-full md:pr-5 items-center">
         <h2
-          class="text-xs font-semibold transition-all duration-300 ease-in-out group-hover:text-primary lg:text-sm"
+          class="text-xs truncate font-semibold transition-all duration-300 ease-in-out group-hover:text-primary lg:text-sm"
         >
           {{ artist.name }}
         </h2>
@@ -103,7 +103,7 @@ const loadingDone = () => {
       </div>
     </div>
     <div
-      class="-mt-0.5 flex min-w-[18%] items-center justify-center bg-quaternary px-3 py-1 text-center md:mt-0 md:py-0"
+      class="-mt-0.5 flex min-w-[15%] items-center justify-center bg-quaternary px-3 py-1 text-center md:mt-0 md:py-0"
     >
       <p
         v-if="!isDatePassed(date) && !isSameDate(date)"
