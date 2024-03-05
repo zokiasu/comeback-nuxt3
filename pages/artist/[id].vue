@@ -72,7 +72,7 @@
         <div class="space-y-5 lg:container lg:mx-auto lg:px-5">
           <h1
             v-if="artist.name"
-            class="py-3 text-3lg font-semibold md:text-6lg lg:text-7lg"
+            class="py-3 text-3xl font-semibold md:text-6xl xl:text-7xl"
           >
             {{ artist.name }}
           </h1>
@@ -129,7 +129,7 @@
         <SkeletonDefault class="h-5 w-2/5 rounded" />
       </div>
 
-      <p v-if="artist.description" class="max-w-6lg whitespace-pre-line leading-6 md:leading-8 text-xs md:text-base">
+      <p v-if="artist.description" class="max-w-6xl whitespace-pre-line leading-6 md:leading-8 text-xs md:text-base">
         {{ artist.description }}
       </p>
 
