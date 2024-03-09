@@ -180,6 +180,10 @@ export function useFirebaseFunction() {
     //TODO
   }
 
+  const getReleaseByPageWithFilters = async (page: number, orderBy: string, lastVisibleElement: any) => {
+    //TODO
+  }
+
   /** 
    * Artist's Function
   **/

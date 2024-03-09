@@ -63,52 +63,39 @@
     },
   })
 
-  const emit = defineEmits(['deleteRelease'])
+  const emit = defineEmits(['deleteRelease', 'verifiedRelease'])
   const toast = useToast()
   const { updateRelease } = useFirebaseFunction()
-  const toastOption = {
-    position: 'top-right',
-    timeout: 5000,
-    closeOnClick: true,
-    pauseOnFocusLoss: false,
-    pauseOnHover: true,
-    draggable: true,
-    draggablePercent: 0.6,
-    showCloseButtonOnHover: false,
-    hideProgressBar: false,
-    closeButton: 'button',
-    icon: true,
-    rtl: false,
-    transition: 'Vue-Toastification__bounce',
-    maxToasts: 5,
-    newestOnTop: true,
-  }
 
   const { Modal } = Mdl
   const skeleton = ref(null)
   const showModal = ref(false)
+  const imageLoaded = ref(false);
+
 
   const dateToChange = ref(null)
   const yearToChange = ref(null)
 
   const releaseDate = computed(() => {
     let dateComputed = new Date()
-    if (date.value) dateComputed = new Date(date.value.seconds * 1000)
-    // return dateComputed format to DD-MM-YYYY
-    return `${dateComputed.getDate()}-${
-      dateComputed.getMonth() + 1
-    }-${dateComputed.getFullYear()}`
+    if (date) {
+      dateComputed = new Date(date.seconds * 1000)
+      return `${dateComputed.getDate()}-${dateComputed.getMonth() + 1}-${dateComputed.getFullYear()}`
+    } else {
+      return 'No Date'
+    }
   })
 
-  const dateToTestYear = date.value ? new Date(date.value.seconds * 1000) : new Date()
+  const dateToTestYear = date ? new Date(date.seconds * 1000) : new Date()
 
   const doubleCheckYear = computed(() => {
     if (yearReleased !== dateToTestYear.getFullYear()) return true
     return false
   })
 
-  const loadingDone = () => {
-    skeleton.value.classList.add('opacity-0')
+  const showImage = () => {
+    console.log('showImage')
+    imageLoaded.value = true
   }
 
   const deleteRelease = () => {
@@ -137,7 +124,7 @@
 
     updateRelease(id, dataToChange).then(() => {
       showModal.value = false
-      toast.success('Release Updated', toastOption)
+      toast.success('Release Updated')
     })
   }
 </script>
@@ -146,35 +133,34 @@
   <div class="relative h-full flex flex-col justify-between gap-1.5 rounded bg-quaternary p-3">
     <div class="space-y-1.5">
       <div class="flex w-full justify-between text-sm">
-      <div class="flex gap-1">
-      <p>[ {{ type }} ]</p>
-      <p>[ {{ yearReleased }} ]</p>
-      </div>
-      <p>
-      {{ idYoutubeMusic }}
-      </p>
+        <div class="flex gap-1">
+          <p>[ {{ type }} ]</p>
+          <p>[ {{ yearReleased }} ]</p>
+          {{ imageLoaded }}
+        </div>
+        <p>
+          {{ idYoutubeMusic }}
+        </p>
       </div>
 
       <p
-      v-if="needToBeVerified || doubleCheckYear"
-      class="absolute z-50 rounded-full bg-red-500 px-2 text-xs font-semibold"
+        v-if="needToBeVerified || doubleCheckYear"
+        class="absolute z-50 rounded-full bg-red-500 px-2 text-xs font-semibold"
       >
         Need To Be Verified
       </p>
 
-      <div class="relative">
-      <div
-      ref="skeleton"
-      class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"
-      ></div>
-      <NuxtImg
-      :src="image"
-      :alt="name"
-      format="webp"
-      loading="lazy"
-      class="w-full rounded"
-      @load="loadingDone"
-      />
+      <div class="relative bg-primary aspect-square w-full rounded">
+        <NuxtImg
+          ref="skeleton"
+          :src="image"
+          :alt="name"
+          format="webp"
+          loading="lazy"
+          class="w-full rounded transition-all duration-1000 ease-in-out"
+          @load="showImage()"
+          v-show="imageLoaded"
+        />
       </div>
 
       <div>
