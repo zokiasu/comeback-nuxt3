@@ -7,6 +7,7 @@ const currentYear = ref(new Date().getFullYear())
 const currentMonth = ref(new Date().getMonth())
 const startDate = ref(new Date(currentYear.value, currentMonth.value, 1))
 const endDate = ref(new Date(currentYear.value, currentMonth.value + 1, 0))
+const { getReleasesBetweenDates } = useFirebaseFunction()
 
 // display month name instead of number
 const monthList = [
@@ -30,12 +31,10 @@ onMounted(async () => {
     yearList.value.push(year)
   }
 
-  fetchReleasesByMonth(
+  releases.value = await getReleasesBetweenDates(
     Timestamp.fromDate(startDate.value),
     Timestamp.fromDate(endDate.value),
-  ).then(releasesData => {
-    releases.value = releasesData
-  })
+  )
 
   window.addEventListener('scroll', handleScrollCalendar)
 })
@@ -58,7 +57,7 @@ function beforeEnter(el) {
 watch([currentYear, currentMonth], async () => {
   startDate.value = new Date(currentYear.value, currentMonth.value, 1)
   endDate.value = new Date(currentYear.value, currentMonth.value + 1, 0)
-  releases.value = await fetchReleasesByMonth(
+  releases.value = await getReleasesBetweenDates(
     Timestamp.fromDate(startDate.value),
     Timestamp.fromDate(endDate.value),
   )

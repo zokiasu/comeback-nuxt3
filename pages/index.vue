@@ -24,17 +24,32 @@ const comebacksToday = computed(() => {
   })
 })
 
-onMounted(async () => {
-  const comebacksDate = new Date()
-  comebacksDate.setDate(comebacksDate.getDate() - 1)
-  await getRealtimeNextComebacks(Timestamp.fromDate(comebacksDate), (cb: any) => { comebacks.value = cb })
+// onMounted(async () => {
+//   const comebacksDate = new Date()
+//   comebacksDate.setDate(comebacksDate.getDate() - 1)
+//   await getRealtimeNextComebacks(Timestamp.fromDate(comebacksDate), (cb: any) => { comebacks.value = cb })
 
-  const releaseDate = new Date()
-  releaseDate.setDate(releaseDate.getDate() - 8)
-  await getRealtimeLastestReleases(Timestamp.fromDate(releaseDate), 8, (rel: any) => { releases.value = rel })
+//   const releaseDate = new Date()
+//   releaseDate.setDate(releaseDate.getDate() - 8)
+//   await getRealtimeLastestReleases(Timestamp.fromDate(releaseDate), 8, (rel: any) => { releases.value = rel })
 
-  await getRealtimeLastestArtistsAdded(8, (art: any) => { artists.value = art })
-})
+//   await getRealtimeLastestArtistsAdded(8, (art: any) => { artists.value = art })
+// })
+
+onMounted(() => {
+  const comebacksDate = new Date();
+  comebacksDate.setDate(comebacksDate.getDate() - 1);
+
+  const releaseDate = new Date();
+  releaseDate.setDate(releaseDate.getDate() - 8);
+
+  Promise.all([
+    new Promise<void>((resolve) => getRealtimeNextComebacks(Timestamp.fromDate(comebacksDate), (cb: any) => { comebacks.value = cb; resolve(); })),
+    new Promise<void>((resolve) => getRealtimeLastestReleases(Timestamp.fromDate(releaseDate), 8, (rel: any) => { releases.value = rel; resolve(); })),
+    new Promise<void>((resolve) => getRealtimeLastestArtistsAdded(8, (art: any) => { artists.value = art; resolve(); }))
+  ]);
+});
+
 
 const reloadDiscoverMusic = async () => {
   discoverOne.value?.reloadRandomMusic()
