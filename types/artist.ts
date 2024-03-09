@@ -5,6 +5,8 @@ export interface Artist {
   name: string
   idYoutubeMusic: string
   description: string
+  verified: boolean
+  activeCareer: boolean
   type: string
   image: string
   styles: Object[]
