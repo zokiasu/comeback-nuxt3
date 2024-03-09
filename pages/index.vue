@@ -117,15 +117,17 @@ useHead({
       <!-- Discover Music -->
       <div class="text-center space-y-8 xl:space-y-10 2xl:space-y-14">
         <p class="text-xl font-bold lg:text-4xl">Discover Music</p>
-        <div class="grid grid-cols-2 gap-5 xl:grid-cols-4">
-          <LazyDiscoverMusic ref="discoverOne" />
-          <LazyDiscoverMusic ref="discoverTwo" />
-          <LazyDiscoverMusic ref="discoverThree" />
-          <LazyDiscoverMusic ref="discoverFour" />
+        <div class="space-y-5">
+          <div class="grid grid-cols-2 gap-5 xl:grid-cols-4">
+            <LazyDiscoverMusic ref="discoverOne" />
+            <LazyDiscoverMusic ref="discoverTwo" />
+            <LazyDiscoverMusic ref="discoverThree" />
+            <LazyDiscoverMusic ref="discoverFour" />
+          </div>
+          <button @click="reloadDiscoverMusic()" class="px-3 py-1 rounded bg-quaternary">
+            Reload
+          </button>
         </div>
-        <button @click="reloadDiscoverMusic()" class="px-3 py-1 rounded bg-quaternary">
-          Reload
-        </button>
       </div>
       <!-- Recent Release -->
       <RecentReleases :releases="releases" />

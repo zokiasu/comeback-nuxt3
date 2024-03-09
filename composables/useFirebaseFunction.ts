@@ -162,9 +162,7 @@ export function useFirebaseFunction() {
   // get release by artist id
   const getReleaseByArtistId = async (artistId: string) => {
     const colRef = query(collection(database as any, 'releases'), where('artistsId', '==', artistId));
-
     const snapshot = await getDocs(colRef);
-
     return snapshotResultToArray(snapshot);
   }
   //TODO: Add comment
@@ -181,6 +179,11 @@ export function useFirebaseFunction() {
   }
   const updateArtist = async (id: string, data: any) => {
     //TODO
+  }
+  const createArtist = async (data: any) => {
+    const docRef = await addDoc(collection(database as any, 'artists'), data);
+    await updateDoc(docRef, { id: docRef.id });
+    return docRef.id;
   }
 
   /** 
@@ -226,5 +229,6 @@ export function useFirebaseFunction() {
     updateRelease,
     getComebackExist,
     getReleaseByArtistId,
+    createArtist,
   }
 }
