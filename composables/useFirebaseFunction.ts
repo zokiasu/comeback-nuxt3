@@ -25,7 +25,7 @@ export function useFirebaseFunction() {
   /** 
    * GENERAL FUNCTION FOR FIREBASE FUNCTION 
   **/
-  //TODO: Add comment
+  // Converts a Firestore snapshot into an array of documents.
   const snapshotResultToArray = (result: any) => {
     const docs = Array.from(result.docs).map((doc: any) => {
       return {
@@ -35,7 +35,7 @@ export function useFirebaseFunction() {
 
     return docs
   }
-  //TODO: Add comment
+  // Fetches details of a YouTube video using the YouTube Data API.
   const getVideoDetails = async (videoId: string, apiKey: string) => {
     const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails,status&key=${apiKey}`
 
@@ -48,7 +48,7 @@ export function useFirebaseFunction() {
       return null
     }
   }
-  //TODO: Add comment
+  // Checks if a YouTube video can be embedded.
   const canVideoBeEmbedded = async (videoId: string, apiKey: string) => {
     const videoDetails = await getVideoDetails(videoId, apiKey)
 
@@ -65,7 +65,7 @@ export function useFirebaseFunction() {
   /** 
    * HOMEPAGE FUNCTION 
   **/
-  //TODO: Add comment
+  // Listens for real-time updates to the 'news' collection in Firestore where the date is greater than or equal to the provided start date.
   const getRealtimeNextComebacks = async (startDate: Timestamp, callback: Function) => {
     const colRef = query(
       collection(database as any, 'news'),
@@ -82,7 +82,7 @@ export function useFirebaseFunction() {
     // Retourne la fonction pour se désabonner de l'écouteur
     return unsubscribe
   }
-  //TODO: Add comment
+  // Listens for real-time updates to the 'releases' collection in Firestore where the date is greater than or equal to the provided start date and needToBeVerified is false.
   const getRealtimeLastestReleases = async (startDate: Timestamp, limitNumber: number, callback: Function) => {
     const colRef = query(
       collection(database as any, 'releases'),
@@ -101,7 +101,7 @@ export function useFirebaseFunction() {
     // Retourne la fonction pour se désabonner de l'écouteur
     return unsubscribe
   }
-  //TODO: Add comment
+  // Listens for real-time updates to the 'artists' collection in Firestore.
   const getRealtimeLastestArtistsAdded = async (limitNumber: number, callback: Function) => {
     const colRef = query(
       collection(database as any, 'artists'),
@@ -118,7 +118,7 @@ export function useFirebaseFunction() {
     // Retourne la fonction pour se désabonner de l'écouteur
     return unsubscribe
   }
-  //TODO: Add comment
+  // Fetches a random music release from the 'releases' collection in Firestore.
   const getRandomMusic = async (): Promise<any> => {
     const colRef = query(collection(database as any, 'releases'));
     const snapshot = await getDocs(colRef);
@@ -148,18 +148,28 @@ export function useFirebaseFunction() {
   **/
   //TODO: Add comment
   const getReleasesBetweenDates = async (startDate: Timestamp, endDate: Timestamp) => {
-    // TODO
+    const colRef = query(
+      collection(database as any, 'releases'),
+      where('date', '>=', startDate),
+      where('date', '<=', endDate),
+      where('needToBeVerified', '==', false),
+      orderBy('date', 'desc')
+    );
+
+    const snapshot = await getDocs(colRef);
+
+    return snapshotResultToArray(snapshot);
   }
 
   /** 
    * Release's Function
   **/
-  //TODO: Add comment
+  // Updates a document in the 'releases' collection in Firestore.
   const updateRelease = async (id: string, data: any) => {
     const docRef = doc(database as any, 'releases', id)
     await updateDoc(docRef, data)
   }
-  // get release by artist id
+  // Fetches releases by a specific artist from the 'releases' collection in Firestore.
   const getReleaseByArtistId = async (artistId: string) => {
     const colRef = query(collection(database as any, 'releases'), where('artistsId', '==', artistId));
     const snapshot = await getDocs(colRef);
@@ -180,6 +190,7 @@ export function useFirebaseFunction() {
   const updateArtist = async (id: string, data: any) => {
     //TODO
   }
+  // Creates a new artist document in the 'artists' collection in Firestore.
   const createArtist = async (data: any) => {
     const docRef = await addDoc(collection(database as any, 'artists'), data);
     await updateDoc(docRef, { id: docRef.id });
@@ -189,7 +200,7 @@ export function useFirebaseFunction() {
   /** 
    * Comeback's Function
   **/
-  //TODO: Add comment
+  // Checks if a comeback exists in the 'news' collection in Firestore for a specific artist on a specific date.
   const getComebackExist = async (date: Timestamp, artistName: string): Promise<boolean> => {
     const today = new Date()
     const todayInTimestamp = Timestamp.fromDate(today)
@@ -225,6 +236,7 @@ export function useFirebaseFunction() {
     getRealtimeNextComebacks,
     getRealtimeLastestReleases,
     getRealtimeLastestArtistsAdded,
+    getReleasesBetweenDates,
     getRandomMusic,
     updateRelease,
     getComebackExist,

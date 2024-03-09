@@ -17,31 +17,6 @@ import {
 
 /** RELEASES FUNCTION **/
 
-export const fetchReleasesByMonth = async (startDate: Timestamp, endDate: Timestamp) => {
-  const { $firestore } = useNuxtApp()
-
-  const colRef = query(
-    collection($firestore as any, 'releases'),
-    where('date', '>=', startDate),
-    where('date', '<=', endDate),
-    orderBy('date', 'desc'),
-  )
-
-  const snapshot = await getDocs(colRef)
-
-  const docs = Array.from(snapshot.docs)
-    .map((doc) => {
-      return {
-        ...doc.data(),
-      }
-    })
-    .filter((doc) => {
-      return doc.needToBeVerified === false
-    })
-
-  return docs
-}
-
 export const fetchReleaseById = async (idRelease: string) => {
   const { $firestore } = useNuxtApp()
 

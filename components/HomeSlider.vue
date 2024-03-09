@@ -32,7 +32,8 @@
           </SwiperSlide>
         </Swiper>
       </section>
-      <section v-else class="absolute inset-0">
+      
+      <section v-else class="absolute inset-0 bg-[url('/slider-placeholder.webp')] bg-cover bg-center bg-no-repeat">
         <div
           class="absolute inset-0 z-10 flex flex-col items-center justify-center space-y-1.5 bg-black/60 xl:space-y-5"
         >
@@ -44,7 +45,7 @@
             Track every next release by your favorite artists
           </p>
         </div>
-        <p class="absolute bottom-5 right-5 z-20 text-quinary">
+        <p class="absolute bottom-5 inset-x-0 z-20 text-center text-primary">
           No Comeback Reported Today
         </p>
       </section>
