@@ -70,6 +70,8 @@ const routeN = useRoute()
         Users
       </NuxtLink>
     </nav>
-    <NuxtPage class="container mx-auto min-h-screen w-full py-3 lg:p-3" />
+    <div class="container mx-auto min-h-screen w-full py-5">
+      <NuxtPage />
+    </div>
   </div>
 </template>

@@ -40,7 +40,6 @@ const filteredNewsList = computed(() => {
   if (page != 1) page.value = 1
   if (!newsFetch.value) return newsFetch.value
   if (!search.value) {
-    console.log('newsFetch.value', newsFetch.value)
     return newsFetch.value.sort((a, b) => {
       if (sort.value === 'createdAt') {
         if (!invertSort.value) return a.createdAt - b.createdAt

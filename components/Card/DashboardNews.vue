@@ -55,15 +55,17 @@ const deleteNews = () => {
         <p class="font-semibold">{{ artist.name }}</p>
         <NuxtLink :to="'/artist/' + artist.id" target="_blank">{{ artist.id }}</NuxtLink>
       </div>
-      <NuxtImg
-        v-if="artist.image"
-        :src="artist.image"
-        :alt="artist.name"
-        format="webp"
-        loading="lazy"
-        class="rounded"
-        @load="loadingDone"
-      />
+      <div class="w-full aspect-video bg-red-500 rounded">
+        <NuxtImg
+          v-if="artist.image"
+          :src="artist.image"
+          :alt="artist.name"
+          format="webp"
+          loading="lazy"
+          class="rounded w-full h-full object-cover"
+          @load="loadingDone"
+        />
+      </div>
     </div>
 
     <div>
