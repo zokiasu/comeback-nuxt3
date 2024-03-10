@@ -24,18 +24,6 @@ const comebacksToday = computed(() => {
   })
 })
 
-// onMounted(async () => {
-//   const comebacksDate = new Date()
-//   comebacksDate.setDate(comebacksDate.getDate() - 1)
-//   await getRealtimeNextComebacks(Timestamp.fromDate(comebacksDate), (cb: any) => { comebacks.value = cb })
-
-//   const releaseDate = new Date()
-//   releaseDate.setDate(releaseDate.getDate() - 8)
-//   await getRealtimeLastestReleases(Timestamp.fromDate(releaseDate), 8, (rel: any) => { releases.value = rel })
-
-//   await getRealtimeLastestArtistsAdded(8, (art: any) => { artists.value = art })
-// })
-
 onMounted(() => {
   const comebacksDate = new Date();
   comebacksDate.setDate(comebacksDate.getDate() - 1);
@@ -126,11 +114,11 @@ useHead({
     <!-- Home Header -->
     <HomeSlider :news-today="comebacksToday" />
     <!-- Home Body -->
-    <section class="container mx-auto space-y-16 p-5 py-10 2xl:space-y-28">
+    <section class="container mx-auto space-y-16 p-5 py-10 2xl:space-y-20">
       <!-- Comeback Reported List -->
       <ComebackReported :comebackList="comebacks" />
       <!-- Discover Music -->
-      <div class="text-center space-y-8 xl:space-y-10 2xl:space-y-14">
+      <div class="text-center space-y-8 xl:space-y-10">
         <p class="text-xl font-bold lg:text-4xl">Discover Music</p>
         <div class="space-y-5">
           <div class="grid grid-cols-2 gap-5 xl:grid-cols-4">

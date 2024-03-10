@@ -39,7 +39,7 @@ onMounted(async () => {
         class="mx-auto block h-9 w-auto"
       />
     </div>
-    <main class="min-h-[calc(100vh-60px)]">
+    <main>
       <slot />
     </main>
     <LazyFooter />
