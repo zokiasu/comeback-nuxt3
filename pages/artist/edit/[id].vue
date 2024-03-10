@@ -136,13 +136,23 @@ useHead({
     v-if="artist"
     class="container mx-auto min-h-[calc(100vh-60px)] space-y-5 p-5 lg:px-10"
   >
-    <p class="border-b border-zinc-700 pb-1 text-lg font-semibold uppercase lg:text-xl">
-      Artist Edition : {{ artistToEdit.name }}
-    </p>
+    <div class="flex items-end justify-between border-b border-zinc-700 pb-1 text-lg font-semibold uppercase lg:text-xl">
+      <p>Artist Edition : {{ artistToEdit.name }}</p>
+      <button
+        @click="sendUpdateArtist"
+        :disabled="isUploadingEdit"
+        class="w-fit rounded bg-primary px-3 py-1 text-base font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+      >
+        {{ isUploadingEdit ? 'Loading' : 'Saves' }}
+      </button>
+    </div>
     <div class="space-y-5">
       <!-- Picture -->
       <div class="flex flex-col gap-2">
-        <ComebackLabel label="Image" />
+        <div class="flex items-end gap-2">
+          <ComebackLabel label="Image" />
+          <p class="italic text-quinary text-sm">Picture will be automaticaly update based on Youtube Music</p>
+        </div>
         <NuxtImg
           v-if="artistToEdit.image"
           :src="artistToEdit.image"
@@ -238,88 +248,91 @@ useHead({
           :preserve-search="false"
         />
       </div>
-      <!-- Platforms -->
-      <div class="w-full space-y-2">
-        <ComebackLabel label="Platforms" />
-        <div
-          v-for="(platform, index) in artistToEdit.platformList"
-          :key="platform"
-          class="flex w-full gap-1"
-        >
-          <div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
-            <input
-              type="text"
-              :value="platform.name"
-              placeholder="Platform's Name"
-              @input="artistToEdit.platformList[index].name = $event.target.value"
-              class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
-            />
-            <input
-              type="text"
-              :value="platform.link"
-              placeholder="Platform's Link"
-              @input="artistToEdit.platformList[index].link = $event.target.value"
-              class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
-            />
+        <!-- Platforms & Socials -->
+      <div class="flex gap-2">
+        <!-- Platforms -->
+        <div class="w-full space-y-2">
+          <ComebackLabel label="Platforms" />
+          <div
+            v-for="(platform, index) in artistToEdit.platformList"
+            :key="platform"
+            class="flex w-full gap-1"
+          >
+            <div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
+              <input
+                type="text"
+                :value="platform.name"
+                placeholder="Platform's Name"
+                @input="artistToEdit.platformList[index].name = $event.target.value"
+                class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+              />
+              <input
+                type="text"
+                :value="platform.link"
+                placeholder="Platform's Link"
+                @input="artistToEdit.platformList[index].link = $event.target.value"
+                class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+              />
+            </div>
+            <button
+              class="rounded bg-primary p-5 text-xs hover:bg-red-900"
+              @click="
+                artistToEdit.platformList.splice(
+                  artistToEdit.platformList.indexOf(platform),
+                  1,
+                )
+              "
+            >
+              Delete
+            </button>
           </div>
           <button
-            class="rounded bg-primary p-5 text-xs hover:bg-red-900"
-            @click="
-              artistToEdit.platformList.splice(
-                artistToEdit.platformList.indexOf(platform),
-                1,
-              )
-            "
+            class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
+            @click="artistToEdit.platformList.push({ name: '', link: '' })"
           >
-            Delete
+            Add Platforms
           </button>
         </div>
-        <button
-          class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
-          @click="artistToEdit.platformList.push({ name: '', link: '' })"
-        >
-          Add Platforms
-        </button>
-      </div>
-      <!-- Socials -->
-      <div class="w-full space-y-2">
-        <ComebackLabel label="Socials" />
-        <div
-          v-for="(social, index) in artistToEdit.socialList"
-          :key="social"
-          class="flex w-full gap-2"
-        >
-          <div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
-            <input
-              type="text"
-              :value="social.name"
-              placeholder="Social's Name"
-              @input="artistToEdit.socialList[index].name = $event.target.value"
-              class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
-            />
-            <input
-              type="text"
-              :value="social.link"
-              placeholder="Social's Link"
-              @input="artistToEdit.socialList[index].link = $event.target.value"
-              class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
-            />
+        <!-- Socials -->
+        <div class="w-full space-y-2">
+          <ComebackLabel label="Socials" />
+          <div
+            v-for="(social, index) in artistToEdit.socialList"
+            :key="social"
+            class="flex w-full gap-2"
+          >
+            <div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
+              <input
+                type="text"
+                :value="social.name"
+                placeholder="Social's Name"
+                @input="artistToEdit.socialList[index].name = $event.target.value"
+                class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+              />
+              <input
+                type="text"
+                :value="social.link"
+                placeholder="Social's Link"
+                @input="artistToEdit.socialList[index].link = $event.target.value"
+                class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+              />
+            </div>
+            <button
+              class="rounded bg-primary p-5 text-xs hover:bg-red-900"
+              @click="
+                artistToEdit.socialList.splice(artistToEdit.socialList.indexOf(platform), 1)
+              "
+            >
+              Delete
+            </button>
           </div>
           <button
-            class="rounded bg-primary p-5 text-xs hover:bg-red-900"
-            @click="
-              artistToEdit.socialList.splice(artistToEdit.socialList.indexOf(platform), 1)
-            "
+            class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
+            @click="artistToEdit.socialList.push({ name: '', link: '' })"
           >
-            Delete
+            Add Socials
           </button>
         </div>
-        <button
-          class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
-          @click="artistToEdit.socialList.push({ name: '', link: '' })"
-        >
-          Add Socials
-        </button>
       </div>
     </div>
     <div class="border-t border-zinc-700 pt-3">
