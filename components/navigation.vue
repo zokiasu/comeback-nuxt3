@@ -73,6 +73,13 @@ const signOut = async () => {
             Calendar
           </NuxtLink>
           <!-- <NuxtLink
+            v-if="isLogin"
+            :to="`/profileDashboard`"
+            :class="routeN.name === 'calendar' ? 'text-white' : 'text-zinc-500'"
+          >
+            Profile Dashboard
+          </NuxtLink> -->
+          <!-- <NuxtLink
             :to="`/artist`"
             :class="routeN.name === 'artist' ? 'text-white' : 'text-zinc-500'"
           >
