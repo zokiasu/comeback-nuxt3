@@ -1,7 +1,7 @@
 <script setup>
 import { Timestamp } from 'firebase/firestore'
 
-const releases = ref(null)
+const releases = ref([])
 const backTop = ref(null)
 const yearList = ref([])
 const monthList = [
@@ -69,7 +69,9 @@ useHead({
 
 <template>
   <div id="calendarPage" class="container mx-auto min-h-screen w-full h-fit space-y-3 p-3 md:p-5">
+    <!-- Period Selector -->
     <div>
+      <!-- Year Selector -->
       <div class="flex w-full gap-1 text-xs font-semibold snap-x snap-mandatory overflow-x-auto pb-1 scrollBarLight">
         <button
           :id="year" 
@@ -82,7 +84,7 @@ useHead({
           {{ year }}
         </button>
       </div>
-
+      <!-- Month Selector -->
       <div v-if="yearList.length" class="flex w-full gap-1 text-xs font-semibold snap-x snap-mandatory overflow-x-auto pb-1 scrollBarLight">
         <button
           :id="month.original" 
@@ -97,7 +99,7 @@ useHead({
         </button>
       </div>
     </div>
-
+    <!-- Stats -->
     <div class="border-y-2 text-xs border-quaternary py-3 space-y-2">
       <p class="font-semibold text-base text-center">
         {{ monthList[currentMonth].original }} {{ currentYear }}'s stats
@@ -117,7 +119,7 @@ useHead({
         </p>
       </div>
     </div>
-
+    <!-- Releases -->
     <transition-group
       tag="div"
       leave-active-class="animate__bounceOut"
@@ -138,6 +140,7 @@ useHead({
         class="!min-w-full"
       />
     </transition-group>
+    <!-- Back to top -->
     <div ref="backTop" class="sticky w-full text-center py-5 bottom-0 hidden">
       <a href="#" class="bg-quaternary w-fit shadow shadow-zinc-700 px-4 py-2.5 text-xs font-semibold">
         Back to top

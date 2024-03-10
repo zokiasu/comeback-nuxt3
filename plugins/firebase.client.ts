@@ -23,4 +23,5 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   nuxtApp.provide('auth', auth)
   nuxtApp.provide('firestore', firestore)
+  nuxtApp.provide('analytics', analytics)
 })
