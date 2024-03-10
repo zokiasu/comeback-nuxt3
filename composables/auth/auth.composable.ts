@@ -21,6 +21,10 @@ export const useAuth = () => {
       error.value = err
     } finally {
       isLoading.value = false
+      if(user.value) {
+        // Rediriger l'utilisateur vers une autre page
+        $router.push('/')
+      }
     }
   }
 
@@ -28,13 +32,22 @@ export const useAuth = () => {
     const provider = new OAuthProvider('microsoft.com');
     // Vous pouvez également définir des paramètres supplémentaires ici, par exemple :
     // provider.setCustomParameters({ prompt: 'select_account' });
+    isLoading.value = true
+    error.value = null
 
     try {
       const result = await signInWithPopup(auth, provider);
       // Traitez le résultat ici (récupérez le token, l'utilisateur, etc.)
-      console.log(result);
+      user.value = result.user
     } catch (error) {
       console.error(error);
+      error.value = err
+    } finally {
+      isLoading.value = false
+      if(user.value) {
+        // Rediriger l'utilisateur vers une autre page
+        $router.push('/')
+      }
     }
   };
 
