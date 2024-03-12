@@ -144,25 +144,25 @@ useHead({
       <div class="grid grid-cols-4 gap-5 justify-center items-center">
         <button 
           @click="switchTypeFilter('ALL')" 
-          class="flex flex-col justify-center items-center bg-primary rounded py-1 px-2" 
+          class="w-full h-full flex flex-col justify-center items-center bg-primary rounded py-1 px-2" 
           :class="(!onlyAlbums && !onlyEps && !onlySingles) ? 'bg-primary':'bg-quaternary'"
         >
           Total releases <span class="font-bold text-base">{{ releases.length }}</span>
         </button>
         <button @click="switchTypeFilter('ALBUM')" 
-          class="flex flex-col justify-center items-center bg-primary rounded py-1 px-2" 
+          class="w-full h-full flex flex-col justify-center items-center bg-primary rounded py-1 px-2" 
           :class="(onlyAlbums && !onlyEps && !onlySingles) ? 'bg-primary':'bg-quaternary'"
         >
           Total albums <span class="font-bold text-base">{{ releases.filter(release => release.type === 'ALBUM').length }}</span>
         </button>
         <button @click="switchTypeFilter('EP')" 
-          class="flex flex-col justify-center items-center bg-primary rounded py-1 px-2" 
+          class="w-full h-full flex flex-col justify-center items-center bg-primary rounded py-1 px-2" 
           :class="(!onlyAlbums && onlyEps && !onlySingles) ? 'bg-primary':'bg-quaternary'"
         >
           Total EPs <span class="font-bold text-base">{{ releases.filter(release => release.type === 'EP').length }}</span>
         </button>
         <button @click="switchTypeFilter('SINGLE')" 
-          class="flex flex-col justify-center items-center bg-primary rounded py-1 px-2" 
+          class="w-full h-full flex flex-col justify-center items-center bg-primary rounded py-1 px-2" 
           :class="(!onlyAlbums && !onlyEps && onlySingles) ? 'bg-primary':'bg-quaternary'"
         >
           Total singles <span class="font-bold text-base">{{ releases.filter(release => release.type === 'SINGLE').length }}</span>
