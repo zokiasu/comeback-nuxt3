@@ -62,7 +62,7 @@ const sendUpdateArtist = async () => {
     toast.success('Artist created');
     isUploadingEdit.value = false;
       const router = useRouter()
-      router.push(`/artist/${route.params.id}`)
+      router.push(`/`)
   })
 }
 
