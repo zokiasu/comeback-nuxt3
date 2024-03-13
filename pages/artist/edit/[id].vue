@@ -14,23 +14,6 @@ const description = ref('Edit Artist Page')
 const route = useRoute()
 
 const toast = useToast()
-const toastOption = {
-  position: 'top-right',
-  timeout: 5000,
-  closeOnClick: true,
-  pauseOnFocusLoss: false,
-  pauseOnHover: true,
-  draggable: true,
-  draggablePercent: 0.6,
-  showCloseButtonOnHover: false,
-  hideProgressBar: false,
-  closeButton: 'button',
-  icon: true,
-  rtl: false,
-  transition: 'Vue-Toastification__bounce',
-  maxToasts: 5,
-  newestOnTop: true,
-}
 
 const isUploadingEdit = ref(false)
 const artist = ref(null)
@@ -70,12 +53,13 @@ const sendUpdateArtist = async () => {
 
   // if artistToEdit doesn't have any field to update then return
   if (Object.keys(updatedFields).length == 0) {
+    console.log('No field to update')
+    toast.error('No field to update')
     return;
   }
 
   const today = new Date()
   today.setDate(today.getDate())
-  // set hour to 00:00:00
   today.setHours(0, 0, 0, 0)
   const todayTimestamp = Timestamp.fromDate(today)
   updatedFields['updatedAt'] = todayTimestamp
@@ -84,7 +68,7 @@ const sendUpdateArtist = async () => {
     // update artist without verifying
     updatedFields['id'] = artist.value.id
     updateArtist(updatedFields).then(async () => {
-      toast.success('Artist Updated', toastOption)
+      toast.success('Artist Updated')
       const router = useRouter()
       router.push(`/artist/${route.params.id}`)
     })
@@ -94,13 +78,13 @@ const sendUpdateArtist = async () => {
       .then(() => {
         console.log('Document successfully written!')
         isUploadingEdit.value = false
-        toast.success('Artist Update', toastOption)
+        toast.success('Artist Update')
         const router = useRouter()
         router.push(`/artist/${route.params.id}`)
       })
       .catch((error) => {
         console.error('Error writing document: ', error)
-        toast.warning('Artist Update Failed', toastOption)
+        toast.warning('Artist Update Failed')
       })
   }
 }
