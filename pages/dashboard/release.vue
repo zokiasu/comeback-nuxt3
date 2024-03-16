@@ -90,6 +90,7 @@ onMounted(async () => {
         ...doc.data(),
       }
     })
+    releaseFetch.value.filter((doc, index, self) => self.findIndex((t) => t.id === doc.id) === index)
   })
 })
 

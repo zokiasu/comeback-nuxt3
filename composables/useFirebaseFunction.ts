@@ -16,15 +16,18 @@ import {
   onSnapshot,
 } from 'firebase/firestore'
 import _ from 'lodash'
+import { useToast } from 'vue-toastification'
 
 export function useFirebaseFunction() {
   const { $firestore: database } = useNuxtApp()
   const { shuffleArray } = useGeneralFunction()
   const config = useRuntimeConfig()
+  const toast = useToast()
 
   /** 
    * GENERAL FUNCTION FOR FIREBASE FUNCTION 
   **/
+
   // Converts a Firestore snapshot into an array of documents.
   const snapshotResultToArray = (result: any) => {
     const docs = Array.from(result.docs).map((doc: any) => {
@@ -32,9 +35,21 @@ export function useFirebaseFunction() {
         ...doc.data(),
       }
     })
-
+    // remove double data
+    docs.filter((doc: any, index: number, self: any) => self.findIndex((t: any) => t.id === doc.id) === index)
+    
     return docs
   }
+  // Transforme un DocumentSnapshot en objet JavaScript
+  const documentSnapshotToObject = (docSnap: any) => {
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() };
+    } else {
+      // Gérer l'absence de document, par exemple en retournant null ou en affichant un message
+      console.log("Aucun document correspondant !");
+      return null;
+    }
+  };
   // Fetches details of a YouTube video using the YouTube Data API.
   const getVideoDetails = async (videoId: string, apiKey: string) => {
     const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails,status&key=${apiKey}`
@@ -61,10 +76,17 @@ export function useFirebaseFunction() {
 
     return isEmbeddable && !hasRestriction
   }
+  // Verify if an artist exist in the 'artists' collection in Firestore with idYoutubeMusic field.
+  const artistExistInFirebase = async (idYoutubeMusic: string) => {
+    const colRef = query(collection(database as any, 'artists'), where('idYoutubeMusic', '==', idYoutubeMusic))
+    const snapshot = await getDocs(colRef)
+    return snapshot.size > 0
+  }
 
   /** 
    * HOMEPAGE FUNCTION 
   **/
+
   // Listens for real-time updates to the 'news' collection in Firestore where the date is greater than or equal to the provided start date.
   const getRealtimeNextComebacks = async (startDate: Timestamp, callback: Function) => {
     const colRef = query(
@@ -146,6 +168,7 @@ export function useFirebaseFunction() {
   /**
    * CALENDAR PAGE FUNCTION
   **/
+
   //TODO: Add comment
   const getReleasesBetweenDates = async (startDate: Timestamp, endDate: Timestamp) => {
     const colRef = query(
@@ -155,15 +178,14 @@ export function useFirebaseFunction() {
       where('needToBeVerified', '==', false),
       orderBy('date', 'desc')
     );
-
     const snapshot = await getDocs(colRef);
-
     return snapshotResultToArray(snapshot);
   }
 
   /** 
    * Release's Function
   **/
+
   // Updates a document in the 'releases' collection in Firestore.
   const updateRelease = async (id: string, data: any) => {
     const docRef = doc(database as any, 'releases', id)
@@ -180,30 +202,175 @@ export function useFirebaseFunction() {
     //TODO
   }
 
-  const getReleaseByPageWithFilters = async (page: number, orderBy: string, lastVisibleElement: any) => {
-    //TODO
-  }
-
   /** 
    * Artist's Function
   **/
-  //TODO: Add comment
-  const getArtistById = async (id: string) => {
-    //TODO
+
+  // Fetches an artist with full details by its ID from the 'artists' collection in Firestore.
+  const getArtistById = async (idArtist: string) => {
+    const docRef = doc(database as any, 'artists', idArtist);
+    const docSnap = await getDoc(docRef);
+    const artist = documentSnapshotToObject(docSnap);
+
+    const colGroup = collection(database as any, 'artists', idArtist, 'groups');
+    const colMember = collection(database as any, 'artists', idArtist, 'members');
+    const snapshotGroup = await getDocs(colGroup);
+    const snapshotMember = await getDocs(colMember);
+    const groups = snapshotResultToArray(snapshotGroup);
+    const members = snapshotResultToArray(snapshotMember);
+
+    const releases = await getReleaseByArtistId(idArtist);
+
+    artist.groups = groups;
+    artist.members = members;
+    artist.releases = releases;
+
+    return artist;
   }
-  const updateArtist = async (id: string, data: any) => {
-    //TODO
-  }
+
+  // Fetches an artist by its ID from the 'artists' collection in Firestore.
+  const getArtistByIdLight = async (idArtist: string) => {
+    const docRef = doc(database as any, 'artists', idArtist);
+    const docSnap = await getDoc(docRef);
+    
+    return documentSnapshotToObject(docSnap);
+  };
+
   // Creates a new artist document in the 'artists' collection in Firestore.
   const createArtist = async (data: any) => {
-    const docRef = await addDoc(collection(database as any, 'artists'), data);
-    await updateDoc(docRef, { id: docRef.id });
-    return docRef.id;
+    if(await artistExistInFirebase(data.idYoutubeMusic)) {
+      toast.error('This artist already exists in the database.')
+      return null;
+    };
+
+    // Suppression des clés de groupes et de membres pour la création initiale de l'artiste
+    const artistData = { ...data };
+    delete artistData.groups;
+    delete artistData.members;
+
+    const docRef = await addDoc(collection(database as any, 'artists'), artistData);
+    const artistId = docRef.id;
+    await updateDoc(docRef, { id: artistId });
+
+    // Gestion des groupes et des membres après la création de l'artiste
+    if (data.groups) {
+      for (const group of data.groups) {
+        await setDoc(doc(database as any, 'artists', artistId, 'groups', group.id), group);
+        await setDoc(doc(database as any, 'artists', group.id, 'members', artistId), { id: artistId });
+      }
+    }
+
+    if (data.members) {
+      for (const member of data.members) {
+        await setDoc(doc(database as any, 'artists', artistId, 'members', member.id), member);
+        await setDoc(doc(database as any, 'artists', member.id, 'groups', artistId), { id: artistId });
+      }
+    }
+
+    return artistId;
+  }
+
+  // Updates a document in the 'artists' collection in Firestore.
+  const updateArtist = async (document: any) => {
+    const artistGroups = ref(null);
+    const artistMembers = ref(null);
+
+    if (document.groups) {
+      artistGroups.value = document.groups;
+      delete document.groups;
+    }
+
+    if (document.members) {
+      artistMembers.value = document.members;
+      delete document.members;
+    }
+
+    if (document.taskId) delete document.taskId;
+    if (document.createdAt) delete document.createdAt;
+
+    document.updatedAt = Timestamp.fromDate(new Date());
+
+    const docRef = doc(database as any, 'artists', document.id);
+    await updateDoc(docRef, document);
+
+    // Handle artist groups
+    if (artistGroups.value) {
+      await handleArtistGroups(database, document, artistGroups);
+    }
+
+    // Handle artist members
+    if (artistMembers.value) {
+      await handleArtistMembers(database, document, artistMembers);
+    }
+  };
+
+  // Handle artist groups
+  const handleArtistGroups = async (database: any, document: any, artistGroups: any) => {
+    const colGroup = collection(database, 'artists', document.id, 'groups');
+    const snapshot = await getDocs(colGroup);
+    const docs = snapshot.docs.map((doc) => doc.data());
+
+    for (const docU of docs) {
+      await deleteDoc(doc(database, 'artists', document.id, 'groups', docU.id));
+      await deleteDoc(doc(database, 'artists', docU.id, 'members', document.id));
+    }
+
+    for (const group of artistGroups.value) {
+      await setDoc(doc(database, 'artists', document.id, 'groups', group.id), group);
+      const artist = await getArtistByIdLight(document.id);
+      await setDoc(doc(database, 'artists', group.id, 'members', artist.id), artist);
+    }
+  };
+
+  // Handle artist members
+  const handleArtistMembers = async (database: any, document: any, artistMembers: any) => {
+    const colMember = collection(database, 'artists', document.id, 'members');
+    const snapshot = await getDocs(colMember);
+    const docs = snapshot.docs.map((doc) => doc.data());
+
+    for (const docU of docs) {
+      await deleteDoc(doc(database, 'artists', document.id, 'members', docU.id));
+      await deleteDoc(doc(database, 'artists', docU.id, 'groups', document.id));
+    }
+
+    for (const member of artistMembers.value) {
+      await setDoc(doc(database, 'artists', document.id, 'members', member.id), member);
+      const artist = await getArtistByIdLight(document.id);
+      await setDoc(doc(database, 'artists', member.id, 'groups', artist.id), artist);
+    }
+  };
+
+  const deleteArtist = async (id: string) => {
+    const releases = await getReleaseByArtistId(id);
+    const artistTodelete = await getArtistById(id);
+    const artistGroups = artistTodelete.groups;
+    const artistMembers = artistTodelete.members;
+
+    for (const release of releases) {
+      await deleteDoc(doc(database as any, 'releases', release.id)).then(() => {
+        console.log('Document successfully deleted!', release.name, release.artistName);
+      });
+    }
+
+    for (const group of artistGroups) {
+      await deleteDoc(doc(database as any, 'artists', id, 'groups', group.id)).then(() => {
+        console.log('Document successfully deleted!', group.name, release.artistName);
+      });
+      await deleteDoc(doc(database as any, 'artists', group.id, 'members', id));
+    }
+
+    for (const member of artistMembers) {
+      await deleteDoc(doc(database as any, 'artists', id, 'members', member.id));
+      await deleteDoc(doc(database as any, 'artists', member.id, 'groups', id));
+    }
+
+    await deleteDoc(doc(database as any, 'artists', id));0
   }
 
   /** 
    * Comeback's Function
   **/
+
   // Checks if a comeback exists in the 'news' collection in Firestore for a specific artist on a specific date.
   const getComebackExist = async (date: Timestamp, artistName: string): Promise<boolean> => {
     const today = new Date()
@@ -246,5 +413,8 @@ export function useFirebaseFunction() {
     getComebackExist,
     getReleaseByArtistId,
     createArtist,
+    updateArtist,
+    getArtistById,
+    getArtistByIdLight,
   }
 }
