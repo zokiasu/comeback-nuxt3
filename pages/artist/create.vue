@@ -58,13 +58,45 @@ const sendUpdateArtist = async () => {
 	if(isAdminStore) {
 		artistToEdit.value['verified'] = true;
 	}
-	createArtist(artistToEdit.value).then(() => {
-    toast.success('Artist created');
-    isUploadingEdit.value = false;
+	createArtist(artistToEdit.value).then((res) => {
+    if (res != null) {
+      toast.success('Artist created');
+      isUploadingEdit.value = false;
       const router = useRouter()
       router.push(`/`)
+    } else {
+      toast.error('Error: Artist not created');
+      isUploadingEdit.value = false;
+    }
+  }).catch((error) => {
+    toast.error('Error: ' + error);
+    isUploadingEdit.value = false;
   })
 }
+
+const updateLink = _.debounce((listName, value, index) => {
+  if(value == '') {
+    artistToEdit.value[listName][index].link = value;
+    return;
+  }
+  
+  if (isValidUrl(value)) {
+    artistToEdit.value[listName][index].link = value;
+  } else {
+    console.error('Invalid URL');
+    toast.error('Invalid URL');
+  }
+}, 500);
+
+const isValidUrl = (url) => {
+  const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return !!pattern.test(url);
+};
 
 onMounted(async () => {
   artistList.value = await queryByCollection('artists')
@@ -122,13 +154,13 @@ useHead({
       <!-- Name & Id -->
       <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
         <ComebackInput
-          label="Name"
+          label="Name *"
           placeholder="Artist Name*"
           v-model="artistToEdit.name"
         />
         <ComebackInput
-          label="Id Youtube Music"
-          placeholder="ID Youtube Music*"
+          label="Id Youtube Music *"
+          placeholder="ID Youtube Music"
           v-model="artistToEdit.idYoutubeMusic"
         />
       </div>
@@ -220,7 +252,7 @@ useHead({
                 type="text"
                 :value="platform.link"
                 placeholder="Platform's Link"
-                @input="artistToEdit.platformList[index].link = $event.target.value"
+                @input="updateLink('platformList', $event.target.value, index)"
                 class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
               />
             </div>
@@ -263,7 +295,7 @@ useHead({
                 type="text"
                 :value="social.link"
                 placeholder="Social's Link"
-                @input="artistToEdit.socialList[index].link = $event.target.value"
+                @input="updateLink('socialList', $event.target.value, index)"
                 class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
               />
             </div>
