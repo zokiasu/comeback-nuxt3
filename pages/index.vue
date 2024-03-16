@@ -133,9 +133,9 @@ useHead({
         </div>
       </div>
       <!-- Recent Release -->
-      <RecentReleases :releases="releases" />
+      <LazyRecentReleases :releases="releases" />
       <!-- Last Artist Added -->
-      <ArtistAdded :artists="artists" />
+      <LazyArtistAdded :artists="artists" />
     </section>
   </div>
 </template>
