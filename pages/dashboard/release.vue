@@ -2,8 +2,10 @@
 import { collection, onSnapshot } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
 
+
 const { $firestore: db } = useNuxtApp()
 const toast = useToast()
+const { getAllReleases } = useFirebaseFunction()
 
 const releaseFetch = ref(null)
 
@@ -83,15 +85,16 @@ const verifiedRelease = async (id) => {
 }
 
 onMounted(async () => {
-  onSnapshot(collection(db, 'releases'), (querySnapshot) => {
-    releaseFetch.value = querySnapshot.docs.map((doc) => {
-      return {
-        id: doc.id,
-        ...doc.data(),
-      }
-    })
-    releaseFetch.value.filter((doc, index, self) => self.findIndex((t) => t.id === doc.id) === index)
-  })
+  // onSnapshot(collection(db, 'releases'), (querySnapshot) => {
+  //   releaseFetch.value = querySnapshot.docs.map((doc) => {
+  //     return {
+  //       id: doc.id,
+  //       ...doc.data(),
+  //     }
+  //   })
+  //   releaseFetch.value.filter((doc, index, self) => self.findIndex((t) => t.id === doc.id) === index)
+  // })
+  releaseFetch.value = await getAllReleases()
 })
 
 const filteredReleaseList = computed(() => {

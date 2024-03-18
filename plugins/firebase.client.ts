@@ -15,6 +15,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     appId: config.public.FIREBASE_APP_ID,
     measurementId: config.public.FIREBASE_MEASUREMENT_ID,
   }
+  
   const app = initializeApp(firebaseConfig)
   const analytics = getAnalytics(app)
 
