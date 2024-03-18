@@ -201,6 +201,12 @@ export function useFirebaseFunction() {
   const getReleaseById = async (id: string) => {
     //TODO
   }
+  // Fetches all releases from the 'releases' collection in Firestore.
+  const getAllReleases = async () => {
+    const colRef = collection(database as any, 'releases');
+    const snapshot = await getDocs(colRef);
+    return snapshotResultToArray(snapshot);
+  }
 
   /** 
    * Artist's Function
@@ -410,6 +416,7 @@ export function useFirebaseFunction() {
     getReleasesBetweenDates,
     getRandomMusic,
     updateRelease,
+    getAllReleases,
     getComebackExist,
     getReleaseByArtistId,
     createArtist,
