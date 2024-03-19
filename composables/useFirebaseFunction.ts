@@ -189,8 +189,25 @@ export function useFirebaseFunction() {
   // Updates a document in the 'releases' collection in Firestore.
   const updateRelease = async (id: string, data: any) => {
     const docRef = doc(database as any, 'releases', id)
-    await updateDoc(docRef, data)
+    await updateDoc(docRef, data).then(() => {
+      console.log('Document successfully updated!');
+      return 'success';
+    }).catch((error) => {
+      console.error('Error updating document:', error);
+      return 'error';
+    });
   }
+  // Deletes a document in the 'releases' collection in Firestore.
+  const deleteRelease = async (id: string) => {
+    await deleteDoc(doc(database as any, 'releases', id)).then(() => {
+      console.log('Document successfully deleted!');
+      return 'success';
+    }).catch((error) => {
+      console.error('Error removing document:', error);
+      return 'error';
+    });
+  }
+
   // Fetches releases by a specific artist from the 'releases' collection in Firestore.
   const getReleaseByArtistId = async (artistId: string) => {
     const colRef = query(collection(database as any, 'releases'), where('artistsId', '==', artistId));
@@ -423,5 +440,6 @@ export function useFirebaseFunction() {
     updateArtist,
     getArtistById,
     getArtistByIdLight,
+    deleteRelease,
   }
 }
