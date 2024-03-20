@@ -252,7 +252,7 @@ useHead({
                 type="text"
                 :value="platform.link"
                 placeholder="Platform's Link"
-                @input="updateLink('platformList', $event.target.value, index)"
+                @input="artistToEdit.platformList[index].link = $event.target.value"
                 class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
               />
             </div>
@@ -295,7 +295,7 @@ useHead({
                 type="text"
                 :value="social.link"
                 placeholder="Social's Link"
-                @input="updateLink('socialList', $event.target.value, index)"
+                @input="artistToEdit.socialList[index].link = $event.target.value"
                 class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
               />
             </div>
