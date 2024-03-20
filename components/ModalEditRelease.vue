@@ -53,22 +53,23 @@ const validVerifiedRelease = async () => {
     }
   }
 
-  const result = await updateRelease(id, releaseToUpdate);
-  //@ts-ignore
-  if (result == 'success') {
-    console.log('Release updated');
-    emit('verifiedRelease');
-  }
-  else {
-    console.log('Error updating release');
-  }
+  await updateRelease(id, releaseToUpdate).then((res) => {
+    if (res == 'success') {
+      console.log('Release updated');
+      emit('verifiedRelease');
+    }
+    else {
+      console.log('Error updating release');
+    }
+  });
 };
 
 watchEffect(() => {
   if (dateToChange.value) {
-    // convert date to timestamp
+    console.log(dateToChange.value);
     const dateToTimestamp = new Timestamp(dateToChange.value / 1000, 0);
     releaseToUpdate.date = dateToTimestamp;
+    console.log(releaseToUpdate);
   }
 });
 </script>
