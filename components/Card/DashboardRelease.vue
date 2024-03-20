@@ -1,136 +1,97 @@
-<script setup>
-  import * as Mdl from '@kouts/vue-modal'
-  import VueDatePicker from '@vuepic/vue-datepicker'
-  import { useToast } from 'vue-toastification'
-  import { Timestamp } from 'firebase/firestore'
+<script setup lang="ts">
+import * as Mdl from "@kouts/vue-modal";
+import '@kouts/vue-modal/dist/vue-modal.css'
+import { useToast } from "vue-toastification";
+import { type Release } from '@/types/release';
 
-  const {
-    id,
-    artistsName,
-    createdAt,
-    date,
-    idYoutubeMusic,
-    image,
-    name,
-    needToBeVerified,
-    platformList,
-    type,
-    yearReleased,
-  } = defineProps({
-    id: {
-      type: String,
-      required: true,
-    },
-    artistsName: {
-      type: String,
-      required: true,
-    },
-    createdAt: {
-      type: Object,
-      required: true,
-    },
-    date: {
-      type: Object,
-      required: true,
-    },
-    idYoutubeMusic: {
-      type: String,
-      required: true,
-    },
-    image: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    needToBeVerified: {
-      type: Boolean,
-      required: true,
-    },
-    platformList: {
-      type: Array,
-      required: true,
-    },
-    type: {
-      type: String,
-      required: true,
-    },
-    yearReleased: {
-      type: Number,
-      required: true,
-    },
-  })
+const { id, artistsName, createdAt, date, idYoutubeMusic, image, name, needToBeVerified, platformList, type, yearReleased } = defineProps({
+  id: {
+    type: String,
+    required: true,
+  },
+  artistsName: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Object,
+    required: true,
+  },
+  date: {
+    type: Object,
+    required: true,
+  },
+  idYoutubeMusic: {
+    type: String,
+    required: true,
+  },
+  image: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  needToBeVerified: {
+    type: Boolean,
+    required: true,
+  },
+  platformList: {
+    type: Array,
+    required: true,
+  },
+  type: {
+    type: String,
+    required: true,
+  },
+  yearReleased: {
+    type: Number,
+    required: true,
+  },
+});
 
-  const emit = defineEmits(['deleteRelease', 'verifiedRelease'])
-  const toast = useToast()
-  const { updateRelease } = useFirebaseFunction()
+const { Modal } = Mdl;
+const { deleteRelease } = useFirebaseFunction();
 
-  const { Modal } = Mdl
-  const skeleton = ref(null)
-  const showModal = ref(false)
-  const imageLoaded = ref(false);
+const showModal = ref(false);
+const imageLoaded = ref(false);
+const dateToTestYear = date ? new Date(date.seconds * 1000) : new Date();
 
-
-  const dateToChange = ref(null)
-  const yearToChange = ref(null)
-
-  const releaseDate = computed(() => {
-    let dateComputed = new Date()
-    if (date) {
-      dateComputed = new Date(date.seconds * 1000)
-      return `${dateComputed.getDate()}-${dateComputed.getMonth() + 1}-${dateComputed.getFullYear()}`
-    } else {
-      return 'No Date'
-    }
-  })
-
-  const dateToTestYear = date ? new Date(date.seconds * 1000) : new Date()
-
-  const doubleCheckYear = computed(() => {
-    if (yearReleased !== dateToTestYear.getFullYear()) return true
-    return false
-  })
-
-  const showImage = () => {
-    console.log('showImage')
-    imageLoaded.value = true
+// COMPUTED
+const releaseDate = computed(() => {
+  let dateComputed = new Date();
+  if (date) {
+    dateComputed = new Date(date.seconds * 1000);
+    return `${dateComputed.getDate()}-${dateComputed.getMonth() + 1}-${dateComputed.getFullYear()}`;
+  } else {
+    return "No Date";
   }
+});
 
-  const deleteRelease = () => {
-    emit('deleteRelease', id)
-  }
+const doubleCheckYear = computed(() => {
+  if (yearReleased !== dateToTestYear.getFullYear()) return true;
+  return false;
+});
 
-  const showUpdateVerifiedRelease = () => {
-    showModal.value = true
-  }
+// FONCTIONS
+const showImage = () => {
+  imageLoaded.value = true;
+};
 
-  const validVerifiedRelease = () => {
-    const dataToChange = {}
-    dataToChange['id'] = id
+const callDeleteRelease = () => {
+  deleteRelease(id);
+};
 
-    if (dateToChange.value) {
-      // add dataToChange
-      dataToChange['date'] = Timestamp.fromDate(new Date(dateToChange.value))
-    }
-
-    if (yearToChange.value) {
-      // add yearToChange
-      dataToChange['year'] = yearToChange.value
-    }
-
-    dataToChange['needToBeVerified'] = false
-
-    updateRelease(id, dataToChange).then(() => {
-      showModal.value = false
-      toast.success('Release Updated')
-    })
-  }
+const showUpdateVerifiedRelease = () => {
+  showModal.value = true;
+};
 </script>
 
 <template>
-  <div class="relative h-full flex flex-col justify-between gap-1.5 rounded bg-quaternary p-3">
+  <div
+    class="relative h-full flex flex-col justify-between gap-1.5 rounded bg-quaternary p-3"
+  >
     <div class="space-y-1.5">
       <div class="flex w-full justify-between text-sm">
         <div class="flex gap-1">
@@ -164,37 +125,38 @@
       </div>
 
       <div>
-      <NuxtLink
-      :to="'/release/' + id"
-      target="_blank"
-      class="font-semibold transition-all duration-300 ease-in-out hover:text-primary"
-      >
-      {{ name }}
-      </NuxtLink>
-      <p class="border-t border-zinc-500">{{ artistsName }}</p>
+        <NuxtLink
+          :to="'/release/' + id"
+          target="_blank"
+          class="font-semibold transition-all duration-300 ease-in-out hover:text-primary"
+        >
+          {{ name }}
+        </NuxtLink>
+        <p class="border-t border-zinc-500">{{ artistsName }}</p>
       </div>
 
       <div class="space-y-2 pt-2">
-      <p class="border-b border-zinc-500 pb-1 text-xs font-semibold uppercase">
-      Platforms
-      </p>
-      <div v-if="platformList.length" class="flex flex-col space-y-1">
-      <a
-      v-for="platform in platformList"
-      :key="platform"
-      :href="platform.link"
-      target="_blank"
-      class="overflow-hidden rounded bg-quinary text-xs"
-      >
-      <p class="bg-secondary px-1.5 py-1 uppercase">{{ platform.name }}</p>
-      <p class="truncate px-1.5 py-1">{{ platform.link }}</p>
-      </a>
-      </div>
-      <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
-      No Platforms Link
-      </p>
+        <p class="border-b border-zinc-500 pb-1 text-xs font-semibold uppercase">
+          Platforms
+        </p>
+        <div v-if="platformList.length" class="flex flex-col space-y-1">
+          <a
+            v-for="platform in platformList"
+            :key="platform"
+            :href="platform.link"
+            target="_blank"
+            class="overflow-hidden rounded bg-quinary text-xs"
+          >
+            <p class="bg-secondary px-1.5 py-1 uppercase">{{ platform.name }}</p>
+            <p class="truncate px-1.5 py-1">{{ platform.link }}</p>
+          </a>
+        </div>
+        <p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
+          No Platforms Link
+        </p>
       </div>
     </div>
+
     <div class="flex w-full items-center justify-between">
       <p class="text-xs uppercase">
         Release date :
@@ -208,24 +170,19 @@
           Edit
         </button>
         <button
-          v-if="needToBeVerified || doubleCheckYear"
-          @click="showUpdateVerifiedRelease"
-          class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
-        >
-          Verified
-        </button>
-        <button
-          @click="deleteRelease"
+          @click="callDeleteRelease"
           class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
         >
           Delete
         </button>
       </div>
     </div>
+
     <Modal
       v-model="showModal"
       :title="`Fix Release ${artistsName} - ${name}`"
       wrapper-class="animate__animated modal-wrapper"
+      :modal-class="`modal modal-xl`"
       :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
       :in-class="`animate__fadeInDown`"
       :out-class="`animate__bounceOut`"
@@ -233,22 +190,28 @@
       :bg-in-class="`animate__fadeInUp`"
       :bg-out-class="`animate__fadeOutDown`"
     >
-      <div class="space-y-2">
-        <p>Actual Date : {{ releaseDate }}</p>
-        <VueDatePicker v-model="dateToChange" auto-apply :enable-time-picker="false" />
-        <p>Actual Year : {{ yearReleased }}</p>
-        <ComebackInput
-          label="Year"
-          :placeholder="yearReleased.toString()"
-          v-model="yearToChange"
-        />
-        <button
-          @click="validVerifiedRelease"
-          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
-        >
-          Verified
-        </button>
-      </div>
+      <ModalEditRelease 
+        :id="id"
+        :name="name"
+        :type="type"
+        :idYoutubeMusic="idYoutubeMusic"
+        :date="date"
+        :yearReleased="yearReleased"
+        :needToBeVerified="needToBeVerified"
+        :artistsName="artistsName"
+        :platformList="platformList"
+        @verifiedRelease="showModal = false"
+       />
     </Modal>
   </div>
 </template>
+
+<style>
+  .modal {
+    min-width: 300px !important;
+  }
+  .modal-xl {
+    width: 80% !important;
+    max-width: 1140px !important;
+  }
+</style>

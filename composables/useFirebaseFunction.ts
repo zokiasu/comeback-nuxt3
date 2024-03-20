@@ -187,10 +187,27 @@ export function useFirebaseFunction() {
   **/
 
   // Updates a document in the 'releases' collection in Firestore.
-  const updateRelease = async (id: string, data: any) => {
-    const docRef = doc(database as any, 'releases', id)
-    await updateDoc(docRef, data)
+  const updateRelease = async (id: string, data: any): Promise<string> => {
+    const docRef = doc(database as any, 'releases', id);
+    return updateDoc(docRef, data).then(() => {
+      console.log('Document successfully updated!');
+      return 'success';
+    }).catch((error) => {
+      console.error('Error updating document:', error);
+      return 'error';
+    });
   }
+  // Deletes a document in the 'releases' collection in Firestore.
+  const deleteRelease = async (id: string): Promise<string> => {
+    return await deleteDoc(doc(database as any, 'releases', id)).then(() => {
+      console.log('Document successfully deleted!');
+      return 'success';
+    }).catch((error) => {
+      console.error('Error removing document:', error);
+      return 'error';
+    });
+  }
+
   // Fetches releases by a specific artist from the 'releases' collection in Firestore.
   const getReleaseByArtistId = async (artistId: string) => {
     const colRef = query(collection(database as any, 'releases'), where('artistsId', '==', artistId));
@@ -200,6 +217,12 @@ export function useFirebaseFunction() {
   //TODO: Add comment
   const getReleaseById = async (id: string) => {
     //TODO
+  }
+  // Fetches all releases from the 'releases' collection in Firestore.
+  const getAllReleases = async () => {
+    const colRef = collection(database as any, 'releases');
+    const snapshot = await getDocs(colRef);
+    return snapshotResultToArray(snapshot);
   }
 
   /** 
@@ -410,11 +433,13 @@ export function useFirebaseFunction() {
     getReleasesBetweenDates,
     getRandomMusic,
     updateRelease,
+    getAllReleases,
     getComebackExist,
     getReleaseByArtistId,
     createArtist,
     updateArtist,
     getArtistById,
     getArtistByIdLight,
+    deleteRelease,
   }
 }
