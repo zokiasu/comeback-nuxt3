@@ -3,16 +3,14 @@ const routeN = useRoute()
 </script>
 
 <template>
-  <div class="px-5">
-    <nav
-      class="container mx-auto flex flex-wrap items-center justify-center space-x-10 border-b border-zinc-700 p-3 text-center"
-    >
+  <div class="h-screen min-h-[calc(100vh-80px)] max-h-[calc(100vh-80px)] p-2 flex">
+    <nav class="bg-quaternary h-full flex flex-col w-80 rounded p-3 drop-shadow-xl">
       <NuxtLink
         to="/dashboard/artist"
-        class="transition-all duration-300 ease-in-out"
+        class="transition-all duration-300 ease-in-out px-5 py-3 rounded"
         :class="
           routeN.name === 'dashboard-artist'
-            ? 'font-semibold text-white'
+            ? 'font-semibold text-white bg-quinary'
             : 'text-zinc-500'
         "
       >
@@ -20,10 +18,10 @@ const routeN = useRoute()
       </NuxtLink>
       <NuxtLink
         to="/dashboard/artistUpdate"
-        class="transition-all duration-300 ease-in-out"
+        class="transition-all duration-300 ease-in-out px-5 py-3 rounded"
         :class="
           routeN.name === 'dashboard-artistUpdate'
-            ? 'font-semibold text-white'
+            ? 'font-semibold text-white bg-quinary'
             : 'text-zinc-500'
         "
       >
@@ -31,10 +29,10 @@ const routeN = useRoute()
       </NuxtLink>
       <NuxtLink
         to="/dashboard/release"
-        class="transition-all duration-300 ease-in-out"
+        class="transition-all duration-300 ease-in-out px-5 py-3 rounded"
         :class="
           routeN.name === 'dashboard-release'
-            ? 'font-semibold text-white'
+            ? 'font-semibold text-white bg-quinary'
             : 'text-zinc-500'
         "
       >
@@ -42,19 +40,19 @@ const routeN = useRoute()
       </NuxtLink>
       <NuxtLink
         to="/dashboard/news"
-        class="transition-all duration-300 ease-in-out"
+        class="transition-all duration-300 ease-in-out px-5 py-3 rounded"
         :class="
-          routeN.name === 'dashboard-news' ? 'font-semibold text-white' : 'text-zinc-500'
+          routeN.name === 'dashboard-news' ? 'font-semibold text-white bg-quinary' : 'text-zinc-500'
         "
       >
         News
       </NuxtLink>
       <NuxtLink
         to="/dashboard/styles"
-        class="transition-all duration-300 ease-in-out"
+        class="transition-all duration-300 ease-in-out px-5 py-3 rounded"
         :class="
           routeN.name === 'dashboard-styles'
-            ? 'font-semibold text-white'
+            ? 'font-semibold text-white bg-quinary'
             : 'text-zinc-500'
         "
       >
@@ -62,15 +60,15 @@ const routeN = useRoute()
       </NuxtLink>
       <NuxtLink
         to="/dashboard/users"
-        class="transition-all duration-300 ease-in-out"
+        class="transition-all duration-300 ease-in-out px-5 py-3 rounded"
         :class="
-          routeN.name === 'dashboard-users' ? 'font-semibold text-white' : 'text-zinc-500'
+          routeN.name === 'dashboard-users' ? 'font-semibold text-white bg-quinary' : 'text-zinc-500'
         "
       >
         Users
       </NuxtLink>
     </nav>
-    <div class="container mx-auto min-h-screen w-full py-5">
+    <div class="w-full h-full overflow-y-scroll px-2 scrollBarLight">
       <NuxtPage />
     </div>
   </div>

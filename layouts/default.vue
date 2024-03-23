@@ -9,6 +9,7 @@ const isAdminStore = computed(() => userStore.isAdminStore)
 const isLoginStore = computed(() => userStore.isLoginStore)
 const isPlayingVideo = useIsPlayingVideo()
 const artistFetch = ref([] as any[])
+const route = useRoute()
 
 onMounted(async () => {
   const q = query(collection(db as any, 'artists'), orderBy('name', 'asc'))
@@ -42,7 +43,7 @@ onMounted(async () => {
     <main>
       <slot />
     </main>
-    <LazyFooter />
+    <LazyFooter v-if="route && route.name && typeof route.name === 'string' && !route.name.startsWith('dashboard-')" />
     <LazyMobileNavigation
       class="md:hidden"
       :artistFetch="artistFetch"
