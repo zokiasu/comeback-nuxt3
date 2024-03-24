@@ -2,7 +2,7 @@
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
-const newsFetch = ref(null)
+const newsFetch = ref([])
 
 const search = ref('')
 const sort = ref('date')
@@ -104,8 +104,8 @@ watch([page], () => {
 </script>
 
 <template>
-  <div v-if="newsFetch" class="space-y-2">
-    <section id="searchbar" class="flex w-full justify-start">
+  <div ref="scrollContainer" class="relative space-y-3 h-full overflow-y-scroll overflow-hidden scrollBarLight pr-2">
+    <section id="searchbar" class="sticky top-0 w-full space-y-2 bg-secondary pb-2 z-50">
       <input
         id="search-input"
         v-model="search"
@@ -113,62 +113,62 @@ watch([page], () => {
         placeholder="Search"
         class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
       />
-    </section>
-    <section class="flex w-full flex-col gap-1.5 sm:flex-row sm:justify-between">
-      <div class="flex space-x-2">
-        <select
-          v-model="sort"
-          class="w-full rounded border-none bg-quinary p-2 text-xs uppercase placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none sm:w-fit"
-        >
-          <option value="date">Date</option>
-          <option value="user">User</option>
-          <option value="artist">Artist</option>
-          <option value="createdAt">Last Created</option>
-        </select>
-        <button
-          @click="invertSort = !invertSort"
-          class="rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
-        >
-          <icon-sort v-if="!invertSort" class="h-6 w-6 text-tertiary" />
-          <icon-sort-reverse v-else class="h-6 w-6 text-tertiary" />
-        </button>
-      </div>
+      <section class="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
+        <div class="flex space-x-2">
+          <select
+            v-model="sort"
+            class="w-full rounded border-none bg-quinary p-2 text-xs uppercase placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none sm:w-fit"
+          >
+            <option value="date">Date</option>
+            <option value="user">User</option>
+            <option value="artist">Artist</option>
+            <option value="createdAt">Last Created</option>
+          </select>
+          <button
+            @click="invertSort = !invertSort"
+            class="rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+          >
+            <icon-sort v-if="!invertSort" class="h-6 w-6 text-tertiary" />
+            <icon-sort-reverse v-else class="h-6 w-6 text-tertiary" />
+          </button>
+        </div>
 
-      <div class="flex w-full justify-between space-x-2 sm:justify-end">
-        <button
-          @click="page = 1"
-          :disabled="startAt == 0"
-          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
-        >
-          First
-        </button>
-        <button
-          @click="page--"
-          :disabled="startAt == 0"
-          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
-        >
-          Prev
-        </button>
-        <input
-          type="text"
-          class="w-10 rounded border-none bg-quinary p-2 text-center placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
-          v-model.number="page"
-        />
-        <button
-          @click="page++"
-          :disabled="page == nbPage"
-          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
-        >
-          Next
-        </button>
-        <button
-          @click="page = nbPage"
-          :disabled="page == nbPage"
-          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
-        >
-          Last
-        </button>
-      </div>
+        <div class="flex w-full justify-between space-x-2 sm:justify-end">
+          <button
+            @click="page = 1"
+            :disabled="startAt == 0"
+            class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+          >
+            First
+          </button>
+          <button
+            @click="page--"
+            :disabled="startAt == 0"
+            class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+          >
+            Prev
+          </button>
+          <input
+            type="text"
+            class="w-10 rounded border-none bg-quinary p-2 text-center placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+            v-model.number="page"
+          />
+          <button
+            @click="page++"
+            :disabled="page == nbPage"
+            class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+          >
+            Next
+          </button>
+          <button
+            @click="page = nbPage"
+            :disabled="page == nbPage"
+            class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+          >
+            Last
+          </button>
+        </div>
+      </section>
     </section>
     <transition-group
       v-if="filteredNewsList.length > 0"
@@ -189,61 +189,5 @@ watch([page], () => {
         @deleteNews="deleteNews(news.taskId)"
       />
     </transition-group>
-    <section class="flex w-full flex-col gap-1.5 sm:flex-row sm:justify-between">
-      <div class="flex space-x-2">
-        <select
-          v-model="sort"
-          class="w-full rounded border-none bg-quinary p-2 text-xs uppercase placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none sm:w-fit"
-        >
-          <option value="date">Date</option>
-          <option value="user">User</option>
-          <option value="artist">Artist</option>
-          <option value="createdAt">Last Created</option>
-        </select>
-        <button
-          @click="invertSort = !invertSort"
-          class="rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
-        >
-          <icon-sort v-if="!invertSort" class="h-6 w-6 text-tertiary" />
-          <icon-sort-reverse v-else class="h-6 w-6 text-tertiary" />
-        </button>
-      </div>
-
-      <div class="flex w-full justify-between space-x-2 sm:justify-end">
-        <button
-          @click="page = 1"
-          :disabled="startAt == 0"
-          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
-        >
-          First
-        </button>
-        <button
-          @click="page--"
-          :disabled="startAt == 0"
-          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
-        >
-          Prev
-        </button>
-        <input
-          type="text"
-          class="w-10 rounded border-none bg-quinary p-2 text-center placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
-          v-model.number="page"
-        />
-        <button
-          @click="page++"
-          :disabled="page == nbPage"
-          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
-        >
-          Next
-        </button>
-        <button
-          @click="page = nbPage"
-          :disabled="page == nbPage"
-          class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
-        >
-          Last
-        </button>
-      </div>
-    </section>
   </div>
 </template>
