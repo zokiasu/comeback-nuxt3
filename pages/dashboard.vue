@@ -3,7 +3,7 @@ const routeN = useRoute()
 </script>
 
 <template>
-  <div class="h-screen min-h-[calc(100vh-80px)] max-h-[calc(100vh-80px)] p-2 flex">
+  <div class="h-screen min-h-[calc(100vh-80px)] max-h-[calc(100vh-80px)] p-2 gap-2 flex">
     <nav class="bg-quaternary h-full flex flex-col w-80 rounded p-3 drop-shadow-xl">
       <NuxtLink
         to="/dashboard/artist"
@@ -68,7 +68,7 @@ const routeN = useRoute()
         Users
       </NuxtLink>
     </nav>
-    <div class="w-full h-full overflow-y-scroll px-2 scrollBarLight">
+    <div class="w-full">
       <NuxtPage />
     </div>
   </div>
