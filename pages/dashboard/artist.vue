@@ -223,7 +223,7 @@
 </script>
 
 <template>
-  <div ref="scrollContainer" class="relative space-y-3 h-full overflow-y-scroll scrollBarLight pr-2">
+  <div ref="scrollContainer" class="relative space-y-3 h-full overflow-y-scroll overflow-hidden scrollBarLight pr-2">
 
     <section id="searchbar" class="sticky top-0 w-full space-y-2 bg-secondary pb-2 z-20">
       <input

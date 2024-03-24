@@ -68,7 +68,7 @@ const routeN = useRoute()
         Users
       </NuxtLink>
     </nav>
-    <div class="w-full">
+    <div class="w-full overflow-hidden">
       <NuxtPage />
     </div>
   </div>
