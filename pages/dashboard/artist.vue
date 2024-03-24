@@ -320,8 +320,8 @@
       No artist found
     </p>
 
-    <div class="flex flex-col items-center space-y-2 text-xs">
-      <button @click="getArtist()" class="w-full md:w-fit bg-quinary mx-auto rounded px-2 py-1 uppercase hover:bg-zinc-500">
+    <div v-if="filteredArtistList.length > 0 && artistFetch.length != 0 && artistFetch.length != maxArtist" class="flex flex-col items-center space-y-2 text-xs">
+      <button v-if="!onlyWithoutDesc && !onlyWithoutPlatforms && !onlyWithoutSocials" @click="getArtist()" class="w-full flex gap-1 md:w-fit bg-quinary mx-auto rounded px-2 py-1 uppercase hover:bg-zinc-500">
         <p v-if="!isLoading">Load More</p><p v-else>Loading...</p> ({{ artistFetch.length }} / {{ maxArtist }})
       </button>
       <button @click="limitFetch = maxArtist" class="mx-auto underline underline-offset-4">
