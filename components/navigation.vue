@@ -88,7 +88,7 @@ const signOut = async () => {
           <NuxtLink
             v-if="isAdmin"
             :to="`/dashboard/artist`"
-            :class="routeN.name === 'dashboard-index-*' ? 'text-white' : 'text-zinc-500'"
+            :class="routeN.name.startsWith('dashboard-') ? 'text-white' : 'text-zinc-500'"
           >
             Dashboard
           </NuxtLink>
