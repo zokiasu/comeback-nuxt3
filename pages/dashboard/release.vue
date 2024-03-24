@@ -94,7 +94,7 @@ onMounted(async () => {
   //   })
   //   releaseFetch.value.filter((doc, index, self) => self.findIndex((t) => t.id === doc.id) === index)
   // })
-  // releaseFetch.value = await getAllReleases()
+  releaseFetch.value = await getAllReleases()
 })
 
 const filteredReleaseList = computed(() => {
