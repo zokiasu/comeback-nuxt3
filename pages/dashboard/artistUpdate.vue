@@ -60,7 +60,7 @@ const confirmEdition = async (id, artist, index) => {
       v-if="artistUpdateList.length"
       name="list-complete"
       tag="div"
-      class="grid grid-cols-1 items-center justify-center gap-5 transition-all duration-300 ease-in-out"
+      class="grid grid-cols-1 items-center justify-center gap-4 transition-all duration-300 ease-in-out"
     >
       <div
         v-for="(artist, index) in artistUpdateList"
