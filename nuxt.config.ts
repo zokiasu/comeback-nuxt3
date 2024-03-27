@@ -32,7 +32,6 @@ export default defineNuxtConfig({
   algolia: {
     applicationId: process.env.ALGOLIA_APPLICATION_ID,
     apiKey: process.env.ALGOLIA_API_KEY,
-    indexName: process.env.ALGOLIA_INDEX_NAME,
     useFetch: true,
     instantSearch: true,
   },
@@ -41,22 +40,27 @@ export default defineNuxtConfig({
     enabled: true,
   },
 
-  timeline: {
-    enabled: true,
-  },
-
   build: {
     // vue-toastification - old commonjs module
     transpile: ['vue-toastification', '@vuepic/vue-datepicker'],
-  },
-
-  pinia: {
-    autoImports: ['defineStore'],
   },
 
   tailwindcss: {
     configPath: 'tailwind.config.js',
     exposeConfig: false,
     viewer: true,
-  }
+  },
+
+  image: {
+    // Configuration du fournisseur
+    providers: {
+      external: {
+        name: 'external',
+        provider: 'static', // Utilisez 'static' pour des images externes non traitées
+        options: {
+          baseURL: '', // Ajustez si vous avez une base URL spécifique
+        },
+      },
+    },
+  },
 })
