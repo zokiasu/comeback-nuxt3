@@ -50,17 +50,4 @@ export default defineNuxtConfig({
     exposeConfig: false,
     viewer: true,
   },
-
-  image: {
-    // Configuration du fournisseur
-    providers: {
-      external: {
-        name: 'external',
-        provider: 'static', // Utilisez 'static' pour des images externes non traitées
-        options: {
-          baseURL: '', // Ajustez si vous avez une base URL spécifique
-        },
-      },
-    },
-  },
 })
