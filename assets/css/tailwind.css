@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html:focus-within {
+  scroll-behavior: smooth;
+}
+
 .remove-scrollbar::-webkit-scrollbar {
   display: none;
 }
