@@ -52,6 +52,11 @@ export default defineNuxtConfig({
   },
 
   image: {
-    provider: 'static',
-  },
+    providers: {
+      myProvider: {
+        name: 'noprovider', // optional value to overrider provider name
+        provider: '',
+      }
+    }
+  }
 })
