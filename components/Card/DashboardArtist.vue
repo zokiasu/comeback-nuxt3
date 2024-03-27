@@ -241,7 +241,7 @@ function afterLeave(el) {
       </div>
     </div>
 
-    <p>
+    <p class="mt-auto">
       {{ createdAtDate }}
     </p>
   </div>
