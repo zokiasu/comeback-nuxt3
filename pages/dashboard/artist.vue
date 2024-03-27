@@ -252,21 +252,21 @@
           </div>
           <button 
             @click="changeOnlyFilter('desc')" 
-            class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+            class="w-full rounded px-2 py-1 text-xs uppercase lg:text-nowrap hover:bg-zinc-500"
             :class="onlyWithoutDesc ? 'bg-primary' : 'bg-quinary'"
           >
             No description
           </button>
           <button 
             @click="changeOnlyFilter('socials')" 
-            class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+            class="w-full rounded px-2 py-1 text-xs uppercase lg:text-nowrap hover:bg-zinc-500"
             :class="onlyWithoutSocials ? 'bg-primary' : 'bg-quinary'"
           >
             No Socials
           </button>
           <button 
             @click="changeOnlyFilter('platforms')" 
-            class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+            class="w-full rounded px-2 py-1 text-xs uppercase lg:text-nowrap hover:bg-zinc-500"
             :class="onlyWithoutPlatforms ? 'bg-primary' : 'bg-quinary'"
           >
             No Platforms
