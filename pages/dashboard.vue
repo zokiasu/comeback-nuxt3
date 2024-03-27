@@ -10,7 +10,7 @@
 
 <template>
   <div class="h-screen min-h-[calc(100vh-80px)] max-h-[calc(100vh-80px)] p-2 gap-2 flex">
-    <nav @click="collapseMenuToggle()" ref="menuCollapsable" class="bg-quaternary h-full flex flex-col w-80 rounded p-2 drop-shadow-xl transition-all ease-in-out duration-300" :class="collapseMenu ? 'w-12' : 'w-80'">
+    <nav @click="collapseMenuToggle()" ref="menuCollapsable" class="bg-quaternary h-full flex flex-col w-80 rounded p-2 gap-2 drop-shadow-xl transition-all ease-in-out duration-300" :class="collapseMenu ? 'w-12' : 'w-80'">
       <div class="flex justify-between cursor-pointer transition-all duration-300 py-3 ease-in-out rounded text-zinc-500 hover:bg-quinary hover:text-white"
         :class="{
           'px-5': !collapseMenu,
@@ -33,7 +33,7 @@
           'flex-col': collapseMenu,
         }"
       >
-        <IconAccount class="w-4 h-4" />
+        <IconArtist class="w-4 h-4" />
         <p v-if="!collapseMenu">Artist</p>
       </NuxtLink>
       <NuxtLink
@@ -46,7 +46,7 @@
           'flex-col': collapseMenu,
         }"
       >
-        <IconAccount class="w-4 h-4" />
+        <IconArtist class="w-4 h-4" />
         <p v-if="!collapseMenu">Artist Update</p>
       </NuxtLink>
       <NuxtLink
@@ -59,7 +59,7 @@
           'flex-col': collapseMenu,
         }"
       >
-        <IconAccount class="w-4 h-4" />
+        <IconRelease class="w-4 h-4" />
         <p v-if="!collapseMenu">Release</p>
       </NuxtLink>
       <NuxtLink
@@ -72,7 +72,7 @@
           'flex-col': collapseMenu,
         }"
       >
-        <IconAccount class="w-4 h-4" />
+        <IconNews class="w-4 h-4" />
         <p v-if="!collapseMenu">News</p>
       </NuxtLink>
       <NuxtLink
@@ -85,7 +85,7 @@
           'flex-col': collapseMenu,
         }"
       >
-        <IconAccount class="w-4 h-4" />
+        <IconStyle class="w-4 h-4" />
         <p v-if="!collapseMenu">Styles</p>
       </NuxtLink>
       <NuxtLink
