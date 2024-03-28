@@ -50,10 +50,10 @@ export default defineNuxtConfig({
     exposeConfig: false,
     viewer: true,
   },
-  
+
   image: {
     // Activer le support pour les images distantes
-    domains: ['lh3.googleusercontent.com', 'exemple.com'],
+    domains: ['https://lh3.googleusercontent.com/*'],
     // Précisez ici d'autres domaines si nécessaire
 
     // Configuration par défaut pour le traitement des images
