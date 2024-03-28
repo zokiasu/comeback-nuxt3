@@ -87,7 +87,6 @@ const loadingDone = () => {
           :src="artist.image"
           :alt="artist.name + 's picture'"
           format="webp"
-          loading="lazy"
           @load="loadingDone"
           class="h-8 w-8 min-w-8 rounded-full object-cover"
         />
