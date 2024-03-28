@@ -50,4 +50,20 @@ export default defineNuxtConfig({
     exposeConfig: false,
     viewer: true,
   },
+  
+  image: {
+    // Activer le support pour les images distantes
+    domains: ['lh3.googleusercontent.com', 'exemple.com'],
+    // Précisez ici d'autres domaines si nécessaire
+
+    // Configuration par défaut pour le traitement des images
+    presets: {
+      cover: {
+        modifiers: {
+          format: 'webp',
+          quality: '80',
+        },
+      },
+    },
+  },
 })
