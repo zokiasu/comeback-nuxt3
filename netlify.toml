@@ -3,4 +3,4 @@
   command = "npm run build"
   functions = "netlify-functions"
 [images]
-  remote_images = ["https://lh3.googleusercontent.com/.*"]
+  remote_images = ["https://lh3.googleusercontent.com/.*","https://i.ibb.co/.*"]
