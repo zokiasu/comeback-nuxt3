@@ -53,6 +53,7 @@ const { id, artistsName, createdAt, date, idYoutubeMusic, image, name, needToBeV
 
 const { Modal } = Mdl;
 const { deleteRelease } = useFirebaseFunction();
+const emit = defineEmits(['deleteRelease']);
 
 const showModal = ref(false);
 const imageLoaded = ref(false);
@@ -80,7 +81,19 @@ const showImage = () => {
 };
 
 const callDeleteRelease = () => {
-  deleteRelease(id);
+  deleteRelease(id).then((res) => {
+    if(res == "success") {
+      const toast = useToast();
+      toast.success("Release deleted");
+      emit('deleteRelease', id);
+    } else {
+      const toast = useToast();
+      toast.error("Error when deleting release");
+    }
+  }).catch((err) => {
+    const toast = useToast();
+    toast.error("Error when deleting release");
+  });
 };
 
 const showUpdateVerifiedRelease = () => {
@@ -90,14 +103,13 @@ const showUpdateVerifiedRelease = () => {
 
 <template>
   <div
-    class="relative h-full flex flex-col justify-between gap-1.5 rounded bg-quaternary p-3"
+    class="relative h-full flex flex-col justify-between gap-1.5 rounded text-xs bg-quaternary p-3"
   >
     <div class="space-y-1.5">
-      <div class="flex w-full justify-between text-sm">
+      <div class="flex w-full justify-between text-xs">
         <div class="flex gap-1">
-          <p>[ {{ type }} ]</p>
-          <p>[ {{ yearReleased }} ]</p>
-          {{ imageLoaded }}
+          <p>[{{ type }}]</p>
+          <p>[{{ yearReleased }}]</p>
         </div>
         <p>
           {{ idYoutubeMusic }}
