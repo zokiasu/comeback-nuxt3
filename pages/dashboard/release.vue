@@ -13,7 +13,7 @@ const search = ref('')
 const sort = ref('date')
 const invertSort = ref(true)
 
-const artistPerPage = ref(12)
+const artistPerPage = ref(24)
 const startAt = ref(0)
 const endAt = ref(artistPerPage.value)
 const page = ref(1)
@@ -49,16 +49,7 @@ const deleteRelease = async (id) => {
   const release = releaseFetch.value.find((release) => release.id === id)
   if (release) {
     const index = releaseFetch.value.indexOf(release)
-    await deletebyDoc('releases', id)
-      .then(() => {
-        console.log('Document successfully deleted!')
-        // releaseFetch.value.splice(index, 1)
-        toast.success('Release Deleted')
-      })
-      .catch((error) => {
-        console.error('Error removing document: ', error)
-        toast.error('Error Removing Release')
-      })
+    releaseFetch.value.splice(index, 1)
   } else {
     toast.error('Release Not Found')
   }
@@ -269,11 +260,11 @@ watch([page], () => {
         </div>
       </section>
     </section>
-    <!-- <pre>{{ filteredReleaseList[0] }}</pre> -->
+    
     <div
       v-if="filteredReleaseList && (filteredReleaseList.length > 0)"
       id="release-list"
-      class="grid grid-cols-1 items-center justify-center gap-5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
+      class="grid grid-cols-1 items-center justify-center gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 2xl:gap-2"
     >
       <div v-for="release in filteredReleaseList.slice(startAt, endAt)" :key="`key_`+release.id" class="w-full h-full">
         <CardDashboardRelease
@@ -289,7 +280,6 @@ watch([page], () => {
           :type="release.type"
           :yearReleased="release.year"
           @deleteRelease="deleteRelease"
-          @verifiedRelease="verifiedRelease"
         />
       </div>
     </div>
