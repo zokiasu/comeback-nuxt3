@@ -74,6 +74,11 @@ const releasesDisplayed = computed(() => {
   }
 })
 
+// function backtotop to id calendarPage
+const backToTop = () => {
+  document.getElementById('__nuxt').scrollIntoView({ behavior: 'smooth' })
+}
+
 onMounted(async () => {
   for (let year = 2020; year <= currentYear.value; year++) {
     yearList.value.push(year)
@@ -109,7 +114,7 @@ useHead({
     <!-- Period Selector -->
     <div>
       <!-- Year Selector -->
-      <div class="flex w-full gap-1 text-xs font-semibold snap-x snap-mandatory overflow-x-auto pb-1 scrollBarLight">
+      <div class="remove-scrollbar flex w-full gap-1 text-xs font-semibold snap-x snap-mandatory overflow-x-auto pb-1 scrollBarLight">
         <button
           :id="year" 
           v-for="year in yearList"
@@ -122,7 +127,7 @@ useHead({
         </button>
       </div>
       <!-- Month Selector -->
-      <div v-if="yearList.length" class="flex w-full gap-1 text-xs font-semibold snap-x snap-mandatory overflow-x-auto pb-1 scrollBarLight">
+      <div v-if="yearList.length" class="remove-scrollbar flex w-full gap-1 text-xs font-semibold snap-x snap-mandatory overflow-x-auto pb-1 scrollBarLight">
         <button
           :id="month.original" 
           v-for="(month, index) in monthList"
@@ -141,7 +146,7 @@ useHead({
       <p class="font-semibold text-base text-center">
         {{ monthList[currentMonth].original }} {{ currentYear }}'s stats
       </p>
-      <div class="grid grid-cols-4 gap-5 justify-center items-center">
+      <div class="grid grid-cols-4 gap-1 lg:gap-5 justify-center items-center">
         <button 
           @click="switchTypeFilter('ALL')" 
           class="w-full h-full flex flex-col justify-center items-center bg-primary rounded py-1 px-2" 
@@ -174,7 +179,7 @@ useHead({
       tag="div"
       leave-active-class="animate__bounceOut"
       enter-active-class="animate__bounceIn"
-      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-5 md:gap-3.5"
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 md:gap-3.5"
     >
       <CardObject
         v-for="release in releasesDisplayed"
@@ -191,10 +196,10 @@ useHead({
       />
     </transition-group>
     <!-- Back to top -->
-    <div ref="backTop" class="sticky w-full text-center py-5 bottom-0 hidden">
-      <a href="#" class="bg-quaternary w-fit shadow shadow-zinc-700 px-4 py-2.5 text-xs font-semibold">
+    <div ref="backTop" class="sticky w-full text-center py-5 bottom-12 lg:bottom-0 hidden">
+      <button @click="backToTop" class="bg-quaternary w-fit shadow shadow-zinc-700 px-4 py-2.5 text-xs font-semibold">
         Back to top
-      </a>
+      </button>
     </div>
   </div>
 </template>

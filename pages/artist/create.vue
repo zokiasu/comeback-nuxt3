@@ -122,15 +122,15 @@ useHead({
   <div
     class="container mx-auto min-h-[calc(100vh-60px)] space-y-5 p-5 lg:px-10"
   >
-    <div class="flex justify-between border-b border-zinc-700 pb-1 text-lg font-semibold uppercase lg:text-xl">
+    <div class="flex items-center justify-between border-b border-zinc-700 pb-1 text-lg font-semibold uppercase lg:text-xl">
       <p>
         Artist Creation
       </p>
-      <div class="border-t border-zinc-700 pt-3">
+      <div>
         <button
           @click="sendUpdateArtist"
           :disabled="isUploadingEdit"
-          class="w-full rounded bg-primary py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+          class="w-full rounded bg-primary px-5 py-3 text-xs font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
         >
           {{ isUploadingEdit ? 'Loading' : 'Saves' }}
         </button>

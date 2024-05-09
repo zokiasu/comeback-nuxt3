@@ -1,61 +1,63 @@
 <script setup lang="ts">
-import * as Mdl from '@kouts/vue-modal'
+  import * as Mdl from '@kouts/vue-modal'
 
-const { Modal } = Mdl
-const showModal = ref(false)
-const sendNewStreamingPlatform = ref(false)
-const newStreamingPlatform = ref({
-  name: '',
-  link: '',
-})
-
-import { type Release } from '@/types/release'
-import { useUserStore } from '@/stores/user'
-const { isAdminStore } = useUserStore()
-
-const title = ref('Release Page')
-const description = ref('Release')
-const { getReleaseByArtistId, updateRelease } = useFirebaseFunction()
-
-const release = ref<Release>({} as Release)
-const artistRelease = ref<Release[]>([] as Release[])
-const imageLoaded = ref(false)
-
-const createNewPlatformStreaming = async () => {
-  sendNewStreamingPlatform.value = true
-  const tmp = [...release.value.platformList]
-  tmp.push(newStreamingPlatform.value)
-  await updateRelease(release.value.id, {
-    platformList: tmp,
-  })
-  sendNewStreamingPlatform.value = false
-  showModal.value = false
-  newStreamingPlatform.value = {
+  const { Modal } = Mdl
+  const showModal = ref(false)
+  const sendNewStreamingPlatform = ref(false)
+  const newStreamingPlatform = ref({
     name: '',
     link: '',
+  })
+
+  import { type Release } from '@/types/release'
+  import { useUserStore } from '@/stores/user'
+  const { isAdminStore } = useUserStore()
+
+  const title = ref('Release Page')
+  const description = ref('Release')
+  const { getReleaseByArtistId, updateRelease } = useFirebaseFunction()
+
+  const release = ref<Release>({} as Release)
+  const artistRelease = ref<Release[]>([] as Release[])
+  const imageLoaded = ref(false)
+
+  const createNewPlatformStreaming = async () => {
+    sendNewStreamingPlatform.value = true
+    const tmp = [...release.value.platformList]
+    tmp.push(newStreamingPlatform.value)
+    await updateRelease(release.value.id, {
+      platformList: tmp,
+    })
+    sendNewStreamingPlatform.value = false
+    showModal.value = false
+    newStreamingPlatform.value = {
+      name: '',
+      link: '',
+    }
   }
-}
 
-onMounted(async () => {
-  const route = useRoute()
-  release.value = (await fetchReleaseById(route.params.id as string)) as Release
-  artistRelease.value = (await getReleaseByArtistId(release.value.artistsId))
-    .sort((a, b) => b.date - a.date)
-    .filter((rel) => rel.id !== release.value.id)
-    .slice(0, 8) as Release[]
-  title.value = release.value.name + ' by ' + release.value.artistsName
-  description.value = release.value.name + ' by ' + release.value.artistsName
-})
+  onMounted(async () => {
+    const route = useRoute()
+    release.value = (await fetchReleaseById(route.params.id as string)) as Release
+    artistRelease.value = (await getReleaseByArtistId(release.value.artistsId))
+      .sort((a, b) => b.date - a.date)
+      .filter((rel) => rel.id !== release.value.id)
+      .slice(0, 8) as Release[]
+    // sort release.musics by index
+    release.value.musics = release.value.musics.sort((a, b) => a?.index - b?.index)
+    title.value = release.value.name + ' by ' + release.value.artistsName
+    description.value = release.value.name + ' by ' + release.value.artistsName
+  })
 
-useHead({
-  title,
-  meta: [
-    {
-      name: 'description',
-      content: description,
-    },
-  ],
-})
+  useHead({
+    title,
+    meta: [
+      {
+        name: 'description',
+        content: description,
+      },
+    ],
+  })
 </script>
 
 <template>
@@ -137,7 +139,7 @@ useHead({
         </div>
       </div>
     </section>
-    <section class="container mx-auto space-y-12 p-5 py-5 lg:px-0">
+    <section class="container mx-auto space-y-12 p-5 py-5 md:px-10 xl:px-0">
       <!-- Skeleton -->
       <section v-if="!release.name" class="space-y-2">
         <SkeletonDefault class="h-3 w-3/4 rounded-full" />
@@ -168,43 +170,48 @@ useHead({
       </section>
       <!-- Musics -->
       <section v-if="release.musics?.length" class="space-y-2">
-        <p class="font-black">
-          Tracks
-          <span class="font-mono">({{ release.musics?.length }})</span>
-        </p>
-        <div class="space-y-2">
-          <MusicDisplay
-            v-for="song in release.musics"
-            :key="song.videoId"
-            :artistId="release.artistsId"
-            :artistName="release.artistsName"
-            :musicId="song.videoId"
-            :musicName="song.name"
-            :musicImage="song.thumbnails[2].url"
-            :duration="song?.duration?.toString() || '0'"
-            class="w-full bg-quinary"
-          />
-        </div>
+        <CardDefault :name="`Tracks (${release.musics?.length})`">
+          <transition-group
+            name="list-complete" 
+            tag="div"
+            class="space-y-2"
+          >
+            <MusicDisplay
+              v-for="song in release.musics"
+              :key="song.videoId"
+              :artistId="release.artistsId"
+              :artistName="release.artistsName"
+              :musicId="song.videoId"
+              :musicName="song.name"
+              :musicImage="song.thumbnails[2].url"
+              :duration="song?.duration?.toString() || '0'"
+              class="w-full bg-quinary"
+            />
+          </transition-group>
+        </CardDefault>
       </section>
       <!-- Release -->
       <section v-if="artistRelease.length" class="space-y-2">
-        <p class="font-black">Other releases by {{ release.artistsName }}</p>
-        <section
-          class="remove-scrollbar flex gap-5 overflow-hidden overflow-x-scroll scroll-smooth lg:gap-3"
-        >
-          <CardObject 
-              v-for="release in artistRelease"
-              :key="release.id"
-              :artistId="release.artistsId"
-              :mainTitle="release.name"
-              :subTitle="release.artistsName"
-              :image="release.image"
-              :releaseDate="release.date"
-              :releaseType="release.type"
-              :objectLink="`/release/${release.id}`"
-              isReleaseDisplay
-            />
-        </section>
+        <CardDefault :name="`Other releases by ${release.artistsName}`">
+          <transition-group
+            name="list-complete" 
+            tag="div"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
+          >
+            <CardObject 
+                v-for="release in artistRelease"
+                :key="release.id"
+                :artistId="release.artistsId"
+                :mainTitle="release.name"
+                :subTitle="release.artistsName"
+                :image="release.image"
+                :releaseDate="release.date"
+                :releaseType="release.type"
+                :objectLink="`/release/${release.id}`"
+                isReleaseDisplay
+              />
+          </transition-group>
+        </CardDefault>
       </section>
     </section>
     <Modal
