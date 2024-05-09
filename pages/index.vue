@@ -1,112 +1,112 @@
 <script setup lang="ts">
-import { Timestamp } from 'firebase/firestore'
+  import { Timestamp } from 'firebase/firestore'
 
-const { getRealtimeNextComebacks, getRealtimeLastestReleases, getRealtimeLastestArtistsAdded, getRandomMusic } = useFirebaseFunction()
+  const { getRealtimeNextComebacks, getRealtimeLastestReleases, getRealtimeLastestArtistsAdded, getRandomMusic } = useFirebaseFunction()
 
-const comebacks = ref([] as any[])
-const artists = ref([] as any[])
-const releases = ref([] as any[])
+  const comebacks = ref([] as any[])
+  const artists = ref([] as any[])
+  const releases = ref([] as any[])
 
-const discoverOne = ref(null)
-const discoverTwo = ref(null)
-const discoverThree = ref(null)
-const discoverFour = ref(null)
+  const discoverOne = ref(null)
+  const discoverTwo = ref(null)
+  const discoverThree = ref(null)
+  const discoverFour = ref(null)
 
-const comebacksToday = computed(() => {
-  return comebacks.value.filter((comebacks: any) => {
-    const comebacksDate = new Date(comebacks.date.seconds * 1000)
-    const today = new Date()
-    return (
-      comebacksDate.getDate() === today.getDate() &&
-      comebacksDate.getMonth() === today.getMonth() &&
-      comebacksDate.getFullYear() === today.getFullYear()
-    )
+  const comebacksToday = computed(() => {
+    return comebacks.value.filter((comebacks: any) => {
+      const comebacksDate = new Date(comebacks.date.seconds * 1000)
+      const today = new Date()
+      return (
+        comebacksDate.getDate() === today.getDate() &&
+        comebacksDate.getMonth() === today.getMonth() &&
+        comebacksDate.getFullYear() === today.getFullYear()
+      )
+    })
   })
-})
 
-onMounted(() => {
-  const comebacksDate = new Date();
-  comebacksDate.setDate(comebacksDate.getDate() - 1);
+  onMounted(() => {
+    const comebacksDate = new Date();
+    comebacksDate.setDate(comebacksDate.getDate() - 1);
 
-  const releaseDate = new Date();
-  releaseDate.setDate(releaseDate.getDate() - 8);
+    const releaseDate = new Date();
+    releaseDate.setDate(releaseDate.getDate() - 8);
 
-  Promise.all([
-    new Promise<void>((resolve) => getRealtimeNextComebacks(Timestamp.fromDate(comebacksDate), (cb: any) => { comebacks.value = cb; resolve(); })),
-    new Promise<void>((resolve) => getRealtimeLastestReleases(Timestamp.fromDate(releaseDate), 8, (rel: any) => { releases.value = rel; resolve(); })),
-    new Promise<void>((resolve) => getRealtimeLastestArtistsAdded(8, (art: any) => { artists.value = art; resolve(); }))
-  ]);
-});
+    Promise.all([
+      new Promise<void>((resolve) => getRealtimeNextComebacks(Timestamp.fromDate(comebacksDate), (cb: any) => { comebacks.value = cb; resolve(); })),
+      new Promise<void>((resolve) => getRealtimeLastestReleases(Timestamp.fromDate(releaseDate), 8, (rel: any) => { releases.value = rel; resolve(); })),
+      new Promise<void>((resolve) => getRealtimeLastestArtistsAdded(8, (art: any) => { artists.value = art; resolve(); }))
+    ]);
+  });
 
 
-const reloadDiscoverMusic = async () => {
-  discoverOne.value?.reloadRandomMusic()
-  discoverTwo.value?.reloadRandomMusic()
-  discoverThree.value?.reloadRandomMusic()
-  discoverFour.value?.reloadRandomMusic()
-}
+  const reloadDiscoverMusic = async () => {
+    discoverOne.value?.reloadRandomMusic()
+    discoverTwo.value?.reloadRandomMusic()
+    discoverThree.value?.reloadRandomMusic()
+    discoverFour.value?.reloadRandomMusic()
+  }
 
-useHead({
-  title: 'Comeback',
-  htmlAttrs: {
-    lang: 'en',
-  },
-  meta: [
-    { charset: 'utf-8' },
-    {
-      name: 'robots',
-      content: 'noindex,nofollow',
+  useHead({
+    title: 'Comeback',
+    htmlAttrs: {
+      lang: 'en',
     },
-    {
-      name: 'viewport',
-      content: 'width=device-width, initial-scale=1',
-    },
-    {
-      hid: 'description',
-      name: 'description',
-      content:
-        "Don't miss any Comeback. Track every next release by your favorite artists.",
-    },
-    {
-      hid: 'og:site_name',
-      property: 'og:site_name',
-      content: 'Comeback - Track every next release by your favorite artists.',
-    },
-    {
-      hid: 'og:type',
-      property: 'og:type',
-      content: 'website',
-    },
-    {
-      hid: 'og:title',
-      property: 'og:title',
-      content: 'Comeback - Track every next release by your favorite artists.',
-    },
-    {
-      hid: 'og:description',
-      property: 'og:description',
-      content:
-        "Don't miss any Comeback. Track every next release by your favorite artists.",
-    },
-    {
-      hid: 'og:url',
-      property: 'og:url',
-      content: 'https://come-back.netlify.app/',
-    },
-    {
-      hid: 'og:image',
-      property: 'og:image',
-      content: 'https://nuxt-firebase-auth.vercel.app/ogp.png',
-    },
-  ],
-  link: [
-    {
-      rel: 'icon',
-      type: 'image/x-icon',
-      href: '/favicon.ico',
-    },
-  ],
-})
+    meta: [
+      { charset: 'utf-8' },
+      {
+        name: 'robots',
+        content: 'noindex,nofollow',
+      },
+      {
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1',
+      },
+      {
+        hid: 'description',
+        name: 'description',
+        content:
+          "Don't miss any Comeback. Track every next release by your favorite artists.",
+      },
+      {
+        hid: 'og:site_name',
+        property: 'og:site_name',
+        content: 'Comeback - Track every next release by your favorite artists.',
+      },
+      {
+        hid: 'og:type',
+        property: 'og:type',
+        content: 'website',
+      },
+      {
+        hid: 'og:title',
+        property: 'og:title',
+        content: 'Comeback - Track every next release by your favorite artists.',
+      },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content:
+          "Don't miss any Comeback. Track every next release by your favorite artists.",
+      },
+      {
+        hid: 'og:url',
+        property: 'og:url',
+        content: 'https://come-back.netlify.app/',
+      },
+      {
+        hid: 'og:image',
+        property: 'og:image',
+        content: 'https://nuxt-firebase-auth.vercel.app/ogp.png',
+      },
+    ],
+    link: [
+      {
+        rel: 'icon',
+        type: 'image/x-icon',
+        href: '/favicon.ico',
+      },
+    ],
+  })
 </script>
 
 <template>

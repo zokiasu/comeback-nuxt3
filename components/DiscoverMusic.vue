@@ -23,6 +23,7 @@ const reloadRandomMusic = async () => {
   music.value = {}
   music.value = await getRandomMusic()
   imageLoaded.value = false
+  console.log('music', music.value)
 }
 
 defineExpose({
@@ -52,9 +53,13 @@ defineExpose({
         </div>
         <div class="absolute inset-0 flex flex-col justify-between bg-quinary/70 p-2 lg:p-3">
           <div class="space-y-1 text-left">
-            <p v-if="music.name" class="font-semibold lg:text-xl">
+            <NuxtLink
+              v-if="music.name"
+              :to="'/release/' + music.id"
+              class="font-semibold lg:text-xl hover:text-primary transition-all duration-300 ease-in-out"
+            >
               {{ music.name }}
-            </p>
+            </NuxtLink>
             <p v-if="music.artists && music.artists.length > 0">
               {{ music.artists[0].name }}
             </p>

@@ -15,6 +15,7 @@
   onMounted(async () => {
     try {
       artist.value = (await fetchArtistFullInfoById(route.params.id as any)) as Artist
+      console.log(artist.value)
       imageBackground.value = artist.value.image
       title.value = artist.value.name
       description.value = artist.value.description
@@ -121,7 +122,7 @@
       </div>
     </section>
 
-    <section class="container mx-auto space-y-8 p-5 py-8 lg:space-y-14 lg:py-10">
+    <section class="container mx-auto space-y-8 p-5 py-8 lg:px-14 xl:px-5 lg:space-y-14 lg:py-10">
       <div v-if="!artist.name" class="space-y-2">
         <SkeletonDefault class="h-5 w-3/4 rounded" />
         <SkeletonDefault class="h-5 w-2/4 rounded" />
@@ -138,7 +139,7 @@
           <transition-group 
             name="list-complete" 
             tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 lg:pb-1 lg:grid-rows-1 lg:justify-start"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
           >
             <CardObject 
               v-for="soloMember in members"
@@ -158,7 +159,7 @@
           <transition-group
             name="list-complete"
             tag="div"
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 lg:pb-1 lg:grid-rows-1 lg:justify-start"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
           >
             <CardObject 
               v-for="release in albumEpRelease"
@@ -181,7 +182,7 @@
           <transition-group
             name="list-complete"
             tag="div"
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 lg:pb-1 lg:grid-rows-1 lg:justify-start"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
           >
             <CardObject 
               v-for="release in singleRelease"
@@ -201,10 +202,10 @@
 
       <div v-if="subUnitMembers?.length">
         <CardDefault name="Subunit">
-          <transition-group 
+          <transition-group
             name="list-complete" 
             tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 lg:pb-1 lg:grid-rows-1 lg:justify-start"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
           >
             <CardObject 
               v-for="groupMember in subUnitMembers"
@@ -221,10 +222,10 @@
 
       <div v-if="artist.groups?.length">
         <CardDefault name="Group">
-          <transition-group 
+          <transition-group
             name="list-complete" 
             tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight grid grid-flow-col gap-3 lg:pb-1 lg:grid-rows-1 lg:justify-start"
+            class="snap-x snap-mandatory overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
           >
             <CardObject 
               v-for="group in artist.groups"
