@@ -14,9 +14,9 @@
   </div>
   <NuxtLink
     :to="`/artist/${id}`"
-    class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-secondary/30 p-5"
+    class="absolute inset-0 z-50 flex flex-col items-start sm:items-center justify-end sm:justify-center bg-secondary/30 p-5"
   >
-    <p class="self-center text-3xl font-bold lg:text-5xl xl:text-7xl 2xl:text-9xl">
+    <p class="text-3xl font-bold lg:text-5xl xl:text-7xl 2xl:text-9xl">
       {{ name }}
     </p>
   </NuxtLink>
