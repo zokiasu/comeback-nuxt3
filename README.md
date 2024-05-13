@@ -1,63 +1,44 @@
-# Nuxt 3 Minimal Starter
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+# Comeback
 
-## Setup
+## Description
+**Comeback** est une plateforme musicale développée avec Nuxt 3. Elle permet aux utilisateurs de découvrir de la musique, suivre les actualités des artistes, et gérer les sorties musicales. Les utilisateurs peuvent ajouter des artistes, des informations sur les comebacks et les actualités, et interagir via des commentaires. La partie tableau de bord est réservée aux administrateurs pour la gestion avancée.
 
-Make sure to install the dependencies:
+## Fonctionnalités
 
-```bash
-# npm
-npm install
+### Pour les Utilisateurs
+- **Découverte de musique** : Parcourez et découvrez de nouvelles musiques et artistes.
+- **Suivi des actualités des artistes** : Restez informé des derniers comebacks et actualités de vos artistes préférés.
+- **Ajout d'artistes et d'informations** : Ajoutez de nouveaux artistes et des informations sur leurs comebacks et actualités.
+- **Interaction** : Prochainement, commentez les fiches artistes et les sorties musicales.
 
-# pnpm
-pnpm install
+### Pour les Administrateurs
+- **Tableau de bord** : Gérez les artistes, les actualités et les sorties musicales.
+- **Gestion des utilisateurs** : Supervisez les contributions des utilisateurs et modérez les contenus.
 
-# yarn
-yarn install
-```
+### Autres Fonctionnalités
+- **Authentification** : Connectez-vous avec Google ou Microsoft.
+- **Lecteur YouTube** : Intégrez des vidéos YouTube pour les artistes et les sorties.
+- **Recherche Algolia** : Utilisez la recherche Algolia pour trouver rapidement de la musique et des artistes.
+- **Notifications Toast** : Recevez des notifications utilisateur via `vue-toastification`.
+- **Styling** : Utilisation de Tailwind CSS pour une interface utilisateur moderne et réactive.
 
-## Development Server
+## Projet Backend | cb-artist-generator
 
-Start the development server on `http://localhost:3000`:
+Le projet **cb-artist-generator** est utilisé pour remplir et mettre à jour la base de données de Comeback. Il s'agit d'un script exécuté quotidiennement via un serveur CRON.
 
-```bash
-# npm
-npm run dev
+### Fonctionnalités
 
-# pnpm
-pnpm run dev
+- **Récupération des informations d'artistes et de sorties musicales** : Utilisation de l'API YouTube Music pour obtenir des données à jour.
+- **Mise à jour de la base de données Firebase** : Stocke les informations récupérées dans Firebase.
+- **Gestion des actualités** : Mise à jour des actualités des artistes dans la base de données.
 
-# yarn
-yarn dev
-```
+### Dépendances principales
 
-## Production
+- **ytmusic-api** : Récupération des données de YouTube Music.
+- **axios** : Requêtes HTTP.
+- **firebase-admin** : Interaction avec Firebase.
+- **dotenv** : Gestion des variables d'environnement.
 
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## Licence
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](./LICENSE) pour plus de détails.
