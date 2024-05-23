@@ -70,7 +70,16 @@ export default defineNuxtConfig({
   app: {
     head: {
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/png', sizes: '48x48', href: '/icons/icon-48x48.png' },
+        { rel: 'icon', type: 'image/png', sizes: '72x72', href: '/icons/icon-72x72.png' },
+        { rel: 'icon', type: 'image/png', sizes: '96x96', href: '/icons/icon-96x96.png' },
+        { rel: 'icon', type: 'image/png', sizes: '144x144', href: '/icons/icon-144x144.png' },
+        { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/icons/icon-192x192.png' },
+        { rel: 'icon', type: 'image/png', sizes: '512x512', href: '/icons/icon-512x512.png' },
+      ],
+      meta: [
+        { name: 'theme-color', content: '#9E0102' }
       ]
     }
   }
