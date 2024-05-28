@@ -1,55 +1,52 @@
 <script setup lang="ts">
-  import { useUserStore } from '@/stores/user'
-  import { type Artist } from '@/types/artist'
-  const { isAdminStore } = useUserStore()
+import { useUserStore } from '@/stores/user'
+import { type Artist } from '@/types/artist'
+import type { Music } from '~/types/music';
+const { isAdminStore } = useUserStore()
+  const { getRandomMusicFromListReleaseId } = useFirebaseFunction()
 
-  const title = ref('Artist Page')
-  const description = ref('Artist')
-  const route = useRoute()
-  const artist = ref<Artist>({} as Artist)
-  const imageBackground = ref('')
-  const editLink = ref('/artist/edit/' + route.params.id)
-  const imageBackLoaded = ref(false)
-  const isFetchingArtist = ref(true)
+const title = ref('Artist Page')
+const description = ref('Artist')
+const route = useRoute()
+const artist = ref<Artist>({} as Artist)
+const imageBackground = ref('')
+const editLink = ref('/artist/edit/' + route.params.id)
+const imageBackLoaded = ref(false)
+const isFetchingArtist = ref(true)
+const musicDiscover = ref([] as Music[])
 
-  onMounted(async () => {
-    try {
-      artist.value = (await fetchArtistFullInfoById(route.params.id as any)) as Artist
-      console.log(artist.value)
-      imageBackground.value = artist.value.image
-      title.value = artist.value.name
-      description.value = artist.value.description
-    } finally {
-      isFetchingArtist.value = false
-    }
-  })
+onMounted(async () => {
+  try {
+    const fetchedArtist = await fetchArtistFullInfoById(route.params.id as any) as Artist;
+    artist.value = fetchedArtist;
+    imageBackground.value = fetchedArtist.image;
+    title.value = fetchedArtist.name;
+    description.value = fetchedArtist.description;
+  } finally {
+    isFetchingArtist.value = false;
+  }
 
-  // computed members
-  const members = computed(() => {
-    return artist.value?.members?.filter((member) => member.type === 'SOLO') || []
-  })
-  // computed subUnitMembers
-  const subUnitMembers = computed(() => {
-    return artist.value?.members?.filter((member) => member.type === 'GROUP') || []
-  })
+  if (artist.value.releases.length) {
+    const releaseIds = artist.value.releases.map(release => release.id).filter(id => id);
+    const fetchedMusicDiscover = await getRandomMusicFromListReleaseId(releaseIds as string[]);
+    musicDiscover.value = fetchedMusicDiscover as Music[];
+  }
+});
 
-  const singleRelease = computed(() => {
-    return artist.value?.releases?.filter((release) => release.type === 'SINGLE') || []
-  })
+const members = computed(() => artist.value?.members?.filter(member => member.type === 'SOLO') || []);
+const subUnitMembers = computed(() => artist.value?.members?.filter(member => member.type === 'GROUP') || []);
+const singleRelease = computed(() => artist.value?.releases?.filter(release => release.type === 'SINGLE') || []);
+const albumEpRelease = computed(() => artist.value?.releases?.filter(release => release.type !== 'SINGLE') || []);
 
-  const albumEpRelease = computed(() => {
-    return artist.value?.releases?.filter((release) => release.type !== 'SINGLE') || []
-  })
-
-  useHead({
-    title,
-    meta: [
-      {
-        name: 'description',
-        content: description,
-      },
-    ],
-  })
+useHead({
+  title,
+  meta: [
+    {
+      name: 'description',
+      content: description,
+    },
+  ],
+})
 </script>
 
 <template>
@@ -71,14 +68,11 @@
         :class="imageBackLoaded ? 'bg-secondary/60' : 'bg-quinary'"
       >
         <div class="space-y-5 lg:container lg:mx-auto lg:px-5">
-          <h1
-            v-if="artist.name"
-            class="py-3 text-3xl font-semibold md:text-6xl xl:text-7xl"
-          >
+          <h1 v-if="artist.name && !isFetchingArtist" class="py-3 text-3xl font-bold md:text-6xl xl:text-7xl">
             {{ artist.name }}
           </h1>
           <SkeletonDefault v-if="isFetchingArtist" class="h-14 w-80 rounded" />
-          <div v-if="artist.platformList" class="flex flex-wrap gap-1.5">
+          <div v-if="artist.platformList && !isFetchingArtist" class="flex flex-wrap gap-1.5">
             <LazyComebackExternalLink
               v-for="platform in artist.platformList"
               :key="platform.link"
@@ -94,7 +88,7 @@
               class="h-6 w-20 rounded"
             />
           </div>
-          <div v-if="artist.socialList?.length" class="flex flex-wrap gap-1.5">
+          <div v-if="artist.socialList?.length && !isFetchingArtist" class="flex flex-wrap gap-1.5">
             <LazyComebackExternalLink
               v-for="social in artist.socialList"
               :key="social.link"
@@ -122,26 +116,61 @@
       </div>
     </section>
 
-    <section class="container mx-auto space-y-8 p-5 py-8 lg:px-14 xl:px-5 lg:space-y-14 lg:py-10">
-      <div v-if="!artist.name" class="space-y-2">
+    <section
+      class="lg:container mx-auto space-y-8 p-5 py-8 lg:px-14 xl:px-5 lg:space-y-14 lg:py-10"
+    >
+      <div v-if="isFetchingArtist" class="space-y-2">
         <SkeletonDefault class="h-5 w-3/4 rounded" />
         <SkeletonDefault class="h-5 w-2/4 rounded" />
         <SkeletonDefault class="h-5 w-2/6 rounded" />
         <SkeletonDefault class="h-5 w-2/5 rounded" />
       </div>
 
-      <p v-if="artist.description" class="max-w-6xl whitespace-pre-line leading-6 md:leading-8 text-xs md:text-base">
-        {{ artist.description }}
-      </p>
+      <div v-else class="grid grid-cols-1 gap-5 lg:gap-10 lg:grid-cols-3">
+        <div :class="artist.releases ? 'col-span-2':'col-span-full'">
+          <CardDefault name="Description">
+            <p
+              v-if="artist.description"
+              class="max-w-6xl whitespace-pre-line leading-6 md:leading-8 text-xs md:text-base"
+            >
+              {{ artist.description }}
+            </p>
+            <p v-else class="text-xs md:text-base">No description available</p>
+          </CardDefault>
+        </div>
+        <div v-if="artist.releases">
+          <CardDefault name="Discover Music">
+            <div v-if="!musicDiscover.length" class="space-y-2">
+              <SkeletonDefault class="h-14 w-full rounded" />
+              <SkeletonDefault class="h-14 w-full rounded" />
+              <SkeletonDefault class="h-14 w-full rounded" />
+              <SkeletonDefault class="h-14 w-full rounded" />
+            </div>
+            <transition-group v-else name="list-complete" tag="div" class="space-y-2">
+              <MusicDisplay
+                v-for="song in musicDiscover"
+                :key="song.videoId"
+                :artistId="artist.id"
+                :artistName="artist.name"
+                :musicId="song.videoId"
+                :musicName="song.name"
+                :musicImage="song.thumbnails[2].url"
+                :duration="song?.duration?.toString() || '0'"
+                class="w-full bg-quinary"
+              />
+            </transition-group>
+          </CardDefault>
+        </div>
+      </div>
 
-      <div v-if="members?.length">
+      <div v-if="members?.length && !isFetchingArtist">
         <CardDefault name="Members">
-          <transition-group 
-            name="list-complete" 
-            tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
+          <transition-group
+            name="list-complete"
+            tag="div"
+            class="snap-x snap-mandatory pb-3 overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
           >
-            <CardObject 
+            <CardObject
               v-for="soloMember in members"
               :key="`artistMembers_` + soloMember.id"
               isArtist
@@ -154,14 +183,14 @@
         </CardDefault>
       </div>
 
-      <div v-if="albumEpRelease?.length">
+      <div v-if="albumEpRelease?.length && !isFetchingArtist">
         <CardDefault name="Albums/Eps">
           <transition-group
             name="list-complete"
             tag="div"
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
+            class="snap-x snap-mandatory pb-3 overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
           >
-            <CardObject 
+            <CardObject
               v-for="release in albumEpRelease"
               :key="release.id"
               :artistId="release.artistsId"
@@ -177,14 +206,14 @@
         </CardDefault>
       </div>
 
-      <div v-if="singleRelease?.length">
+      <div v-if="singleRelease?.length && !isFetchingArtist">
         <CardDefault name="Singles">
           <transition-group
             name="list-complete"
             tag="div"
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
+            class="snap-x snap-mandatory pb-3 overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
           >
-            <CardObject 
+            <CardObject
               v-for="release in singleRelease"
               :key="release.id"
               :artistId="release.artistsId"
@@ -200,14 +229,14 @@
         </CardDefault>
       </div>
 
-      <div v-if="subUnitMembers?.length">
+      <div v-if="subUnitMembers?.length && !isFetchingArtist">
         <CardDefault name="Subunit">
           <transition-group
-            name="list-complete" 
-            tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
+            name="list-complete"
+            tag="div"
+            class="snap-x snap-mandatory pb-3 overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
           >
-            <CardObject 
+            <CardObject
               v-for="groupMember in subUnitMembers"
               :key="`artistMembers_` + groupMember.id"
               isArtist
@@ -220,14 +249,14 @@
         </CardDefault>
       </div>
 
-      <div v-if="artist.groups?.length">
+      <div v-if="artist.groups?.length && !isFetchingArtist">
         <CardDefault name="Group">
           <transition-group
-            name="list-complete" 
-            tag="div" 
-            class="snap-x snap-mandatory overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
+            name="list-complete"
+            tag="div"
+            class="snap-x snap-mandatory pb-3 overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
           >
-            <CardObject 
+            <CardObject
               v-for="group in artist.groups"
               :key="`artistMembers_` + group.id"
               isArtist

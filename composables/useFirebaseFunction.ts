@@ -164,6 +164,48 @@ export function useFirebaseFunction() {
     // Si aucune musique correspondante n'est trouvée après avoir parcouru toutes les releases
     return null;
   };
+  // return a list of 10 random music from list release id
+  const getRandomMusicFromListReleaseId = async (listReleaseId: string[]): Promise<any[]> => {
+    // Mélange la liste des identifiants de release
+    const shuffledList = shuffleArray(listReleaseId);
+    
+    // Sélectionne un sous-ensemble aléatoire de 10 identifiants ou moins si la liste est plus courte
+    const selectedReleaseIds = shuffledList.slice(0, 10);
+    
+    let releases = [];
+    for (let id of selectedReleaseIds) {
+      const docRef = doc(database as any, 'releases', id);
+      const docSnap = await getDoc(docRef);
+      const release = documentSnapshotToObject(docSnap);
+      releases.push(release);
+    }
+
+    releases = shuffleArray(releases); // Mélange les releases
+    let listMusicFromReleaseSelected: any[] = [];
+    let foundMusics = [];
+
+    for (let release of releases.splice(0, 10)) {
+      const colMusic = query(collection(database as any, 'releases', release.id, 'musics'));
+      const snapshotMusic = await getDocs(colMusic);
+      const musics = snapshotMusic.docs.map((doc) => doc.data());
+      listMusicFromReleaseSelected = listMusicFromReleaseSelected.concat(musics.filter((music: any) => !music.name.toLowerCase().includes('inst')));
+    }
+
+    const shuffledMusics = shuffleArray(listMusicFromReleaseSelected); // Mélange les musiques de l'album
+    for (let music of shuffledMusics) {
+      const isEmbeddable = await canVideoBeEmbedded(music.videoId, config.public.YOUTUBE_API_KEY);
+      if (isEmbeddable) {
+        foundMusics.push(music); // Ajoute la musique trouvée à la liste
+
+        if (foundMusics.length >= 7) {
+          return foundMusics; // Retourne la liste si elle contient 10 musiques
+        }
+      }
+    }
+
+    // Retourne la liste des musiques trouvées (peut être vide si aucune musique correspondante n'est trouvée)
+    return foundMusics;
+  };
 
   /**
    * CALENDAR PAGE FUNCTION
@@ -207,7 +249,6 @@ export function useFirebaseFunction() {
       return 'error';
     });
   }
-
   // Fetches releases by a specific artist from the 'releases' collection in Firestore.
   const getReleaseByArtistId = async (artistId: string) => {
     const colRef = query(collection(database as any, 'releases'), where('artistsId', '==', artistId));
@@ -430,6 +471,7 @@ export function useFirebaseFunction() {
     getRealtimeNextComebacks,
     getRealtimeLastestReleases,
     getRealtimeLastestArtistsAdded,
+    getRandomMusicFromListReleaseId,
     getReleasesBetweenDates,
     getRandomMusic,
     updateRelease,
