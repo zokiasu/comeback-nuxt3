@@ -197,7 +197,7 @@ export function useFirebaseFunction() {
       if (isEmbeddable) {
         foundMusics.push(music); // Ajoute la musique trouvée à la liste
 
-        if (foundMusics.length >= 7) {
+        if (foundMusics.length >= 5) {
           return foundMusics; // Retourne la liste si elle contient 10 musiques
         }
       }
