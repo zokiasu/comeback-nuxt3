@@ -13,8 +13,8 @@ const { name } = defineProps({
 </script>
 
 <template>
-  <div>
-    <p class="pb-2 text-sm font-semibold uppercase" :class="additionalClass">
+  <div class="space-y-2">
+    <p class="text-sm font-semibold uppercase" :class="additionalClass">
       {{ name }}
     </p>
     <slot />

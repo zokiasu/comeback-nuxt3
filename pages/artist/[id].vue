@@ -22,7 +22,12 @@ onMounted(async () => {
     imageBackground.value = fetchedArtist.image;
     title.value = fetchedArtist.name;
     description.value = fetchedArtist.description;
-  } finally {
+  } 
+  catch (error) {
+    console.error(error)
+    isFetchingArtist.value = false;
+  }
+  finally {
     isFetchingArtist.value = false;
   }
 
@@ -72,7 +77,7 @@ useHead({
             {{ artist.name }}
           </h1>
           <SkeletonDefault v-if="isFetchingArtist" class="h-14 w-80 rounded" />
-          <div v-if="artist.platformList && !isFetchingArtist" class="flex flex-wrap gap-1.5">
+          <!-- <div v-if="artist.platformList && !isFetchingArtist" class="flex flex-wrap gap-1.5">
             <LazyComebackExternalLink
               v-for="platform in artist.platformList"
               :key="platform.link"
@@ -103,7 +108,7 @@ useHead({
               :key="`skeleton_socials_` + i"
               class="h-6 w-20 rounded"
             />
-          </div>
+          </div> -->
           <div v-if="isAdminStore">
             <NuxtLink
               :to="editLink"
@@ -127,7 +132,43 @@ useHead({
       </div>
 
       <div v-else class="grid grid-cols-1 gap-5 lg:gap-10 lg:grid-cols-3">
-        <div :class="artist.releases ? 'col-span-2':'col-span-full'">
+        <div class="space-y-5" :class="artist.releases ? 'col-span-2':'col-span-full'">
+          <CardDefault name="Streaming Platforms" v-if="artist.platformList?.length && !isFetchingArtist">
+            <div class="flex flex-wrap gap-2">
+              <LazyComebackExternalLink
+                v-for="platform in artist.platformList"
+                :key="platform.link"
+                :name="platform.name"
+                :link="platform.link"
+                class="!px-2.5 !py-1"
+              />
+            </div>
+          </CardDefault>
+          <div v-if="isFetchingArtist" class="flex gap-2">
+            <SkeletonDefault
+              v-for="i in 3"
+              :key="`skeleton_platforms_` + i"
+              class="h-6 w-20 rounded"
+            />
+          </div>
+          <CardDefault name="Socials Media" v-if="artist.socialList?.length && !isFetchingArtist">
+            <div class="flex flex-wrap gap-2">
+              <LazyComebackExternalLink
+                v-for="social in artist.socialList"
+                :key="social.link"
+                :name="social.name"
+                :link="social.link"
+                class="!px-2.5 !py-1"
+              />
+            </div>
+          </CardDefault>
+          <div v-if="isFetchingArtist" class="flex gap-2">
+            <SkeletonDefault
+              v-for="i in 3"
+              :key="`skeleton_socials_` + i"
+              class="h-6 w-20 rounded"
+            />
+          </div>
           <CardDefault name="Description">
             <p
               v-if="artist.description"
@@ -138,9 +179,10 @@ useHead({
             <p v-else class="text-xs md:text-base">No description available</p>
           </CardDefault>
         </div>
-        <div v-if="artist.releases">
+        <div v-if="artist.releases.length">
           <CardDefault name="Discover Music">
-            <div v-if="!musicDiscover.length" class="space-y-2">
+            <div v-if="musicDiscover.length < 1" class="space-y-2">
+              <SkeletonDefault class="h-14 w-full rounded" />
               <SkeletonDefault class="h-14 w-full rounded" />
               <SkeletonDefault class="h-14 w-full rounded" />
               <SkeletonDefault class="h-14 w-full rounded" />

@@ -92,6 +92,13 @@ const signOut = async () => {
           >
             Dashboard
           </NuxtLink>
+          <NuxtLink
+            v-if="isAdmin"
+            :to="`/artist/create`"
+            :class="routeN.name.startsWith('artist-create') ? 'text-white' : 'text-zinc-500'"
+          >
+            Create Artist
+          </NuxtLink>
         </nav>
         <div class="flex items-center justify-center gap-x-2 text-sm">
           <button @click="showModalAlgolia = true" class="bg-quaternary p-2 rounded">
