@@ -66,10 +66,8 @@ const validVerifiedRelease = async () => {
 
 watchEffect(() => {
   if (dateToChange.value) {
-    console.log(dateToChange.value);
     const dateToTimestamp = new Timestamp(dateToChange.value / 1000, 0);
     releaseToUpdate.date = dateToTimestamp;
-    console.log(releaseToUpdate);
   }
 });
 </script>

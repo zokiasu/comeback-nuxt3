@@ -58,18 +58,13 @@ const switchTypeFilter = async (type) => {
 }
 
 const releasesDisplayed = computed(() => {
-  console.log(onlyAlbums.value, onlyEps.value, onlySingles.value)
   if(onlyAlbums.value) {
-    console.log('onlyAlbums')
     return releases.value.filter((release) => release.type === 'ALBUM')
   } else if(onlyEps.value) {
-    console.log('onlyEps')
     return releases.value.filter((release) => release.type === 'EP')
   } else if(onlySingles.value) {
-    console.log('onlySingles')
     return releases.value.filter((release) => release.type === 'SINGLE')
   } else {
-    console.log('all')
     return releases.value
   }
 })
