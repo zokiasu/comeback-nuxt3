@@ -138,9 +138,9 @@ useHead({
     </div>
     <!-- Stats -->
     <div class="border-y-2 text-xs border-quaternary py-3 space-y-2">
-      <p class="font-semibold text-base text-center">
+      <!-- <p class="font-semibold text-base text-center">
         {{ monthList[currentMonth].original }} {{ currentYear }}'s stats
-      </p>
+      </p> -->
       <div class="grid grid-cols-4 gap-1 lg:gap-5 justify-center items-center">
         <button 
           @click="switchTypeFilter('ALL')" 
