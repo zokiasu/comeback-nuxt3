@@ -21,6 +21,16 @@ onMounted(async () => {
     artistFetch.value = tmp
   })
 })
+
+const displayingFooter = computed(() => {
+  return (
+    route &&
+    route.name &&
+    typeof route.name === 'string' &&
+    !route.name.startsWith('dashboard-') &&
+    !route.name.startsWith('settings-')
+  )
+})
 </script>
 
 <template>
@@ -43,7 +53,7 @@ onMounted(async () => {
     <main>
       <slot />
     </main>
-    <LazyFooter v-if="route && route.name && typeof route.name === 'string' && !route.name.startsWith('dashboard-')" />
+    <LazyFooter v-if="displayingFooter" />
     <LazyMobileNavigation
       class="md:hidden"
       :artistFetch="artistFetch"

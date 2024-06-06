@@ -101,7 +101,7 @@ const signOut = async () => {
           </NuxtLink>
         </nav>
         <div class="flex items-center justify-center gap-x-2 text-sm">
-          <button @click="showModalAlgolia = true" class="bg-quaternary p-2 rounded">
+          <button @click="showModalAlgolia = true" class="bg-quaternary p-2 rounded hover:bg-tertiary/20">
             <IconSearch class="w-3.5 h-3.5" />
           </button>
           <button
@@ -118,13 +118,20 @@ const signOut = async () => {
           >
             Login
           </NuxtLink>
-          <button
+          <NuxtLink
+            v-else
+            :to="`/settings/profile`"
+            class="bg-quaternary p-2 rounded hover:bg-tertiary/20"
+          >
+            <IconSettings class="w-3.5 h-3.5" />
+          </NuxtLink>
+          <!-- <button
             v-else
             @click="signOut"
             class="bg-quaternary p-2 rounded"
           >
             <IconLogout class="w-3.5 h-3.5" />
-          </button>
+          </button> -->
         </div>
       </div>
     </div>

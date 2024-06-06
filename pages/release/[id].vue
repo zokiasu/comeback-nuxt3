@@ -11,7 +11,8 @@
 
   import { type Release } from '@/types/release'
   import { useUserStore } from '@/stores/user'
-  const { isAdminStore } = useUserStore()
+  const { isAdminStore, isLoginStore } = useUserStore()
+  const router = useRouter();
 
   const title = ref('Release Page')
   const description = ref('Release')
@@ -48,6 +49,15 @@
     title.value = release.value.name + ' by ' + release.value.artistsName
     description.value = release.value.name + ' by ' + release.value.artistsName
   })
+
+  const verifyShowModal = () => {
+    console.log('isLoginStore', isLoginStore)
+    if(isLoginStore) {
+      showModal.value = true;
+    } else {
+      router.push('/authentification')
+    }
+  }
 
   useHead({
     title,
@@ -159,8 +169,7 @@
             :link="social.link"
           />
           <button
-            v-if="isAdminStore"
-            @click="showModal = true"
+            @click="verifyShowModal()"
             class="flex items-center gap-2 rounded bg-quaternary px-3.5 py-2.5 text-sm hover:bg-quinary"
           >
             <IconPlus class="h-5 w-5" />

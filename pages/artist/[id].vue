@@ -2,20 +2,21 @@
 import { useUserStore } from '@/stores/user'
 import { type Artist } from '@/types/artist'
 import type { Music } from '~/types/music';
-const { isAdminStore } = useUserStore()
-  const { getRandomMusicFromListReleaseId } = useFirebaseFunction()
+const { isAdminStore, isLoginStore } = useUserStore()
+const { getRandomMusicFromListReleaseId } = useFirebaseFunction()
+const router = useRouter();
 
 const title = ref('Artist Page')
 const description = ref('Artist')
 const route = useRoute()
 const artist = ref<Artist>({} as Artist)
 const imageBackground = ref('')
-const editLink = ref('/artist/edit/' + route.params.id)
 const imageBackLoaded = ref(false)
 const isFetchingArtist = ref(true)
 const musicDiscover = ref([] as Music[])
 
 onMounted(async () => {
+  console.log('isLoginStore', isLoginStore)
   try {
     const fetchedArtist = await fetchArtistFullInfoById(route.params.id as any) as Artist;
     artist.value = fetchedArtist;
@@ -42,6 +43,12 @@ const members = computed(() => artist.value?.members?.filter(member => member.ty
 const subUnitMembers = computed(() => artist.value?.members?.filter(member => member.type === 'GROUP') || []);
 const singleRelease = computed(() => artist.value?.releases?.filter(release => release.type === 'SINGLE') || []);
 const albumEpRelease = computed(() => artist.value?.releases?.filter(release => release.type !== 'SINGLE') || []);
+const editLink = computed(() => {
+  if (!isLoginStore) {
+    return '/authentification';
+  }
+  return '/artist/edit/' + route.params.id;
+});
 
 useHead({
   title,
@@ -77,46 +84,12 @@ useHead({
             {{ artist.name }}
           </h1>
           <SkeletonDefault v-if="isFetchingArtist" class="h-14 w-80 rounded" />
-          <!-- <div v-if="artist.platformList && !isFetchingArtist" class="flex flex-wrap gap-1.5">
-            <LazyComebackExternalLink
-              v-for="platform in artist.platformList"
-              :key="platform.link"
-              :name="platform.name"
-              :link="platform.link"
-              class="!px-2.5 !py-1"
-            />
-          </div>
-          <div v-if="isFetchingArtist" class="flex gap-2">
-            <SkeletonDefault
-              v-for="i in 3"
-              :key="`skeleton_platforms_` + i"
-              class="h-6 w-20 rounded"
-            />
-          </div>
-          <div v-if="artist.socialList?.length && !isFetchingArtist" class="flex flex-wrap gap-1.5">
-            <LazyComebackExternalLink
-              v-for="social in artist.socialList"
-              :key="social.link"
-              :name="social.name"
-              :link="social.link"
-              class="!px-2.5 !py-1"
-            />
-          </div>
-          <div v-if="isFetchingArtist" class="flex gap-2">
-            <SkeletonDefault
-              v-for="i in 3"
-              :key="`skeleton_socials_` + i"
-              class="h-6 w-20 rounded"
-            />
-          </div> -->
-          <div v-if="isAdminStore">
-            <NuxtLink
-              :to="editLink"
-              class="bg-secondary px-2 py-1 text-xs font-semibold uppercase"
-            >
-              Edit Artist
-            </NuxtLink>
-          </div>
+          <NuxtLink
+            :to="editLink"
+            class="bg-secondary px-2 py-1 text-xs font-semibold uppercase"
+          >
+            Edit Artist
+          </NuxtLink>
         </div>
       </div>
     </section>
@@ -176,7 +149,18 @@ useHead({
             >
               {{ artist.description }}
             </p>
-            <p v-else class="text-xs md:text-base">No description available</p>
+            <div v-else>
+              <p class="text-xs md:text-base">No description.</p>
+              <p class="text-xs md:text-base">Write a description to share more information about this artist with our community.</p>
+              <div class="pt-2">
+                <NuxtLink
+                  :to="editLink"
+                  class="bg-quaternary px-2 py-1 mt-5 text-xs font-semibold uppercase"
+                >
+                  Add a description
+                </NuxtLink>
+              </div>
+            </div>
           </CardDefault>
         </div>
         <div v-if="artist.releases.length">
