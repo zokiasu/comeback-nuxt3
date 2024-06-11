@@ -5,6 +5,7 @@ export const useAuth = () => {
   const user = ref(null)
   const isLoading = ref(false)
   const error = ref(null)
+  const router = useRouter();
 
   const { $auth: auth } = useNuxtApp()
 
@@ -21,9 +22,10 @@ export const useAuth = () => {
       error.value = err
     } finally {
       isLoading.value = false
+      console.log('user', user.value)
       if(user.value != null) {
         // Rediriger l'utilisateur vers une autre page
-        $router.push('/')
+        router.push('/');
       }
     }
   }
@@ -46,7 +48,7 @@ export const useAuth = () => {
       isLoading.value = false
       if(user.value != null) {
         // Rediriger l'utilisateur vers une autre page
-        $router.push('/')
+        router.push('/desired-route');
       }
     }
   };

@@ -24,9 +24,7 @@ export function useFirebaseFunction() {
   const config = useRuntimeConfig()
   const toast = useToast()
 
-  /** 
-   * GENERAL FUNCTION FOR FIREBASE FUNCTION 
-  **/
+  ///////// GENERAL FUNCTION FOR FIREBASE FUNCTION \\\\\\\\\\
 
   // Converts a Firestore snapshot into an array of documents.
   const snapshotResultToArray = (result: any) => {
@@ -82,10 +80,8 @@ export function useFirebaseFunction() {
     const snapshot = await getDocs(colRef)
     return snapshot.size > 0
   }
-
-  /** 
-   * HOMEPAGE FUNCTION 
-  **/
+  
+  ///////// HOMEPAGE FUNCTION \\\\\\\\\\
 
   // Listens for real-time updates to the 'news' collection in Firestore where the date is greater than or equal to the provided start date.
   const getRealtimeNextComebacks = async (startDate: Timestamp, callback: Function) => {
@@ -207,9 +203,7 @@ export function useFirebaseFunction() {
     return foundMusics;
   };
 
-  /**
-   * CALENDAR PAGE FUNCTION
-  **/
+  ///////// CALENDAR PAGE FUNCTION \\\\\\\\\\
 
   //TODO: Add comment
   const getReleasesBetweenDates = async (startDate: Timestamp, endDate: Timestamp) => {
@@ -224,9 +218,7 @@ export function useFirebaseFunction() {
     return snapshotResultToArray(snapshot);
   }
 
-  /** 
-   * Release's Function
-  **/
+  ///////// Release's Function \\\\\\\\\\
 
   // Updates a document in the 'releases' collection in Firestore.
   const updateRelease = async (id: string, data: any): Promise<string> => {
@@ -266,9 +258,7 @@ export function useFirebaseFunction() {
     return snapshotResultToArray(snapshot);
   }
 
-  /** 
-   * Artist's Function
-  **/
+  ///////// Artist's Function \\\\\\\\\\
 
   // Fetches an artist with full details by its ID from the 'artists' collection in Firestore.
   const getArtistById = async (idArtist: string) => {
@@ -431,9 +421,7 @@ export function useFirebaseFunction() {
     await deleteDoc(doc(database as any, 'artists', id));0
   }
 
-  /** 
-   * Comeback's Function
-  **/
+  ///////// Comeback's Function \\\\\\\\\\
 
   // Checks if a comeback exists in the 'news' collection in Firestore for a specific artist on a specific date.
   const getComebackExist = async (date: Timestamp, artistName: string): Promise<boolean> => {

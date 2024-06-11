@@ -9,6 +9,7 @@ export default defineNuxtConfig({
       FIREBASE_MESSAGIN_SENDER_ID: process.env.FIREBASE_MESSAGIN_SENDER_ID,
       FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
       FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
+      FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL,
       YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
     },
   },
