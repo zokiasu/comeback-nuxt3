@@ -1,6 +1,7 @@
 <script setup>
 import { useUserStore } from './stores/user'
-import { doc, getDoc, getFirestore } from 'firebase/firestore'
+import { doc, setDoc, getDoc, getFirestore } from 'firebase/firestore'
+import { Timestamp } from 'firebase/firestore'
 
 const { $auth } = useNuxtApp()
 onMounted(() => {
@@ -10,7 +11,7 @@ onMounted(() => {
     if (userState) {
       setFirebaseUser(userState)
       setIsLogin(true)
-      getDatabaseUser(userState.uid)
+      getDatabaseUser(userState)
     } else {
       setFirebaseUser(null)
       setIsLogin(false)
@@ -19,7 +20,8 @@ onMounted(() => {
     }
   })
 
-  const getDatabaseUser = async (uid) => {
+  const getDatabaseUser = async (user) => {
+    const uid = user.uid
     const db = getFirestore()
     const userRef = doc(db, 'users', uid)
     const userSnap = await getDoc(userRef)
@@ -29,7 +31,35 @@ onMounted(() => {
       setIsAdmin(user?.role ? true : false)
     } else {
       console.log('No such document!')
+      createDatabaseUser(user);
     }
+  }
+
+  const createDatabaseUser = async (user) => {
+    const db = getFirestore()
+    const userRef = doc(db, 'users', user.uid)
+    const today = new Date();
+    today.setDate(today.getDate());
+    today.setHours(0, 0, 0, 0);
+    const todayTimestamp = Timestamp.fromDate(today);
+
+    await setDoc(userRef, {
+      uid: user.uid,
+      email: user.email,
+      name: user.displayName,
+      photoURL: user.photoURL,
+      role: 'USER',
+      createdAt: todayTimestamp,
+      updatedAt: todayTimestamp,
+    })
+
+    setUserData({
+      uid: user.uid,
+      email: user.email,
+      name: user.displayName,
+      photoURL: user.photoURL,
+      role: 'user'
+    })
   }
 })
 </script>
