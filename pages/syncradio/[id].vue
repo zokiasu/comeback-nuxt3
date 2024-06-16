@@ -1,109 +1,355 @@
 <template>
-    <div>
-        <div class="grid grid-cols-1 gap-3 p-5">
-            <div class="space-y-3">
+    <div class="flex flex-col md:flex-row px-8 pb-8 gap-3 min-h-[calc(100dvh-100px)]">
+        <section class="space-y-3 w-full flex flex-col">
+            <form
+                @submit.prevent="getYoutubeVideo"
+                class="flex flex-col sm:flex-row gap-3"
+            >
                 <input
                     id="search-input"
                     v-model="search"
                     type="text"
-                    placeholder="Search"
+                    placeholder="Youtube URL"
+                    :disabled="!isAdminRoom"
                     class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
                 />
-                <div class="flex flex-col-reverse lg:flex-row gap-3">
-                    <div class="bg-quinary rounded p-3 space-y-2 text-xs">
-                        <p class="uppercase font-semibold">Chat together</p>
-                        <div class="grid grid-cols-1 gap-2 w-full h-full">
-                            <SyncRadioYoutubeCard />
-                        </div>
+                <button
+                    type="submit"
+                    :disabled="!isAdminRoom"
+                    class="w-full sm:max-w-[10rem] overflow-hidden bg-primary rounded py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-secondary"
+                >
+                    Add URL
+                </button>
+            </form>
+            <div id="playlist-video" class="flex flex-col-reverse justify-end lg:justify-start lg:flex-row gap-3 flex-grow">
+                <div class="bg-quinary rounded p-3 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%]">
+                    <p class="uppercase font-semibold">Playlist</p>
+                    <div class="grid grid-cols-1 gap-2 w-full h-full max-h-[10dvh] lg:max-h-[58dvh] overflow-hidden overflow-y-auto remove-scrollbar">
+                        <SyncRadioYoutubeCard
+                            v-for="(video, index) in roomPlaylist"
+                            :key="'videoPlaylist_'+index"
+                            :video="video"
+                        />
                     </div>
-                    <div class="bg-primary h-20 space-x-5">
-                        <button @click="writeDataExample">Write Data</button>
-                        <button @click="readDataExample">Read Data</button>
-                        <button @click="updateDataExample">Update Data</button>
-                        <button @click="deleteDataExample">Delete Data</button>
-                        <button @click="writeDataWithRandomIdExample">Write Data with Random ID</button>
-                    </div>
+                </div>
+                <div class="bg-primary relative h-full w-full aspect-video lg:aspect-auto rounded max-h-[768px]">
+                    <SyncRadioYoutubePlayer
+                        ref="playerRef"
+                        @videoEnded="nextVideo"
+                        @videoError="videoError"
+                        @updateDuration="updateDurationActualVideoPlay($event)"
+                        class="z-50" 
+                    />
                 </div>
             </div>
-            <!-- REALTIME CHAT
-            <div class="space-y-2">
-                <div class="bg-quinary rounded p-3 space-y-2 text-xs">
-                    <p class="uppercase font-semibold">Chat together</p>
-                    <div class="flex flex-col w-full h-full">
-                        <SyncRadioMessageCard 
-                            id="1" 
-                            message="Lorem ipsum dolor, sit amet consectetur adipisicing elit."
-                            :isActualUser="false"
-                            :isAdmin="true"
-                        />
-                        <SyncRadioMessageCard 
-                            id="2" 
-                            message="Lorem ipsum dolor, sit amet consectetur adipisicing elit."
-                            :isActualUser="true"
-                            :isAdmin="true"
-                        />
-                        <SyncRadioMessageCard 
-                            id="3" 
-                            message="Lorem ipsum dolor, sit amet consectetur adipisicing elit."
-                            :isActualUser="false"
-                            :isAdmin="true"
-                        />
+            <div class="lg:flex gap-3 hidden">
+                <div class="bg-quinary rounded p-3 space-y-2 text-xs w-[25%] max-w-[25%] min-w-[25%]">
+                    <p class="uppercase font-semibold">Recommandation</p>
+                    <div class="flex flex-col gap-2">
+                        <div class="flex gap-2 rounded w-full p-2 bg-quaternary">
+                            <p>Hello World</p>
+                            <p>Hello World</p>
+                        </div>
+                        <div class="flex gap-2 rounded w-full p-2 bg-quaternary">
+                            <p>Hello World</p>
+                            <p>Hello World</p>
+                        </div>
+                        <div class="flex gap-2 rounded w-full p-2 bg-quaternary">
+                            <p>Hello World</p>
+                            <p>Hello World</p>
+                        </div>
                     </div>
                 </div>
-                <textarea
-                    id="message-input"
+                <div class="w-full bg-quinary rounded p-3">
+                    <p>Hello World</p>
+                </div>
+            </div>
+        </section>
+        <section class="space-y-3 lg:w-[30%] flex flex-col flex-grow">
+            <div class="bg-quinary flex-grow rounded p-3 opacity-50">
+                <p class="uppercase font-semibold">Chat together</p>
+            </div>
+            <form
+                @submit.prevent="getYoutubeVideo"
+                class="flex flex-col sm:flex-row gap-3"
+            >
+                <input
+                    id="search-input"
                     v-model="message"
                     type="text"
-                    placeholder="Send your message..."
-                    class="w-full auto-resizing rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+                    placeholder="Message"
+                    disabled
+                    class="w-full rounded border-none bg-quinary px-5 py-2 disabled:opacity-50 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
                 />
-            </div> -->
-        </div>
+                <button
+                    type="submit"
+                    disabled
+                    class="lg:w-fit px-3 bg-primary rounded disabled:opacity-50 py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-secondary"
+                >
+                    Send
+                </button>
+            </form>
+        </section>
     </div>
 </template>
 
 <script setup>
     import { useFirebaseRealtimeDatabase } from '~/composables/useFirebaseRealtimeDatabase'
+    import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
+    import { useUserStore } from '~/stores/user'
     import { useToast } from 'vue-toastification'
 
     const { writeData, readData, updateData, deleteData, listenForUpdates, queryData, writeDataWithRandomId } = useFirebaseRealtimeDatabase()
+    const { getVideoFullDetails } = useFirebaseFunction()
+    const { userDataStore } = useUserStore()
+    const config = useRuntimeConfig()
+    const route = useRoute()
     const router = useRouter()
     const toast = useToast()
 
+    const playerRef = ref(null)
+
+    const firstFetch = ref(true)
     const search = ref('');
     const message = ref('');
-    const roomId = ref(null)
+    const roomId = ref('')
+    const roomPlaylist = ref([])
+    const currentUsers = ref([])
+    const isAdminRoom = ref(false)
+    const actualVideoPlay = ref({
+        id: null,
+        title: null,
+        thumbnail: null,
+        duration: null,
+        channelTitle: null,
+        addedBy: {
+            id: null,
+            name: null
+        }
+    })
+
+    function checkIfUserIsCreator(users, userId) {
+        return users.some(user => user.id === userId && user.status === 'administrator');
+    }
+
+    function checkIfUserIsAlredyInRoom(users, userId) {
+        return users.some(user => user.id === userId);
+    }
+
+    function extractYouTubeId(url) {
+        const videoRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|v\/|embed\/)|youtu\.be\/|music\.youtube\.com\/watch\?v=)([\w-]{11})/;
+        const playlistRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/playlist\?list=|music\.youtube\.com\/playlist\?list=|youtube\.com\/watch\?.*&list=)([\w-]+)/;
+        
+        const videoMatch = url.match(videoRegex);
+        const playlistMatch = url.match(playlistRegex);
+        
+        return {
+            videoId: videoMatch ? videoMatch[1] : null,
+            playlistId: playlistMatch ? playlistMatch[1] : null
+        };
+    }
+
+    function convertDuration(duration) {
+        const match = duration.match(/PT(\d+M)?(\d+S)?/);
+        const minutes = match[1] ? match[1].slice(0, -1) : '0';
+        const seconds = match[2] ? match[2].slice(0, -1).padStart(2, '0') : '00';
+        return `${minutes}:${seconds}`;
+    }
+
+    const updateDurationActualVideoPlay = (duration) => {
+        if (isAdminRoom.value) {
+            // console.log('Update duration:', duration)
+            actualVideoPlay.value.duration = duration
+            writeData('/syncradio/' + roomId.value + '/actualVideoPlay/', actualVideoPlay.value)
+        }
+    }
+
+    const updateActualVideoPlay = (videoData) => {
+        if (isAdminRoom.value) {
+            actualVideoPlay.value = videoData
+            console.log('Update actual video play:', videoData, playerRef.value)
+            if(actualVideoPlay.value.id) {
+                writeData('/syncradio/' + roomId.value + '/actualVideoPlay/', videoData)
+            } else {
+                deleteData('/syncradio/' + roomId.value + '/actualVideoPlay/')
+            }
+        }
+    }
+
+    const nextVideo = () => {
+        console.log('Next video')
+        if(isAdminRoom.value) {
+            if(roomPlaylist.value) {
+                // récupérer la vidéo la plus haute dans la playlist
+                const video = roomPlaylist.value.shift()
+                // mettre à jour la vidéo actuelle
+                updateActualVideoPlay(video)
+                // mettre à jour la playlist
+                
+                    writeData('/syncradio/' + roomId.value + '/playlist/', roomPlaylist.value)
+            } else {
+                // mettre à jour la vidéo actuelle
+                updateActualVideoPlay({
+                    id: null,
+                    title: null,
+                    thumbnail: null,
+                    duration: null,
+                    channelTitle: null,
+                    addedBy: {
+                        id: null,
+                        name: null
+                    }
+                })
+                deleteData('/syncradio/' + roomId.value + '/playlist/')
+            }
+        }
+    }
+
+    const getYoutubeVideo = () => {
+        const { videoId, playlistId } = extractYouTubeId(search.value);
+        
+        if (playlistId) {
+            console.log('Playlist ID:', playlistId);
+        } else if (videoId) {
+            getVideoFullDetails(videoId, config.public.YOUTUBE_API_KEY).then((data) => {
+                const videoData = {
+                    id: data.id,
+                    title: data.snippet.title,
+                    thumbnail: data.snippet.thumbnails.default.url,
+                    duration: convertDuration(data.contentDetails.duration),
+                    channelTitle: data.snippet.channelTitle,
+                    addedBy: {
+                        id: userDataStore.id,
+                        name: userDataStore.name
+                    }
+                }
+                console.log('actualVideoPlay.value.id', actualVideoPlay?.value)
+                if(isAdminRoom.value && (!actualVideoPlay.value || !actualVideoPlay.value.id)) {
+                    // actualVideoPlay.value = videoData
+                    updateActualVideoPlay(videoData)
+                } else if (isAdminRoom.value) {
+                    addInPlayslit(videoData)
+                } else {
+                    actualVideoPlay.value = videoData; // Mise à jour pour les utilisateurs non administrateurs
+                }
+            })
+            search.value = ''; 
+        } else {
+            console.log('No valid YouTube ID found.');
+        }
+    }
+
+    const addInPlayslit = (data) => {
+        if(isAdminRoom.value) {
+            roomPlaylist.value = roomPlaylist.value || []
+            roomPlaylist.value.push(data)
+            writeData('/syncradio/' + roomId.value + '/playlist/', roomPlaylist.value)
+        }
+    }
 
     const writeDataExample = () => {
         writeData('/syncradio/rooms', { key: 'value' })
     }
 
-    const readDataExample = async () => {
-        const data = await readData('/syncradio/rooms')
-        console.log(data)
-    }
-
-    const updateDataExample = () => {
-        updateData('/syncradio/rooms', { key: 'newValue' })
-    }
-
-    const deleteDataExample = () => {
-        deleteData('/syncradio/rooms')
-    }
-
-    const writeDataWithRandomIdExample = async () => {
-        const data = { key: 'value', otherKey: 'otherValue' }
-        const generatedId = await writeDataWithRandomId('/example/path', data)
-        if (generatedId) {
-            console.log('Data written with ID:', generatedId)
+    const addUserToRoom = async () => {
+        const currentUser = {
+            id: userDataStore.id,
+            name: userDataStore.name,
+            onlineStatus: true,
+            status: 'listener'
         }
+        currentUsers.value.push(currentUser)
+        console.log('users:', currentUsers.value)
+        writeData('/syncradio/' + roomId.value + '/users/', currentUsers.value)
     }
 
-    const listenForUpdatesExample = () => {
-        listenForUpdates('/syncradio/rooms', (data) => {
-            console.log('Data updated:', data)
+    const videoError = () => {
+        console.log('Video error')
+        updateActualVideoPlay({
+            id: null,
+            title: null,
+            thumbnail: null,
+            duration: null,
+            channelTitle: null,
+            addedBy: {
+                id: null,
+                name: null
+            }
         })
     }
+
+    watch(() => actualVideoPlay?.value?.id, (newId) => {
+        console.log('New actualVideoPlay.id:', newId);
+        if (newId && playerRef.value) {
+            playerRef.value.updateVideoId(newId, actualVideoPlay.value.duration);
+        }
+    });
+
+    onMounted(async () => {
+        roomId.value = route.params.id
+        const dataRouteRadio = '/syncradio/' + roomId.value
+        const data = await readData(dataRouteRadio)
+        let isCreator = false
+
+        // Autres initialisations
+        console.log('Player ref:', playerRef.value);
+        console.log('data:', data, 'userDataStore.id:', userDataStore.id)
+        if (data && userDataStore.id) {
+            roomPlaylist.value = data.playlist
+            currentUsers.value = data.users
+            listenForUpdates(dataRouteRadio, (data) => {
+                console.log('listenForUpdates:', data)
+                roomPlaylist.value = data.playlist
+                currentUsers.value = data.users
+                actualVideoPlay.value = data.actualVideoPlay
+            })
+
+            if(checkIfUserIsAlredyInRoom(data.users, userDataStore.id)) {
+                console.log('User is in room')
+                isCreator = checkIfUserIsCreator(data.users, userDataStore.id);
+
+                if (isCreator) {
+                    console.log('User is creator')
+                    isAdminRoom.value = true
+                } else {
+                    console.log('User is not creator')
+                }
+            } else {
+                console.log('User is not in room')
+                addUserToRoom()
+            }
+        } else {
+            toast.error('Room not found. Please create a new room.')
+            router.push('/syncradio')
+        }
+    })
+
+const readDataExample = async () => {
+    const data = await readData('/syncradio/rooms')
+    console.log(data)
+}
+
+const updateDataExample = () => {
+    updateData('/syncradio/rooms', { key: 'newValue' })
+}
+
+const deleteDataExample = () => {
+    deleteData('/syncradio/rooms')
+}
+
+const writeDataWithRandomIdExample = async () => {
+    const data = { key: 'value', otherKey: 'otherValue' }
+    const generatedId = await writeDataWithRandomId('/example/path', data)
+    if (generatedId) {
+        console.log('Data written with ID:', generatedId)
+    }
+}
+
+const listenForUpdatesExample = () => {
+    listenForUpdates('/syncradio/rooms', (data) => {
+        console.log('Data updated:', data)
+    })
+}
 </script>
 
 <style scoped>

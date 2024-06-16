@@ -75,7 +75,7 @@ const signOut = async () => {
           <NuxtLink
             :to="`/syncradio`"
             class="relative"
-            :class="routeN.name === 'syncradio' ? 'font-semibold text-white' : 'text-zinc-500'"
+            :class="routeN.name.startsWith('syncradio-') ? 'font-semibold text-white' : 'text-zinc-500'"
           >
             SyncRadio
             <span class="absolute -bottom-2

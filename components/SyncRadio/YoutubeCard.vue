@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center gap-3 p-3 rounded-lg bg-quaternary">
+    <div class="flex items-center gap-3 p-3 h-20 rounded-lg bg-quaternary">
         <NuxtImg
             src="https://i.ytimg.com/vi/1jYiQw8j3-M/hqdefault.jpg"
             alt="Youtube video thumbnail"

@@ -1,6 +1,5 @@
 <template>
-    <ComingSoon />
-    <!-- <div class="min-h-[calc(100dvh-160px)] p-5 flex flex-col justify-center items-center text-center gap-8 lg:max-w-xl lg:mx-auto">
+    <div class="min-h-[calc(100dvh-160px)] p-5 flex flex-col justify-center items-center text-center gap-8 sm:max-w-xl sm:mx-auto">
         <div class="space-y-2">
             <h2 class="font-bold text-4xl">SyncRadio Snippet</h2>
             <p>Listen together, no matter where you are</p>
@@ -25,7 +24,7 @@
                 Create My Party
             </button>
         </div>
-    </div> -->
+    </div>
 </template>
 
 <script setup>
@@ -41,16 +40,23 @@
     const roomIdInput = ref('')
 
     const createARoom = async () => {
+        const user = {
+            id: userDataStore.id,
+            name: userDataStore.name,
+            onlineStatus: true,
+            status: 'administrator'
+        }
         const data = { 
             createdAt: new Date().toISOString(),
+            createBy: {
+                id: userDataStore.id,
+                name: userDataStore.name
+            },
             temporary: true,
             users: [],
             playlist: []
         }
-        const user = {
-            id: '1',
-            name: 'John Doe'
-        }
+        data.users.push(user)
         const generatedId = await writeDataWithRandomId('/syncradio', data)
         if (generatedId) {
             console.log('Data written with ID:', generatedId)

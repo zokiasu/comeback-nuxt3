@@ -28,7 +28,8 @@ const displayingFooter = computed(() => {
     route.name &&
     typeof route.name === 'string' &&
     !route.name.startsWith('dashboard-') &&
-    !route.name.startsWith('settings-')
+    !route.name.startsWith('settings-') &&
+    !route.name.startsWith('syncradio-')
   )
 })
 </script>

@@ -44,7 +44,7 @@ onMounted(() => {
     const todayTimestamp = Timestamp.fromDate(today);
 
     await setDoc(userRef, {
-      uid: user.uid,
+      id: user.uid,
       email: user.email,
       name: user.displayName,
       photoURL: user.photoURL,
