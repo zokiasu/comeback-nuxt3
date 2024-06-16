@@ -11,12 +11,12 @@
                     type="text"
                     placeholder="Youtube URL"
                     :disabled="!isAdminRoom"
-                    class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+                    class="w-full disabled:opacity-50 rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
                 />
                 <button
                     type="submit"
                     :disabled="!isAdminRoom"
-                    class="w-full sm:max-w-[10rem] overflow-hidden bg-primary rounded py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-secondary"
+                    class="w-full disabled:opacity-50 sm:max-w-[10rem] overflow-hidden bg-primary rounded py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-primary/90"
                 >
                     Add URL
                 </button>
@@ -28,7 +28,10 @@
                         <SyncRadioYoutubeCard
                             v-for="(video, index) in roomPlaylist"
                             :key="'videoPlaylist_'+index"
-                            :video="video"
+                            :urlPicture="video.thumbnail"
+                            :name="video.title"
+                            :channelName="video.channelTitle"
+                            :userName="video.addedBy.name"
                         />
                     </div>
                 </div>

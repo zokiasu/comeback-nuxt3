@@ -1,5 +1,11 @@
 <script setup>
 import * as Mdl from '@kouts/vue-modal'
+import { useUserStore } from '@/stores/user'
+const { Modal } = Mdl
+
+const userStore = useUserStore()
+const userDataStore = computed(() => userStore.userDataStore)
+console.log('userDataStore', userDataStore.value)
 
 const { artistFetch, isAdmin, isLogin } = defineProps([
   'artistFetch',
@@ -7,18 +13,12 @@ const { artistFetch, isAdmin, isLogin } = defineProps([
   'isLogin',
 ])
 
-const { Modal } = Mdl
-
-const routeN = useRoute()
+const route = useRoute()
 
 const navbar = ref(null)
 const algolia = ref(null)
 const showModal = ref(false)
 const showModalAlgolia = ref(false)
-
-onMounted(async () => {
-  window.addEventListener('scroll', handleScroll)
-})
 
 function handleScroll() {
   if (window.scrollY > 50) {
@@ -40,11 +40,9 @@ function handleScroll() {
   }
 }
 
-const signOut = async () => {
-  await signOutApp()
-  const router = useRouter()
-  router.push('/')
-}
+onMounted(async () => {
+  window.addEventListener('scroll', handleScroll)
+})
 </script>
 
 <template>
@@ -59,56 +57,45 @@ const signOut = async () => {
         <NuxtLink to="/">
           <img src="~/assets/image/logo.png" alt="Comeback" class="block h-8 w-auto" />
         </NuxtLink>
+        
         <nav class="flex items-center justify-center gap-x-5 text-sm">
           <NuxtLink
             :to="`/`"
-            :class="routeN.name === 'index' ? 'font-semibold text-white' : 'text-zinc-500'"
+            :class="route.name === 'index' ? 'font-semibold text-white' : 'text-zinc-500'"
           >
             Home
           </NuxtLink>
           <NuxtLink
             :to="`/calendar`"
-            :class="routeN.name === 'calendar' ? 'font-semibold text-white' : 'text-zinc-500'"
+            :class="route.name === 'calendar' ? 'font-semibold text-white' : 'text-zinc-500'"
           >
             Calendar
           </NuxtLink>
           <NuxtLink
             :to="`/syncradio`"
             class="relative"
-            :class="routeN.name.startsWith('syncradio-') ? 'font-semibold text-white' : 'text-zinc-500'"
+            :class="route.name.startsWith('syncradio-') ? 'font-semibold text-white' : 'text-zinc-500'"
           >
             SyncRadio
             <span class="absolute -bottom-2
              -right-4 px-2 text-xs font-bold text-primary">Beta</span>
           </NuxtLink>
-          <!-- <NuxtLink
-            v-if="isLogin"
-            :to="`/profileDashboard`"
-            :class="routeN.name === 'calendar' ? 'font-semibold text-white' : 'text-zinc-500'"
-          >
-            Profile Dashboard
-          </NuxtLink> -->
-          <!-- <NuxtLink
-            :to="`/artist`"
-            :class="routeN.name === 'artist' ? 'font-semibold text-white' : 'text-zinc-500'"
-          >
-            Artists
-          </NuxtLink> -->
           <NuxtLink
             v-if="isAdmin"
             :to="`/dashboard/artist`"
-            :class="routeN.name.startsWith('dashboard-') ? 'font-semibold text-white' : 'text-zinc-500'"
+            :class="route.name.startsWith('dashboard-') ? 'font-semibold text-white' : 'text-zinc-500'"
           >
             Dashboard
           </NuxtLink>
           <NuxtLink
             v-if="isAdmin"
             :to="`/artist/create`"
-            :class="routeN.name.startsWith('artist-create') ? 'font-semibold text-white' : 'text-zinc-500'"
+            :class="route.name.startsWith('artist-create') ? 'font-semibold text-white' : 'text-zinc-500'"
           >
             Create Artist
           </NuxtLink>
         </nav>
+
         <div class="flex items-center justify-center gap-x-2 text-sm">
           <button @click="showModalAlgolia = true" class="bg-quaternary p-2 rounded hover:bg-tertiary/20">
             <IconSearch class="w-3.5 h-3.5" />
@@ -130,17 +117,11 @@ const signOut = async () => {
           <NuxtLink
             v-else
             :to="`/settings/profile`"
-            class="bg-quaternary block p-2 rounded hover:bg-tertiary/20"
+            class="flex items-center gap-2 bg-quaternary px-2 py-1 rounded hover:bg-tertiary/20"
           >
+            <p class="">Hi, {{ userDataStore.name }}</p>
             <IconSettings class="w-3.5 h-3.5" />
           </NuxtLink>
-          <!-- <button
-            v-else
-            @click="signOut"
-            class="bg-quaternary p-2 rounded"
-          >
-            <IconLogout class="w-3.5 h-3.5" />
-          </button> -->
         </div>
       </div>
     </div>

@@ -81,13 +81,13 @@ html:focus-within {
 
 /* Le fond de la track de la scrollbar (partie sur laquelle la thumb se déplace) */
 .scrollBarLight::-webkit-scrollbar-track {
-    background: transparent; /* Rend le fond de la track transparent */
+  background: transparent; /* Rend le fond de la track transparent */
 }
 
 /* La thumb de la scrollbar (la partie que l'on déplace) */
 .scrollBarLight::-webkit-scrollbar-thumb {
-    background: white; /* Couleur de la thumb */
-    border-radius: 2.5px; /* Arrondi les bords de la thumb pour un aspect plus doux */
+  background: white; /* Couleur de la thumb */
+  border-radius: 2.5px; /* Arrondi les bords de la thumb pour un aspect plus doux */
 }
 
 /* Pour Firefox */

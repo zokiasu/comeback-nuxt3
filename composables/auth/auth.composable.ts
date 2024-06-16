@@ -22,7 +22,6 @@ export const useAuth = () => {
       error.value = err
     } finally {
       isLoading.value = false
-      console.log('user', user.value)
       if(user.value != null) {
         // Rediriger l'utilisateur vers une autre page
         router.push('/');

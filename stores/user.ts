@@ -1,44 +1,44 @@
-export const useUserStore = defineStore(
-  'userStore',
-  () => {
-    const userStore = useState<any>('userStore', () => null)
-    const authStore = useState<any>('authStore', () => null)
-    const firebaseUserStore = useState<any>('firebaseUserStore', () => null)
+// store/user.ts
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
-    const isLoginStore = useState<boolean>('isLoginStore', () => false)
-    const isAdminStore = useState<boolean>('isAdminStore', () => false)
-    const userDataStore = useState<any>('userDataStore', () => null)
+export const useUserStore = defineStore('userStore', () => {
+  const userStore = ref(null)
+  const authStore = ref(null)
+  const firebaseUserStore = ref(null)
 
-    const setUserData = (user: any) => {
-      userDataStore.value = user
-    }
+  const isLoginStore = ref(false)
+  const isAdminStore = ref(false)
+  const userDataStore = ref(null)
 
-    const setFirebaseUser = (user: any) => {
-      firebaseUserStore.value = user
-    }
+  const setUserData = (user: any) => {
+    userDataStore.value = user
+  }
 
-    const setIsLogin = (isLogin: boolean) => {
-      isLoginStore.value = isLogin
-    }
+  const setFirebaseUser = (user: any) => {
+    firebaseUserStore.value = user
+  }
 
-    const setIsAdmin = (isAdmin: boolean) => {
-      isAdminStore.value = isAdmin
-    }
+  const setIsLogin = (isLogin: boolean) => {
+    isLoginStore.value = isLogin
+  }
 
-    return {
-      userStore,
-      authStore,
-      firebaseUserStore,
-      userDataStore,
-      isLoginStore,
-      isAdminStore,
-      setUserData,
-      setFirebaseUser,
-      setIsLogin,
-      setIsAdmin,
-    }
-  },
-  {
-    persist: true,
-  },
-)
+  const setIsAdmin = (isAdmin: boolean) => {
+    isAdminStore.value = isAdmin
+  }
+
+  return {
+    userStore,
+    authStore,
+    firebaseUserStore,
+    userDataStore,
+    isLoginStore,
+    isAdminStore,
+    setUserData,
+    setFirebaseUser,
+    setIsLogin,
+    setIsAdmin,
+  }
+}, {
+  persist: true,
+})
