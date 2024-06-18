@@ -40,7 +40,7 @@
                 </div>
                 <div class="bg-primary relative h-full w-full aspect-video lg:aspect-auto rounded max-h-[768px]">
                     <p v-if="errorMessage" class="font-semibold p-5 text-lg">You are probably using your YouTube account on another page or device. Consider stopping it to fully enjoy SyncRadio.</p>
-                    <p v-else class="p-5 max-w-xl mx-auto font-semibold text-center text-lg mt-[20%]">Add a YouTube URL and share the room link with your friends to enjoy a collaboratively designed or individual playlist in real-time together</p>
+                    <!-- <p v-else class="absolute inset-0 p-5 max-w-xl mx-auto font-semibold text-center text-lg mt-[20%]">Add a YouTube URL and share the room link with your friends to enjoy a collaboratively designed or individual playlist in real-time together</p> -->
                     <SyncRadioYoutubePlayer
                         ref="playerRef"
                         @videoEnded="nextVideo"
