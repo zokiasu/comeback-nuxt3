@@ -117,9 +117,9 @@ onMounted(async () => {
           <NuxtLink
             v-else
             :to="`/settings/profile`"
-            class="flex items-center gap-2 bg-quaternary px-2 py-1 rounded hover:bg-tertiary/20"
+            class="flex items-center gap-2 bg-quaternary h-full px-2 py-1 rounded hover:bg-tertiary/20"
           >
-            <p class="">Hi, {{ userDataStore.name }}</p>
+            <p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>
             <IconSettings class="w-3.5 h-3.5" />
           </NuxtLink>
         </div>

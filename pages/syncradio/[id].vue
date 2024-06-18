@@ -32,10 +32,14 @@
                             :name="video.title"
                             :channelName="video.channelTitle"
                             :userName="video.addedBy.name"
+                            :isAdmin="isAdminRoom"
+                            @deleteInPlaylist="deleteVideo(index)"
+                            @playVideo="setNewVideo(index)"
                         />
                     </div>
                 </div>
                 <div class="bg-primary relative h-full w-full aspect-video lg:aspect-auto rounded max-h-[768px]">
+                    <p v-if="errorMessage" class="font-semibold p-5 text-lg">You are probably using your YouTube account on another page or device. Consider stopping it to fully enjoy SyncRadio.</p>
                     <SyncRadioYoutubePlayer
                         ref="playerRef"
                         @videoEnded="nextVideo"
@@ -112,7 +116,7 @@
 
     const playerRef = ref(null)
 
-    const firstFetch = ref(true)
+    const errorMessage = ref(false)
     const search = ref('');
     const message = ref('');
     const roomId = ref('')
@@ -160,7 +164,7 @@
     }
 
     const updateDurationActualVideoPlay = (duration) => {
-        if (isAdminRoom.value) {
+        if (isAdminRoom.value && duration > 0) {
             // console.log('Update duration:', duration)
             actualVideoPlay.value.duration = duration
             writeData('/syncradio/' + roomId.value + '/actualVideoPlay/', actualVideoPlay.value)
@@ -188,8 +192,7 @@
                 // mettre à jour la vidéo actuelle
                 updateActualVideoPlay(video)
                 // mettre à jour la playlist
-                
-                    writeData('/syncradio/' + roomId.value + '/playlist/', roomPlaylist.value)
+                writeData('/syncradio/' + roomId.value + '/playlist/', roomPlaylist.value)
             } else {
                 // mettre à jour la vidéo actuelle
                 updateActualVideoPlay({
@@ -205,6 +208,33 @@
                 })
                 deleteData('/syncradio/' + roomId.value + '/playlist/')
             }
+        }
+    }
+
+    const setNewVideo = (indexTodelete) => {
+        console.log('setNewVideo')
+        if(isAdminRoom.value) {
+            if(roomPlaylist.value) {
+                // récupérer la vidéo la plus haute dans la playlist
+                const video = roomPlaylist.value[indexTodelete]
+                console.log('setNewVideo:', video)
+                // mettre à jour la vidéo actuelle
+                updateActualVideoPlay(video)
+
+                deleteVideo(indexTodelete)
+            }
+        } else {
+            toast.error('Sorry you are not allowed to play a video. Ask a admin or a moderator.')
+        }
+    }
+
+    const deleteVideo = (index) => {
+        console.log('Delete video:', index)
+        if(isAdminRoom.value) {
+            roomPlaylist.value.splice(index, 1)
+            writeData('/syncradio/' + roomId.value + '/playlist/', roomPlaylist.value)
+        } else {
+            toast.error('Sorry you are not allowed to delete a video. Ask a admin or a moderator.')
         }
     }
 
@@ -279,6 +309,8 @@
                 name: null
             }
         })
+        toast.error('Video is restricted or unavailable. Please try another video.');
+        errorMessage.value = true
     }
 
     watch(() => actualVideoPlay?.value?.id, (newId) => {
@@ -300,11 +332,17 @@
         if (data && userDataStore.id) {
             roomPlaylist.value = data.playlist
             currentUsers.value = data.users
+
             listenForUpdates(dataRouteRadio, (data) => {
-                console.log('listenForUpdates:', data)
+                // console.log('listenForUpdates:', data)
                 roomPlaylist.value = data.playlist
                 currentUsers.value = data.users
                 actualVideoPlay.value = data.actualVideoPlay
+                isCreator = checkIfUserIsCreator(data.users, userDataStore.id);
+                if (!isCreator) {
+                    playerRef.value.seekToTimer(actualVideoPlay.value.duration);
+                }
+                errorMessage.value = false
             })
 
             if(checkIfUserIsAlredyInRoom(data.users, userDataStore.id)) {

@@ -52,6 +52,8 @@ const onPlayerStateChange = (event) => {
         duration.value = player.value.getDuration();
     } else if (event.data === window.YT.PlayerState.ENDED) {
         emit('videoEnded');
+    } else {
+        console.log('isPlaying', isPlaying.value)
     }
 };
 
@@ -61,11 +63,13 @@ const onPlayerError = (event) => {
         case 101:
         case 150:
             errorDetected.value = true;
-            console.error("Video is restricted or unavailable.");
+            console.error("Video is restricted or unavailable.", event.data);
             if (player.value) {
                 player.value.destroy();
             }
-            toast.error('Video is restricted or unavailable. Please try another video.');
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
             emit('videoError');
             break;
     }
@@ -88,7 +92,6 @@ const updateCurrentTime = () => {
     if (player.value && typeof player.value.getPlayerState === "function") {
         if (player.value.getPlayerState() === window.YT.PlayerState.PLAYING) {
             currentTime.value = player.value.getCurrentTime();
-            // console.log('currentTime', currentTime.value);
             emit('updateDuration', currentTime.value);
         }
     }
@@ -110,6 +113,10 @@ onBeforeUnmount(() => {
 
 function updateVideoId(newId, time = 0) {
     console.log('updateVideoId', newId)
+    if (idYoutubeVideo.value === newId) {
+        return;
+    }
+
     if (!player.value) {
         console.log('no player');
         idYoutubeVideo.value = newId;
@@ -140,7 +147,13 @@ const seekToTime = () => {
   }
 };
 
-defineExpose({ updateVideoId });
+const seekToTimer = (time) => {
+  if (player.value && !isPlaying.value) {
+    player.value.seekTo(time);
+  }
+};
+
+defineExpose({ updateVideoId, seekToTimer });
 </script>
 
 <template>
