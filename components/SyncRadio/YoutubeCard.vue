@@ -25,6 +25,7 @@ const playVideo = () => {
             :src="urlPicture"
             :alt="name"
             class="rounded-lg object-cover h-full"
+            provider="static"
         />
         <div class="h-full flex flex-col justify-between text-sm truncate">
             <p class="font-semibold truncate">{{ name }}</p>

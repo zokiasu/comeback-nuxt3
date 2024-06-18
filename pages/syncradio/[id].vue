@@ -257,10 +257,10 @@
             }
         } else if(!userData) {
             toast.error('You are not connected. Please connect to access the room.')
-            // router.push('/')
+            router.push('/')
         } else {
             toast.error('Room not found. Please create a new room.')
-            // router.push('/syncradio')
+            router.push('/syncradio')
         }
     })
 
