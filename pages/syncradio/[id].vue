@@ -1,106 +1,3 @@
-<template>
-    <div class="flex flex-col md:flex-row px-8 pb-8 gap-3 min-h-[calc(100dvh-100px)]">
-        <section class="space-y-3 w-full flex flex-col">
-            <form
-                @submit.prevent="getYoutubeVideo"
-                class="flex flex-col sm:flex-row gap-3"
-            >
-                <input
-                    id="search-input"
-                    v-model="search"
-                    type="text"
-                    placeholder="Youtube URL"
-                    :disabled="!isAdminRoom"
-                    class="w-full disabled:opacity-50 rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
-                />
-                <button
-                    type="submit"
-                    :disabled="!isAdminRoom"
-                    class="w-full disabled:opacity-50 sm:max-w-[10rem] overflow-hidden bg-primary rounded py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-primary/90"
-                >
-                    Add URL
-                </button>
-            </form>
-            <div id="playlist-video" class="flex flex-col-reverse justify-end lg:justify-start lg:flex-row gap-3 flex-grow">
-                <div class="bg-quinary rounded p-3 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%]">
-                    <p class="uppercase font-semibold">Playlist</p>
-                    <div class="grid grid-cols-1 gap-2 w-full h-full max-h-[10dvh] lg:max-h-[58dvh] overflow-hidden overflow-y-auto remove-scrollbar">
-                        <SyncRadioYoutubeCard
-                            v-for="(video, index) in roomPlaylist"
-                            :key="'videoPlaylist_'+index"
-                            :urlPicture="video.thumbnail"
-                            :name="video.title"
-                            :channelName="video.channelTitle"
-                            :userName="video.addedBy.name"
-                            :isAdmin="isAdminRoom"
-                            @deleteInPlaylist="deleteVideo(index)"
-                            @playVideo="setNewVideo(index)"
-                        />
-                    </div>
-                </div>
-                <div class="bg-primary relative h-full w-full aspect-video lg:aspect-auto rounded max-h-[768px]">
-                    <p v-if="errorMessage" class="font-semibold p-5 text-lg">You are probably using your YouTube account on another page or device. Consider stopping it to fully enjoy SyncRadio.</p>
-                    <!-- <p v-else class="absolute inset-0 p-5 max-w-xl mx-auto font-semibold text-center text-lg mt-[20%]">Add a YouTube URL and share the room link with your friends to enjoy a collaboratively designed or individual playlist in real-time together</p> -->
-                    <SyncRadioYoutubePlayer
-                        ref="playerRef"
-                        @videoEnded="nextVideo"
-                        @videoError="videoError"
-                        @updateDuration="updateDurationActualVideoPlay($event)"
-                        class="z-50" 
-                    />
-                </div>
-            </div>
-            <div class="lg:flex gap-3 hidden">
-                <div class="bg-quinary rounded p-3 space-y-2 text-xs w-[25%] max-w-[25%] min-w-[25%]">
-                    <p class="uppercase font-semibold">Recommandation</p>
-                    <div class="flex flex-col gap-2">
-                        <div class="flex gap-2 rounded w-full p-2 bg-quaternary">
-                            <p>Hello World</p>
-                            <p>Hello World</p>
-                        </div>
-                        <div class="flex gap-2 rounded w-full p-2 bg-quaternary">
-                            <p>Hello World</p>
-                            <p>Hello World</p>
-                        </div>
-                        <div class="flex gap-2 rounded w-full p-2 bg-quaternary">
-                            <p>Hello World</p>
-                            <p>Hello World</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="w-full bg-quinary rounded p-3">
-                    <p>Hello World</p>
-                </div>
-            </div>
-        </section>
-        <section class="space-y-3 lg:w-[30%] flex flex-col flex-grow">
-            <div class="bg-quinary flex-grow rounded p-3 opacity-50">
-                <p class="uppercase font-semibold">Chat together</p>
-            </div>
-            <form
-                @submit.prevent="getYoutubeVideo"
-                class="flex flex-col sm:flex-row gap-3"
-            >
-                <input
-                    id="search-input"
-                    v-model="message"
-                    type="text"
-                    placeholder="Message"
-                    disabled
-                    class="w-full rounded border-none bg-quinary px-5 py-2 disabled:opacity-50 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
-                />
-                <button
-                    type="submit"
-                    disabled
-                    class="lg:w-fit px-3 bg-primary rounded disabled:opacity-50 py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-secondary"
-                >
-                    Send
-                </button>
-            </form>
-        </section>
-    </div>
-</template>
-
 <script setup>
     import { useFirebaseRealtimeDatabase } from '~/composables/useFirebaseRealtimeDatabase'
     import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
@@ -113,14 +10,17 @@
 
     const { writeData, readData, updateData, deleteData, listenForUpdates, queryData, writeDataWithRandomId } = useFirebaseRealtimeDatabase()
     const { getVideoFullDetails } = useFirebaseFunction()
-    const { userDataStore } = useUserStore()
+
+    const userStore = useUserStore()
+    const userData = computed(() => userStore.userDataStore)
+
     const config = useRuntimeConfig()
     const route = useRoute()
     const router = useRouter()
     const toast = useToast()
 
     const playerRef = ref(null)
-
+    const blurEffectLoading = ref(true)
     const errorMessage = ref(false)
     const search = ref('');
     const message = ref('');
@@ -253,8 +153,8 @@
                     duration: convertDuration(data.contentDetails.duration),
                     channelTitle: data.snippet.channelTitle,
                     addedBy: {
-                        id: userDataStore.id,
-                        name: userDataStore.name
+                        id: userData.value.id,
+                        name: userData.name
                     }
                 }
                 console.log('actualVideoPlay.value.id', actualVideoPlay?.value)
@@ -283,8 +183,8 @@
 
     const addUserToRoom = async () => {
         const currentUser = {
-            id: userDataStore.id,
-            name: userDataStore.name,
+            id: userData.value.id,
+            name: userData.name,
             onlineStatus: true,
             status: 'listener'
         }
@@ -318,15 +218,15 @@
     });
 
     onMounted(async () => {
+        console.log('AsyncRadio/id')
         roomId.value = route.params.id
         const dataRouteRadio = '/syncradio/' + roomId.value
         const data = await readData(dataRouteRadio)
         let isCreator = false
+        console.log('Data:', data, 'UserData:', userData.value)
 
-        // Autres initialisations
-        console.log('Player ref:', playerRef.value);
-        console.log('data:', data, 'userDataStore.id:', userDataStore.id)
-        if (data && userDataStore.id) {
+        if (data && userData.value.id) {
+            blurEffectLoading.value = false
             roomPlaylist.value = data.playlist
             currentUsers.value = data.users
 
@@ -334,16 +234,16 @@
                 roomPlaylist.value = data.playlist
                 currentUsers.value = data.users
                 actualVideoPlay.value = data.actualVideoPlay
-                isCreator = checkIfUserIsCreator(data.users, userDataStore.id);
+                isCreator = checkIfUserIsCreator(data.users, userData.value.id);
                 if (!isCreator) {
                     playerRef.value.seekToTimer(actualVideoPlay.value.duration);
                 }
                 errorMessage.value = false
             })
 
-            if(checkIfUserIsAlredyInRoom(data.users, userDataStore.id)) {
+            if(checkIfUserIsAlredyInRoom(data.users, userData.value.id)) {
                 console.log('User is in room')
-                isCreator = checkIfUserIsCreator(data.users, userDataStore.id);
+                isCreator = checkIfUserIsCreator(data.users, userData.value.id);
 
                 if (isCreator) {
                     console.log('User is creator')
@@ -355,10 +255,23 @@
                 console.log('User is not in room')
                 addUserToRoom()
             }
+        } else if(!userData) {
+            toast.error('You are not connected. Please connect to access the room.')
+            // router.push('/')
         } else {
             toast.error('Room not found. Please create a new room.')
-            router.push('/syncradio')
+            // router.push('/syncradio')
         }
+    })
+
+    useHead({
+        title: 'SyncRadio - Room',
+        meta: [
+            {
+                name: 'description',
+                content: 'Share a YouTube playlist with your friends in real-time'
+            },
+        ],
     })
 
 const readDataExample = async () => {
@@ -392,6 +305,112 @@ const writeDataExample = () => {
     writeData('/syncradio/rooms', { key: 'value' })
 }
 </script>
+
+<template>
+    <div class="relative flex flex-col md:flex-row px-8 pb-8 gap-3 min-h-[calc(100dvh-100px)] transition-all ease-out duration-300">
+        <section class="space-y-3 w-full flex flex-col":class="blurEffectLoading ? 'filter blur-sm' : ''">
+            <form
+                @submit.prevent="getYoutubeVideo"
+                class="flex flex-col sm:flex-row gap-3"
+            >
+                <input
+                    id="search-input"
+                    v-model="search"
+                    type="text"
+                    placeholder="Youtube URL"
+                    :disabled="!isAdminRoom"
+                    class="w-full disabled:opacity-50 rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+                />
+                <button
+                    type="submit"
+                    :disabled="!isAdminRoom"
+                    class="w-full disabled:opacity-50 sm:max-w-[10rem] overflow-hidden bg-primary rounded py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-primary/90"
+                >
+                    Add URL
+                </button>
+            </form>
+            <div id="playlist-video" class="flex flex-col-reverse justify-end lg:justify-start lg:flex-row gap-3 flex-grow">
+                <div class="bg-quinary rounded p-3 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%]">
+                    <p class="uppercase font-semibold">Playlist</p>
+                    <div class="grid grid-cols-1 gap-2 w-full h-full max-h-[10dvh] lg:max-h-[58dvh] overflow-hidden overflow-y-auto remove-scrollbar">
+                        <SyncRadioYoutubeCard
+                            v-for="(video, index) in roomPlaylist"
+                            :key="'videoPlaylist_'+index"
+                            :urlPicture="video.thumbnail"
+                            :name="video.title"
+                            :channelName="video.channelTitle"
+                            :userName="video.addedBy.name"
+                            :isAdmin="isAdminRoom"
+                            @deleteInPlaylist="deleteVideo(index)"
+                            @playVideo="setNewVideo(index)"
+                        />
+                    </div>
+                </div>
+                <div class="bg-primary relative h-full w-full aspect-video lg:aspect-auto rounded max-h-[768px]">
+                    <p v-if="errorMessage" class="font-semibold p-5 text-lg">You are probably using your YouTube account on another page or device. Consider stopping it to fully enjoy SyncRadio.</p>
+                    <!-- <p v-else class="absolute inset-0 p-5 max-w-xl mx-auto font-semibold text-center text-lg mt-[20%]">Add a YouTube URL and share the room link with your friends to enjoy a collaboratively designed or individual playlist in real-time together</p> -->
+                    <SyncRadioYoutubePlayer
+                        ref="playerRef"
+                        @videoEnded="nextVideo"
+                        @videoError="videoError"
+                        @updateDuration="updateDurationActualVideoPlay($event)"
+                        class="z-50" 
+                    />
+                </div>
+            </div>
+            <div class="lg:flex gap-3 hidden">
+                <div class="bg-quinary rounded p-3 space-y-2 text-xs w-[25%] max-w-[25%] min-w-[25%]">
+                    <p class="uppercase font-semibold">Recommandation</p>
+                    <div class="flex flex-col gap-2">
+                        <div class="flex gap-2 rounded w-full p-2 bg-quaternary">
+                            <p>Hello World</p>
+                            <p>Hello World</p>
+                        </div>
+                        <div class="flex gap-2 rounded w-full p-2 bg-quaternary">
+                            <p>Hello World</p>
+                            <p>Hello World</p>
+                        </div>
+                        <div class="flex gap-2 rounded w-full p-2 bg-quaternary">
+                            <p>Hello World</p>
+                            <p>Hello World</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full bg-quinary rounded p-3">
+                    <p>Hello World</p>
+                </div>
+            </div>
+        </section>
+        <section class="space-y-3 lg:w-[30%] flex flex-col flex-grow":class="blurEffectLoading ? 'filter blur-sm' : ''">
+            <div class="bg-quinary flex-grow rounded p-3 opacity-50">
+                <p class="uppercase font-semibold">Chat together</p>
+            </div>
+            <form
+                @submit.prevent="getYoutubeVideo"
+                class="flex flex-col sm:flex-row gap-3"
+            >
+                <input
+                    id="search-input"
+                    v-model="message"
+                    type="text"
+                    placeholder="Message"
+                    disabled
+                    class="w-full rounded border-none bg-quinary px-5 py-2 disabled:opacity-50 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+                />
+                <button
+                    type="submit"
+                    disabled
+                    class="lg:w-fit px-3 bg-primary rounded disabled:opacity-50 py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-secondary"
+                >
+                    Send
+                </button>
+            </form>
+        </section>
+        <div class="absolute inset-0 z-50 items-center justify-center" :class="blurEffectLoading ? 'flex' : 'hidden'">
+            <p class="font-bold text-xl lg:text-3xl xl:text-5xl bg-quaternary/50 p-10 rounded-lg">Please wait some verification is loaded...</p>
+        </div>
+    </div>
+</template>
 
 <style scoped>
     .auto-resizing {

@@ -1,12 +1,11 @@
 <script setup>
 import { useUserStore } from './stores/user'
-import { doc, setDoc, getDoc, getFirestore } from 'firebase/firestore'
-import { Timestamp } from 'firebase/firestore'
+import { doc, setDoc, getDoc, getFirestore, Timestamp } from 'firebase/firestore'
 
 const { $auth } = useNuxtApp()
-onMounted(() => {
-  const { setUserData, setFirebaseUser, setIsLogin, setIsAdmin } = useUserStore()
+const { setUserData, setFirebaseUser, setIsLogin, setIsAdmin } = useUserStore()
 
+onMounted(() => {
   $auth.onAuthStateChanged((userState) => {
     if (userState) {
       setFirebaseUser(userState)
@@ -28,7 +27,7 @@ onMounted(() => {
     if (userSnap.exists()) {
       const user = userSnap.data()
       setUserData(user)
-      setIsAdmin(user?.role ? true : false)
+      setIsAdmin(user.role == 'ADMIN' ? true : false)
     } else {
       console.log('No such document!')
       createDatabaseUser(user);

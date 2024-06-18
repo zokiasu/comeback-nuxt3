@@ -81,14 +81,14 @@ onMounted(async () => {
              -right-4 px-2 text-xs font-bold text-primary">Beta</span>
           </NuxtLink>
           <NuxtLink
-            v-if="isAdmin"
+            v-if="isAdmin === true"
             :to="`/dashboard/artist`"
             :class="route.name.startsWith('dashboard-') ? 'font-semibold text-white' : 'text-zinc-500'"
           >
             Dashboard
           </NuxtLink>
           <NuxtLink
-            v-if="isAdmin"
+            v-if="isAdmin === true"
             :to="`/artist/create`"
             :class="route.name.startsWith('artist-create') ? 'font-semibold text-white' : 'text-zinc-500'"
           >
