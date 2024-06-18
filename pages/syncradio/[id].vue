@@ -40,6 +40,7 @@
                 </div>
                 <div class="bg-primary relative h-full w-full aspect-video lg:aspect-auto rounded max-h-[768px]">
                     <p v-if="errorMessage" class="font-semibold p-5 text-lg">You are probably using your YouTube account on another page or device. Consider stopping it to fully enjoy SyncRadio.</p>
+                    <p v-else class="p-5 max-w-xl mx-auto font-semibold text-center text-lg mt-[20%]">Add a YouTube URL and share the room link with your friends to enjoy a collaboratively designed or individual playlist in real-time together</p>
                     <SyncRadioYoutubePlayer
                         ref="playerRef"
                         @videoEnded="nextVideo"
@@ -105,6 +106,10 @@
     import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
     import { useUserStore } from '~/stores/user'
     import { useToast } from 'vue-toastification'
+
+    definePageMeta({
+        middleware: 'auth',
+    })
 
     const { writeData, readData, updateData, deleteData, listenForUpdates, queryData, writeDataWithRandomId } = useFirebaseRealtimeDatabase()
     const { getVideoFullDetails } = useFirebaseFunction()
@@ -187,14 +192,10 @@
         console.log('Next video')
         if(isAdminRoom.value) {
             if(roomPlaylist.value) {
-                // récupérer la vidéo la plus haute dans la playlist
-                const video = roomPlaylist.value.shift()
-                // mettre à jour la vidéo actuelle
+                const video = roomPlaylist.value[0]
                 updateActualVideoPlay(video)
-                // mettre à jour la playlist
-                writeData('/syncradio/' + roomId.value + '/playlist/', roomPlaylist.value)
+                deleteVideo(0)
             } else {
-                // mettre à jour la vidéo actuelle
                 updateActualVideoPlay({
                     id: null,
                     title: null,
@@ -206,7 +207,7 @@
                         name: null
                     }
                 })
-                deleteData('/syncradio/' + roomId.value + '/playlist/')
+                // deleteData('/syncradio/' + roomId.value + '/playlist/')
             }
         }
     }
@@ -280,10 +281,6 @@
         }
     }
 
-    const writeDataExample = () => {
-        writeData('/syncradio/rooms', { key: 'value' })
-    }
-
     const addUserToRoom = async () => {
         const currentUser = {
             id: userDataStore.id,
@@ -334,7 +331,6 @@
             currentUsers.value = data.users
 
             listenForUpdates(dataRouteRadio, (data) => {
-                // console.log('listenForUpdates:', data)
                 roomPlaylist.value = data.playlist
                 currentUsers.value = data.users
                 actualVideoPlay.value = data.actualVideoPlay
@@ -390,6 +386,10 @@ const listenForUpdatesExample = () => {
     listenForUpdates('/syncradio/rooms', (data) => {
         console.log('Data updated:', data)
     })
+}
+
+const writeDataExample = () => {
+    writeData('/syncradio/rooms', { key: 'value' })
 }
 </script>
 

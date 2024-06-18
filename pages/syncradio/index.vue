@@ -11,16 +11,18 @@
                     v-model="roomIdInput"
                     type="text"
                     placeholder="Enter Room ID"
-                    class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+                    :disabled="!userDataStore"
+                    class="w-full disabled:opacity-50 rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
                 />
                 <button 
-                    @click="redirectToRoom()" 
-                    class="font-semibold text-nowrap bg-primary rounded px-2 py-1 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50"
+                    @click="redirectToRoom()"
+                    :disabled="!userDataStore"
+                    class="font-semibold disabled:opacity-50 text-nowrap bg-primary rounded px-2 py-1 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50"
                 >
                     Join Party
                 </button>
             </div>
-            <button @click="createARoom" class="font-semibold bg-primary rounded w-full py-3 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50">
+            <button @click="createARoom" :disabled="!userDataStore" class="font-semibold disabled:opacity-50 bg-primary rounded w-full py-3 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50">
                 Create My Party
             </button>
         </div>

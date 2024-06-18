@@ -29,7 +29,7 @@ const playVideo = () => {
         <div class="h-full flex flex-col justify-between text-sm truncate">
             <p class="font-semibold truncate">{{ name }}</p>
             <p class="text-xs">{{ channelName }}</p>
-            <div class="flex items-end justify-between">
+            <div class="flex items-end text-xs justify-between">
                 <div class="flex gap-1">
                     <p>Added by</p>
                     <p class="font-semibold">{{ userName }}</p>
