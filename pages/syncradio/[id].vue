@@ -34,6 +34,7 @@
         thumbnail: null,
         duration: null,
         channelTitle: null,
+        index: null,
         addedBy: {
             id: null,
             name: null
@@ -81,7 +82,7 @@
             actualVideoPlay.value = videoData
             console.log('Update actual video play:', videoData, playerRef.value)
             if(actualVideoPlay.value.id) {
-                writeData('/syncradio/' + roomId.value + '/actualVideoPlay/', videoData)
+                updateData('/syncradio/' + roomId.value + '/actualVideoPlay/', videoData)
             } else {
                 deleteData('/syncradio/' + roomId.value + '/actualVideoPlay/')
             }
@@ -91,38 +92,23 @@
     const nextVideo = () => {
         console.log('Next video')
         if(isAdminRoom.value) {
-            if(roomPlaylist.value) {
-                const video = roomPlaylist.value[0]
+            const video = roomPlaylist.value[actualVideoPlay.value.index + 1]
+            if(video) {
                 updateActualVideoPlay(video)
-                deleteVideo(0)
-            } else {
-                updateActualVideoPlay({
-                    id: null,
-                    title: null,
-                    thumbnail: null,
-                    duration: null,
-                    channelTitle: null,
-                    addedBy: {
-                        id: null,
-                        name: null
-                    }
-                })
-                // deleteData('/syncradio/' + roomId.value + '/playlist/')
             }
         }
     }
 
-    const setNewVideo = (indexTodelete) => {
+    const setNewVideo = (index) => {
         console.log('setNewVideo')
         if(isAdminRoom.value) {
             if(roomPlaylist.value) {
                 // récupérer la vidéo la plus haute dans la playlist
-                const video = roomPlaylist.value[indexTodelete]
+                const video = roomPlaylist.value[index]
                 console.log('setNewVideo:', video)
                 // mettre à jour la vidéo actuelle
                 updateActualVideoPlay(video)
-
-                deleteVideo(indexTodelete)
+                // deleteVideo(index)
             }
         } else {
             toast.error('Sorry you are not allowed to play a video. Ask a admin or a moderator.')
@@ -154,14 +140,17 @@
                     channelTitle: data.snippet.channelTitle,
                     addedBy: {
                         id: userData.value.id,
-                        name: userData.name
+                        name: userData.value.name
                     }
                 }
-                console.log('actualVideoPlay.value.id', actualVideoPlay?.value)
+                console.log('actualVideoPlay.value.id', actualVideoPlay.value)
                 if(isAdminRoom.value && (!actualVideoPlay.value || !actualVideoPlay.value.id)) {
                     // actualVideoPlay.value = videoData
+                    videoData.index = 0
                     updateActualVideoPlay(videoData)
+                    addInPlayslit(videoData)
                 } else if (isAdminRoom.value) {
+                    videoData.index = roomPlaylist.value.length
                     addInPlayslit(videoData)
                 } else {
                     actualVideoPlay.value = videoData; // Mise à jour pour les utilisateurs non administrateurs
@@ -184,7 +173,7 @@
     const addUserToRoom = async () => {
         const currentUser = {
             id: userData.value.id,
-            name: userData.name,
+            name: userData.value.name,
             onlineStatus: true,
             status: 'listener'
         }
@@ -201,6 +190,7 @@
             thumbnail: null,
             duration: null,
             channelTitle: null,
+            index: null,
             addedBy: {
                 id: null,
                 name: null
@@ -208,6 +198,19 @@
         })
         toast.error('Video is restricted or unavailable. Please try another video.');
         errorMessage.value = true
+    }
+
+    const deletePlaylist = () => {
+        if(isAdminRoom.value) {
+            roomPlaylist.value = []
+            writeData('/syncradio/' + roomId.value + '/playlist/', roomPlaylist.value)
+        } else {
+            toast.error('Sorry you are not allowed to delete the playlist. Ask a admin or a moderator.')
+        }
+    }
+
+    const isActualPlayingInYoutubeCard = (index, videoId) => {
+        return actualVideoPlay.value.id === videoId && actualVideoPlay.value.index === index
     }
 
     watch(() => actualVideoPlay?.value?.id, (newId) => {
@@ -331,8 +334,13 @@ const writeDataExample = () => {
             </form>
             <div id="playlist-video" class="flex flex-col-reverse justify-end lg:justify-start lg:flex-row gap-3 flex-grow">
                 <div class="bg-quinary rounded p-3 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%]">
-                    <p class="uppercase font-semibold">Playlist</p>
-                    <div class="grid grid-cols-1 gap-2 w-full h-full max-h-[10dvh] lg:max-h-[58dvh] overflow-hidden overflow-y-auto remove-scrollbar">
+                    <div class="w-full flex justify-between">
+                        <p class="uppercase font-semibold">Playlist</p>
+                        <button v-if='isAdminRoom' @click="deletePlaylist">
+                            <IconDelete class="w-5 h-5 cursor-pointer hover:text-primary" />
+                        </button>
+                    </div>
+                    <div class="flex flex-col gap-2 w-full h-full max-h-[10dvh] lg:max-h-[58dvh] overflow-hidden overflow-y-auto remove-scrollbar">
                         <SyncRadioYoutubeCard
                             v-for="(video, index) in roomPlaylist"
                             :key="'videoPlaylist_'+index"
@@ -341,6 +349,7 @@ const writeDataExample = () => {
                             :channelName="video.channelTitle"
                             :userName="video.addedBy.name"
                             :isAdmin="isAdminRoom"
+                            :isActualPlaying="isActualPlayingInYoutubeCard(index, video.id)"
                             @deleteInPlaylist="deleteVideo(index)"
                             @playVideo="setNewVideo(index)"
                         />
@@ -407,7 +416,7 @@ const writeDataExample = () => {
             </form>
         </section>
         <div class="absolute inset-0 z-50 items-center justify-center" :class="blurEffectLoading ? 'flex' : 'hidden'">
-            <p class="font-bold text-xl lg:text-3xl xl:text-5xl bg-quaternary/50 p-10 rounded-lg">Please wait some verification is loaded...</p>
+            <p class="font-bold text-xl lg:text-3xl bg-quaternary/50 p-10 rounded-lg">Please wait some verification is loaded...</p>
         </div>
     </div>
 </template>
