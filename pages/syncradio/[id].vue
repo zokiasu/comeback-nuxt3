@@ -8,7 +8,7 @@
         middleware: 'auth',
     })
 
-    const { writeData, readData, updateData, deleteData, listenForUpdates, queryData, writeDataWithRandomId } = useFirebaseRealtimeDatabase()
+    const { writeData, readData, updateData, deleteData, listenForUpdates } = useFirebaseRealtimeDatabase()
     const { getVideoFullDetails } = useFirebaseFunction()
 
     const userStore = useUserStore()
@@ -28,6 +28,8 @@
     const roomPlaylist = ref([])
     const currentUsers = ref([])
     const isAdminRoom = ref(false)
+    const isEveryoneCanAddSong = ref(false)
+    const permanentRoom = ref(false)
     const actualVideoPlay = ref({
         id: null,
         title: null,
@@ -73,7 +75,7 @@
         if (isAdminRoom.value && duration > 0) {
             // console.log('Update duration:', duration)
             actualVideoPlay.value.duration = duration
-            writeData('/syncradio/' + roomId.value + '/actualVideoPlay/', actualVideoPlay.value)
+            updateData('/syncradio/' + roomId.value + '/actualVideoPlay/', actualVideoPlay.value)
         }
     }
 
@@ -86,6 +88,16 @@
             } else {
                 deleteData('/syncradio/' + roomId.value + '/actualVideoPlay/')
             }
+        }
+    }
+
+    const updateSettings = (settingToUpdate, state) => {
+        if(isAdminRoom.value) {
+            const settings = {
+                isEveryoneDJ: settingToUpdate === 'isEveryoneDJ' ? state : isEveryoneCanAddSong.value,
+                isTemporary: settingToUpdate === 'isTemporary' ? state : permanentRoom.value
+            }
+            updateData('/syncradio/' + roomId.value + '/settings/', settings)
         }
     }
 
@@ -210,8 +222,11 @@
     }
 
     const isActualPlayingInYoutubeCard = (index, videoId) => {
-        return actualVideoPlay.value.id === videoId && actualVideoPlay.value.index === index
+        return actualVideoPlay?.value?.id === videoId && actualVideoPlay.value.index === index
     }
+
+    const moderators = computed(() => currentUsers.value.filter(user => user.status === 'moderator' || user.status === 'administrator'))
+    const listeners = computed(() => currentUsers.value.filter(user => user.status === 'listener'))
 
     watch(() => actualVideoPlay?.value?.id, (newId) => {
         console.log('New actualVideoPlay.id:', newId);
@@ -232,11 +247,15 @@
             blurEffectLoading.value = false
             roomPlaylist.value = data.playlist
             currentUsers.value = data.users
+            isEveryoneCanAddSong.value = data.settings.isEveryoneDJ
+            permanentRoom.value = data.settings.isTemporary
 
             listenForUpdates(dataRouteRadio, (data) => {
                 roomPlaylist.value = data.playlist
                 currentUsers.value = data.users
                 actualVideoPlay.value = data.actualVideoPlay
+                isEveryoneCanAddSong.value = data.settings.isEveryoneDJ
+                permanentRoom.value = data.settings.isTemporary
                 isCreator = checkIfUserIsCreator(data.users, userData.value.id);
                 if (!isCreator) {
                     playerRef.value.seekToTimer(actualVideoPlay.value.duration);
@@ -276,37 +295,6 @@
             },
         ],
     })
-
-const readDataExample = async () => {
-    const data = await readData('/syncradio/rooms')
-    console.log(data)
-}
-
-const updateDataExample = () => {
-    updateData('/syncradio/rooms', { key: 'newValue' })
-}
-
-const deleteDataExample = () => {
-    deleteData('/syncradio/rooms')
-}
-
-const writeDataWithRandomIdExample = async () => {
-    const data = { key: 'value', otherKey: 'otherValue' }
-    const generatedId = await writeDataWithRandomId('/example/path', data)
-    if (generatedId) {
-        console.log('Data written with ID:', generatedId)
-    }
-}
-
-const listenForUpdatesExample = () => {
-    listenForUpdates('/syncradio/rooms', (data) => {
-        console.log('Data updated:', data)
-    })
-}
-
-const writeDataExample = () => {
-    writeData('/syncradio/rooms', { key: 'value' })
-}
 </script>
 
 <template>
@@ -385,8 +373,60 @@ const writeDataExample = () => {
                         </div>
                     </div>
                 </div>
-                <div class="w-full bg-quinary rounded p-3">
-                    <p>Hello World</p>
+                <div class="w-full space-y-2">
+                    <div class="space-y-1">
+                        <p class="font-semibold">YOUR DJs</p>
+                        <SyncRadioUserLabel
+                            v-for="(user, index) in moderators"
+                            :key="'user_'+index"
+                            :userName="user.name"
+                            userPicture="https://picsum.photos/200"
+                            :userRoomGrade="user.status"
+                        />
+                    </div>
+                    <div v-if="isAdminRoom" class="space-y-1">
+                        <p class="font-semibold">SETTINGS</p>
+                        <div class="flex gap-5">
+                            <div>
+                                <p>Who’s allow to add songs?</p>
+                                <div class="flex gap-1">
+                                    <button 
+                                    @click="updateSettings('isEveryoneDJ', true)"
+                                    class="rounded py-1 px-4" 
+                                    :class="isEveryoneCanAddSong ? 'bg-quaternary hover:bg-primary':'bg-primary'"
+                                    >
+                                        Moderator
+                                    </button>
+                                    <button 
+                                    @click="updateSettings('isEveryoneDJ', false)"
+                                    class="rounded py-1 px-4" 
+                                    :class="isEveryoneCanAddSong ? 'bg-primary':'bg-quaternary hover:bg-primary'"
+                                    >
+                                        Everyone
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <p>Did you want to save this room and playlist?</p>
+                                <div class="flex gap-1">
+                                    <button 
+                                    @click="updateSettings('isTemporary', true)"
+                                    class="rounded py-1 px-4" 
+                                    :class="permanentRoom ? 'bg-primary':'bg-quaternary hover:bg-primary'"
+                                    >
+                                        Yes
+                                    </button>
+                                    <button 
+                                    @click="updateSettings('isTemporary', false)"
+                                    class="rounded py-1 px-4" 
+                                    :class="permanentRoom ? 'bg-quaternary hover:bg-primary':'bg-primary'"
+                                    >
+                                        No
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

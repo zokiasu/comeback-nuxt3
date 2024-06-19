@@ -32,7 +32,7 @@ const playVideo = () => {
         <NuxtImg
             :src="urlPicture"
             :alt="name"
-            class="rounded object-cover h-full"
+            class="rounded object-cover h-full min-h-full min-w-[20%] w-[20%]"
         />
         <div class="h-full w-full flex flex-col justify-between text-sm truncate">
             <p class="font-semibold truncate">{{ name }}</p>

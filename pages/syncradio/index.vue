@@ -25,7 +25,12 @@
                 id: userData.value.id,
                 name: userData.value.name
             },
-            temporary: true,
+            settings: {
+                isPublic: false,
+                isTemporary: false,
+                isPlaying: false,
+                isEveryoneDJ: false,
+            },
             users: [],
             playlist: []
         }
