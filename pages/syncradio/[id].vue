@@ -88,7 +88,7 @@
         if (isAdminRoom.value) {
             actualVideoPlay.value = videoData
             if(actualVideoPlay.value.id) {
-                updateData('/syncradio/' + roomId.value + '/actualVideoPlay/', videoData)
+                writeData('/syncradio/' + roomId.value + '/actualVideoPlay/', videoData)
             } else {
                 deleteData('/syncradio/' + roomId.value + '/actualVideoPlay/')
             }
@@ -217,6 +217,18 @@
         writeData('/syncradio/' + roomId.value + '/users/', currentUsers.value)
     }
 
+    const checkUserDataUpdate = async () => {
+        if(userData.value.id) {
+            const data = await readData('/syncradio/' + roomId.value)
+            let user = data.users.find(user => user.id === userData.value.id)
+            if(userData.value.name != user.name) {
+                const userIndex = data.users.findIndex(user => user.id === userData.value.id)
+                user.name = userData.value.name
+                writeData('/syncradio/' + roomId.value + '/users/' + userIndex, data.users)
+            }
+        }
+    }
+
     const videoError = () => {
         updateActualVideoPlay({
             id: null,
@@ -284,7 +296,7 @@
 
             if(checkIfUserIsAlredyInRoom(data.users, userData.value.id)) {
                 isCreator = checkIfUserIsCreator(data.users, userData.value.id);
-
+                checkUserDataUpdate()
                 if (isCreator) {
                     isAdminRoom.value = true
                 }

@@ -15,7 +15,6 @@ const hasMv = computed(() => music.value.hasMv || false)
 
 onMounted(async () => {
     music.value = await getRandomMusic()
-    console.log('music', music.value)
 })
 
 const reloadRandomMusic = async () => {
@@ -25,12 +24,16 @@ const reloadRandomMusic = async () => {
 
 const addInPlaylist = () => {
     emit('addInPlaylist', music.value.videoId)
+    reloadRandomMusic()
 }
 
 const sendMusic = () => {
     console.log('sendMusic')
 }
 
+defineExpose({
+  reloadRandomMusic
+})
 </script>
 
 <template>

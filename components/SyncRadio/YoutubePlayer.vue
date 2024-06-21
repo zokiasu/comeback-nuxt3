@@ -123,6 +123,7 @@ function updateVideoId(newId, time = 0) {
             }
         }
     } else {
+        idYoutubeVideo.value = newId;
         player.value.loadVideoById(newId);
         if (isPlaying.value) {
             player.value.playVideo();
