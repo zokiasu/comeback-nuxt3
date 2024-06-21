@@ -21,7 +21,6 @@ export const useAuth = () => {
       user.value = result.user
       if (user.value != null) {
         getDatabaseUser(user.value)
-        console.log('loginWithGoogle userDataStore', userDataStore)
       }
     } catch (err) {
       console.error(err)
@@ -47,7 +46,6 @@ export const useAuth = () => {
       setUserData(user)
       setIsAdmin(user.role == 'ADMIN' ? true : false)
     } else {
-      console.log('No such document!')
       createDatabaseUser(user);
     }
   }

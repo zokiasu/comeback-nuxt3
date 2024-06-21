@@ -52,8 +52,6 @@ const onPlayerStateChange = (event) => {
         duration.value = player.value.getDuration();
     } else if (event.data === window.YT.PlayerState.ENDED) {
         emit('videoEnded');
-    } else {
-        console.log('isPlaying', isPlaying.value)
     }
 };
 
@@ -76,7 +74,6 @@ const onPlayerError = (event) => {
 };
 
 const initYTPlayer = () => {
-    console.log('initYTPlayer')
     if (window.YT && window.YT.Player) {
         createPlayer();
     } else {
@@ -112,16 +109,13 @@ onBeforeUnmount(() => {
 });
 
 function updateVideoId(newId, time = 0) {
-    console.log('updateVideoId', newId)
     if (idYoutubeVideo.value === newId) {
         return;
     }
 
     if (!player.value) {
-        console.log('no player');
         idYoutubeVideo.value = newId;
         initYTPlayer();
-        console.log('no player end', idYoutubeVideo.value);
         if (player.value) {
             player.value.playVideo();
             if(currentTime.value > 0) {
@@ -129,7 +123,6 @@ function updateVideoId(newId, time = 0) {
             }
         }
     } else {
-        console.log('player');
         player.value.loadVideoById(newId);
         if (isPlaying.value) {
             player.value.playVideo();

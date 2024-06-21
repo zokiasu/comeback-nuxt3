@@ -37,7 +37,6 @@
         data.users.push(user)
         const generatedId = await writeDataWithRandomId('/syncradio', data)
         if (generatedId) {
-            console.log('Data written with ID:', generatedId)
             router.push('/syncradio/' + generatedId)
         }
     }

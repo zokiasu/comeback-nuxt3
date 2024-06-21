@@ -16,7 +16,6 @@ const isFetchingArtist = ref(true)
 const musicDiscover = ref([] as Music[])
 
 onMounted(async () => {
-  console.log('isLoginStore', isLoginStore)
   try {
     const fetchedArtist = await fetchArtistFullInfoById(route.params.id as any) as Artist;
     artist.value = fetchedArtist;

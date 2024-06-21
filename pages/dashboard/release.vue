@@ -62,7 +62,6 @@ const verifiedRelease = async (id) => {
     release.needToBeVerified = false
     update('releases', id, release)
       .then(() => {
-        console.log('Document successfully updated!')
         releaseFetch.value.splice(index, 1, release)
         toast.success('Release Verified')
       })

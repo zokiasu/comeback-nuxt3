@@ -27,7 +27,6 @@
       const index = artistFetch.value.indexOf(artist)
       await deletebyDoc('artists', id)
         .then(() => {
-          console.log('Document successfully deleted!')
           artistFetch.value.splice(index, 1)
           toast.success('Artist Deleted')
         })

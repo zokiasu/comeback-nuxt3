@@ -71,9 +71,14 @@
         return `${minutes}:${seconds}`;
     }
 
+    function shareRoomUrl() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url);
+        toast.success('Room link copied to clipboard.');
+    }
+
     const updateDurationActualVideoPlay = (duration) => {
         if (isAdminRoom.value && duration > 0) {
-            // console.log('Update duration:', duration)
             actualVideoPlay.value.duration = duration
             updateData('/syncradio/' + roomId.value + '/actualVideoPlay/', actualVideoPlay.value)
         }
@@ -82,7 +87,6 @@
     const updateActualVideoPlay = (videoData) => {
         if (isAdminRoom.value) {
             actualVideoPlay.value = videoData
-            console.log('Update actual video play:', videoData, playerRef.value)
             if(actualVideoPlay.value.id) {
                 updateData('/syncradio/' + roomId.value + '/actualVideoPlay/', videoData)
             } else {
@@ -102,7 +106,6 @@
     }
 
     const nextVideo = () => {
-        console.log('Next video')
         if(isAdminRoom.value) {
             const video = roomPlaylist.value[actualVideoPlay.value.index + 1]
             if(video) {
@@ -112,12 +115,10 @@
     }
 
     const setNewVideo = (index) => {
-        console.log('setNewVideo')
         if(isAdminRoom.value) {
             if(roomPlaylist.value) {
                 // récupérer la vidéo la plus haute dans la playlist
                 const video = roomPlaylist.value[index]
-                console.log('setNewVideo:', video)
                 // mettre à jour la vidéo actuelle
                 updateActualVideoPlay(video)
                 // deleteVideo(index)
@@ -128,7 +129,6 @@
     }
 
     const deleteVideo = (index) => {
-        console.log('Delete video:', index)
         if(isAdminRoom.value) {
             roomPlaylist.value.splice(index, 1)
             writeData('/syncradio/' + roomId.value + '/playlist/', roomPlaylist.value)
@@ -140,9 +140,7 @@
     const getYoutubeVideo = () => {
         const { videoId, playlistId } = extractYouTubeId(search.value);
         
-        if (playlistId) {
-            console.log('Playlist ID:', playlistId);
-        } else if (videoId) {
+        if (videoId && !playlistId) {
             getVideoFullDetails(videoId, config.public.YOUTUBE_API_KEY).then((data) => {
                 const videoData = {
                     id: data.id,
@@ -155,30 +153,56 @@
                         name: userData.value.name
                     }
                 }
-                console.log('actualVideoPlay.value.id', actualVideoPlay.value)
                 if(isAdminRoom.value && (!actualVideoPlay.value || !actualVideoPlay.value.id)) {
                     // actualVideoPlay.value = videoData
                     videoData.index = 0
                     updateActualVideoPlay(videoData)
-                    addInPlayslit(videoData)
+                    addInPlaylist(videoData)
                 } else if (isAdminRoom.value) {
                     videoData.index = roomPlaylist.value.length
-                    addInPlayslit(videoData)
+                    addInPlaylist(videoData)
                 } else {
                     actualVideoPlay.value = videoData; // Mise à jour pour les utilisateurs non administrateurs
                 }
             })
             search.value = ''; 
-        } else {
-            console.log('No valid YouTube ID found.');
         }
     }
 
-    const addInPlayslit = (data) => {
+    const addInPlaylist = (data) => {
         if(isAdminRoom.value) {
             roomPlaylist.value = roomPlaylist.value || []
             roomPlaylist.value.push(data)
             writeData('/syncradio/' + roomId.value + '/playlist/', roomPlaylist.value)
+        }
+    }
+
+    const addInPlaylistFromRecommandation = (videoId) => {
+        if(isAdminRoom.value) {
+            getVideoFullDetails(videoId, config.public.YOUTUBE_API_KEY).then((data) => {
+                const videoData = {
+                    id: data.id,
+                    title: data.snippet.title,
+                    thumbnail: data.snippet.thumbnails.default.url,
+                    duration: convertDuration(data.contentDetails.duration),
+                    channelTitle: data.snippet.channelTitle,
+                    addedBy: {
+                        id: userData.value.id,
+                        name: userData.value.name
+                    }
+                }
+                
+                if(isAdminRoom.value && (!actualVideoPlay.value || !actualVideoPlay.value.id)) {
+                    videoData.index = 0
+                    updateActualVideoPlay(videoData)
+                    addInPlaylist(videoData)
+                } else if (isAdminRoom.value) {
+                    videoData.index = roomPlaylist.value.length
+                    addInPlaylist(videoData)
+                } else {
+                    actualVideoPlay.value = videoData; // Mise à jour pour les utilisateurs non administrateurs
+                }
+            })
         }
     }
 
@@ -190,12 +214,10 @@
             status: 'listener'
         }
         currentUsers.value.push(currentUser)
-        console.log('users:', currentUsers.value)
         writeData('/syncradio/' + roomId.value + '/users/', currentUsers.value)
     }
 
     const videoError = () => {
-        console.log('Video error')
         updateActualVideoPlay({
             id: null,
             title: null,
@@ -229,19 +251,16 @@
     const listeners = computed(() => currentUsers.value.filter(user => user.status === 'listener'))
 
     watch(() => actualVideoPlay?.value?.id, (newId) => {
-        console.log('New actualVideoPlay.id:', newId);
         if (newId && playerRef.value) {
             playerRef.value.updateVideoId(newId, actualVideoPlay.value.duration);
         }
     });
 
     onMounted(async () => {
-        console.log('AsyncRadio/id')
         roomId.value = route.params.id
         const dataRouteRadio = '/syncradio/' + roomId.value
         const data = await readData(dataRouteRadio)
         let isCreator = false
-        console.log('Data:', data, 'UserData:', userData.value)
 
         if (data && userData.value.id) {
             blurEffectLoading.value = false
@@ -257,24 +276,19 @@
                 isEveryoneCanAddSong.value = data.settings.isEveryoneDJ
                 permanentRoom.value = data.settings.isTemporary
                 isCreator = checkIfUserIsCreator(data.users, userData.value.id);
-                if (!isCreator) {
+                if (!isCreator && actualVideoPlay.value && playerRef.value) {
                     playerRef.value.seekToTimer(actualVideoPlay.value.duration);
                 }
                 errorMessage.value = false
             })
 
             if(checkIfUserIsAlredyInRoom(data.users, userData.value.id)) {
-                console.log('User is in room')
                 isCreator = checkIfUserIsCreator(data.users, userData.value.id);
 
                 if (isCreator) {
-                    console.log('User is creator')
                     isAdminRoom.value = true
-                } else {
-                    console.log('User is not creator')
                 }
             } else {
-                console.log('User is not in room')
                 addUserToRoom()
             }
         } else if(!userData) {
@@ -298,11 +312,11 @@
 </script>
 
 <template>
-    <div class="relative flex flex-col md:flex-row px-8 pb-8 gap-3 min-h-[calc(100dvh-100px)] transition-all ease-out duration-300">
-        <section class="space-y-3 w-full flex flex-col":class="blurEffectLoading ? 'filter blur-sm' : ''">
+    <div class="relative flex flex-col md:flex-row px-8 pb-8 gap-3 min-h-[calc(100dvh-80px)] transition-all ease-out duration-300">
+        <section class="space-y-3 w-full flex flex-col" :class="blurEffectLoading ? 'filter blur-sm' : ''">
             <form
                 @submit.prevent="getYoutubeVideo"
-                class="flex flex-col sm:flex-row gap-3"
+                class="flex gap-3"
             >
                 <input
                     id="search-input"
@@ -315,13 +329,14 @@
                 <button
                     type="submit"
                     :disabled="!isAdminRoom"
-                    class="w-full disabled:opacity-50 sm:max-w-[10rem] overflow-hidden bg-primary rounded py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-primary/90"
+                    class="px-3 lg:w-full disabled:opacity-50 sm:max-w-[10rem] overflow-hidden bg-primary rounded py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-primary/90"
                 >
-                    Add URL
+                    <IconPlus class="w-5 h-5 lg:hidden mx-auto" />
+                    <span class="hidden lg:block">Add URL</span>
                 </button>
             </form>
             <div id="playlist-video" class="flex flex-col-reverse justify-end lg:justify-start lg:flex-row gap-3 flex-grow">
-                <div class="bg-quinary rounded p-3 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%]">
+                <div class="hidden lg:block bg-quinary rounded p-3 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%]">
                     <div class="w-full flex justify-between">
                         <p class="uppercase font-semibold">Playlist</p>
                         <button v-if='isAdminRoom' @click="deletePlaylist">
@@ -355,36 +370,61 @@
                     />
                 </div>
             </div>
-            <div class="lg:flex gap-3 hidden">
-                <div class="bg-quinary rounded p-3 space-y-2 text-xs w-[25%] max-w-[25%] min-w-[25%]">
+            <div class="flex gap-3">
+                <div class="hidden lg:block bg-quinary rounded p-3 space-y-2 text-xs w-[25%] max-w-[25%] min-w-[25%]">
                     <p class="uppercase font-semibold">Recommandation</p>
-                    <div class="flex flex-col gap-2">
-                        <div class="flex gap-2 rounded w-full p-2 bg-quaternary">
-                            <p>Hello World</p>
-                            <p>Hello World</p>
-                        </div>
-                        <div class="flex gap-2 rounded w-full p-2 bg-quaternary">
-                            <p>Hello World</p>
-                            <p>Hello World</p>
-                        </div>
-                        <div class="flex gap-2 rounded w-full p-2 bg-quaternary">
-                            <p>Hello World</p>
-                            <p>Hello World</p>
-                        </div>
+                    <div class="flex flex-col divide-y divide-tertiary/30 ">
+                        <SyncRadioRecommandationCard 
+                            :isAdminRoom="isAdminRoom" 
+                            @addInPlaylist="addInPlaylistFromRecommandation"
+                        />
+                        <SyncRadioRecommandationCard 
+                            :isAdminRoom="isAdminRoom" 
+                            @addInPlaylist="addInPlaylistFromRecommandation"
+                        />
+                        <SyncRadioRecommandationCard 
+                            :isAdminRoom="isAdminRoom" 
+                            @addInPlaylist="addInPlaylistFromRecommandation"
+                        />
                     </div>
                 </div>
                 <div class="w-full space-y-2">
-                    <div class="space-y-1">
-                        <p class="font-semibold">YOUR DJs</p>
-                        <SyncRadioUserLabel
-                            v-for="(user, index) in moderators"
-                            :key="'user_'+index"
-                            :userName="user.name"
-                            userPicture="https://picsum.photos/200"
-                            :userRoomGrade="user.status"
-                        />
+                    <div class="w-full flex flex-col lg:flex-row gap-3 justify-between">
+                        <div>
+                            <p class="font-semibold uppercase text-sm">Room Moderators</p>
+                            <div class="flex gap-3 overflow-hidden overflow-x-auto">
+                                <SyncRadioUserLabel
+                                    v-for="(user, index) in moderators"
+                                    :key="'user_'+index"
+                                    :userName="user.name"
+                                    userPicture="https://picsum.photos/200"
+                                    :userRoomGrade="user.status"
+                                />
+                            </div>
+                        </div>
+                        <div class="w-full lg:w-fit">
+                            <button
+                                @click="shareRoomUrl"
+                                class="flex items-center justify-center lg:justify-start gap-1 w-full lg:w-fit rounded p-2 lg:py-1 bg-quinary text-tertiary transition-all duration-300 ease-in-out hover:bg-tertiary/30"
+                            >
+                                <IconShare class="w-4 h-4" />
+                                Share Room
+                            </button>
+                        </div>
                     </div>
-                    <div v-if="isAdminRoom" class="space-y-1">
+                    <div class="hidden lg:block">
+                        <p class="font-semibold uppercase text-sm">Listeners</p>
+                        <div class="flex gap-3 overflow-hidden overflow-x-auto">
+                            <SyncRadioUserLabel
+                                v-for="(user, index) in listeners"
+                                :key="'user_'+index"
+                                :userName="user.name"
+                                userPicture="https://picsum.photos/200"
+                                :userRoomGrade="user.status"
+                            />
+                        </div>
+                    </div>
+                    <div v-if="isAdminRoom">
                         <p class="font-semibold">SETTINGS</p>
                         <div class="flex gap-5">
                             <div>
@@ -430,13 +470,13 @@
                 </div>
             </div>
         </section>
-        <section class="space-y-3 lg:w-[30%] flex flex-col flex-grow":class="blurEffectLoading ? 'filter blur-sm' : ''">
+        <section class="space-y-3 lg:w-[30%] flex flex-col flex-grow" :class="blurEffectLoading ? 'filter blur-sm' : ''">
             <div class="bg-quinary flex-grow rounded p-3 opacity-50">
                 <p class="uppercase font-semibold">Chat together</p>
             </div>
             <form
                 @submit.prevent="getYoutubeVideo"
-                class="flex flex-col sm:flex-row gap-3"
+                class="flex gap-3"
             >
                 <input
                     id="search-input"
@@ -446,13 +486,6 @@
                     disabled
                     class="w-full rounded border-none bg-quinary px-5 py-2 disabled:opacity-50 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
                 />
-                <button
-                    type="submit"
-                    disabled
-                    class="lg:w-fit px-3 bg-primary rounded disabled:opacity-50 py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-secondary"
-                >
-                    Send
-                </button>
             </form>
         </section>
         <div class="absolute inset-0 z-50 items-center justify-center" :class="blurEffectLoading ? 'flex' : 'hidden'">

@@ -5,7 +5,6 @@ const { Modal } = Mdl
 
 const userStore = useUserStore()
 const userDataStore = computed(() => userStore.userDataStore)
-console.log('userDataStore', userDataStore.value)
 
 const { artistFetch, isAdmin, isLogin } = defineProps([
   'artistFetch',
@@ -21,6 +20,8 @@ const showModal = ref(false)
 const showModalAlgolia = ref(false)
 
 function handleScroll() {
+  if(navbar.value === null) return
+  
   if (window.scrollY > 50) {
     navbar.value.classList.add(
       'bg-secondary',
