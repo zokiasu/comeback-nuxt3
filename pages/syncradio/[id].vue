@@ -261,6 +261,7 @@
 
     const moderators = computed(() => currentUsers.value.filter(user => user.status === 'moderator' || user.status === 'administrator'))
     const listeners = computed(() => currentUsers.value.filter(user => user.status === 'listener'))
+    const isAllowedToAddSong = computed(() => isEveryoneCanAddSong.value || isAdminRoom.value)
 
     watch(() => actualVideoPlay?.value?.id, (newId) => {
         if (newId && playerRef.value) {
@@ -335,12 +336,12 @@
                     v-model="search"
                     type="text"
                     placeholder="Youtube URL"
-                    :disabled="!isAdminRoom"
+                    :disabled="!isAllowedToAddSong"
                     class="w-full disabled:opacity-50 rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
                 />
                 <button
                     type="submit"
-                    :disabled="!isAdminRoom"
+                    :disabled="!isAllowedToAddSong"
                     class="px-3 lg:w-full disabled:opacity-50 sm:max-w-[10rem] overflow-hidden bg-primary rounded py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-primary/90"
                 >
                     <IconPlus class="w-5 h-5 lg:hidden mx-auto" />
@@ -424,7 +425,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="hidden lg:block">
+                    <div v-if="listeners.length" class="hidden lg:block">
                         <p class="font-semibold uppercase text-sm">Listeners</p>
                         <div class="flex gap-3 overflow-hidden overflow-x-auto">
                             <SyncRadioUserLabel
@@ -436,10 +437,10 @@
                             />
                         </div>
                     </div>
-                    <div v-if="isAdminRoom">
+                    <div v-if="isAdminRoom" class="space-y-1">
                         <p class="font-semibold">SETTINGS</p>
-                        <div class="flex gap-5">
-                            <div>
+                        <div class="flex gap-5 text-xs">
+                            <div class="space-y-1">
                                 <p>Who’s allow to add songs?</p>
                                 <div class="flex gap-1">
                                     <button 
@@ -458,7 +459,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div>
+                            <div class="space-y-1">
                                 <p>Did you want to save this room and playlist?</p>
                                 <div class="flex gap-1">
                                     <button 
