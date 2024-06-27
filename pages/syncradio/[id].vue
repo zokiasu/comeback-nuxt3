@@ -4,22 +4,21 @@
     import { useUserStore } from '~/stores/user'
     import { useToast } from 'vue-toastification'
 
-    definePageMeta({
-        middleware: 'auth',
-    })
-
     const { writeData, readData, updateData, deleteData, listenForUpdates } = useFirebaseRealtimeDatabase()
     const { getVideoFullDetails } = useFirebaseFunction()
 
     const userStore = useUserStore()
-    const userData = computed(() => userStore.userDataStore)
-
     const config = useRuntimeConfig()
     const route = useRoute()
     const router = useRouter()
     const toast = useToast()
 
     const playerRef = ref(null)
+    const recommandationCard1 = ref(null)
+    const recommandationCard2 = ref(null)
+    const recommandationCard3 = ref(null)
+
+    const searchOnComeback = ref(false)
     const blurEffectLoading = ref(true)
     const errorMessage = ref(false)
     const search = ref('');
@@ -259,6 +258,13 @@
         return actualVideoPlay?.value?.id === videoId && actualVideoPlay.value.index === index
     }
 
+    const reloadAllRecommandationCard = () => {
+        recommandationCard1.value.reloadRandomMusic()
+        recommandationCard2.value.reloadRandomMusic()
+        recommandationCard3.value.reloadRandomMusic()
+    }
+
+    const userData = computed(() => userStore.userDataStore)
     const moderators = computed(() => currentUsers.value.filter(user => user.status === 'moderator' || user.status === 'administrator'))
     const listeners = computed(() => currentUsers.value.filter(user => user.status === 'listener'))
     const isAllowedToAddSong = computed(() => isEveryoneCanAddSong.value || isAdminRoom.value)
@@ -275,7 +281,7 @@
         const data = await readData(dataRouteRadio)
         let isCreator = false
 
-        if (data && userData.value.id) {
+        if (data && userData.value) {
             blurEffectLoading.value = false
             roomPlaylist.value = data.playlist
             currentUsers.value = data.users
@@ -327,27 +333,48 @@
 <template>
     <div class="relative flex flex-col md:flex-row px-8 pb-8 gap-3 min-h-[calc(100dvh-80px)] transition-all ease-out duration-300">
         <section class="space-y-3 w-full flex flex-col" :class="blurEffectLoading ? 'filter blur-sm' : ''">
-            <form
-                @submit.prevent="getYoutubeVideo"
-                class="flex gap-3"
-            >
-                <input
-                    id="search-input"
-                    v-model="search"
-                    type="text"
-                    placeholder="Youtube URL"
-                    :disabled="!isAllowedToAddSong"
-                    class="w-full disabled:opacity-50 rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
-                />
-                <button
-                    type="submit"
-                    :disabled="!isAllowedToAddSong"
-                    class="px-3 lg:w-full disabled:opacity-50 sm:max-w-[10rem] overflow-hidden bg-primary rounded py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-primary/90"
+            <div class="space-y-1">
+                <!-- <div class="space-x-1">
+                    <button @click="searchOnComeback = true" class="px-3 py-1 rounded" :class="searchOnComeback ? 'bg-primary':'bg-quaternary'">Search on <span class="font-bold" :class="searchOnComeback ? 'text-tertiary ':'text-primary'">Comeback</span></button>
+                    <button @click="searchOnComeback = false" class="px-3 py-1 rounded" :class="searchOnComeback ? 'bg-quaternary':'bg-primary'">Add Youtube Video</button>
+                </div> -->
+                <form
+                    v-if="searchOnComeback"
+                    @submit.prevent="getYoutubeVideo"
+                    class="flex gap-3"
                 >
-                    <IconPlus class="w-5 h-5 lg:hidden mx-auto" />
-                    <span class="hidden lg:block">Add URL</span>
-                </button>
-            </form>
+                    <input
+                        id="search-input"
+                        v-model="search"
+                        type="text"
+                        placeholder="Search your song on Comeback"
+                        :disabled="!isAllowedToAddSong"
+                        class="w-full disabled:opacity-50 rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+                    />
+                </form>
+                <form
+                    v-else
+                    @submit.prevent="getYoutubeVideo"
+                    class="flex gap-3"
+                >
+                    <input
+                        id="search-input"
+                        v-model="search"
+                        type="text"
+                        placeholder="Youtube URL"
+                        :disabled="!isAllowedToAddSong"
+                        class="w-full disabled:opacity-50 rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+                    />
+                    <button
+                        type="submit"
+                        :disabled="!isAllowedToAddSong"
+                        class="px-3 lg:w-full disabled:opacity-50 sm:max-w-[10rem] overflow-hidden bg-primary rounded py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-primary/90"
+                    >
+                        <IconPlus class="w-5 h-5 lg:hidden mx-auto" />
+                        <span class="hidden lg:block">Add URL</span>
+                    </button>
+                </form>
+            </div>
             <div id="playlist-video" class="flex flex-col-reverse justify-end lg:justify-start lg:flex-row gap-3 flex-grow">
                 <div class="hidden lg:block bg-quinary rounded p-3 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%]">
                     <div class="w-full flex justify-between">
@@ -384,18 +411,29 @@
                 </div>
             </div>
             <div class="flex gap-3">
-                <div class="hidden lg:block bg-quinary rounded p-3 space-y-2 text-xs w-[25%] max-w-[25%] min-w-[25%]">
-                    <p class="uppercase font-semibold">Recommandation</p>
+                <div class="hidden lg:block bg-quinary rounded p-3 text-xs w-[25%] max-w-[25%] min-w-[25%]">
+                    <div class="flex justify-between items-center w-full">
+                        <p class="uppercase font-semibold">Recommandation</p>
+                        <button @click="reloadAllRecommandationCard" class="rounded p-1 transition-all ease-in-out duration-300 bg-quaternary hover:bg-primary">
+                            <IconReload class="w-4 h-4" />
+                        </button>
+                    </div>
                     <div class="flex flex-col divide-y divide-tertiary/30 ">
-                        <SyncRadioRecommandationCard 
+                        <SyncRadioRecommandationCard
+                            id="recommandation-card-1"
+                            ref="recommandationCard1"
                             :isAdminRoom="isAdminRoom" 
                             @addInPlaylist="addInPlaylistFromRecommandation"
                         />
                         <SyncRadioRecommandationCard 
+                            id="recommandation-card-2"
+                            ref="recommandationCard2"
                             :isAdminRoom="isAdminRoom" 
                             @addInPlaylist="addInPlaylistFromRecommandation"
                         />
-                        <SyncRadioRecommandationCard 
+                        <SyncRadioRecommandationCard
+                            id="recommandation-card-3"
+                            ref="recommandationCard3"
                             :isAdminRoom="isAdminRoom" 
                             @addInPlaylist="addInPlaylistFromRecommandation"
                         />
@@ -444,14 +482,14 @@
                                 <p>Who’s allow to add songs?</p>
                                 <div class="flex gap-1">
                                     <button 
-                                    @click="updateSettings('isEveryoneDJ', true)"
+                                    @click="updateSettings('isEveryoneDJ', false)"
                                     class="rounded py-1 px-4" 
                                     :class="isEveryoneCanAddSong ? 'bg-quaternary hover:bg-primary':'bg-primary'"
                                     >
                                         Moderator
                                     </button>
                                     <button 
-                                    @click="updateSettings('isEveryoneDJ', false)"
+                                    @click="updateSettings('isEveryoneDJ', true)"
                                     class="rounded py-1 px-4" 
                                     :class="isEveryoneCanAddSong ? 'bg-primary':'bg-quaternary hover:bg-primary'"
                                     >

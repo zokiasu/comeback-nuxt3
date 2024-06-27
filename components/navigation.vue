@@ -51,6 +51,7 @@ onMounted(async () => {
     class="sticky top-0 z-50 px-3 py-2 transition-all duration-500 ease-in-out xl:py-3"
   >
     <div
+      id="navbar"
       ref="navbar"
       class="animate__animated animate__fadeInDown rounded-full px-5 transition-all duration-500 ease-in-out"
     >
