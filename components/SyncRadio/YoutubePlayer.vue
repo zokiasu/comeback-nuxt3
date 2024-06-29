@@ -22,6 +22,7 @@ const createPlayer = () => {
         width: "100%",
         playerVars: {
             autoplay: 1,
+            mute: 1,
             controls: 1,
             disablekb: 1,
             enablejsapi: 1,
@@ -43,7 +44,16 @@ const createPlayer = () => {
 
 const onPlayerReady = async (event) => {
     duration.value = event.target.getDuration();
+    if (currentTime.value > 0) {
+        player.value.seekTo(currentTime.value);
+        setTimeout(() => {
+            player.value.playVideo();
+        }, 2000); // 2 secondes de délai pour le seek
+    } else {
+        player.value.playVideo();
+    }
 };
+
 
 const onPlayerStateChange = (event) => {
     isPlaying.value = event.data === window.YT.PlayerState.PLAYING;
@@ -109,15 +119,18 @@ onBeforeUnmount(() => {
 });
 
 function updateVideoId(newId, time = 0) {
+    console.log('updateVideoId', player.value, newId, time)
     if (idYoutubeVideo.value === newId) {
         return;
     }
 
     if (!player.value) {
         idYoutubeVideo.value = newId;
+        currentTime.value = time;
         initYTPlayer();
         if (player.value) {
-            player.value.playVideo();
+            console.log('currentTime', currentTime.value)
+            console.log('time', time)
             if(currentTime.value > 0) {
                 player.value.seekTo(currentTime.value);
             }

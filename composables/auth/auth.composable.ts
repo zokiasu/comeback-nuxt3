@@ -30,12 +30,13 @@ export const useAuth = () => {
       isLoading.value = false;
       if (user.value != null) {
         const redirectUrl = router.currentRoute.value.query.redirect as string | '/';
-        router.push(redirectUrl);
+        // router.push(redirectUrl);
       }
     }
   };
 
   const getDatabaseUser = async (user: any) => {
+    console.log('getDatabaseUser', user)
     try {
       const uid = user.uid;
       const db = getFirestore();
@@ -56,6 +57,7 @@ export const useAuth = () => {
   };
 
   const createDatabaseUser = async (user: any) => {
+    console.log('createDatabaseUser', user)
     try {
       const db = getFirestore();
       const userRef = doc(db, 'users', user.uid);

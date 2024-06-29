@@ -10,3 +10,5 @@ export const useIsPlayingVideo = () => useState<boolean>('isPlayingVideo', () =>
 export const useIsLogin = () => useState<boolean>('isLogin', () => false)
 //TODO: Add comment
 export const useIsAdmin = () => useState<boolean>('isAdmin', () => false)
+//TODO: Add comment
+export const useLastRoomYouTryToJoined = () => useState<boolean>('lastRoomYouTryToJoined', () => null)

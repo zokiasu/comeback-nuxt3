@@ -3,7 +3,7 @@
     import { useFirebaseRealtimeDatabase } from '~/composables/useFirebaseRealtimeDatabase'
     import { useUserStore } from '~/stores/user'
 
-    const { writeDataWithRandomId } = useFirebaseRealtimeDatabase()
+    const { queryData, writeDataWithRandomId } = useFirebaseRealtimeDatabase()
 
     const userStore = useUserStore()
     const userData = computed(() => userStore.userDataStore)
@@ -11,6 +11,7 @@
     const router = useRouter()
     const toast = useToast()
     const roomIdInput = ref('')
+    const roomList = ref([])
 
     const createARoom = async () => {
         const user = {
@@ -48,6 +49,60 @@
             toast.error('Please enter a valid Room ID')
         }
     }
+
+    const getRoomCreateByUserAlreadyConnected = async () => {
+        const path = 'syncradio'; // Définissez le chemin de la base de données selon vos besoins
+        const child = 'createBy/id';
+        const value = userData.value.id;
+
+        const data = await queryData(path, child, value);
+
+        if (data) {
+            console.log('Données récupérées :', data);
+            // use key as id
+            for (const key in data) {
+                data[key].id = key;
+            }
+            roomList.value = data;
+        }
+    }
+
+    // Fonction pour filtrer les objets par l'ID utilisateur dans users
+    const filterDataByUserIdInUsers = (data, userId) => {
+        const result = {};
+        for (const key in data) {
+            if (data[key].users && Array.isArray(data[key].users)) {
+            if (data[key].users.some(user => user.id === userId)) {
+                result[key] = data[key];
+            }
+            }
+        }
+        return result;
+    };
+
+    // Utilisation de la fonction pour récupérer les données
+    const fetchDataForUser = async () => {
+        const path = 'syncradio';
+        const child = 'users/id';
+        const value = userData.value.id;
+        
+        const data = await queryData(path, child, value);
+        if (data) {
+            const filteredData = filterDataByUserIdInUsers(data, userId);
+            console.log('Données filtrées :', filteredData);
+            return filteredData;
+        } else {
+            console.log('Aucune donnée trouvée pour cet utilisateur.');
+            return null;
+        }
+    };
+
+    onMounted(async () => {
+        if (userData.value) {
+            getRoomCreateByUserAlreadyConnected()
+            // fetchDataForUser()
+        }
+    })
 
     useHead({
         title: 'SyncRadio',
@@ -87,6 +142,11 @@
             <button @click="createARoom" :disabled="!userData" class="font-semibold disabled:opacity-50 bg-primary rounded w-full py-3 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50">
                 Create My Party
             </button>
+        </div>
+        <div class="flex gap-3 w-full">
+            <NuxtLink v-for="room in roomList" :key="room.id" :to="'/syncradio/' + room.id" class="font-semibold bg-primary rounded w-full py-3 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50">
+                {{ room.id }}
+            </NuxtLink>
         </div>
     </div>
 </template>

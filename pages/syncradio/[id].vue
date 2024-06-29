@@ -4,7 +4,7 @@
     import { useUserStore } from '~/stores/user'
     import { useToast } from 'vue-toastification'
 
-    const { writeData, readData, updateData, deleteData, listenForUpdates } = useFirebaseRealtimeDatabase()
+    const { queryData, writeData, readData, updateData, deleteData, listenForUpdates } = useFirebaseRealtimeDatabase()
     const { getVideoFullDetails } = useFirebaseFunction()
 
     const userStore = useUserStore()
@@ -76,6 +76,11 @@
         toast.success('Room link copied to clipboard.');
     }
 
+    function copyIdRoom() {
+        navigator.clipboard.writeText(roomId.value);
+        toast.success('Room ID copied to clipboard.');
+    }
+
     const updateDurationActualVideoPlay = (duration) => {
         if (isAdminRoom.value && duration > 0) {
             actualVideoPlay.value.duration = duration
@@ -105,7 +110,7 @@
     }
 
     const nextVideo = () => {
-        if(isAdminRoom.value) {
+        if(isAdminRoom.value && roomPlaylist.value) {
             const video = roomPlaylist.value[actualVideoPlay.value.index + 1]
             if(video) {
                 updateActualVideoPlay(video)
@@ -130,9 +135,26 @@
     const deleteVideo = (index) => {
         if(isAdminRoom.value) {
             roomPlaylist.value.splice(index, 1)
-            writeData('/syncradio/' + roomId.value + '/playlist/', roomPlaylist.value)
+            reIndexAllPlaylist()
+            reIndexActualPlayingVideo()
         } else {
             toast.error('Sorry you are not allowed to delete a video. Ask a admin or a moderator.')
+        }
+    }
+
+    const reIndexAllPlaylist = () => {
+        if(isAdminRoom.value) {
+            roomPlaylist.value.forEach((video, index) => {
+                video.index = index
+            })
+            writeData('/syncradio/' + roomId.value + '/playlist/', roomPlaylist.value)
+        }
+    }
+
+    const reIndexActualPlayingVideo = () => {
+        if(isAdminRoom.value) {
+            actualVideoPlay.value.index = roomPlaylist.value?.findIndex(video => video.id === actualVideoPlay.value.id) || 0
+            writeData('/syncradio/' + roomId.value + '/actualVideoPlay/', actualVideoPlay.value)
         }
     }
 
@@ -158,7 +180,15 @@
                     updateActualVideoPlay(videoData)
                     addInPlaylist(videoData)
                 } else if (isAdminRoom.value) {
-                    videoData.index = roomPlaylist.value.length
+                    if(!roomPlaylist.value.length) {
+                        videoData.index = 0
+                    } else {
+                        if(roomPlaylist.value.length) {
+                            videoData.index = roomPlaylist.value.length
+                        } else {
+                            videoData.index = 0
+                        }
+                    }
                     addInPlaylist(videoData)
                 } else {
                     actualVideoPlay.value = videoData; // Mise à jour pour les utilisateurs non administrateurs
@@ -196,7 +226,11 @@
                     updateActualVideoPlay(videoData)
                     addInPlaylist(videoData)
                 } else if (isAdminRoom.value) {
-                    videoData.index = roomPlaylist.value.length
+                    if(!roomPlaylist.value) {
+                        videoData.index = 0
+                    } else {
+                        videoData.index = roomPlaylist.value.length
+                    }
                     addInPlaylist(videoData)
                 } else {
                     actualVideoPlay.value = videoData; // Mise à jour pour les utilisateurs non administrateurs
@@ -249,6 +283,7 @@
         if(isAdminRoom.value) {
             roomPlaylist.value = []
             writeData('/syncradio/' + roomId.value + '/playlist/', roomPlaylist.value)
+            reIndexActualPlayingVideo()
         } else {
             toast.error('Sorry you are not allowed to delete the playlist. Ask a admin or a moderator.')
         }
@@ -262,6 +297,10 @@
         recommandationCard1.value.reloadRandomMusic()
         recommandationCard2.value.reloadRandomMusic()
         recommandationCard3.value.reloadRandomMusic()
+    }
+
+    const lastUpdateTime = () => {
+        updateData('/syncradio/' + roomId.value, { lastUpdate: new Date().toISOString() })
     }
 
     const userData = computed(() => userStore.userDataStore)
@@ -280,7 +319,8 @@
         const dataRouteRadio = '/syncradio/' + roomId.value
         const data = await readData(dataRouteRadio)
         let isCreator = false
-
+        console.log('data', data)
+        console.log('userData', userData.value)
         if (data && userData.value) {
             blurEffectLoading.value = false
             roomPlaylist.value = data.playlist
@@ -303,6 +343,7 @@
 
             if(checkIfUserIsAlredyInRoom(data.users, userData.value.id)) {
                 isCreator = checkIfUserIsCreator(data.users, userData.value.id);
+                console.log('isCreator', isCreator, blurEffectLoading.value)
                 checkUserDataUpdate()
                 if (isCreator) {
                     isAdminRoom.value = true
@@ -310,9 +351,10 @@
             } else {
                 addUserToRoom()
             }
-        } else if(!userData) {
+            blurEffectLoading.value = false
+        } else if(!userData.value) {
             toast.error('You are not connected. Please connect to access the room.')
-            router.push('/')
+            router.push('/syncradio')
         } else {
             toast.error('Room not found. Please create a new room.')
             router.push('/syncradio')
@@ -327,10 +369,6 @@
                 content: 'Share a YouTube playlist with your friends in real-time'
             },
         ],
-    })
-
-    definePageMeta({
-        middleware: 'auth',
     })
 </script>
 
@@ -387,7 +425,7 @@
                             <IconDelete class="w-5 h-5 cursor-pointer hover:text-primary" />
                         </button>
                     </div>
-                    <div class="flex flex-col gap-2 w-full h-full max-h-[10dvh] lg:max-h-[58dvh] overflow-hidden overflow-y-auto remove-scrollbar">
+                    <div class="flex flex-col gap-2 w-full h-full max-h-[10dvh] lg:max-h-[50dvh] overflow-hidden overflow-y-auto remove-scrollbar">
                         <SyncRadioYoutubeCard
                             v-for="(video, index) in roomPlaylist"
                             :key="'videoPlaylist_'+index"
@@ -414,7 +452,7 @@
                 </div>
             </div>
             <div class="flex gap-3">
-                <div class="hidden lg:block bg-quinary rounded p-3 text-xs w-[25%] max-w-[25%] min-w-[25%]">
+                <section id="recommandation" class="hidden lg:block bg-quinary rounded p-3 text-xs w-[25%] max-w-[25%] min-w-[25%]">
                     <div class="flex justify-between items-center w-full">
                         <p class="uppercase font-semibold">Recommandation</p>
                         <button @click="reloadAllRecommandationCard" class="rounded p-1 transition-all ease-in-out duration-300 bg-quaternary hover:bg-primary">
@@ -425,24 +463,89 @@
                         <SyncRadioRecommandationCard
                             id="recommandation-card-1"
                             ref="recommandationCard1"
-                            :isAdminRoom="isAdminRoom" 
+                            :isAdminRoom="isAllowedToAddSong" 
                             @addInPlaylist="addInPlaylistFromRecommandation"
                         />
                         <SyncRadioRecommandationCard 
                             id="recommandation-card-2"
                             ref="recommandationCard2"
-                            :isAdminRoom="isAdminRoom" 
+                            :isAdminRoom="isAllowedToAddSong" 
                             @addInPlaylist="addInPlaylistFromRecommandation"
                         />
                         <SyncRadioRecommandationCard
                             id="recommandation-card-3"
                             ref="recommandationCard3"
-                            :isAdminRoom="isAdminRoom" 
+                            :isAdminRoom="isAllowedToAddSong" 
                             @addInPlaylist="addInPlaylistFromRecommandation"
                         />
                     </div>
-                </div>
-                <div class="w-full space-y-2">
+                </section>
+                <section id="moderation" class="w-full space-y-2">
+                    <div class="flex justify-between w-full">
+                        <div v-if="isAdminRoom" class="space-y-1">
+                            <p class="font-semibold">SETTINGS</p>
+                            <div class="flex gap-5 text-xs">
+                                <div class="space-y-1">
+                                    <p>Who’s allow to add songs?</p>
+                                    <div class="flex gap-1">
+                                        <button 
+                                        @click="updateSettings('isEveryoneDJ', false)"
+                                        class="rounded py-1 px-4" 
+                                        :class="isEveryoneCanAddSong ? 'bg-quaternary hover:bg-primary':'bg-primary'"
+                                        >
+                                            Moderator
+                                        </button>
+                                        <button 
+                                        @click="updateSettings('isEveryoneDJ', true)"
+                                        class="rounded py-1 px-4" 
+                                        :class="isEveryoneCanAddSong ? 'bg-primary':'bg-quaternary hover:bg-primary'"
+                                        >
+                                            Everyone
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="space-y-1">
+                                    <p>Did you want to save this room and playlist?</p>
+                                    <div class="flex gap-1">
+                                        <button 
+                                        @click="updateSettings('isTemporary', true)"
+                                        class="rounded py-1 px-4" 
+                                        :class="permanentRoom ? 'bg-primary':'bg-quaternary hover:bg-primary'"
+                                        >
+                                            Yes
+                                        </button>
+                                        <button 
+                                        @click="updateSettings('isTemporary', false)"
+                                        class="rounded py-1 px-4" 
+                                        :class="permanentRoom ? 'bg-quaternary hover:bg-primary':'bg-primary'"
+                                        >
+                                            No
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="w-full lg:w-fit">
+                                <button
+                                    @click="copyIdRoom"
+                                    class="flex items-center justify-center lg:justify-start gap-1 w-full lg:w-fit rounded p-2 lg:py-1 bg-quinary text-tertiary transition-all duration-300 ease-in-out hover:bg-tertiary/30"
+                                >
+                                    <IconCopy class="w-4 h-4" />
+                                    Copy ID
+                                </button>
+                            </div>
+                            <div class="w-full lg:w-fit">
+                                <button
+                                    @click="shareRoomUrl"
+                                    class="flex items-center justify-center lg:justify-start gap-1 w-full lg:w-fit rounded p-2 lg:py-1 bg-quinary text-tertiary transition-all duration-300 ease-in-out hover:bg-tertiary/30"
+                                >
+                                    <IconShare class="w-4 h-4" />
+                                    Share Room 
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div>
                         <p class="font-semibold uppercase text-sm">Room Moderators</p>
                         <div class="flex gap-3 overflow-hidden overflow-x-auto">
@@ -467,7 +570,7 @@
                             />
                         </div>
                     </div>
-                </div>
+                </section>
             </div>
         </section>
         <section class="space-y-3 lg:w-[30%] flex flex-col flex-grow" :class="blurEffectLoading ? 'filter blur-sm' : ''">
