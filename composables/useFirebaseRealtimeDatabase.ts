@@ -12,8 +12,7 @@ export function useFirebaseRealtimeDatabase() {
       const snapshot = await get(dataRef)
       if (snapshot.exists()) {
         return snapshot.val()
-      } else {
-        console.log('No data available')
+      } else { 
         return null
       }
     } catch (error) {

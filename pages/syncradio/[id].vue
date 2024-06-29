@@ -328,6 +328,10 @@
             },
         ],
     })
+
+    definePageMeta({
+        middleware: 'auth',
+    })
 </script>
 
 <template>
@@ -379,7 +383,7 @@
                 <div class="hidden lg:block bg-quinary rounded p-3 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%]">
                     <div class="w-full flex justify-between">
                         <p class="uppercase font-semibold">Playlist</p>
-                        <button v-if='isAdminRoom' @click="deletePlaylist">
+                        <button v-if='isAdminRoom && roomPlaylist' @click="deletePlaylist">
                             <IconDelete class="w-5 h-5 cursor-pointer hover:text-primary" />
                         </button>
                     </div>
@@ -400,7 +404,6 @@
                 </div>
                 <div class="bg-primary relative h-full w-full aspect-video lg:aspect-auto rounded max-h-[768px]">
                     <p v-if="errorMessage" class="font-semibold p-5 text-lg">You are probably using your YouTube account on another page or device. Consider stopping it to fully enjoy SyncRadio.</p>
-                    <!-- <p v-else class="absolute inset-0 p-5 max-w-xl mx-auto font-semibold text-center text-lg mt-[20%]">Add a YouTube URL and share the room link with your friends to enjoy a collaboratively designed or individual playlist in real-time together</p> -->
                     <SyncRadioYoutubePlayer
                         ref="playerRef"
                         @videoEnded="nextVideo"
@@ -440,27 +443,16 @@
                     </div>
                 </div>
                 <div class="w-full space-y-2">
-                    <div class="w-full flex flex-col lg:flex-row gap-3 justify-between">
-                        <div>
-                            <p class="font-semibold uppercase text-sm">Room Moderators</p>
-                            <div class="flex gap-3 overflow-hidden overflow-x-auto">
-                                <SyncRadioUserLabel
-                                    v-for="(user, index) in moderators"
-                                    :key="'user_'+index"
-                                    :userName="user.name"
-                                    userPicture="https://picsum.photos/200"
-                                    :userRoomGrade="user.status"
-                                />
-                            </div>
-                        </div>
-                        <div class="w-full lg:w-fit">
-                            <button
-                                @click="shareRoomUrl"
-                                class="flex items-center justify-center lg:justify-start gap-1 w-full lg:w-fit rounded p-2 lg:py-1 bg-quinary text-tertiary transition-all duration-300 ease-in-out hover:bg-tertiary/30"
-                            >
-                                <IconShare class="w-4 h-4" />
-                                Share Room
-                            </button>
+                    <div>
+                        <p class="font-semibold uppercase text-sm">Room Moderators</p>
+                        <div class="flex gap-3 overflow-hidden overflow-x-auto">
+                            <SyncRadioUserLabel
+                                v-for="(user, index) in moderators"
+                                :key="'user_'+index"
+                                :userName="user.name"
+                                userPicture="https://picsum.photos/200"
+                                :userRoomGrade="user.status"
+                            />
                         </div>
                     </div>
                     <div v-if="listeners.length" class="hidden lg:block">
@@ -473,49 +465,6 @@
                                 userPicture="https://picsum.photos/200"
                                 :userRoomGrade="user.status"
                             />
-                        </div>
-                    </div>
-                    <div v-if="isAdminRoom" class="space-y-1">
-                        <p class="font-semibold">SETTINGS</p>
-                        <div class="flex gap-5 text-xs">
-                            <div class="space-y-1">
-                                <p>Who’s allow to add songs?</p>
-                                <div class="flex gap-1">
-                                    <button 
-                                    @click="updateSettings('isEveryoneDJ', false)"
-                                    class="rounded py-1 px-4" 
-                                    :class="isEveryoneCanAddSong ? 'bg-quaternary hover:bg-primary':'bg-primary'"
-                                    >
-                                        Moderator
-                                    </button>
-                                    <button 
-                                    @click="updateSettings('isEveryoneDJ', true)"
-                                    class="rounded py-1 px-4" 
-                                    :class="isEveryoneCanAddSong ? 'bg-primary':'bg-quaternary hover:bg-primary'"
-                                    >
-                                        Everyone
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="space-y-1">
-                                <p>Did you want to save this room and playlist?</p>
-                                <div class="flex gap-1">
-                                    <button 
-                                    @click="updateSettings('isTemporary', true)"
-                                    class="rounded py-1 px-4" 
-                                    :class="permanentRoom ? 'bg-primary':'bg-quaternary hover:bg-primary'"
-                                    >
-                                        Yes
-                                    </button>
-                                    <button 
-                                    @click="updateSettings('isTemporary', false)"
-                                    class="rounded py-1 px-4" 
-                                    :class="permanentRoom ? 'bg-quaternary hover:bg-primary':'bg-primary'"
-                                    >
-                                        No
-                                    </button>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
