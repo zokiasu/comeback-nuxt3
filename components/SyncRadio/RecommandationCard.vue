@@ -28,7 +28,7 @@ const addInPlaylist = () => {
 }
 
 const sendMusic = () => {
-    console.log('sendMusic')
+    //console.log('sendMusic')
 }
 
 defineExpose({

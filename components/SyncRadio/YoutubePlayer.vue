@@ -74,6 +74,7 @@ const onPlayerError = (event) => {
             console.error("Video is restricted or unavailable.", event.data);
             if (player.value) {
                 player.value.destroy();
+                player.value = null;
             }
             if (intervalId) {
                 clearInterval(intervalId);
@@ -119,8 +120,9 @@ onBeforeUnmount(() => {
 });
 
 function updateVideoId(newId, time = 0) {
-    console.log('updateVideoId', player.value, newId, time)
+    //console.log('updateVideoId', player.value, newId, time)
     if (idYoutubeVideo.value === newId) {
+        //console.log('idYoutubeVideo.value === newId', idYoutubeVideo.value, newId)
         return;
     }
 
@@ -129,8 +131,8 @@ function updateVideoId(newId, time = 0) {
         currentTime.value = time;
         initYTPlayer();
         if (player.value) {
-            console.log('currentTime', currentTime.value)
-            console.log('time', time)
+            //console.log('currentTime', currentTime.value)
+            //console.log('time', time)
             if(currentTime.value > 0) {
                 player.value.seekTo(currentTime.value);
             }

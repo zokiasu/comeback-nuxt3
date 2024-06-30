@@ -14,6 +14,7 @@
     const toast = useToast()
 
     const playerRef = ref(null)
+    const messagePanel = ref(null)
     const recommandationCard1 = ref(null)
     const recommandationCard2 = ref(null)
     const recommandationCard3 = ref(null)
@@ -352,6 +353,7 @@
                 addUserToRoom()
             }
             blurEffectLoading.value = false
+            messagePanel.value.getMessages(roomId.value)
         } else if(!userData.value) {
             toast.error('You are not connected. Please connect to access the room.')
             router.push('/syncradio')
@@ -373,7 +375,7 @@
 </script>
 
 <template>
-    <div class="relative flex flex-col md:flex-row px-8 pb-8 gap-3 min-h-[calc(100dvh-80px)] transition-all ease-out duration-300">
+    <div class="relative flex flex-col md:flex-row px-8 pb-8 gap-3 min-h-[calc(100dvh-80px)] max-h-[calc(100dvh-80px)] transition-all ease-out duration-300">
         <section class="space-y-3 w-full flex flex-col" :class="blurEffectLoading ? 'filter blur-sm' : ''">
             <div class="space-y-1">
                 <!-- <div class="space-x-1">
@@ -525,7 +527,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="flex gap-3">
+                        <div class="flex gap-2 text-xs">
                             <div class="w-full lg:w-fit">
                                 <button
                                     @click="copyIdRoom"
@@ -573,24 +575,14 @@
                 </section>
             </div>
         </section>
-        <section class="space-y-3 lg:w-[30%] flex flex-col flex-grow" :class="blurEffectLoading ? 'filter blur-sm' : ''">
-            <div class="bg-quinary flex-grow rounded p-3 opacity-50">
-                <p class="uppercase font-semibold">Chat together</p>
-            </div>
-            <form
-                @submit.prevent="getYoutubeVideo"
-                class="flex gap-3"
-            >
-                <input
-                    id="search-input"
-                    v-model="message"
-                    type="text"
-                    placeholder="Message"
-                    disabled
-                    class="w-full rounded border-none bg-quinary px-5 py-2 disabled:opacity-50 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
-                />
-            </form>
-        </section>
+        <SyncRadioMessagePanel 
+            ref="messagePanel"
+            :idRoom="route.params.id"
+            :idActualUser="userData.id"
+            :nameActualUser="userData.name"
+            :isModerator="isAdminRoom"
+            :class="blurEffectLoading ? 'filter blur-sm' : ''"
+        />
         <div class="absolute inset-0 z-50 items-center justify-center" :class="blurEffectLoading ? 'flex' : 'hidden'">
             <p class="font-bold text-xl lg:text-3xl bg-quaternary/50 p-10 rounded-lg">Please wait some verification is loaded...</p>
         </div>
