@@ -58,7 +58,6 @@
         const data = await queryData(path, child, value);
 
         if (data) {
-            console.log('Données récupérées :', data);
             // use key as id
             for (const key in data) {
                 data[key].id = key;
@@ -89,10 +88,8 @@
         const data = await queryData(path, child, value);
         if (data) {
             const filteredData = filterDataByUserIdInUsers(data, userId);
-            console.log('Données filtrées :', filteredData);
             return filteredData;
         } else {
-            console.log('Aucune donnée trouvée pour cet utilisateur.');
             return null;
         }
     };

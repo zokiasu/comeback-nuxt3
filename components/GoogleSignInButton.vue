@@ -5,7 +5,7 @@
 
   const handleLoginWithGoogleClick = () => {
     auth.value.loginWithGoogle().then(() => {
-      console.log('Logged in with Google')
+      // console.log('Logged in with Google')
     })
   }
 </script>

@@ -53,7 +53,6 @@ const sendUpdateArtist = async () => {
 
   // if artistToEdit doesn't have any field to update then return
   if (Object.keys(updatedFields).length == 0) {
-    console.log('No field to update')
     toast.error('No field to update')
     return;
   }
@@ -76,7 +75,6 @@ const sendUpdateArtist = async () => {
     //addd pending artist
     add('updateArtistPending', updatedFields)
       .then(() => {
-        console.log('Document successfully written!')
         isUploadingEdit.value = false
         toast.success('Artist Update')
         const router = useRouter()

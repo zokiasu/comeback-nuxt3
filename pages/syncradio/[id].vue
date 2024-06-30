@@ -326,8 +326,7 @@
         const dataRouteRadio = '/syncradio/' + roomId.value
         const data = await readData(dataRouteRadio)
         let isCreator = false
-        console.log('data', data)
-        console.log('userData', userData.value)
+        
         if (data && userData.value) {
             blurEffectLoading.value = false
             roomPlaylist.value = data.playlist
@@ -350,7 +349,7 @@
 
             if(checkIfUserIsAlredyInRoom(data.users, userData.value.id)) {
                 isCreator = checkIfUserIsCreator(data.users, userData.value.id);
-                console.log('isCreator', isCreator, blurEffectLoading.value)
+                
                 checkUserDataUpdate()
                 if (isCreator) {
                     isAdminRoom.value = true

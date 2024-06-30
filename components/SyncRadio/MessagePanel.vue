@@ -14,8 +14,6 @@
     const messageListContent = ref<HTMLElement | null>(null)
 
     const sendMessage = () => {
-        console.log('sendMessage', message.value)
-        console.log('sendMessage idRoom', idRoom)
         if (message.value.trim() === '') return
 
         const newMessage = {
@@ -34,13 +32,10 @@
     }
 
     const getMessages = async (idRoomValue) => {
-        console.log('getMessages')
         const path = '/messages/syncradio/' + idRoomValue + '/messageList/'
         const data = await readData(path)
-        console.log('getMessages data', data, idRoomValue)
         if (data) {
             messageList.value = (data ? data : [])
-            console.log('Message Panel messageList', messageList.value)
         }
 
         listenForUpdates('/messages/syncradio/' + idRoomValue + '/messageList/', (data: any) => {
