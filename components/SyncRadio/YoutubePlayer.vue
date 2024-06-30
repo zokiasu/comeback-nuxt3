@@ -150,6 +150,15 @@ function updateVideoId(newId, time = 0) {
     }
 }
 
+function reloadPlayer () {
+    if (player.value) {
+        player.value.destroy();
+        player.value = null;
+    }
+    currentTime.value = 0;
+    initYTPlayer();
+}
+
 const seekToTime = () => {
   if (player.value) {
     player.value.seekTo(currentTime.value);
@@ -162,7 +171,7 @@ const seekToTimer = (time) => {
   }
 };
 
-defineExpose({ updateVideoId, seekToTimer });
+defineExpose({ updateVideoId, seekToTimer, reloadPlayer });
 </script>
 
 <template>

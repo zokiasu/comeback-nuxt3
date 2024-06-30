@@ -304,6 +304,12 @@
         updateData('/syncradio/' + roomId.value, { lastUpdate: new Date().toISOString() })
     }
 
+    const resetPlayer = () => {
+        if(playerRef.value) {
+            playerRef.value.reloadPlayer()
+        }
+    }
+
     const userData = computed(() => userStore.userDataStore)
     const moderators = computed(() => currentUsers.value.filter(user => user.status === 'moderator' || user.status === 'administrator'))
     const listeners = computed(() => currentUsers.value.filter(user => user.status === 'listener'))
@@ -444,6 +450,13 @@
                 </div>
                 <div class="bg-primary relative h-full w-full aspect-video lg:aspect-auto rounded max-h-[768px]">
                     <p v-if="errorMessage" class="font-semibold p-5 text-lg">You are probably using your YouTube account on another page or device. Consider stopping it to fully enjoy SyncRadio.</p>
+                    <button
+                        v-if="errorMessage"
+                        @click="resetPlayer"
+                        class="p-2 bg-quaternary hover:bg-primary rounded-lg transition-all ease-in-out duration-300"
+                    >
+                        Reload Player
+                    </button>
                     <SyncRadioYoutubePlayer
                         ref="playerRef"
                         @videoEnded="nextVideo"
@@ -483,7 +496,7 @@
                     </div>
                 </section>
                 <section id="moderation" class="w-full space-y-2">
-                    <div class="flex justify-between w-full">
+                    <div class="flex flex-col lg:flex-row gap-3 justify-between w-full">
                         <div v-if="isAdminRoom" class="space-y-1">
                             <p class="font-semibold">SETTINGS</p>
                             <div class="flex gap-5 text-xs">
