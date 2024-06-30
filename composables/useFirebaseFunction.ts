@@ -74,6 +74,32 @@ export function useFirebaseFunction() {
       return null
     }
   }
+
+  const getAllVideosFromPlaylist = async (playlistId: string, apiKey: string) => {
+    const baseUrl = `https://youtube.googleapis.com/youtube/v3/playlistItems`;
+    let allItems: any[] = [];
+    let pageToken = '';
+  
+    try {
+      do {
+        const url = `${baseUrl}?part=snippet,contentDetails,id,status&playlistId=${playlistId}&key=${apiKey}&maxResults=50&pageToken=${pageToken}`;
+        const response = await fetch(url);
+        const data = await response.json();
+  
+        if (data.items) {
+          allItems = allItems.concat(data.items);
+        }
+  
+        pageToken = data.nextPageToken;
+      } while (pageToken);
+  
+      return allItems;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des vidéos de la playlist:', error);
+      return null;
+    }
+  };
+
   // Checks if a YouTube video can be embedded.
   const canVideoBeEmbedded = async (videoId: string, apiKey: string) => {
     const videoDetails = await getVideoDetails(videoId, apiKey)
@@ -485,6 +511,7 @@ export function useFirebaseFunction() {
     getArtistByIdLight,
     deleteRelease,
     getVideoDetails,
-    getVideoFullDetails
+    getVideoFullDetails,
+    getAllVideosFromPlaylist
   }
 }

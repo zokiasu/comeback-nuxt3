@@ -5,7 +5,7 @@
     import { useToast } from 'vue-toastification'
 
     const { queryData, writeData, readData, updateData, deleteData, listenForUpdates } = useFirebaseRealtimeDatabase()
-    const { getVideoFullDetails } = useFirebaseFunction()
+    const { getVideoFullDetails, getAllVideosFromPlaylist } = useFirebaseFunction()
 
     const userStore = useUserStore()
     const config = useRuntimeConfig()
@@ -159,44 +159,54 @@
         }
     }
 
+    const getDetailsVideoFromId = (videoId) => {
+        getVideoFullDetails(videoId, config.public.YOUTUBE_API_KEY).then((data) => {
+            const videoData = {
+                id: data.id,
+                title: data.snippet.title,
+                thumbnail: data.snippet.thumbnails.default.url,
+                duration: convertDuration(data.contentDetails.duration),
+                channelTitle: data.snippet.channelTitle,
+                addedBy: {
+                    id: userData.value.id,
+                    name: userData.value.name
+                }
+            }
+            if(isAdminRoom.value && (!actualVideoPlay.value || !actualVideoPlay.value.id)) {
+                // actualVideoPlay.value = videoData
+                videoData.index = 0
+                updateActualVideoPlay(videoData)
+                addInPlaylist(videoData)
+            } else if (isAdminRoom.value) {
+                if(!roomPlaylist.value?.length) {
+                    videoData.index = 0
+                } else {
+                    if(roomPlaylist.value.length) {
+                        videoData.index = roomPlaylist.value.length
+                    } else {
+                        videoData.index = 0
+                    }
+                }
+                addInPlaylist(videoData)
+            } else {
+                actualVideoPlay.value = videoData; // Mise à jour pour les utilisateurs non administrateurs
+            }
+        })
+    }
+
     const getYoutubeVideo = () => {
         const { videoId, playlistId } = extractYouTubeId(search.value);
-        
+
         if (videoId && !playlistId) {
-            getVideoFullDetails(videoId, config.public.YOUTUBE_API_KEY).then((data) => {
-                const videoData = {
-                    id: data.id,
-                    title: data.snippet.title,
-                    thumbnail: data.snippet.thumbnails.default.url,
-                    duration: convertDuration(data.contentDetails.duration),
-                    channelTitle: data.snippet.channelTitle,
-                    addedBy: {
-                        id: userData.value.id,
-                        name: userData.value.name
-                    }
-                }
-                if(isAdminRoom.value && (!actualVideoPlay.value || !actualVideoPlay.value.id)) {
-                    // actualVideoPlay.value = videoData
-                    videoData.index = 0
-                    updateActualVideoPlay(videoData)
-                    addInPlaylist(videoData)
-                } else if (isAdminRoom.value) {
-                    if(!roomPlaylist.value.length) {
-                        videoData.index = 0
-                    } else {
-                        if(roomPlaylist.value.length) {
-                            videoData.index = roomPlaylist.value.length
-                        } else {
-                            videoData.index = 0
-                        }
-                    }
-                    addInPlaylist(videoData)
-                } else {
-                    actualVideoPlay.value = videoData; // Mise à jour pour les utilisateurs non administrateurs
-                }
+            getDetailsVideoFromId(videoId)
+        } else if(playlistId) {
+            getAllVideosFromPlaylist(playlistId, config.public.YOUTUBE_API_KEY).then((data) => {
+                data.forEach(async (video) => {
+                    await getDetailsVideoFromId(video.snippet.resourceId.videoId);
+                })
             })
-            search.value = ''; 
         }
+        search.value = '';
     }
 
     const addInPlaylist = (data) => {
