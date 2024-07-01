@@ -45,12 +45,12 @@ const createPlayer = () => {
 const onPlayerReady = async (event) => {
     duration.value = event.target.getDuration();
     if (currentTime.value > 0) {
-        player.value.seekTo(currentTime.value);
+        player.value?.seekTo(currentTime.value);
         setTimeout(() => {
-            player.value.playVideo();
+            player.value?.playVideo();
         }, 2000); // 2 secondes de délai pour le seek
     } else {
-        player.value.playVideo();
+        player.value?.playVideo();
     }
 };
 
@@ -59,7 +59,7 @@ const onPlayerStateChange = (event) => {
     isPlaying.value = event.data === window.YT.PlayerState.PLAYING;
     if (isPlaying.value) {
         errorDetected.value = false;
-        duration.value = player.value.getDuration();
+        duration.value = player.value?.getDuration();
     } else if (event.data === window.YT.PlayerState.ENDED) {
         emit('videoEnded');
     }
@@ -73,7 +73,7 @@ const onPlayerError = (event) => {
             errorDetected.value = true;
             console.error("Video is restricted or unavailable.", event.data);
             if (player.value) {
-                player.value.destroy();
+                player.value?.destroy();
                 player.value = null;
             }
             if (intervalId) {
@@ -97,9 +97,9 @@ const initYTPlayer = () => {
 };
 
 const updateCurrentTime = () => {
-    if (player.value && typeof player.value.getPlayerState === "function") {
-        if (player.value.getPlayerState() === window.YT.PlayerState.PLAYING) {
-            currentTime.value = player.value.getCurrentTime();
+    if (player.value && typeof player.value?.getPlayerState === "function") {
+        if (player.value?.getPlayerState() === window.YT.PlayerState.PLAYING) {
+            currentTime.value = player.value?.getCurrentTime();
             emit('updateDuration', currentTime.value);
         }
     }
@@ -115,7 +115,7 @@ onBeforeUnmount(() => {
     }
 
     if (player.value) {
-        player.value.destroy();
+        player.value?.destroy();
     }
 });
 
@@ -134,14 +134,14 @@ function updateVideoId(newId, time = 0) {
             //console.log('currentTime', currentTime.value)
             //console.log('time', time)
             if(currentTime.value > 0) {
-                player.value.seekTo(currentTime.value);
+                player.value?.seekTo(currentTime.value);
             }
         }
     } else {
         idYoutubeVideo.value = newId;
-        player.value.loadVideoById(newId);
+        player.value?.loadVideoById(newId);
         if (isPlaying.value) {
-            player.value.playVideo();
+            player.value?.playVideo();
         }
     }
 
@@ -152,7 +152,7 @@ function updateVideoId(newId, time = 0) {
 
 function reloadPlayer () {
     if (player.value) {
-        player.value.destroy();
+        player.value?.destroy();
         player.value = null;
     }
     currentTime.value = 0;
@@ -161,13 +161,13 @@ function reloadPlayer () {
 
 const seekToTime = () => {
   if (player.value) {
-    player.value.seekTo(currentTime.value);
+    player.value?.seekTo(currentTime.value);
   }
 };
 
 const seekToTimer = (time) => {
   if (player.value && !isPlaying.value) {
-    player.value.seekTo(time);
+    player.value?.seekTo(time);
   }
 };
 

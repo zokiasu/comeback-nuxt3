@@ -332,6 +332,7 @@
     });
 
     onMounted(async () => {
+        console.log('params id: ', route.params.id)
         roomId.value = route.params.id
         const dataRouteRadio = '/syncradio/' + roomId.value
         const data = await readData(dataRouteRadio)
@@ -597,7 +598,8 @@
                 </section>
             </div>
         </section>
-        <SyncRadioMessagePanel 
+        <SyncRadioMessagePanel
+            v-if="userData"
             ref="messagePanel"
             :idRoom="route.params.id"
             :idActualUser="userData.id"
