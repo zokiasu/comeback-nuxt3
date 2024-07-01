@@ -42,13 +42,13 @@ const displayingFooter = computed(() => {
       :isAdmin="isAdminStore"
       :isLogin="isLoginStore"
     />
-    <div class="inset-x-0 z-50 pb-4 pt-5 md:hidden">
+    <div class="inset-x-0 z-50 py-3 md:hidden">
       <img
         src="~/assets/image/logo.png"
         alt="Comeback"
         quality="80"
         loading="lazy"
-        class="mx-auto block h-9 w-auto"
+        class="mx-auto block h-8 w-auto"
       />
     </div>
     <main>

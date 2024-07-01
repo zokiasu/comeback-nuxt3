@@ -391,7 +391,7 @@
 </script>
 
 <template>
-    <div class="relative flex flex-col md:flex-row px-8 pb-8 gap-3 min-h-[calc(100dvh-80px)] max-h-[calc(100dvh-80px)] transition-all ease-out duration-300">
+    <div class="relative flex flex-col md:flex-row px-4 lg:px-8 pb-8 gap-3 min-h-[calc(100dvh-80px)] max-h-[calc(100dvh-80px)] transition-all ease-out duration-300">
         <section class="space-y-3 w-full flex flex-col" :class="blurEffectLoading ? 'filter blur-sm' : ''">
             <div class="space-y-1">
                 <!-- <div class="space-x-1">

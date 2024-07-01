@@ -62,7 +62,7 @@
 
 <template>
     <section class="space-y-3 lg:w-[23%] lg:max-w-[23%] flex flex-col flex-grow">
-        <div class="bg-quinary lg:flex-grow rounded pb-4 h-[15%] lg:h-[90%] flex flex-col">
+        <div class="bg-quinary flex-grow rounded pb-4 lg:h-[90%] flex flex-col">
             <p class="uppercase font-semibold p-3">Chat together</p>
             <div ref="messageListContent" v-if="messageList.length" class="flex flex-col gap-2 px-2 w-full h-52 lg:h-full overflow-hidden overflow-y-auto scrollBarLight">
                 <SyncRadioMessageCard
