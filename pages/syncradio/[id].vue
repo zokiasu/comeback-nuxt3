@@ -373,7 +373,7 @@
             messagePanel.value.getMessages(roomId.value)
         } else if(!userData.value) {
             toast.error('You are not connected. Please connect to access the room.')
-            router.push('/syncradio')
+            router.push('/authentification')
         } else {
             toast.error('Room not found. Please create a new room.')
             router.push('/syncradio')
