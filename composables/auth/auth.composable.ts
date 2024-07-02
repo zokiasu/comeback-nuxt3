@@ -7,6 +7,7 @@ export const useAuth = () => {
   const isLoading = ref(false);
   const error = ref(null);
   const router = useRouter();
+  const route = useRoute();
 
   const { $auth: auth } = useNuxtApp();
   const { setUserData, setIsAdmin, userDataStore } = useUserStore();
@@ -22,15 +23,13 @@ export const useAuth = () => {
       if (user.value != null) {
         await getDatabaseUser(user.value);
       }
-      console.log('userDataStore', userDataStore);
     } catch (err) {
       console.error(err);
       error.value = err;
     } finally {
       isLoading.value = false;
       if (user.value != null) {
-        const redirectUrl = router.currentRoute.value.query.redirect as string | '/';
-        router.push(redirectUrl);
+        router.push('/');
       }
     }
   };
