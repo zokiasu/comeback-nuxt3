@@ -7,6 +7,7 @@
 
     const userStore = useUserStore()
     const userData = computed(() => userStore.userDataStore)
+    const lastRoomYouTryToJoined = useLastRoomYouTryToJoined()
     
     const router = useRouter()
     const toast = useToast()
@@ -98,6 +99,9 @@
         if (userData.value) {
             getRoomCreateByUserAlreadyConnected()
             // fetchDataForUser()
+            if(lastRoomYouTryToJoined.value) {
+                roomIdInput.value = lastRoomYouTryToJoined.value
+            }
         }
     })
 

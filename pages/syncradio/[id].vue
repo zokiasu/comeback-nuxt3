@@ -12,6 +12,7 @@
     const route = useRoute()
     const router = useRouter()
     const toast = useToast()
+    const lastRoomYouTryToJoined = useLastRoomYouTryToJoined()
 
     const playerRef = ref(null)
     const messagePanel = ref(null)
@@ -332,8 +333,8 @@
     });
 
     onMounted(async () => {
-        console.log('params id: ', route.params.id)
         roomId.value = route.params.id
+        lastRoomYouTryToJoined.value = roomId.value
         const dataRouteRadio = '/syncradio/' + roomId.value
         const data = await readData(dataRouteRadio)
         let isCreator = false
