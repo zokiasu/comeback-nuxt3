@@ -30,7 +30,7 @@ export const useAuth = () => {
       isLoading.value = false;
       if (user.value != null) {
         const redirectUrl = router.currentRoute.value.query.redirect as string | '/';
-        // router.push(redirectUrl);
+        router.push(redirectUrl);
       }
     }
   };
