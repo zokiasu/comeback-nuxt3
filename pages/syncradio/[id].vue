@@ -275,18 +275,18 @@
     }
 
     const videoError = () => {
-        updateActualVideoPlay({
-            id: null,
-            title: null,
-            thumbnail: null,
-            duration: null,
-            channelTitle: null,
-            index: null,
-            addedBy: {
-                id: null,
-                name: null
-            }
-        })
+        // updateActualVideoPlay({
+        //     id: null,
+        //     title: null,
+        //     thumbnail: null,
+        //     duration: null,
+        //     channelTitle: null,
+        //     index: null,
+        //     addedBy: {
+        //         id: null,
+        //         name: null
+        //     }
+        // })
         toast.error('Video is restricted or unavailable. Please try another video.');
         errorMessage.value = true
     }
@@ -317,6 +317,7 @@
 
     const resetPlayer = () => {
         if(playerRef.value) {
+            errorMessage.value = false
             playerRef.value.reloadPlayer()
         }
     }
@@ -459,7 +460,7 @@
                         />
                     </div>
                 </div>
-                <div class="bg-primary relative h-full w-full aspect-video lg:aspect-auto rounded max-h-[768px]">
+                <div class="bg-primary relative h-full w-full flex flex-col justify-center items-center aspect-video lg:aspect-auto rounded max-h-[768px]">
                     <p v-if="errorMessage" class="font-semibold p-5 text-lg">You are probably using your YouTube account on another page or device. Consider stopping it to fully enjoy SyncRadio.</p>
                     <button
                         v-if="errorMessage"
