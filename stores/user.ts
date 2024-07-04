@@ -1,6 +1,7 @@
 // store/user.ts
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { doc, getDoc, getFirestore, Timestamp, setDoc } from 'firebase/firestore'
 
 export const useUserStore = defineStore('userStore', () => {
 
@@ -34,12 +35,24 @@ export const useUserStore = defineStore('userStore', () => {
     return new Promise<void>((resolve) => {
         const unsubscribe = $auth.onAuthStateChanged((user: any) => {
             if (user) {
-              userDataStore.value = user;
+              getDatabaseUser(user)
             }
             unsubscribe();
             resolve();
         });
     });
+  }
+
+  const getDatabaseUser = async (user: any) => {
+    const uid = user.uid
+    const db = getFirestore()
+    const userRef = doc(db, 'users', uid)
+    const userSnap = await getDoc(userRef)
+    if (userSnap.exists()) {
+      const userData = userSnap.data()
+      setUserData(userData)
+      setIsAdmin(userData.role === 'ADMIN')
+    }
   }
 
 
