@@ -420,6 +420,7 @@
                     <button @click="searchOnComeback = true" class="px-3 py-1 rounded" :class="searchOnComeback ? 'bg-primary':'bg-quaternary'">Search on <span class="font-bold" :class="searchOnComeback ? 'text-tertiary ':'text-primary'">Comeback</span></button>
                     <button @click="searchOnComeback = false" class="px-3 py-1 rounded" :class="searchOnComeback ? 'bg-quaternary':'bg-primary'">Add Youtube Video</button>
                 </div> -->
+                <p>User : {{ userData }}</p>
                 <form
                     v-if="searchOnComeback"
                     @submit.prevent="getYoutubeVideo"
