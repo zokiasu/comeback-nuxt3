@@ -3,9 +3,8 @@ import { doc, getDoc, getFirestore, Timestamp, setDoc } from 'firebase/firestore
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
   const { $auth } = useNuxtApp()
-  const { setUserData, setFirebaseUser, setIsLogin, setIsAdmin, firebaseUserStore } = useUserStore()
+  const { setUserData, setFirebaseUser, setIsLogin, setIsAdmin } = useUserStore()
 
-  // Fonction pour vérifier l'état de l'utilisateur
   const checkAuthState = () => {
     return new Promise((resolve, reject) => {
       const unsubscribe = $auth.onAuthStateChanged(async (userState: any) => {

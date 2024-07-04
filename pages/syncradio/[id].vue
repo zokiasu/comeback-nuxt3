@@ -4,7 +4,7 @@
     import { useUserStore } from '~/stores/user'
     import { useToast } from 'vue-toastification'
 
-    const { queryData, writeData, readData, updateData, deleteData, listenForUpdates } = useFirebaseRealtimeDatabase()
+    const { writeData, readData, updateData, deleteData, listenForUpdates } = useFirebaseRealtimeDatabase()
     const { getVideoFullDetails, getAllVideosFromPlaylist } = useFirebaseFunction()
 
     const userStore = useUserStore()
@@ -22,13 +22,13 @@
     const recommandationCard3 = ref(null)
 
     const searchOnComeback = ref(false)
-    const blurEffectLoading = ref(true)
+    const blurEffectLoading = ref(false)
     const errorMessage = ref(false)
     const search = ref('');
-    const message = ref('');
     const roomId = ref('')
     const roomPlaylist = ref([])
     const currentUsers = ref([])
+    const videoRefs = ref([])
     const isAdminRoom = ref(false)
     const isEveryoneCanAddSong = ref(false)
     const permanentRoom = ref(false)
@@ -44,6 +44,11 @@
             name: null
         }
     })
+
+    const userData = computed(() => userStore.userDataStore)
+    const moderators = computed(() => currentUsers.value.filter(user => user.status === 'moderator' || user.status === 'administrator'))
+    const listeners = computed(() => currentUsers.value.filter(user => user.status === 'listener'))
+    const isAllowedToAddSong = computed(() => isEveryoneCanAddSong.value || isAdminRoom.value)
 
     function checkIfUserIsCreator(users, userId) {
         return users.some(user => user.id === userId && user.status === 'administrator');
@@ -84,11 +89,9 @@
         toast.success('Room ID copied to clipboard.');
     }
 
-    const videoRefs = ref([]);
-
     const setVideoRef = (el, index) => {
         videoRefs.value[index] = el;
-    };
+    }
 
     const scrollToCurrentVideo = (index) => {
         if (roomPlaylistElement.value && videoRefs.value[index]) {
@@ -337,11 +340,6 @@
         }
     }
 
-    const userData = computed(() => userStore.userDataStore)
-    const moderators = computed(() => currentUsers.value.filter(user => user.status === 'moderator' || user.status === 'administrator'))
-    const listeners = computed(() => currentUsers.value.filter(user => user.status === 'listener'))
-    const isAllowedToAddSong = computed(() => isEveryoneCanAddSong.value || isAdminRoom.value)
-
     watch(() => actualVideoPlay?.value?.id, (newId) => {
         if (newId && playerRef.value) {
             playerRef.value.updateVideoId(newId, actualVideoPlay.value.duration);
@@ -358,7 +356,6 @@
         let isCreator = false
         
         if (data && userData.value) {
-            blurEffectLoading.value = false
             roomPlaylist.value = data.playlist
             currentUsers.value = data.users
             isEveryoneCanAddSong.value = data.settings.isEveryoneDJ
@@ -387,7 +384,6 @@
             } else {
                 addUserToRoom()
             }
-            blurEffectLoading.value = false
             messagePanel.value.getMessages(roomId.value)
 
             nextTick(() => {

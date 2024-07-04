@@ -1,10 +1,9 @@
 // store/user.ts
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { doc, getDoc, getFirestore, Timestamp, setDoc } from 'firebase/firestore'
+import { doc, getDoc, getFirestore } from 'firebase/firestore'
 
 export const useUserStore = defineStore('userStore', () => {
-
   const userStore = ref(null)
   const authStore = ref(null)
   const firebaseUserStore = ref(null)
@@ -29,7 +28,6 @@ export const useUserStore = defineStore('userStore', () => {
     isAdminStore.value = isAdmin
   }
 
-  // Dans le store utilisateur
   async function checkUserAuthState() {
     const { $auth } = useNuxtApp()
     return new Promise<void>((resolve) => {
@@ -54,7 +52,6 @@ export const useUserStore = defineStore('userStore', () => {
       setIsAdmin(userData.role === 'ADMIN')
     }
   }
-
 
   return {
     userStore,
