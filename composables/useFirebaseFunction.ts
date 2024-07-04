@@ -143,7 +143,7 @@ export function useFirebaseFunction() {
   const getRealtimeLastestReleases = async (startDate: Timestamp, limitNumber: number, callback: Function) => {
     const colRef = query(
       collection(database as any, 'releases'),
-      where('date', '>=', startDate),
+      // where('date', '>=', startDate),
       where('needToBeVerified', '==', false),
       orderBy('date', 'desc'),
       limit(limitNumber),

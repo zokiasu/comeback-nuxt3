@@ -16,6 +16,7 @@
 
     const playerRef = ref(null)
     const messagePanel = ref(null)
+    const roomPlaylistElement = ref(null)
     const recommandationCard1 = ref(null)
     const recommandationCard2 = ref(null)
     const recommandationCard3 = ref(null)
@@ -83,6 +84,20 @@
         toast.success('Room ID copied to clipboard.');
     }
 
+    const videoRefs = ref([]);
+
+    const setVideoRef = (el, index) => {
+        videoRefs.value[index] = el;
+    };
+
+    const scrollToCurrentVideo = (index) => {
+        if (roomPlaylistElement.value && videoRefs.value[index]) {
+            // Calculer la position de défilement
+            const topPos = videoRefs.value[index].$el.offsetTop;
+            roomPlaylistElement.value.scrollTop = topPos - roomPlaylistElement.value.offsetTop;
+        }
+    }
+
     const updateDurationActualVideoPlay = (duration) => {
         if (isAdminRoom.value && duration > 0) {
             actualVideoPlay.value.duration = duration
@@ -123,14 +138,14 @@
     const setNewVideo = (index) => {
         if(isAdminRoom.value) {
             if(roomPlaylist.value) {
-                // récupérer la vidéo la plus haute dans la playlist
-                const video = roomPlaylist.value[index]
-                // mettre à jour la vidéo actuelle
-                updateActualVideoPlay(video)
-                // deleteVideo(index)
+                const video = roomPlaylist.value[index];
+                updateActualVideoPlay(video);
+                nextTick(() => {
+                    scrollToCurrentVideo(index);
+                });
             }
         } else {
-            toast.error('Sorry you are not allowed to play a video. Ask a admin or a moderator.')
+            toast.error('Sorry you are not allowed to play a video. Ask a admin or a moderator.');
         }
     }
 
@@ -372,6 +387,13 @@
             }
             blurEffectLoading.value = false
             messagePanel.value.getMessages(roomId.value)
+
+            nextTick(() => {
+                const currentIndex = actualVideoPlay.value?.index;
+                if (typeof currentIndex === 'number' && videoRefs.value[currentIndex]) {
+                    scrollToCurrentVideo(currentIndex);
+                }
+            });
         } else if(!userData.value) {
             toast.error('You are not connected. Please connect to access the room.')
             router.push('/authentification')
@@ -445,10 +467,11 @@
                             <IconDelete class="w-5 h-5 cursor-pointer hover:text-primary" />
                         </button>
                     </div>
-                    <div class="flex flex-col gap-2 w-full h-full max-h-[10dvh] lg:max-h-[50dvh] overflow-hidden overflow-y-auto remove-scrollbar">
+                    <div ref="roomPlaylistElement" class="flex flex-col gap-2 w-full h-full max-h-[10dvh] lg:max-h-[50dvh] overflow-hidden overflow-y-auto remove-scrollbar">
                         <SyncRadioYoutubeCard
                             v-for="(video, index) in roomPlaylist"
                             :key="'videoPlaylist_'+index"
+                            :ref="setVideoRef"
                             :urlPicture="video.thumbnail"
                             :name="video.title"
                             :channelName="video.channelTitle"
