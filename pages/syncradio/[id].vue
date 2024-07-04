@@ -349,6 +349,8 @@
     });
 
     onMounted(async () => {
+        await userStore.checkUserAuthState();
+        
         roomId.value = route.params.id
         lastRoomYouTryToJoined.value = roomId.value
         const dataRouteRadio = '/syncradio/' + roomId.value
@@ -396,7 +398,7 @@
             });
         } else if(!userData.value) {
             toast.error('You are not connected. Please connect to access the room.')
-            router.push('/authentification')
+            // router.push('/authentification')
         } else {
             toast.error('Room not found. Please create a new room.')
             router.push('/syncradio')

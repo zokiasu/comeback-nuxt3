@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useUserStore = defineStore('userStore', () => {
+
   const userStore = ref(null)
   const authStore = ref(null)
   const firebaseUserStore = ref(null)
@@ -27,6 +28,23 @@ export const useUserStore = defineStore('userStore', () => {
     isAdminStore.value = isAdmin
   }
 
+  // Dans le store utilisateur
+  async function checkUserAuthState() {
+    const { $auth } = useNuxtApp()
+    return new Promise<void>((resolve) => {
+        const unsubscribe = $auth.onAuthStateChanged((user: any) => {
+            if (user) {
+              userDataStore.value = user;
+            } else {
+              userDataStore.value = null;
+            }
+            unsubscribe();
+            resolve();
+        });
+    });
+  }
+
+
   return {
     userStore,
     authStore,
@@ -38,6 +56,7 @@ export const useUserStore = defineStore('userStore', () => {
     setFirebaseUser,
     setIsLogin,
     setIsAdmin,
+    checkUserAuthState
   }
 }, {
   persist: true,
