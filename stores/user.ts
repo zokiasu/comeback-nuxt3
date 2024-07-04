@@ -35,8 +35,6 @@ export const useUserStore = defineStore('userStore', () => {
         const unsubscribe = $auth.onAuthStateChanged((user: any) => {
             if (user) {
               userDataStore.value = user;
-            } else {
-              userDataStore.value = null;
             }
             unsubscribe();
             resolve();
