@@ -8,6 +8,7 @@ const { releases } = defineProps({
 </script>
 <template>
   <CardDefault name="Recent Releases">
+    <p class="text-primary text-sm italic">Some troubles have been noticed with our release recovery API and are working to resolve them quickly. We apologize for the inconvenience.</p>
     <div
       v-if="releases.length > 0"
       class="relative w-full pb-5 flex justify-between gap-5 snap-x snap-mandatory overflow-x-auto scrollBarLight"
