@@ -7,6 +7,7 @@ const { comebackList } = defineProps({
 })
 const maxDisplay = ref(12)
 const minDisplay = ref(3)
+const seeMore = ref(false)
 
 const setMaxDisplay = () => {
   const width = window.innerWidth
@@ -53,9 +54,9 @@ onBeforeUnmount(() => {
         class="h-12 rounded"
       />
     </div>
-    <div class="flex w-full justify-center">
+    <div v-if="comebackList.length > maxDisplay" class="flex w-full justify-center">
       <button
-        v-if="comebackList.length != maxDisplay && comebackList.length > maxDisplay"
+        v-if="seeMore"
         type="button"
         class="flex gap-1 items-center w-fit font-semibold border border-tertiary rounded p-1"
         @click="maxDisplay = comebackList.length"
@@ -64,7 +65,7 @@ onBeforeUnmount(() => {
         <IconPlus class="mx-auto h-3 w-3" />
       </button>
       <button
-        v-if="comebackList.length == maxDisplay && comebackList.length >= maxDisplay"
+        v-else
         type="button"
         class="flex gap-1 items-center w-fit font-semibold border border-tertiary rounded p-1"
         @click="maxDisplay = minDisplay"
