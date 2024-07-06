@@ -123,13 +123,11 @@
     }
 
     const updateActualVideoPlay = (videoData) => {
-        if (isAdminRoom.value) {
-            actualVideoPlay.value = videoData
-            if(actualVideoPlay.value.id) {
-                writeData('/syncradio/' + roomId + '/actualVideoPlay/', videoData)
-            } else {
-                deleteData('/syncradio/' + roomId + '/actualVideoPlay/')
-            }
+        actualVideoPlay.value = videoData
+        if(actualVideoPlay.value.id) {
+            writeData('/syncradio/' + roomId + '/actualVideoPlay/', videoData)
+        } else {
+            deleteData('/syncradio/' + roomId + '/actualVideoPlay/')
         }
     }
 
@@ -144,7 +142,7 @@
     }
 
     const nextVideo = () => {
-        if(isAdminRoom.value && roomPlaylist.value) {
+        if(roomPlaylist.value) {
             const video = roomPlaylist.value[actualVideoPlay.value.index + 1]
             if(video) {
                 updateActualVideoPlay(video)
@@ -463,7 +461,13 @@
             <div id="playlist-video" class="flex flex-col-reverse justify-end lg:justify-start lg:flex-row gap-3 flex-grow">
                 <div class="hidden lg:block bg-quinary rounded p-3 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%]">
                     <div class="w-full flex justify-between">
-                        <p class="uppercase font-semibold">Playlist</p>
+                        <div class="flex gap-3">
+                            <p class="uppercase font-semibold">Playlist</p>
+                            <button v-if='isAllowedToAddSong && roomPlaylist' @click="nextVideo" class="flex hover:text-primary">
+                                <p class="text-xs">Next Song</p>
+                                <IconDoubleArrowRight class="w-5 h-5 cursor-pointer" />
+                            </button>
+                        </div>
                         <button v-if='isAdminRoom && roomPlaylist' @click="deletePlaylist">
                             <IconDelete class="w-5 h-5 cursor-pointer hover:text-primary" />
                         </button>

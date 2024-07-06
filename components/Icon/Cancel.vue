@@ -5,9 +5,3 @@
     />
   </svg>
 </template>
-
-<script>
-export default {
-  name: 'IconCancel',
-}
-</script>
