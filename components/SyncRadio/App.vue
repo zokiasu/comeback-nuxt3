@@ -100,6 +100,7 @@
     }
 
     const scrollToCurrentVideo = (index) => {
+        console.log('scrollToCurrentVideo')
         if (roomPlaylistElement.value && videoRefs.value[index]) {
             // Calculer la position de défilement
             const topPos = videoRefs.value[index].$el.offsetTop;
@@ -299,18 +300,6 @@
     }
 
     const videoError = () => {
-        // updateActualVideoPlay({
-        //     id: null,
-        //     title: null,
-        //     thumbnail: null,
-        //     duration: null,
-        //     channelTitle: null,
-        //     index: null,
-        //     addedBy: {
-        //         id: null,
-        //         name: null
-        //     }
-        // })
         toast.error('Video is restricted or unavailable. Please try another video.');
         errorMessage.value = true
     }

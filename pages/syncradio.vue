@@ -18,10 +18,5 @@
     <div>
         <SyncRadioApp v-if="isReady" :roomId="roomId" />
         <SyncRadioIntro v-else />
-        <pre>
-            Room ID: {{ roomId }}
-            User Data: {{ userData }}
-            Ready: {{ isReady }}
-        </pre>
     </div>
 </template>

@@ -76,7 +76,7 @@ onMounted(async () => {
           <NuxtLink
             :to="`/syncradio`"
             class="relative"
-            :class="route.name.startsWith('syncradio-') ? 'font-semibold text-white' : 'text-zinc-500'"
+            :class="route.name.startsWith('syncradio') ? 'font-semibold text-white' : 'text-zinc-500'"
           >
             SyncRadio
             <span class="absolute -bottom-2

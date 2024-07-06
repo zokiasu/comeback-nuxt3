@@ -44,7 +44,7 @@ const createPlayer = () => {
 
 const onPlayerReady = async (event) => {
     duration.value = event.target.getDuration();
-    if (currentTime.value > 0) {
+    if (currentTime.value > 0 && player.value) {
         player.value?.seekTo(currentTime.value);
         setTimeout(() => {
             player.value?.playVideo();

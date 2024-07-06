@@ -39,13 +39,13 @@
         data.users.push(user)
         const generatedId = await writeDataWithRandomId('/syncradio', data)
         if (generatedId) {
-            router.push('/syncradio/' + generatedId)
+            router.push('/syncradio?id=' + generatedId)
         }
     }
 
     const redirectToRoom = () => {
         if (roomIdInput.value.trim()) {
-            router.push('/syncradio/' + roomIdInput.value.trim())
+            router.push('/syncradio?id=' + roomIdInput.value.trim())
         } else {
             toast.error('Please enter a valid Room ID')
         }
