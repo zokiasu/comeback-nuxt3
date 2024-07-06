@@ -9,7 +9,7 @@
 
     const { roomId } = defineProps({
         roomId: {
-            type: Array,
+            type: String,
             required: true,
         },
     })
@@ -100,11 +100,18 @@
     }
 
     const scrollToCurrentVideo = (index) => {
-        console.log('scrollToCurrentVideo')
-        if (roomPlaylistElement.value && videoRefs.value[index]) {
-            // Calculer la position de défilement
-            const topPos = videoRefs.value[index].$el.offsetTop;
-            roomPlaylistElement.value.scrollTop = topPos - roomPlaylistElement.value.offsetTop;
+        console.log('scrollToCurrentVideo', index, roomPlaylistElement.value)
+        if (roomPlaylistElement.value) {
+            //scroll to element with isPlaying class
+            const element = roomPlaylistElement.value.children[index];
+
+            if (element) {
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                    inline: 'center',
+                });
+            }
         }
     }
 
@@ -141,6 +148,7 @@
             const video = roomPlaylist.value[actualVideoPlay.value.index + 1]
             if(video) {
                 updateActualVideoPlay(video)
+                scrollToCurrentVideo(video.index)
             }
         }
     }
@@ -349,7 +357,7 @@
         const data = await readData(dataRouteRadio)
         let isCreator = false
         
-        if (data && userData.value) {
+        if (data && userData.value && roomId) {
             roomPlaylist.value = data.playlist
             currentUsers.value = data.users
             isEveryoneCanAddSong.value = data.settings.isEveryoneDJ
@@ -378,11 +386,12 @@
             } else {
                 addUserToRoom()
             }
+
             messagePanel.value.getMessages(roomId)
 
             nextTick(() => {
                 const currentIndex = actualVideoPlay.value?.index;
-                if (typeof currentIndex === 'number' && videoRefs.value[currentIndex]) {
+                if (typeof currentIndex === 'number' && roomPlaylist.value) {
                     scrollToCurrentVideo(currentIndex);
                 }
             });
@@ -472,6 +481,7 @@
                             :isActualPlaying="isActualPlayingInYoutubeCard(index, video.id)"
                             @deleteInPlaylist="deleteVideo(index)"
                             @playVideo="setNewVideo(index)"
+                            :class="isActualPlayingInYoutubeCard(index, video.id) ? 'isPlaying':''"
                         />
                     </div>
                 </div>
@@ -618,7 +628,7 @@
         <SyncRadioMessagePanel
             v-if="userData"
             ref="messagePanel"
-            :idRoom="route.params.id"
+            :idRoom="roomId"
             :idActualUser="userData.id"
             :nameActualUser="userData.name"
             :isModerator="isAdminRoom"

@@ -7,7 +7,7 @@
     const roomId = computed(() => route.query.id)
     const userData = computed(() => userStore.userDataStore)
     const isReady = computed(() => {
-        if (route.query.id && userData.value.id) {
+        if (route.query.id && userData.value.id && userData.value) {
             return true
         }
         return false
