@@ -145,7 +145,7 @@
             </button>
         </div>
         <div class="flex gap-3 w-full">
-            <NuxtLink v-for="room in roomList" :key="room.id" :to="'/syncradio?id=' + room.id" class="font-semibold bg-primary rounded w-full py-3 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50">
+            <NuxtLink v-for="room in roomList" :key="room.id" :to="'/syncradio?id' + room.id" class="font-semibold bg-primary rounded w-full py-3 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50">
                 {{ room.id }}
             </NuxtLink>
         </div>

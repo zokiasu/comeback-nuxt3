@@ -117,12 +117,12 @@
 </script>
 
 <template>
-    <div class="min-h-[calc(100dvh-160px)] p-5 flex flex-col justify-center items-center text-center gap-8 sm:max-w-xl sm:mx-auto">
+    <div class="min-h-[calc(100dvh-160px)] p-5 flex flex-col justify-center items-center text-center gap-8 w-full sm:mx-auto">
         <div class="space-y-2">
             <h2 class="font-bold text-4xl">SyncRadio Snippet</h2>
             <p>Listen together, no matter where you are</p>
         </div>
-        <div class="space-y-5 w-full">
+        <div class="space-y-5 sm:max-w-5xl">
             <div class="flex gap-3 w-full">
                 <input
                     id="room-input"
@@ -144,9 +144,10 @@
                 Create My Party
             </button>
         </div>
-        <div class="flex gap-3 w-full">
-            <NuxtLink v-for="room in roomList" :key="room.id" :to="'/syncradio/' + room.id" class="font-semibold bg-primary rounded w-full py-3 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50">
-                {{ room.id }}
+        <div class="flex flex-wrap gap-3 w-full px-20">
+            <NuxtLink v-for="room in roomList" :key="room.id" :to="'/syncradio?id=' + room.id" class="bg-primary rounded flex-grow py-3 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50">
+                <p>Room :</p>
+                <p>{{ room.id }}</p>
             </NuxtLink>
         </div>
     </div>
