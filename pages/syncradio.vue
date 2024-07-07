@@ -6,12 +6,7 @@
 
     const roomId = computed(() => route.query.id)
     const userData = computed(() => userStore.userDataStore)
-    const isReady = computed(() => {
-        if (route.query.id && userData.value.id && userData.value) {
-            return true
-        }
-        return false
-    })
+    const isReady = computed(() => route.query.id && userData.value && userData.value.id)
 
     const updateMetaTags = () => {
         const baseUrl = 'https://come-back.netlify.app/syncradio'
@@ -38,11 +33,11 @@
                 },
                 {
                     property: 'og:image',
-                    content: 'https://i.ibb.co/f4JQ8wR/Sync-Radio.webp' // Replace with the URL of the image to display when shared
+                    content: 'https://i.ibb.co/f4JQ8wR/Sync-Radio.webp'
                 },
                 {
                     property: 'og:url',
-                    content: fullUrl // Use the correct URL based on roomId
+                    content: fullUrl
                 },
                 {
                     name: 'twitter:card',
@@ -58,19 +53,18 @@
                 },
                 {
                     name: 'twitter:image',
-                    content: 'https://i.ibb.co/f4JQ8wR/Sync-Radio.webp' // Replace with the URL of the image to display when shared
+                    content: 'https://i.ibb.co/f4JQ8wR/Sync-Radio.webp'
                 },
                 {
                     name: 'twitter:url',
-                    content: fullUrl // Use the correct URL based on roomId
+                    content: fullUrl
                 },
             ],
         })
     }
 
     // Update meta tags on component mount and when roomId changes
-    onMounted(updateMetaTags)
-    watch(roomId, updateMetaTags)
+    watch(roomId, updateMetaTags, { immediate: true })
 </script>
 
 <template>
