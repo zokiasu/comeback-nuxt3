@@ -427,7 +427,7 @@
             },
             {
                 property: 'og:url',
-                content: 'https://come-back.netlify.app/syncradio' // Replace with the URL of your page
+                content: 'https://come-back.netlify.app/syncradio?id' + roomId // Replace with the URL of your page
             },
             {
                 name: 'twitter:card',
