@@ -13,7 +13,7 @@
         const fullUrl = roomId.value ? `${baseUrl}?id=${roomId.value}` : baseUrl
 
         useHead({
-            title: 'SyncRadio - Listen to Music Together in Real-Time',
+            title: 'SyncRadio by Comeback - Listen to Music Together in Real-Time',
             meta: [
                 {
                     name: 'description',
@@ -25,7 +25,7 @@
                 },
                 {
                     property: 'og:title',
-                    content: 'SyncRadio - Listen to Music Together in Real-Time'
+                    content: 'SyncRadio by Comeback - Listen to Music Together in Real-Time'
                 },
                 {
                     property: 'og:description',
