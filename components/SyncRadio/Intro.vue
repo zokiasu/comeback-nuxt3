@@ -4,10 +4,9 @@
     import { useUserStore } from '~/stores/user'
 
     const { queryData, writeDataWithRandomId } = useFirebaseRealtimeDatabase()
-
     const userStore = useUserStore()
-    const userData = computed(() => userStore.userDataStore)
     const lastRoomYouTryToJoined = useLastRoomYouTryToJoined()
+    const userData = computed(() => userStore.userDataStore)
     
     const router = useRouter()
     const toast = useToast()
@@ -106,14 +105,51 @@
     })
 
     useHead({
-        title: 'SyncRadio',
+        title: 'SyncRadio - Listen to Music Together in Real-Time',
         meta: [
             {
                 name: 'description',
-                content: 'Create or join a room to listen to music together'
+                content: 'Join or create synchronized music rooms with SyncRadio. Listen to music together, no matter where you are. Immersive and community-driven experience guaranteed!'
+            },
+            {
+                name: 'keywords',
+                content: 'synchronized music, listen together, create music room, SyncRadio, collaborative playlists, online music, community experience'
+            },
+            {
+                property: 'og:title',
+                content: 'SyncRadio - Listen to Music Together in Real-Time'
+            },
+            {
+                property: 'og:description',
+                content: 'Join or create synchronized music rooms with SyncRadio. Listen to music together, no matter where you are. Immersive and community-driven experience guaranteed!'
+            },
+            {
+                property: 'og:image',
+                content: 'https://i.ibb.co/XWfLTGk/Comeback-paper.webp' // Replace with the URL of the image to display when shared
+            },
+            {
+                property: 'og:url',
+                content: 'https://come-back.netlify.app/syncradio' // Replace with the URL of your page
+            },
+            {
+                name: 'twitter:card',
+                content: 'summary_large_image'
+            },
+            {
+                name: 'twitter:title',
+                content: 'SyncRadio - Listen to Music Together in Real-Time'
+            },
+            {
+                name: 'twitter:description',
+                content: 'Join or create synchronized music rooms with SyncRadio. Listen to music together, no matter where you are. Immersive and community-driven experience guaranteed!'
+            },
+            {
+                name: 'twitter:image',
+                content: 'https://i.ibb.co/XWfLTGk/Comeback-paper.webp' // Replace with the URL of the image to display when shared
             },
         ],
     })
+
 </script>
 
 <template>
