@@ -53,11 +53,8 @@ export default defineNuxtConfig({
   },
 
   image: {
-    // Activer le support pour les images distantes
-    domains: ['https://lh3.googleusercontent.com/*'],
-    // Précisez ici d'autres domaines si nécessaire
-
-    // Configuration par défaut pour le traitement des images
+    provider: 'ipx',
+    domains: [],
     presets: {
       cover: {
         modifiers: {

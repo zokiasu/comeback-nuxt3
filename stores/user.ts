@@ -1,44 +1,71 @@
-export const useUserStore = defineStore(
-  'userStore',
-  () => {
-    const userStore = useState<any>('userStore', () => null)
-    const authStore = useState<any>('authStore', () => null)
-    const firebaseUserStore = useState<any>('firebaseUserStore', () => null)
+// store/user.ts
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import { doc, getDoc, getFirestore } from 'firebase/firestore'
 
-    const isLoginStore = useState<boolean>('isLoginStore', () => false)
-    const isAdminStore = useState<boolean>('isAdminStore', () => false)
-    const userDataStore = useState<any>('userDataStore', () => null)
+export const useUserStore = defineStore('userStore', () => {
+  const userStore = ref(null)
+  const authStore = ref(null)
+  const firebaseUserStore = ref(null)
 
-    const setUserData = (user: any) => {
-      userDataStore.value = user
+  const isLoginStore = ref(false)
+  const isAdminStore = ref(false)
+  const userDataStore = ref(null)
+
+  const setUserData = (user: any) => {
+    userDataStore.value = user
+  }
+
+  const setFirebaseUser = (user: any) => {
+    firebaseUserStore.value = user
+  }
+
+  const setIsLogin = (isLogin: boolean) => {
+    isLoginStore.value = isLogin
+  }
+
+  const setIsAdmin = (isAdmin: boolean) => {
+    isAdminStore.value = isAdmin
+  }
+
+  async function checkUserAuthState() {
+    const { $auth } = useNuxtApp()
+    return new Promise<void>((resolve) => {
+        const unsubscribe = $auth.onAuthStateChanged((user: any) => {
+            if (user) {
+              getDatabaseUser(user)
+            }
+            unsubscribe();
+            resolve();
+        });
+    });
+  }
+
+  const getDatabaseUser = async (user: any) => {
+    const uid = user.uid
+    const db = getFirestore()
+    const userRef = doc(db, 'users', uid)
+    const userSnap = await getDoc(userRef)
+    if (userSnap.exists()) {
+      const userData = userSnap.data()
+      setUserData(userData)
+      setIsAdmin(userData.role === 'ADMIN')
     }
+  }
 
-    const setFirebaseUser = (user: any) => {
-      firebaseUserStore.value = user
-    }
-
-    const setIsLogin = (isLogin: boolean) => {
-      isLoginStore.value = isLogin
-    }
-
-    const setIsAdmin = (isAdmin: boolean) => {
-      isAdminStore.value = isAdmin
-    }
-
-    return {
-      userStore,
-      authStore,
-      firebaseUserStore,
-      userDataStore,
-      isLoginStore,
-      isAdminStore,
-      setUserData,
-      setFirebaseUser,
-      setIsLogin,
-      setIsAdmin,
-    }
-  },
-  {
-    persist: true,
-  },
-)
+  return {
+    userStore,
+    authStore,
+    firebaseUserStore,
+    userDataStore,
+    isLoginStore,
+    isAdminStore,
+    setUserData,
+    setFirebaseUser,
+    setIsLogin,
+    setIsAdmin,
+    checkUserAuthState
+  }
+}, {
+  persist: true,
+})

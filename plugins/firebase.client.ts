@@ -18,15 +18,18 @@ export default defineNuxtPlugin((nuxtApp) => {
     measurementId: config.public.FIREBASE_MEASUREMENT_ID,
   }
   
-  const app = initializeApp(firebaseConfig)
-  const analytics = getAnalytics(app)
 
-  const auth = getAuth(app)
-  const firestore = getFirestore(app)
-  const database = getDatabase(app)
+  nuxtApp.hook('app:beforeMount', () => {
+    const app = initializeApp(firebaseConfig)
+    const analytics = getAnalytics(app)
 
-  nuxtApp.provide('auth', auth)
-  nuxtApp.provide('firestore', firestore)
-  nuxtApp.provide('analytics', analytics)
-  nuxtApp.provide('database', database)
+    const auth = getAuth(app)
+    const firestore = getFirestore(app)
+    const database = getDatabase(app)
+
+    nuxtApp.provide('auth', auth)
+    nuxtApp.provide('firestore', firestore)
+    nuxtApp.provide('analytics', analytics)
+    nuxtApp.provide('database', database)
+  })
 })

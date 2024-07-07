@@ -51,7 +51,6 @@
   })
 
   const verifyShowModal = () => {
-    console.log('isLoginStore', isLoginStore)
     if(isLoginStore) {
       showModal.value = true;
     } else {

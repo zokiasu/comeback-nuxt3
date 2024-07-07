@@ -12,8 +12,7 @@ export function useFirebaseRealtimeDatabase() {
       const snapshot = await get(dataRef)
       if (snapshot.exists()) {
         return snapshot.val()
-      } else {
-        console.log('No data available')
+      } else { 
         return null
       }
     } catch (error) {
@@ -27,10 +26,10 @@ export function useFirebaseRealtimeDatabase() {
     const dataRef = ref(database as any, path)
     try {
       await set(dataRef, data)
-      toast.success('Data successfully written!')
+      // toast.success('Data successfully written!')
     } catch (error) {
       console.error('Error writing data:', error)
-      toast.error('Failed to write data')
+      // toast.error('Failed to write data')
     }
   }
 
@@ -39,10 +38,10 @@ export function useFirebaseRealtimeDatabase() {
     const dataRef = ref(database as any, path)
     try {
       await update(dataRef, data)
-      toast.success('Data successfully updated!')
+      // toast.success('Data successfully updated!')
     } catch (error) {
       console.error('Error updating data:', error)
-      toast.error('Failed to update data')
+      // toast.error('Failed to update data')
     }
   }
 
@@ -51,10 +50,10 @@ export function useFirebaseRealtimeDatabase() {
     const dataRef = ref(database as any, path)
     try {
       await remove(dataRef)
-      toast.success('Data successfully deleted!')
+      // toast.success('Data successfully deleted!')
     } catch (error) {
       console.error('Error deleting data:', error)
-      toast.error('Failed to delete data')
+      // toast.error('Failed to delete data')
     }
   }
 
@@ -90,11 +89,11 @@ export function useFirebaseRealtimeDatabase() {
     const newRef = push(dataRef) // Generate a new reference with a unique ID
     try {
       await set(newRef, data)
-      toast.success('Data successfully written with random ID!')
+      // toast.success('Data successfully written with random ID!')
       return newRef.key // Return the generated ID
     } catch (error) {
       console.error('Error writing data:', error)
-      toast.error('Failed to write data')
+      // toast.error('Failed to write data')
       return null
     }
   }

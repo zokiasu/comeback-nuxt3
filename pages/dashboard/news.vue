@@ -23,7 +23,6 @@ const deleteNews = async (id) => {
     const index = newsFetch.value.indexOf(newsToDelete)
     await deletebyDoc('news', id)
       .then(async () => {
-        console.log('Document successfully deleted!')
         newsFetch.value.splice(index, 1)
         toast.success('News deleted')
       })
