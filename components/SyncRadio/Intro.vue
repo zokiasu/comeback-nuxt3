@@ -125,7 +125,7 @@
             },
             {
                 property: 'og:image',
-                content: 'https://i.ibb.co/XWfLTGk/Comeback-paper.webp' // Replace with the URL of the image to display when shared
+                content: 'https://i.ibb.co/f4JQ8wR/Sync-Radio.webp' // Replace with the URL of the image to display when shared
             },
             {
                 property: 'og:url',
@@ -145,7 +145,7 @@
             },
             {
                 name: 'twitter:image',
-                content: 'https://i.ibb.co/XWfLTGk/Comeback-paper.webp' // Replace with the URL of the image to display when shared
+                content: 'https://i.ibb.co/f4JQ8wR/Sync-Radio.webp' // Replace with the URL of the image to display when shared
             },
         ],
     })
