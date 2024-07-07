@@ -50,7 +50,7 @@ const signOut = async () => {
       >
         <p>Security & Privacy</p>
       </NuxtLink>
-      <NuxtLink
+      <!-- <NuxtLink
         to="/settings/notification"
         class="transition-all duration-300 px-3 py-1.5 ease-in-out rounded flex items-center gap-2"
         :class="{
@@ -59,8 +59,8 @@ const signOut = async () => {
         }"
       >
         <p>Notifications</p>
-      </NuxtLink>
-      <NuxtLink
+      </NuxtLink> -->
+      <!-- <NuxtLink
         to="/settings/subscription"
         class="transition-all duration-300 px-3 py-1.5 ease-in-out rounded flex items-center gap-2"
         :class="{
@@ -69,7 +69,7 @@ const signOut = async () => {
         }"
       >
         <p>Subscriptions</p>
-      </NuxtLink>
+      </NuxtLink> -->
       <div class="border-b border-quinary"></div>
       <NuxtLink
         :to="`/artist/create`"
