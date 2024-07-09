@@ -3,10 +3,17 @@
 
     const route = useRoute()
     const userStore = useUserStore()
+    const lastRoomYouTryToJoined = useLastRoomYouTryToJoined()
 
     const roomId = computed(() => route.query.id)
     const userData = computed(() => userStore.userDataStore)
     const isReady = computed(() => route.query.id && userData.value && userData.value.id)
+
+    onMounted(async () => {
+        if(roomId.value) {
+            lastRoomYouTryToJoined.value = roomId.value
+        }
+    })
 
     const updateMetaTags = () => {
         const baseUrl = 'https://come-back.netlify.app/syncradio'
