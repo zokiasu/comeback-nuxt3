@@ -169,7 +169,7 @@ useHead({
         </button>
       </div>
     </div>
-    <p class="text-primary text-sm italic">Some troubles have been noticed with our release recovery API and are working to resolve them quickly. We apologize for the inconvenience.</p>
+    <!-- <p class="text-primary text-sm italic">Some troubles have been noticed with our release recovery API and are working to resolve them quickly. We apologize for the inconvenience.</p> -->
     <!-- Releases -->
     <transition-group
       tag="div"

@@ -4,7 +4,6 @@ import { ref } from 'vue'
 import { doc, getDoc, getFirestore } from 'firebase/firestore'
 
 export const useUserStore = defineStore('userStore', () => {
-  const userStore = ref(null)
   const authStore = ref(null)
   const firebaseUserStore = ref(null)
 
@@ -13,7 +12,13 @@ export const useUserStore = defineStore('userStore', () => {
   const userDataStore = ref(null)
 
   const setUserData = (user: any) => {
-    userDataStore.value = user
+    if (user) {
+      userDataStore.value = user
+      isLoginStore.value = true
+      if(user.role === 'ADMIN') {
+        isAdminStore.value = true
+      }
+    }
   }
 
   const setFirebaseUser = (user: any) => {
@@ -54,7 +59,6 @@ export const useUserStore = defineStore('userStore', () => {
   }
 
   return {
-    userStore,
     authStore,
     firebaseUserStore,
     userDataStore,

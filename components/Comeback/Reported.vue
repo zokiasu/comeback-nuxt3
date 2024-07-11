@@ -1,36 +1,36 @@
 <script setup>
-const { comebackList } = defineProps({
-  comebackList: {
-    type: Array,
-    required: true,
-  },
-})
-const maxDisplay = ref(12)
-const minDisplay = ref(3)
-const seeMore = ref(false)
+  const { comebackList } = defineProps({
+    comebackList: {
+      type: Array,
+      required: true,
+    },
+  })
+  const maxDisplay = ref(12)
+  const minDisplay = ref(3)
+  const seeMore = ref(false)
 
-const setMaxDisplay = () => {
-  const width = window.innerWidth
+  const setMaxDisplay = () => {
+    const width = window.innerWidth
 
-  if (width < 1280) {
-    // Pour les écrans moyens
-    maxDisplay.value = 6
-    minDisplay.value = 6
-  } else {
-    // Pour les grands écrans
-    maxDisplay.value = 12
-    minDisplay.value = 12
+    if (width < 1280) {
+      // Pour les écrans moyens
+      maxDisplay.value = 6
+      minDisplay.value = 6
+    } else {
+      // Pour les grands écrans
+      maxDisplay.value = 12
+      minDisplay.value = 12
+    }
   }
-}
 
-onMounted(() => {
-  setMaxDisplay()
-  window.addEventListener('resize', setMaxDisplay)
-})
+  onMounted(() => {
+    setMaxDisplay()
+    window.addEventListener('resize', setMaxDisplay)
+  })
 
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', setMaxDisplay)
-})
+  onBeforeUnmount(() => {
+    window.removeEventListener('resize', setMaxDisplay)
+  })
 </script>
 
 <template>

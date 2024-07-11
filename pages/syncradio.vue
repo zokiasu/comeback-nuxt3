@@ -3,17 +3,24 @@
 
     const route = useRoute()
     const userStore = useUserStore()
+    const lastRoomYouTryToJoined = useLastRoomYouTryToJoined()
 
     const roomId = computed(() => route.query.id)
     const userData = computed(() => userStore.userDataStore)
     const isReady = computed(() => route.query.id && userData.value && userData.value.id)
+
+    onMounted(async () => {
+        if(roomId.value) {
+            lastRoomYouTryToJoined.value = roomId.value
+        }
+    })
 
     const updateMetaTags = () => {
         const baseUrl = 'https://come-back.netlify.app/syncradio'
         const fullUrl = roomId.value ? `${baseUrl}?id=${roomId.value}` : baseUrl
 
         useHead({
-            title: 'SyncRadio - Listen to Music Together in Real-Time',
+            title: 'SyncRadio by Comeback - Listen to Music Together in Real-Time',
             meta: [
                 {
                     name: 'description',
@@ -25,7 +32,7 @@
                 },
                 {
                     property: 'og:title',
-                    content: 'SyncRadio - Listen to Music Together in Real-Time'
+                    content: 'SyncRadio by Comeback - Listen to Music Together in Real-Time'
                 },
                 {
                     property: 'og:description',
