@@ -29,13 +29,21 @@ export const useAuth = () => {
     } finally {
       isLoading.value = false;
       if (user.value != null) {
-        router.push('/');
+        const previousURL = document.referrer;
+        const currentHost = window.location.host;
+        const previousHost = new URL(previousURL).host;
+
+        if (previousHost === currentHost) {
+          router.back();
+        } else {
+          router.push('/');
+        }
       }
     }
   };
 
-  const getDatabaseUser = async (user: any) => {
-    console.log('getDatabaseUser', user)
+  const getDatabaseUser = async (user) => {
+    console.log('getDatabaseUser', user);
     try {
       const uid = user.uid;
       const db = getFirestore();
@@ -55,8 +63,8 @@ export const useAuth = () => {
     }
   };
 
-  const createDatabaseUser = async (user: any) => {
-    console.log('createDatabaseUser', user)
+  const createDatabaseUser = async (user) => {
+    console.log('createDatabaseUser', user);
     try {
       const db = getFirestore();
       const userRef = doc(db, 'users', user.uid);

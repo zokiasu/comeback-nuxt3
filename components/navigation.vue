@@ -5,6 +5,7 @@ const { Modal } = Mdl
 
 const userStore = useUserStore()
 const userDataStore = computed(() => userStore.userDataStore)
+const isLoginStore = computed(() => userStore.isLoginStore)
 
 const { artistFetch, isAdmin, isLogin } = defineProps([
   'artistFetch',
@@ -39,6 +40,12 @@ function handleScroll() {
       'shadow-zinc-700',
     )
   }
+}
+
+const signOut = async () => {
+  await signOutApp()
+  const router = useRouter()
+  router.push('/')
 }
 
 onMounted(async () => {
@@ -103,14 +110,15 @@ onMounted(async () => {
             <IconSearch class="w-3.5 h-3.5" />
           </button>
           <button
-            v-if="isLogin && artistFetch"
+            v-if="isLoginStore && artistFetch"
             @click="showModal = true"
             class="font-semibold bg-primary rounded px-2 py-1 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50"
           >
             New Comeback
           </button>
+          <!-- <GoogleSignInButton v-if="!isLoginStore" /> -->
           <NuxtLink
-            v-if="!isLogin"
+            v-if="!isLoginStore"
             :to="`/authentification`"
             class="bg-quaternary px-2 py-1 text-[0.875rem] rounded"
           >
@@ -124,6 +132,13 @@ onMounted(async () => {
             <p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>
             <IconSettings class="w-3.5 h-3.5" />
           </NuxtLink>
+          <button
+            @click="signOut"
+            class="transition-all duration-300 px-3 py-1.5 ease-in-out rounded flex justify-between items-center gap-2 text-zinc-500 hover:text-white"
+          >
+            <p>Logout</p>
+            <IconLogout class="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     </div>

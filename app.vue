@@ -6,6 +6,7 @@ const { $auth } = useNuxtApp()
 const { setUserData, setFirebaseUser, setIsLogin, setIsAdmin } = useUserStore()
 
 onMounted(() => {
+  setUserData(null)
   $auth.onAuthStateChanged((userState) => {
     if (userState) {
       setFirebaseUser(userState)

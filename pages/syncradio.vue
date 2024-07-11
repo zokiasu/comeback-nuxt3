@@ -2,12 +2,19 @@
     import { useUserStore } from '~/stores/user'
 
     const route = useRoute()
+    const { $auth } = useNuxtApp()
     const userStore = useUserStore()
     const lastRoomYouTryToJoined = useLastRoomYouTryToJoined()
 
     const roomId = computed(() => route.query.id)
     const userData = computed(() => userStore.userDataStore)
-    const isReady = computed(() => route.query.id && userData.value && userData.value.id)
+    const isUserLoggedIn = computed(() => $auth?.currentUser ? true : false)
+
+    watchEffect(() => {
+        isUserLoggedIn.value = $auth?.currentUser ? true : false
+    })
+
+    const isReady = computed(() => userData.value && userData.value.id && route.query.id && isUserLoggedIn.value)
 
     onMounted(async () => {
         if(roomId.value) {
@@ -76,7 +83,7 @@
 
 <template>
     <div>
-        <SyncRadioApp v-if="isReady" :roomId="roomId" />
-        <SyncRadioIntro v-else />
+        <SyncRadioIntro v-if="!isReady" />
+        <SyncRadioApp v-else :roomId="roomId" />
     </div>
 </template>
