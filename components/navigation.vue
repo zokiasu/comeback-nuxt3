@@ -106,12 +106,13 @@ onMounted(async () => {
         </nav>
 
         <div class="flex items-center justify-center gap-x-2 text-sm">
-          <button @click="showModalAlgolia = true" class="bg-quaternary p-2 rounded hover:bg-tertiary/20">
+          <button @click="showModalAlgolia = true" title="Search Artist" class="bg-quaternary p-2 rounded hover:bg-tertiary/20">
             <IconSearch class="w-3.5 h-3.5" />
           </button>
           <button
             v-if="isLoginStore && artistFetch"
             @click="showModal = true"
+            title="Add new comeback"
             class="font-semibold bg-primary rounded px-2 py-1 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50"
           >
             New Comeback
@@ -127,6 +128,7 @@ onMounted(async () => {
           <NuxtLink
             v-else
             :to="`/settings/profile`"
+            title="Settings"
             class="flex items-center gap-2 bg-quaternary h-full px-2 py-1 rounded hover:bg-tertiary/20"
           >
             <p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>
@@ -134,9 +136,9 @@ onMounted(async () => {
           </NuxtLink>
           <button
             @click="signOut"
-            class="transition-all duration-300 px-3 py-1.5 ease-in-out rounded flex justify-between items-center gap-2 text-zinc-500 hover:text-white"
+            title="Logout"
+            class="transition-all duration-300 p-1.5 ease-in-out rounded flex justify-between items-center gap-2 text-zinc-500 hover:text-white"
           >
-            <p>Logout</p>
             <IconLogout class="w-3.5 h-3.5" />
           </button>
         </div>

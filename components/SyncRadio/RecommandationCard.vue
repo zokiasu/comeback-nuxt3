@@ -1,39 +1,39 @@
 <script setup lang="ts">
-const { getRandomMusic } = useFirebaseFunction()
+    const { getRandomMusic } = useFirebaseFunction()
 
-const { isAdminRoom } = defineProps<{
-    isAdminRoom: boolean;
-}>();
+    const { isAdminRoom } = defineProps<{
+        isAdminRoom: boolean;
+    }>();
 
-const emit = defineEmits(['addInPlaylist']);
+    const emit = defineEmits(['addInPlaylist']);
 
-const music = ref({} as any)
+    const music = ref({} as any)
 
-const musicName = computed(() => music.value.name)
-const musicArtists = computed(() => music.value.artists[0].name)
-const hasMv = computed(() => music.value.hasMv || false)
+    const musicName = computed(() => music.value.name)
+    const musicArtists = computed(() => music.value.artists[0].name)
+    const hasMv = computed(() => music.value.hasMv || false)
 
-onMounted(async () => {
-    music.value = await getRandomMusic()
-})
+    onMounted(async () => {
+        music.value = await getRandomMusic()
+    })
 
-const reloadRandomMusic = async () => {
-    music.value = {}
-    music.value = await getRandomMusic()
-}
+    const reloadRandomMusic = async () => {
+        music.value = {}
+        music.value = await getRandomMusic()
+    }
 
-const addInPlaylist = () => {
-    emit('addInPlaylist', music.value.videoId)
-    reloadRandomMusic()
-}
+    const addInPlaylist = () => {
+        emit('addInPlaylist', music.value.videoId)
+        reloadRandomMusic()
+    }
 
-const sendMusic = () => {
-    //console.log('sendMusic')
-}
+    const sendMusic = () => {
+        //console.log('sendMusic')
+    }
 
-defineExpose({
-  reloadRandomMusic
-})
+    defineExpose({
+    reloadRandomMusic
+    })
 </script>
 
 <template>

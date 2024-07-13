@@ -3,6 +3,34 @@
     import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
     import { useUserStore } from '~/stores/user'
     import { useToast } from 'vue-toastification'
+    
+    import debounce from 'lodash.debounce';
+
+    // Initialisation des réactifs
+    const searchComebackInput = ref('');
+    const datas = ref([]);
+    const maxResults = ref(10);
+
+    // Utilisation de Algolia Search de manière optimisée
+    const { result, search } = useAlgoliaSearch('Musics');
+
+    // Définition d'une fonction de recherche débattue
+    const debouncedSearch = debounce(async (query) => {
+        await useAsyncData('ssr-search-results', () => search({ query }));
+        datas.value = result.value.hits
+    }, 500); // Attend 500ms après le dernier appel avant d'exécuter la fonction
+
+    watchEffect(() => {
+        if (searchComebackInput.value.length > 1) {
+            debouncedSearch(searchComebackInput.value);
+        } else {
+            datas.value = []
+        }
+    });
+
+    const searchMusicComeback = computed(() => {
+        return datas.value.slice(0, maxResults.value);
+    });
 
     const { writeData, readData, updateData, deleteData, listenForUpdates } = useFirebaseRealtimeDatabase()
     const { getVideoFullDetails, getAllVideosFromPlaylist } = useFirebaseFunction()
@@ -31,7 +59,7 @@
     const searchOnComeback = ref(false)
     const blurEffectLoading = ref(false)
     const errorMessage = ref(false)
-    const search = ref('')
+    const youtubeUrlInput = ref('')
     const roomPlaylist = ref([])
     const currentUsers = ref([])
     const videoRefs = ref([])
@@ -66,11 +94,10 @@
 
     function extractYouTubeId(url) {
         const videoRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|v\/|embed\/)|youtu\.be\/|music\.youtube\.com\/watch\?v=)([\w-]{11})/;
-        const playlistRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/playlist\?list=|music\.youtube\.com\/playlist\?list=|youtube\.com\/watch\?.*&list=)([\w-]+)/;
+        const playlistRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/playlist\?list=|music\.youtube\.com\/playlist\?list=|youtube\.com\/watch\?.*[\&\?]list=)([\w-]+)/;
         
         const videoMatch = url.match(videoRegex);
         const playlistMatch = url.match(playlistRegex);
-        
         return {
             videoId: videoMatch ? videoMatch[1] : null,
             playlistId: playlistMatch ? playlistMatch[1] : null
@@ -100,7 +127,6 @@
     }
 
     const scrollToCurrentVideo = (index) => {
-        console.log('scrollToCurrentVideo', index, roomPlaylistElement.value)
         if (roomPlaylistElement.value) {
             //scroll to element with isPlaying class
             const element = roomPlaylistElement.value.children[index];
@@ -227,8 +253,8 @@
     }
 
     const getYoutubeVideo = () => {
-        const { videoId, playlistId } = extractYouTubeId(search.value);
-
+        const { videoId, playlistId } = extractYouTubeId(youtubeUrlInput.value);
+        
         if (videoId && !playlistId) {
             getDetailsVideoFromId(videoId)
         } else if(playlistId) {
@@ -238,7 +264,7 @@
                 })
             })
         }
-        search.value = '';
+        youtubeUrlInput.value = '';
     }
 
     const addInPlaylist = (data) => {
@@ -250,36 +276,36 @@
     }
 
     const addInPlaylistFromRecommandation = (videoId) => {
-        if(isAdminRoom.value) {
-            getVideoFullDetails(videoId, config.public.YOUTUBE_API_KEY).then((data) => {
-                const videoData = {
-                    id: data.id,
-                    title: data.snippet.title,
-                    thumbnail: data.snippet.thumbnails.default.url,
-                    duration: convertDuration(data.contentDetails.duration),
-                    channelTitle: data.snippet.channelTitle,
-                    addedBy: {
-                        id: userData.value.id,
-                        name: userData.value.name
-                    }
+        getVideoFullDetails(videoId, config.public.YOUTUBE_API_KEY).then((data) => {
+            const videoData = {
+                id: data.id,
+                title: data.snippet.title,
+                thumbnail: data.snippet.thumbnails.default.url,
+                duration: convertDuration(data.contentDetails.duration),
+                channelTitle: data.snippet.channelTitle,
+                addedBy: {
+                    id: userData.value.id,
+                    name: userData.value.name
                 }
-                
-                if(isAdminRoom.value && (!actualVideoPlay.value || !actualVideoPlay.value.id)) {
+            }
+            
+            if(isAdminRoom.value && (!actualVideoPlay.value || !actualVideoPlay.value.id)) {
+                videoData.index = 0
+                updateActualVideoPlay(videoData)
+                addInPlaylist(videoData)
+            } else if (isAdminRoom.value) {
+                if(!roomPlaylist.value) {
                     videoData.index = 0
-                    updateActualVideoPlay(videoData)
-                    addInPlaylist(videoData)
-                } else if (isAdminRoom.value) {
-                    if(!roomPlaylist.value) {
-                        videoData.index = 0
-                    } else {
-                        videoData.index = roomPlaylist.value.length
-                    }
-                    addInPlaylist(videoData)
                 } else {
-                    actualVideoPlay.value = videoData; // Mise à jour pour les utilisateurs non administrateurs
+                    videoData.index = roomPlaylist.value.length
                 }
-            })
-        }
+                addInPlaylist(videoData)
+            } else {
+                actualVideoPlay.value = videoData; // Mise à jour pour les utilisateurs non administrateurs
+            }
+        })
+        searchComebackInput.value = ''
+        datas.value = []
     }
 
     const addUserToRoom = async () => {
@@ -393,38 +419,76 @@
                     scrollToCurrentVideo(currentIndex);
                 }
             });
-        } else if(!userData.value) {
-            toast.error('You are not connected. Please connect to access the room.')
-            // router.push('/authentification')
-        } else {
+        } else if (!data) {
             toast.error('Room not found. Please create a new room.')
-            // router.push('/syncradio')
+            router.push('/syncradio')
         }
     })
 </script>
 
 <template>
-    <div class="relative flex flex-col md:flex-row px-4 lg:px-8 pb-8 gap-3 min-h-[calc(100dvh-80px)] max-h-[calc(100dvh-80px)] transition-all ease-out duration-300">
-        <section class="space-y-3 w-full flex flex-col" :class="blurEffectLoading ? 'filter blur-sm' : ''">
-            <div class="space-y-1">
-                <!-- <div class="space-x-1">
-                    <button @click="searchOnComeback = true" class="px-3 py-1 rounded" :class="searchOnComeback ? 'bg-primary':'bg-quaternary'">Search on <span class="font-bold" :class="searchOnComeback ? 'text-tertiary ':'text-primary'">Comeback</span></button>
-                    <button @click="searchOnComeback = false" class="px-3 py-1 rounded" :class="searchOnComeback ? 'bg-quaternary':'bg-primary'">Add Youtube Video</button>
-                </div> -->
-                <form
+    <div class="relative flex flex-col lg:flex-row px-4 lg:px-8 pb-8 gap-3 min-h-[calc(100dvh-80px)] lg:max-h-[calc(100dvh-80px)] transition-all ease-out duration-300">
+        <section class="relative space-y-3 w-full flex flex-col" :class="blurEffectLoading ? 'filter blur-sm' : ''">
+            <div class="space-y-2">
+                <div
                     v-if="searchOnComeback"
-                    @submit.prevent="getYoutubeVideo"
                     class="flex gap-3"
                 >
-                    <input
-                        id="search-input"
-                        v-model="search"
-                        type="text"
-                        placeholder="Search your song on Comeback"
-                        :disabled="!isAllowedToAddSong"
-                        class="w-full disabled:opacity-50 rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
-                    />
-                </form>
+                    <div class="w-full relative">
+                        <input
+                            id="search-input"
+                            v-model="searchComebackInput"
+                            type="text"
+                            placeholder="Search a song"
+                            :disabled="!isAllowedToAddSong"
+                            class="w-full disabled:opacity-50 rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+                        />
+                        <button 
+                            v-if="searchComebackInput.length"
+                            class="absolute right-2.5 inset-y-0 text-quaternary hover:text-primary"
+                            @click="searchComebackInput = ''; datas = [];"
+                        >
+                            <IconClose class="w-5 h-5" />
+                        </button>
+                    </div>
+                    <div v-if="searchMusicComeback.length" class="absolute top-12 rounded drop-shadow inset-x-0 bg-quaternary z-50 gap-x-5 py-5 lg:px-10">
+                        <div class="hidden lg:flex gap-3">
+                            <p>Limit Result :</p>
+                            <button :class="maxResults === 10 ? 'font-bold':''" @click="maxResults = 10">
+                                10
+                            </button>
+                            <button :class="maxResults === 20 ? 'font-bold':''" @click="maxResults = 20">
+                                20
+                            </button>
+                        </div>
+                        <div class="w-full grid grid-cols-1 lg:grid-cols-2">
+                            <div 
+                                v-for="(data, index) in searchMusicComeback" 
+                                :key="data.objectID" 
+                                class="hover:bg-primary/10 px-3 py-1.5 rounded cursor-pointer text-sm flex justify-between items-center gap-3" 
+                                @click="addInPlaylistFromRecommandation(data.objectID)"
+                            >
+                                <div class="flex items-center gap-3">
+                                    <NuxtImg
+                                        :src="data.mvThumbnails.default.url"
+                                        :alt="data.name"
+                                        class="aspect-video w-20 rounded"
+                                    />
+                                    <div>
+                                        <p><span class="font-semibold text-base">{{ data.name }}</span> - {{ data.album.name }}</p>
+                                        <div class="flex gap-1 text-xs">
+                                            <p class="truncate">{{ data.artists[0].name }}</p>
+                                            <p v-if="data.hasMv" class="bg-primary rounded px-1 font-semibold">MV</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="rounded bg-quinary p-2">
+                                    <IconPlus class="w-5 h-5" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <form
                     v-else
                     @submit.prevent="getYoutubeVideo"
@@ -432,7 +496,7 @@
                 >
                     <input
                         id="search-input"
-                        v-model="search"
+                        v-model="youtubeUrlInput"
                         type="text"
                         placeholder="Youtube URL"
                         :disabled="!isAllowedToAddSong"
@@ -447,9 +511,13 @@
                         <span class="hidden lg:block">Add URL</span>
                     </button>
                 </form>
+                <div class="space-x-2 text-sm">
+                    <button @click="searchOnComeback = true" class="px-3 py-1 rounded" :class="searchOnComeback ? 'bg-primary':'hover:bg-quinary'">Search on <span class="font-bold" :class="searchOnComeback ? 'text-tertiary ':'text-primary'">Comeback</span></button>
+                    <button @click="searchOnComeback = false" class="px-3 py-1 rounded" :class="searchOnComeback ? 'hover:bg-quinary':'bg-primary'">Add Youtube URL</button>
+                </div>
             </div>
             <div id="playlist-video" class="flex flex-col-reverse justify-end lg:justify-start lg:flex-row gap-3 flex-grow">
-                <div class="hidden lg:block bg-quinary rounded p-3 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%]">
+                <div class="bg-quinary rounded p-3 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%]">
                     <div class="w-full flex justify-between">
                         <div class="flex gap-3">
                             <p class="uppercase font-semibold">Playlist</p>
@@ -493,7 +561,7 @@
                         @videoEnded="nextVideo"
                         @videoError="videoError"
                         @updateDuration="updateDurationActualVideoPlay($event)"
-                        class="z-50" 
+                        class="z-40" 
                     />
                 </div>
             </div>
@@ -592,7 +660,7 @@
                             </div>
                         </div>
                     </div>
-                    <div>
+                    <div class="hidden lg:block">
                         <p class="font-semibold uppercase text-sm">Room Moderators</p>
                         <div class="flex gap-3 overflow-hidden overflow-x-auto">
                             <SyncRadioUserLabel

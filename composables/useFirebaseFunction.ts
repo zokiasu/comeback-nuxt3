@@ -272,7 +272,26 @@ export function useFirebaseFunction() {
   }
   // Deletes a document in the 'releases' collection in Firestore.
   const deleteRelease = async (id: string): Promise<string> => {
-    return await deleteDoc(doc(database as any, 'releases', id)).then(() => {
+    const musicsRef = collection(database as any, 'releases', id, 'musics');
+
+    try {
+      const snapshot = await getDocs(musicsRef);
+      const deleteMusicPromises = snapshot.docs.map((doc) => deleteMusic(doc.id));
+      await Promise.all(deleteMusicPromises);
+  
+      await deleteDoc(doc(database as any, 'releases', id));
+      console.log('Document successfully deleted!');
+      return 'success';
+    } catch (error) {
+      console.error('Error removing document:', error);
+      return 'error';
+    }
+  }
+
+  const deleteMusic = async (musicId: string): Promise<string> => {
+    const docRef = doc(database as any, 'musics', musicId);
+
+    return await deleteDoc(docRef).then(() => {
       console.log('Document successfully deleted!');
       return 'success';
     }).catch((error) => {
@@ -280,6 +299,7 @@ export function useFirebaseFunction() {
       return 'error';
     });
   }
+
   // Fetches releases by a specific artist from the 'releases' collection in Firestore.
   const getReleaseByArtistId = async (artistId: string) => {
     const colRef = query(collection(database as any, 'releases'), where('artistsId', '==', artistId));

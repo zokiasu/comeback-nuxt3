@@ -6,6 +6,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   const { setUserData, setFirebaseUser, setIsLogin, setIsAdmin } = useUserStore()
 
   const checkAuthState = () => {
+    setUserData(null)
     return new Promise((resolve, reject) => {
       const unsubscribe = $auth.onAuthStateChanged(async (userState: any) => {
         if (userState) {
@@ -70,7 +71,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   try {
     const user = await checkAuthState()
-    console.log('Middleware User:', user)
     // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
     if (!user) {
       return navigateTo({
