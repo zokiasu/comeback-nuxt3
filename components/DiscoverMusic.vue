@@ -4,6 +4,7 @@ const music = ref({} as any)
 
 onMounted(async () => {
   music.value = await getRandomMusic()
+  console.log('Music', music.value)
 })
 
 const idYoutubeVideo = useIdYoutubeVideo()

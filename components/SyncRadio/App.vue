@@ -556,7 +556,8 @@
                     >
                         Reload Player
                     </button>
-                    <SyncRadioYoutubePlayer
+                    <LazySyncRadioYoutubePlayer
+                        v-if="actualVideoPlay"
                         ref="playerRef"
                         @videoEnded="nextVideo"
                         @videoError="videoError"
@@ -574,19 +575,19 @@
                         </button>
                     </div>
                     <div class="flex flex-col divide-y divide-tertiary/30 ">
-                        <SyncRadioRecommandationCard
+                        <LazySyncRadioRecommandationCard
                             id="recommandation-card-1"
                             ref="recommandationCard1"
                             :isAdminRoom="isAllowedToAddSong" 
                             @addInPlaylist="addInPlaylistFromRecommandation"
                         />
-                        <SyncRadioRecommandationCard 
+                        <LazySyncRadioRecommandationCard 
                             id="recommandation-card-2"
                             ref="recommandationCard2"
                             :isAdminRoom="isAllowedToAddSong" 
                             @addInPlaylist="addInPlaylistFromRecommandation"
                         />
-                        <SyncRadioRecommandationCard
+                        <LazySyncRadioRecommandationCard
                             id="recommandation-card-3"
                             ref="recommandationCard3"
                             :isAdminRoom="isAllowedToAddSong" 

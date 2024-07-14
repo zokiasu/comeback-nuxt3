@@ -158,8 +158,8 @@ useHead({
           disabled
         />
       </div>
-      <!-- Id YTM & Type -->
-      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+      <!-- Id YTM & Type & Activity -->
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
         <ComebackInput
           label="Id Youtube Music"
           :placeholder="artist.idYoutubeMusic"
@@ -173,6 +173,16 @@ useHead({
           >
             <option value="SOLO" class="text-secondary">SOLO</option>
             <option value="GROUP" class="text-secondary">GROUP</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-1 gap-1">
+          <ComebackLabel label="Active Career" />
+          <select
+            v-model="artistToEdit.activeCareer"
+            class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
+          >
+            <option value="true" class="text-secondary">Active</option>
+            <option value="false" class="text-secondary">Inactive</option>
           </select>
         </div>
       </div>
