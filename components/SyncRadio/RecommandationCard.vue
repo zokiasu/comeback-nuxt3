@@ -18,7 +18,7 @@
     })
 
     const reloadRandomMusic = async () => {
-        music.value = {}
+        music.value = null
         music.value = await getRandomMusic()
     }
 
