@@ -430,6 +430,10 @@
     <div class="relative flex flex-col lg:flex-row px-4 lg:px-8 pb-8 gap-3 min-h-[calc(100dvh-80px)] lg:max-h-[calc(100dvh-80px)] transition-all ease-out duration-300">
         <section class="relative space-y-3 w-full flex flex-col" :class="blurEffectLoading ? 'filter blur-sm' : ''">
             <div class="space-y-2">
+                <div class="space-x-2 text-sm">
+                    <button @click="searchOnComeback = true" class="px-3 py-1 rounded" :class="searchOnComeback ? 'bg-primary':'hover:bg-quinary'">Search on <span class="font-bold" :class="searchOnComeback ? 'text-tertiary ':'text-primary'">Comeback</span></button>
+                    <button @click="searchOnComeback = false" class="px-3 py-1 rounded" :class="searchOnComeback ? 'hover:bg-quinary':'bg-primary'">Add Youtube URL</button>
+                </div>
                 <div
                     v-if="searchOnComeback"
                     class="flex gap-3"
@@ -511,10 +515,6 @@
                         <span class="hidden lg:block">Add URL</span>
                     </button>
                 </form>
-                <div class="space-x-2 text-sm">
-                    <button @click="searchOnComeback = true" class="px-3 py-1 rounded" :class="searchOnComeback ? 'bg-primary':'hover:bg-quinary'">Search on <span class="font-bold" :class="searchOnComeback ? 'text-tertiary ':'text-primary'">Comeback</span></button>
-                    <button @click="searchOnComeback = false" class="px-3 py-1 rounded" :class="searchOnComeback ? 'hover:bg-quinary':'bg-primary'">Add Youtube URL</button>
-                </div>
             </div>
             <div id="playlist-video" class="flex flex-col-reverse justify-end lg:justify-start lg:flex-row gap-3 flex-grow">
                 <div class="bg-quinary rounded p-3 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%]">
