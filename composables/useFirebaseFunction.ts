@@ -336,6 +336,12 @@ export function useFirebaseFunction() {
 
   ///////// Artist's Function \\\\\\\\\\
 
+  const getAllArtists = async () => {
+    const colRef = collection(database as any, 'artists');
+    const snapshot = await getDocs(colRef);
+    return snapshotResultToArray(snapshot);
+  }
+
   // Fetches an artist with full details by its ID from the 'artists' collection in Firestore.
   const getArtistById = async (idArtist: string) => {
     const docRef = doc(database as any, 'artists', idArtist);
@@ -530,6 +536,15 @@ export function useFirebaseFunction() {
     }
   }
 
+  const updateUserData = async(user: any) => {
+    const docRef = doc(database as any, 'users', user.id);
+    await updateDoc(docRef, user).then(() => {
+      // console.log('Document successfully updated!');
+    }).catch((error) => {
+      console.error('Error updating document:', error);
+    });
+  }
+
   return {
     database,
     getRealtimeNextComebacks,
@@ -540,10 +555,12 @@ export function useFirebaseFunction() {
     getRandomMusic,
     updateRelease,
     getAllReleases,
+    getAllArtists,
     getComebackExist,
     getReleaseByArtistId,
     createArtist,
     updateArtist,
+    updateUserData,
     getArtistById,
     getArtistByIdLight,
     deleteRelease,
