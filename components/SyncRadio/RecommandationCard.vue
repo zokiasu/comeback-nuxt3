@@ -15,7 +15,6 @@
 
     onMounted(async () => {
         music.value = await getRandomMusic()
-        console.log('music', music.value)
     })
 
     const reloadRandomMusic = async () => {
