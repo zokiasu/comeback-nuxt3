@@ -455,7 +455,7 @@
                             <IconClose class="w-5 h-5" />
                         </button>
                     </div>
-                    <div v-if="searchMusicComeback.length" class="absolute top-12 rounded drop-shadow inset-x-0 bg-quaternary z-50 gap-x-5 py-5 lg:px-10">
+                    <div v-if="searchMusicComeback.length" class="absolute top-20 rounded drop-shadow inset-x-0 bg-quaternary z-50 gap-x-5 py-5 lg:px-10">
                         <div class="hidden lg:flex gap-3">
                             <p>Limit Result :</p>
                             <button :class="maxResults === 10 ? 'font-bold':''" @click="maxResults = 10">
