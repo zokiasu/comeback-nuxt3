@@ -1,44 +1,44 @@
 <script setup lang="ts">
-const { getRandomMusic } = useFirebaseFunction()
+    const { getRandomMusic } = useFirebaseFunction()
 
-const { isAdminRoom } = defineProps<{
-    isAdminRoom: boolean;
-}>();
+    const { isAdminRoom } = defineProps<{
+        isAdminRoom: boolean;
+    }>();
 
-const emit = defineEmits(['addInPlaylist']);
+    const emit = defineEmits(['addInPlaylist']);
 
-const music = ref({} as any)
+    const music = ref(null)
 
-const musicName = computed(() => music.value.name)
-const musicArtists = computed(() => music.value.artists[0].name)
-const hasMv = computed(() => music.value.hasMv || false)
+    const musicName = computed(() => music.value?.name)
+    const musicArtists = computed(() => music.value?.artists[0]?.name)
+    const hasMv = computed(() => music.value?.hasMv || false)
 
-onMounted(async () => {
-    music.value = await getRandomMusic()
-})
+    onMounted(async () => {
+        music.value = await getRandomMusic()
+    })
 
-const reloadRandomMusic = async () => {
-    music.value = {}
-    music.value = await getRandomMusic()
-}
+    const reloadRandomMusic = async () => {
+        music.value = null
+        music.value = await getRandomMusic()
+    }
 
-const addInPlaylist = () => {
-    emit('addInPlaylist', music.value.videoId)
-    reloadRandomMusic()
-}
+    const addInPlaylist = () => {
+        emit('addInPlaylist', music.value.videoId)
+        reloadRandomMusic()
+    }
 
-const sendMusic = () => {
-    //console.log('sendMusic')
-}
+    const sendMusic = () => {
+        //console.log('sendMusic')
+    }
 
-defineExpose({
-  reloadRandomMusic
-})
+    defineExpose({
+    reloadRandomMusic
+    })
 </script>
 
 <template>
     <div>
-        <div v-if="music.name" class="w-full flex items-center justify-between py-2.5">
+        <div v-if="music" class="w-full flex items-center justify-between py-2.5">
             <div class="flex-grow space-y-2 max-w-[60%]">
                 <div class="relative h-[14px]">
                     <p class="truncate text-sm font-semibold hover:absolute hover:overflow-auto hover:z-10 hover:bg-quinary">{{ musicName }}</p>

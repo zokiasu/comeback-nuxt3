@@ -130,9 +130,9 @@ function updateVideoId(newId, time = 0) {
         idYoutubeVideo.value = newId;
         currentTime.value = time;
         initYTPlayer();
-        if (player.value && currentTime.value > 0) {
-            player.value?.seekTo(currentTime.value);
-        }
+        // if (player.value && currentTime.value > 0) {
+        //     player.value?.seekTo(currentTime.value);
+        // }
     } else {
         idYoutubeVideo.value = newId;
         player.value?.loadVideoById(newId);

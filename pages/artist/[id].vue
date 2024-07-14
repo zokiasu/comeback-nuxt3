@@ -79,16 +79,21 @@ useHead({
         :class="imageBackLoaded ? 'bg-secondary/60' : 'bg-quinary'"
       >
         <div class="space-y-5 lg:container lg:mx-auto lg:px-5">
-          <h1 v-if="artist.name && !isFetchingArtist" class="py-3 text-3xl font-bold md:text-6xl xl:text-7xl">
+          <SkeletonDefault v-if="isFetchingArtist" class="h-14 w-80 rounded" />
+          <h1 v-if="artist.name && !isFetchingArtist" class="text-3xl font-bold md:text-6xl xl:text-7xl">
             {{ artist.name }}
           </h1>
-          <SkeletonDefault v-if="isFetchingArtist" class="h-14 w-80 rounded" />
-          <NuxtLink
-            :to="editLink"
-            class="bg-secondary px-2 py-1 text-xs font-semibold uppercase"
-          >
-            Edit Artist
-          </NuxtLink>
+          <div class="flex gap-2">
+            <p v-if="artist.activeCareer" class="bg-quaternary px-2 py-1 text-xs font-semibold uppercase w-fit">
+              Inactive (Withdrawn or Disband)
+            </p>
+            <NuxtLink
+              :to="editLink"
+              class="bg-secondary px-2 py-1 text-xs font-semibold uppercase"
+            >
+              Edit Artist
+            </NuxtLink>
+          </div>
         </div>
       </div>
     </section>

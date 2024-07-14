@@ -14,6 +14,8 @@ import {
   limit,
   getCountFromServer,
   onSnapshot,
+  startAt,
+  endAt,
 } from 'firebase/firestore'
 import _ from 'lodash'
 import { useToast } from 'vue-toastification'
@@ -44,7 +46,7 @@ export function useFirebaseFunction() {
       return { id: docSnap.id, ...docSnap.data() };
     } else {
       // Gérer l'absence de document, par exemple en retournant null ou en affichant un message
-      console.log("Aucun document correspondant !");
+      // console.log("Aucun document correspondant !");
       return null;
     }
   };
@@ -177,28 +179,43 @@ export function useFirebaseFunction() {
   }
   // Fetches a random music release from the 'releases' collection in Firestore.
   const getRandomMusic = async (): Promise<any> => {
-    const colRef = query(collection(database as any, 'releases'));
-    const snapshot = await getDocs(colRef);
-    let releases = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const years = [2020, 2021, 2022, 2023, 2024];
+    const selectedYear = years[Math.floor(Math.random() * years.length)];
+    // console.log('selectedYear', selectedYear)
   
-    releases = shuffleArray(releases); // Mélange les releases
-  
-    for (let release of releases) {
-      const colMusic = query(collection(database as any, 'releases', release.id, 'musics'));
-      const snapshotMusic = await getDocs(colMusic);
-      const musics = snapshotMusic.docs.map((doc) => doc.data());
-  
-      for (let music of musics) {
-        const isEmbeddable = await canVideoBeEmbedded(music.videoId, config.public.YOUTUBE_API_KEY);
-        if (!music.name.toLowerCase().includes('inst') && isEmbeddable) {
-          return music; // Retourne immédiatement dès qu'une musique correspondante est trouvée
-        }
+    // Filtrer les musiques par l'année sélectionnée
+    const countRef = collection(database as any, 'musics');
+    const yearQuery = query(countRef, where('year', '==', selectedYear));
+    const snapshot = await getCountFromServer(yearQuery);
+    const totalMusics = snapshot.data().count;
+    // console.log('totalMusics', totalMusics)
+
+    if (totalMusics === 0) {
+      return null;
+    }
+
+    // Générer un index aléatoire
+    const randomIndex = Math.floor(Math.random() * totalMusics);
+    // console.log('randomIndex', randomIndex)
+    const musicQuery = query(countRef, orderBy('name'), limit(((randomIndex + 1) <= totalMusics ? (randomIndex + 1) : totalMusics)));
+    // console.log('musicQuery', musicQuery)
+    const musicSnapshot = await getDocs(musicQuery);
+    // console.log('musicSnapshot', musicSnapshot)
+    const musicDoc = musicSnapshot.docs[randomIndex];
+    // console.log('musicDoc', musicDoc)
+
+    if (musicDoc) {
+      const musicData = musicDoc.data();
+      const isEmbeddable = await canVideoBeEmbedded(musicData.videoId, config.public.YOUTUBE_API_KEY);
+      if (!musicData.name.toLowerCase().includes('inst') && !musicData.name.toLowerCase().includes('sped-up') && isEmbeddable) {
+        return musicData; // Retourne la musique si elle peut être intégrée
       }
     }
   
-    // Si aucune musique correspondante n'est trouvée après avoir parcouru toutes les releases
-    return null;
+    // Si aucune musique correspondante n'est trouvée après avoir parcouru toutes les musiques relance la fonction
+    return getRandomMusic();
   };
+
   // return a list of 10 random music from list release id
   const getRandomMusicFromListReleaseId = async (listReleaseId: string[]): Promise<any[]> => {
     // Mélange la liste des identifiants de release
@@ -263,7 +280,7 @@ export function useFirebaseFunction() {
   const updateRelease = async (id: string, data: any): Promise<string> => {
     const docRef = doc(database as any, 'releases', id);
     return updateDoc(docRef, data).then(() => {
-      console.log('Document successfully updated!');
+      // console.log('Document successfully updated!');
       return 'success';
     }).catch((error) => {
       console.error('Error updating document:', error);
@@ -272,14 +289,34 @@ export function useFirebaseFunction() {
   }
   // Deletes a document in the 'releases' collection in Firestore.
   const deleteRelease = async (id: string): Promise<string> => {
-    return await deleteDoc(doc(database as any, 'releases', id)).then(() => {
-      console.log('Document successfully deleted!');
+    const musicsRef = collection(database as any, 'releases', id, 'musics');
+
+    try {
+      const snapshot = await getDocs(musicsRef);
+      const deleteMusicPromises = snapshot.docs.map((doc) => deleteMusic(doc.id));
+      await Promise.all(deleteMusicPromises);
+  
+      await deleteDoc(doc(database as any, 'releases', id));
+      // console.log('Document successfully deleted!');
+      return 'success';
+    } catch (error) {
+      console.error('Error removing document:', error);
+      return 'error';
+    }
+  }
+
+  const deleteMusic = async (musicId: string): Promise<string> => {
+    const docRef = doc(database as any, 'musics', musicId);
+
+    return await deleteDoc(docRef).then(() => {
+      // console.log('Document successfully deleted!');
       return 'success';
     }).catch((error) => {
       console.error('Error removing document:', error);
       return 'error';
     });
   }
+
   // Fetches releases by a specific artist from the 'releases' collection in Firestore.
   const getReleaseByArtistId = async (artistId: string) => {
     const colRef = query(collection(database as any, 'releases'), where('artistsId', '==', artistId));
@@ -441,13 +478,13 @@ export function useFirebaseFunction() {
 
     for (const release of releases) {
       await deleteDoc(doc(database as any, 'releases', release.id)).then(() => {
-        console.log('Document successfully deleted!', release.name, release.artistName);
+        // console.log('Document successfully deleted!', release.name, release.artistName);
       });
     }
 
     for (const group of artistGroups) {
       await deleteDoc(doc(database as any, 'artists', id, 'groups', group.id)).then(() => {
-        console.log('Document successfully deleted!', group.name, release.artistName);
+        // console.log('Document successfully deleted!', group.name, release.artistName);
       });
       await deleteDoc(doc(database as any, 'artists', group.id, 'members', id));
     }

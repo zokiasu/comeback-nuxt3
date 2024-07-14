@@ -1,4 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
+import { useUserStore } from '@/stores/user';
 
 export const signUpWithEAndP = async (email: string, password: string) => {
   const { $auth } = useNuxtApp()
@@ -28,6 +29,9 @@ export const signInWithEAndP = async (email: string, password: string) => {
 
 export const signOutApp = async () => {
   const { $auth } = useNuxtApp()
+  const { setUserData, setIsAdmin } = useUserStore();
+  setUserData(null)
+  setIsAdmin(false)
   const result = await $auth.signOut()
   return result
 }
