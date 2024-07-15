@@ -82,7 +82,7 @@
     const userData = computed(() => userStore.userDataStore)
     const moderators = computed(() => currentUsers.value.filter(user => user.status === 'moderator' || user.status === 'administrator'))
     const listeners = computed(() => currentUsers.value.filter(user => user.status === 'listener'))
-    const isAllowedToAddSong = computed(() => isEveryoneCanAddSong.value || isAdminRoom.value)
+    const isAllowedToAddSong = computed(() => isEveryoneCanAddSong.value || isEveryoneCanAddSong.value)
 
     function checkIfUserIsCreator(users, userId) {
         return users.some(user => user.id === userId && user.status === 'administrator');
@@ -142,7 +142,7 @@
     }
 
     const updateDurationActualVideoPlay = (duration) => {
-        if (isAdminRoom.value && duration > 0) {
+        if (isEveryoneCanAddSong.value && duration > 0) {
             actualVideoPlay.value.duration = duration
             updateData('/syncradio/' + roomId + '/actualVideoPlay/', actualVideoPlay.value)
         }
@@ -158,7 +158,7 @@
     }
 
     const updateSettings = (settingToUpdate, state) => {
-        if(isAdminRoom.value) {
+        if(isEveryoneCanAddSong.value) {
             const settings = {
                 isEveryoneDJ: settingToUpdate === 'isEveryoneDJ' ? state : isEveryoneCanAddSong.value,
                 isTemporary: settingToUpdate === 'isTemporary' ? state : permanentRoom.value
@@ -178,7 +178,7 @@
     }
 
     const setNewVideo = (index) => {
-        if(isAdminRoom.value) {
+        if(isEveryoneCanAddSong.value) {
             if(roomPlaylist.value) {
                 const video = roomPlaylist.value[index];
                 updateActualVideoPlay(video);
@@ -192,7 +192,7 @@
     }
 
     const deleteVideo = (index) => {
-        if(isAdminRoom.value) {
+        if(isEveryoneCanAddSong.value) {
             roomPlaylist.value.splice(index, 1)
             reIndexAllPlaylist()
             reIndexActualPlayingVideo()
@@ -202,19 +202,15 @@
     }
 
     const reIndexAllPlaylist = () => {
-        if(isAdminRoom.value) {
-            roomPlaylist.value.forEach((video, index) => {
-                video.index = index
-            })
-            writeData('/syncradio/' + roomId + '/playlist/', roomPlaylist.value)
-        }
+        roomPlaylist.value.forEach((video, index) => {
+            video.index = index
+        })
+        writeData('/syncradio/' + roomId + '/playlist/', roomPlaylist.value)
     }
 
     const reIndexActualPlayingVideo = () => {
-        if(isAdminRoom.value) {
-            actualVideoPlay.value.index = roomPlaylist.value?.findIndex(video => video.id === actualVideoPlay.value.id) || 0
-            writeData('/syncradio/' + roomId + '/actualVideoPlay/', actualVideoPlay.value)
-        }
+        actualVideoPlay.value.index = roomPlaylist.value?.findIndex(video => video.id === actualVideoPlay.value.id) || 0
+        writeData('/syncradio/' + roomId + '/actualVideoPlay/', actualVideoPlay.value)
     }
 
     const getDetailsVideoFromId = (videoId) => {
@@ -230,12 +226,12 @@
                     name: userData.value.name
                 }
             }
-            if(isAdminRoom.value && (!actualVideoPlay.value || !actualVideoPlay.value.id)) {
+            if(isEveryoneCanAddSong.value && (!actualVideoPlay.value || !actualVideoPlay.value.id)) {
                 // actualVideoPlay.value = videoData
                 videoData.index = 0
                 updateActualVideoPlay(videoData)
                 addInPlaylist(videoData)
-            } else if (isAdminRoom.value) {
+            } else if (isEveryoneCanAddSong.value) {
                 if(!roomPlaylist.value?.length) {
                     videoData.index = 0
                 } else {
@@ -268,7 +264,7 @@
     }
 
     const addInPlaylist = (data) => {
-        if(isAdminRoom.value) {
+        if(isEveryoneCanAddSong.value) {
             roomPlaylist.value = roomPlaylist.value || []
             roomPlaylist.value.push(data)
             writeData('/syncradio/' + roomId + '/playlist/', roomPlaylist.value)
@@ -289,11 +285,11 @@
                 }
             }
             
-            if(isAdminRoom.value && (!actualVideoPlay.value || !actualVideoPlay.value.id)) {
+            if(isEveryoneCanAddSong.value && (!actualVideoPlay.value || !actualVideoPlay.value.id)) {
                 videoData.index = 0
                 updateActualVideoPlay(videoData)
                 addInPlaylist(videoData)
-            } else if (isAdminRoom.value) {
+            } else if (isEveryoneCanAddSong.value) {
                 if(!roomPlaylist.value) {
                     videoData.index = 0
                 } else {
@@ -337,7 +333,7 @@
     }
 
     const deletePlaylist = () => {
-        if(isAdminRoom.value) {
+        if(isEveryoneCanAddSong.value) {
             roomPlaylist.value = []
             writeData('/syncradio/' + roomId + '/playlist/', roomPlaylist.value)
             reIndexActualPlayingVideo()
@@ -405,7 +401,7 @@
                 
                 checkUserDataUpdate()
                 if (isCreator) {
-                    isAdminRoom.value = true
+                    isEveryoneCanAddSong.value = true
                 }
             } else {
                 addUserToRoom()
