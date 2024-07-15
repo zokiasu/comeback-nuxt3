@@ -567,7 +567,7 @@
                 </div>
             </div>
             <div class="flex gap-3">
-                <section id="recommandation" class="hidden lg:block bg-quinary rounded p-3 text-xs w-[25%] max-w-[25%] min-w-[25%]">
+                <!-- <section id="recommandation" class="hidden lg:block bg-quinary rounded p-3 text-xs w-[25%] max-w-[25%] min-w-[25%]">
                     <div class="flex justify-between items-center w-full">
                         <p class="uppercase font-semibold">Recommandation</p>
                         <button @click="reloadAllRecommandationCard" class="rounded p-1 transition-all ease-in-out duration-300 bg-quaternary hover:bg-primary">
@@ -594,7 +594,7 @@
                             @addInPlaylist="addInPlaylistFromRecommandation"
                         />
                     </div>
-                </section>
+                </section> -->
                 <section id="moderation" class="w-full space-y-2">
                     <div class="flex flex-col lg:flex-row gap-3 justify-between w-full">
                         <div v-if="isAdminRoom" class="space-y-1">
