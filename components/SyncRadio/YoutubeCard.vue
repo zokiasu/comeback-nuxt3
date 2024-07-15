@@ -22,7 +22,7 @@ const playVideo = () => {
 
 <template>
     <div 
-        class="relative flex items-center gap-3 p-2 h-20 rounded-lg" 
+        class="relative flex items-center h-20 gap-3 p-2 rounded-lg" 
         :class="{
             'group' : isAdmin,
             'bg-primary' : isActualPlaying,
@@ -32,17 +32,17 @@ const playVideo = () => {
         <NuxtImg
             :src="urlPicture"
             :alt="name"
-            class="rounded object-cover h-full min-h-full min-w-[20%] w-[20%]"
+            class="hidden lg:block rounded object-cover h-full min-h-full min-w-[20%] w-[20%]"
         />
-        <div class="h-full w-full flex flex-col justify-between text-sm truncate">
+        <div class="flex flex-col justify-between w-full h-full text-sm truncate">
             <p class="font-semibold truncate">{{ name }}</p>
             <p class="text-xs">{{ channelName }}</p>
-            <div class="flex items-end text-xs justify-between w-full">
+            <div class="flex items-end justify-between w-full text-xs">
                 <div class="flex gap-1">
                     <p>Added by</p>
                     <p class="font-semibold">{{ userName }}</p>
                 </div>
-                <div class="hidden items-center gap-2" :class="isAdmin ? 'group-hover:flex':''">
+                <div class="items-center hidden gap-2" :class="isAdmin ? 'group-hover:flex':''">
                     <button @click="deleteInPlaylist">
                         <IconDelete class="w-3.5 h-3.5 cursor-pointer hover:text-primary" />
                     </button>

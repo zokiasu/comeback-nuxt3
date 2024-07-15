@@ -422,25 +422,57 @@
 </script>
 
 <template>
-    <div class="relative flex flex-col lg:flex-row px-4 lg:px-8 pb-8 gap-3 min-h-[calc(100dvh-80px)] lg:max-h-[calc(100dvh-80px)] transition-all ease-out duration-300">
-        <section class="relative space-y-3 w-full flex flex-col" :class="blurEffectLoading ? 'filter blur-sm' : ''">
-            <div class="space-y-2">
-                <div class="space-x-2 text-sm">
-                    <button @click="searchOnComeback = true" class="px-3 py-1 rounded" :class="searchOnComeback ? 'bg-primary':'hover:bg-quinary'">Search on <span class="font-bold" :class="searchOnComeback ? 'text-tertiary ':'text-primary'">Comeback</span></button>
-                    <button @click="searchOnComeback = false" class="px-3 py-1 rounded" :class="searchOnComeback ? 'hover:bg-quinary':'bg-primary'">Add Youtube URL</button>
+    <div id="syncRadioApp" class="relative flex flex-col gap-3 px-4 pb-8 text-sm transition-all duration-300 ease-out min-h-[calc(100dvh-80px)] lg:max-h-[calc(100dvh-80px)] lg:flex-row lg:px-8">
+        <section id="bodyApp" class="relative flex flex-col w-full max-h-full space-y-3" :class="blurEffectLoading ? 'filter blur-sm' : ''">
+
+            <div id="searchInputElement" class="space-y-2">
+                <div class="flex justify-between space-x-2 text-sm">
+                    <div class="flex">
+                        <button 
+                            @click="searchOnComeback = true" 
+                            class="px-3 py-1 rounded" 
+                            :class="searchOnComeback ? 'bg-primary':'hover:bg-quinary'"
+                        >
+                            Search on <span class="font-bold" :class="searchOnComeback ? 'text-tertiary ':'text-primary'">Comeback</span>
+                        </button>
+                        <button 
+                            @click="searchOnComeback = false" 
+                            class="px-3 py-1 rounded" 
+                            :class="searchOnComeback ? 'hover:bg-quinary':'bg-primary'"
+                        >
+                            Add Youtube URL
+                        </button>
+                    </div>
+                    <div class="flex gap-2">
+                        <button
+                            @click="copyIdRoom"
+                            class="flex items-center justify-center w-full gap-1 px-3 py-1 transition-all duration-300 ease-in-out rounded lg:justify-start lg:w-fit lg:py-1 bg-quinary text-tertiary hover:bg-tertiary/30"
+                        >
+                            <IconCopy class="w-4 h-4" />
+                            Copy ID
+                        </button>
+                        <button
+                            @click="shareRoomUrl"
+                            class="flex items-center justify-center w-full gap-1 px-3 py-1 transition-all duration-300 ease-in-out rounded lg:justify-start lg:w-fit lg:py-1 bg-quinary text-tertiary hover:bg-tertiary/30"
+                        >
+                            <IconShare class="w-4 h-4" />
+                            Share Room 
+                        </button>
+                    </div>
                 </div>
+                
                 <div
                     v-if="searchOnComeback"
                     class="flex gap-3"
                 >
-                    <div class="w-full relative">
+                    <div class="relative w-full">
                         <input
                             id="search-input"
                             v-model="searchComebackInput"
                             type="text"
                             placeholder="Search a song"
                             :disabled="!isAllowedToAddSong"
-                            class="w-full disabled:opacity-50 rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+                            class="w-full px-5 py-2 transition-all duration-300 ease-in-out border-none rounded disabled:opacity-50 bg-quinary placeholder-tertiary drop-shadow-xl focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
                         />
                         <button 
                             v-if="searchComebackInput.length"
@@ -450,8 +482,8 @@
                             <IconClose class="w-5 h-5" />
                         </button>
                     </div>
-                    <div v-if="searchMusicComeback.length" class="absolute top-20 rounded drop-shadow inset-x-0 bg-quaternary z-50 gap-x-5 py-5 lg:px-10">
-                        <div class="hidden lg:flex gap-3">
+                    <div v-if="searchMusicComeback.length" class="absolute inset-x-0 z-50 py-5 rounded top-20 drop-shadow bg-quaternary gap-x-5 lg:px-10">
+                        <div class="hidden gap-3 lg:flex">
                             <p>Limit Result :</p>
                             <button :class="maxResults === 10 ? 'font-bold':''" @click="maxResults = 10">
                                 10
@@ -460,7 +492,7 @@
                                 20
                             </button>
                         </div>
-                        <div class="w-full grid grid-cols-1 lg:grid-cols-2">
+                        <div class="grid w-full grid-cols-1 lg:grid-cols-2">
                             <div 
                                 v-for="(data, index) in searchMusicComeback" 
                                 :key="data.objectID" 
@@ -471,17 +503,17 @@
                                     <NuxtImg
                                         :src="data.mvThumbnails.default.url"
                                         :alt="data.name"
-                                        class="aspect-video w-20 rounded"
+                                        class="w-20 rounded aspect-video"
                                     />
                                     <div>
-                                        <p><span class="font-semibold text-base">{{ data.name }}</span> - {{ data.album.name }}</p>
+                                        <p><span class="text-base font-semibold">{{ data.name }}</span> - {{ data.album.name }}</p>
                                         <div class="flex gap-1 text-xs">
                                             <p class="truncate">{{ data.artists[0].name }}</p>
-                                            <p v-if="data.hasMv" class="bg-primary rounded px-1 font-semibold">MV</p>
+                                            <p v-if="data.hasMv" class="px-1 font-semibold rounded bg-primary">MV</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="rounded bg-quinary p-2">
+                                <div class="p-2 rounded bg-quinary">
                                     <IconPlus class="w-5 h-5" />
                                 </div>
                             </div>
@@ -499,23 +531,24 @@
                         type="text"
                         placeholder="Youtube URL"
                         :disabled="!isAllowedToAddSong"
-                        class="w-full disabled:opacity-50 rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+                        class="w-full px-5 py-2 transition-all duration-300 ease-in-out border-none rounded disabled:opacity-50 bg-quinary placeholder-tertiary drop-shadow-xl focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
                     />
                     <button
                         type="submit"
                         :disabled="!isAllowedToAddSong"
                         class="px-3 lg:w-full disabled:opacity-50 sm:max-w-[10rem] overflow-hidden bg-primary rounded py-2 text-tertiary font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-primary/90"
                     >
-                        <IconPlus class="w-5 h-5 lg:hidden mx-auto" />
+                        <IconPlus class="w-5 h-5 mx-auto lg:hidden" />
                         <span class="hidden lg:block">Add URL</span>
                     </button>
                 </form>
             </div>
-            <div id="playlist-video" class="flex flex-col-reverse justify-end lg:justify-start lg:flex-row gap-3 flex-grow">
-                <div class="bg-quinary rounded p-3 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%]">
-                    <div class="w-full flex justify-between">
+
+            <div id="playlist-video" class="flex flex-col-reverse justify-end flex-grow gap-3 h-fit lg:justify-start lg:flex-row">
+                <div class="bg-quinary h-fit rounded p-2 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%] lg:max-h-[55dvh] overflow-hidden">
+                    <div class="flex justify-between w-full">
                         <div class="flex gap-3">
-                            <p class="uppercase font-semibold">Playlist</p>
+                            <p class="font-semibold uppercase">Playlist</p>
                             <button v-if='isAllowedToAddSong && roomPlaylist' @click="nextVideo" class="flex hover:text-primary">
                                 <p class="text-xs">Next Song</p>
                                 <IconDoubleArrowRight class="w-5 h-5 cursor-pointer" />
@@ -525,7 +558,7 @@
                             <IconDelete class="w-5 h-5 cursor-pointer hover:text-primary" />
                         </button>
                     </div>
-                    <div ref="roomPlaylistElement" class="flex flex-col gap-2 w-full h-full max-h-[10dvh] lg:max-h-[50dvh] overflow-hidden overflow-y-auto remove-scrollbar">
+                    <div ref="roomPlaylistElement" class="flex flex-col w-full h-full gap-2 overflow-hidden lg:max-h-[50dvh] overflow-y-auto remove-scrollbar">
                         <SyncRadioYoutubeCard
                             v-for="(video, index) in roomPlaylist"
                             :key="'videoPlaylist_'+index"
@@ -542,12 +575,12 @@
                         />
                     </div>
                 </div>
-                <div class="relative h-full w-full flex flex-col justify-center items-center aspect-video lg:aspect-auto rounded max-h-[768px]">
-                    <p v-if="errorMessage" class="font-semibold p-5 text-lg">You are probably using your YouTube account on another page or device. Consider stopping it to fully enjoy SyncRadio.</p>
+                <div class="relative flex flex-col items-center justify-center w-full h-full bg-green-500 rounded aspect-video lg:aspect-auto">
+                    <p v-if="errorMessage" class="p-5 text-lg font-semibold">You are probably using your YouTube account on another page or device. Consider stopping it to fully enjoy SyncRadio.</p>
                     <button
                         v-if="errorMessage"
                         @click="resetPlayer"
-                        class="p-2 bg-quaternary hover:bg-primary rounded-lg transition-all ease-in-out duration-300"
+                        class="p-2 transition-all duration-300 ease-in-out rounded-lg bg-quaternary hover:bg-primary"
                     >
                         Reload Player
                     </button>
@@ -561,11 +594,12 @@
                     />
                 </div>
             </div>
-            <div class="flex gap-3">
-                <!-- <section id="recommandation" class="hidden lg:block bg-quinary rounded p-3 text-xs w-[25%] max-w-[25%] min-w-[25%]">
-                    <div class="flex justify-between items-center w-full">
-                        <p class="uppercase font-semibold">Recommandation</p>
-                        <button @click="reloadAllRecommandationCard" class="rounded p-1 transition-all ease-in-out duration-300 bg-quaternary hover:bg-primary">
+
+            <div class="flex flex-1 gap-3">
+                <section id="recommandation" class="hidden lg:block bg-quinary rounded p-3 text-xs w-[25%] max-w-[25%] min-w-[25%]">
+                    <div class="flex items-center justify-between w-full">
+                        <p class="font-semibold uppercase">Recommandation</p>
+                        <button @click="reloadAllRecommandationCard" class="p-1 transition-all duration-300 ease-in-out rounded bg-quaternary hover:bg-primary">
                             <IconReload class="w-4 h-4" />
                         </button>
                     </div>
@@ -589,10 +623,10 @@
                             @addInPlaylist="addInPlaylistFromRecommandation"
                         />
                     </div>
-                </section> -->
-                <section id="moderation" class="w-full space-y-2">
-                    <div class="flex flex-col lg:flex-row gap-3 justify-between w-full">
-                        <div v-if="isAdminRoom" class="space-y-1">
+                </section>
+                <section v-if="isAdminRoom" id="moderation" class="w-full space-y-2">
+                    <div class="flex flex-col justify-between w-full gap-3 lg:flex-row">
+                        <div class="space-y-1">
                             <p class="font-semibold">SETTINGS</p>
                             <div class="flex gap-5 text-xs">
                                 <div class="space-y-1">
@@ -600,14 +634,14 @@
                                     <div class="flex gap-1">
                                         <button 
                                         @click="updateSettings('isEveryoneDJ', false)"
-                                        class="rounded py-1 px-4" 
+                                        class="px-4 py-1 rounded" 
                                         :class="isEveryoneCanAddSong ? 'bg-quaternary hover:bg-primary':'bg-primary'"
                                         >
                                             Moderator
                                         </button>
                                         <button 
                                         @click="updateSettings('isEveryoneDJ', true)"
-                                        class="rounded py-1 px-4" 
+                                        class="px-4 py-1 rounded" 
                                         :class="isEveryoneCanAddSong ? 'bg-primary':'bg-quaternary hover:bg-primary'"
                                         >
                                             Everyone
@@ -619,14 +653,14 @@
                                     <div class="flex gap-1">
                                         <button 
                                         @click="updateSettings('isTemporary', true)"
-                                        class="rounded py-1 px-4" 
+                                        class="px-4 py-1 rounded" 
                                         :class="permanentRoom ? 'bg-primary':'bg-quaternary hover:bg-primary'"
                                         >
                                             Yes
                                         </button>
                                         <button 
                                         @click="updateSettings('isTemporary', false)"
-                                        class="rounded py-1 px-4" 
+                                        class="px-4 py-1 rounded" 
                                         :class="permanentRoom ? 'bg-quaternary hover:bg-primary':'bg-primary'"
                                         >
                                             No
@@ -635,54 +669,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="flex gap-2 text-xs">
-                            <div class="w-full lg:w-fit">
-                                <button
-                                    @click="copyIdRoom"
-                                    class="flex items-center justify-center lg:justify-start gap-1 w-full lg:w-fit rounded p-2 lg:py-1 bg-quinary text-tertiary transition-all duration-300 ease-in-out hover:bg-tertiary/30"
-                                >
-                                    <IconCopy class="w-4 h-4" />
-                                    Copy ID
-                                </button>
-                            </div>
-                            <div class="w-full lg:w-fit">
-                                <button
-                                    @click="shareRoomUrl"
-                                    class="flex items-center justify-center lg:justify-start gap-1 w-full lg:w-fit rounded p-2 lg:py-1 bg-quinary text-tertiary transition-all duration-300 ease-in-out hover:bg-tertiary/30"
-                                >
-                                    <IconShare class="w-4 h-4" />
-                                    Share Room 
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="hidden lg:block">
-                        <p class="font-semibold uppercase text-sm">Room Moderators</p>
-                        <div class="flex gap-3 overflow-hidden overflow-x-auto">
-                            <SyncRadioUserLabel
-                                v-for="(user, index) in moderators"
-                                :key="'user_'+index"
-                                :userName="user.name"
-                                userPicture="https://picsum.photos/200"
-                                :userRoomGrade="user.status"
-                            />
-                        </div>
-                    </div>
-                    <div v-if="listeners.length" class="hidden lg:block">
-                        <p class="font-semibold uppercase text-sm">Listeners</p>
-                        <div class="flex gap-3 overflow-hidden overflow-x-auto">
-                            <SyncRadioUserLabel
-                                v-for="(user, index) in listeners"
-                                :key="'user_'+index"
-                                :userName="user.name"
-                                userPicture="https://picsum.photos/200"
-                                :userRoomGrade="user.status"
-                            />
-                        </div>
                     </div>
                 </section>
             </div>
         </section>
+
         <SyncRadioMessagePanel
             v-if="userData"
             ref="messagePanel"
@@ -692,8 +683,9 @@
             :isModerator="isAdminRoom"
             :class="blurEffectLoading ? 'filter blur-sm' : ''"
         />
+
         <div class="absolute inset-0 z-50 items-center justify-center" :class="blurEffectLoading ? 'flex' : 'hidden'">
-            <p class="font-bold text-xl lg:text-3xl bg-quaternary/50 p-10 rounded-lg">Please wait some verification is loaded...</p>
+            <p class="p-10 text-xl font-bold rounded-lg lg:text-3xl bg-quaternary/50">Please wait some verification is loaded...</p>
         </div>
     </div>
 </template>

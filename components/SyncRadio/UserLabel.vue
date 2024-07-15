@@ -11,11 +11,11 @@ const { userName, userPicture, userRoomGrade } = defineProps<{
         <!-- <NuxtImg
             :src="userPicture"
             :alt="userName"
-            class="rounded-full w-8 h-8"
+            class="w-8 h-8 rounded-full"
         /> -->
-        <div class="">
+        <div class="flex gap-1">
+            <p class="px-2 uppercase rounded bg-quinary w-fit">{{ userRoomGrade }}</p>
             <p class="">{{ userName }}</p>
-            <p class="text-[0.5rem] uppercase bg-quinary rounded px-2 w-fit">{{ userRoomGrade }}</p>
         </div>
     </div>
 </template>
