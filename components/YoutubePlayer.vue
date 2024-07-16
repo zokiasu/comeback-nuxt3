@@ -8,7 +8,7 @@ const isPlaying = ref(false);
 const currentTime = ref(0);
 const duration = ref(0);
 let intervalId = null;
-const playerContainer = ref(null);
+const globalPlayerContainer = ref(null);
 const player = ref(null);
 const volumeOn = ref(true);
 const volume = ref(20);
@@ -16,7 +16,7 @@ const errorDetected = ref(false);
 const isVideoDisplay = ref(false);
 
 const displayVideo = () => {
-  const iframe = document.getElementById("playerContainer");
+  const iframe = document.getElementById("globalPlayerContainer");
   if (iframe) {
     if (isVideoDisplay.value) {
       iframe.classList.remove("hidden");
@@ -30,7 +30,7 @@ const displayVideo = () => {
 
 // Création du lecteur YouTube
 const createPlayer = () => {
-  player.value = new window.YT.Player("playerContainer", {
+  player.value = new window.YT.Player("globalPlayerContainer", {
     videoId: idYoutubeVideo.value,
     height: "100%",
     width: "100%",
@@ -64,7 +64,7 @@ const onPlayerStateChange = (event) => {
   isPlaying.value = event.data === window.YT.PlayerState.PLAYING;
   if (isPlaying.value) {
     errorDetected.value = false;
-    duration.value = player.value.getDuration();
+    duration.value = player.value?.getDuration();
   }
 };
 
@@ -92,9 +92,9 @@ const initYTPlayer = () => {
 };
 
 const updateCurrentTime = () => {
-  if (player.value && typeof player.value.getPlayerState === "function") {
-    if (player.value.getPlayerState() === window.YT.PlayerState.PLAYING) {
-      currentTime.value = player.value.getCurrentTime();
+  if (player.value && typeof player.value?.getPlayerState === "function") {
+    if (player.value?.getPlayerState() === window.YT.PlayerState.PLAYING) {
+      currentTime.value = player.value?.getCurrentTime();
     }
   }
 };
@@ -103,9 +103,9 @@ watch(
   idYoutubeVideo,
   (newId) => {
     if (player.value) {
-      player.value.loadVideoById(newId);
+      player.value?.loadVideoById(newId);
       if (isPlaying.value) {
-        player.value.playVideo();
+        player.value?.playVideo();
       }
     }
   },
@@ -123,37 +123,37 @@ onBeforeUnmount(() => {
   }
 
   if (player.value) {
-    player.value.destroy();
+    player.value?.destroy();
   }
 });
 
 const togglePlayPause = () => {
   if (player.value) {
     if (isPlaying.value) {
-      player.value.pauseVideo();
+      player.value?.pauseVideo();
     } else {
-      player.value.playVideo();
+      player.value?.playVideo();
     }
   }
 };
 
 const seek = (seconds) => {
   if (player.value) {
-    const newTime = player.value.getCurrentTime() + seconds;
-    player.value.seekTo(newTime);
-    currentTime.value = player.value.getCurrentTime();
+    const newTime = player.value?.getCurrentTime() + seconds;
+    player.value?.seekTo(newTime);
+    currentTime.value = player.value?.getCurrentTime();
   }
 };
 
 const seekToTime = () => {
   if (player.value) {
-    player.value.seekTo(currentTime.value);
+    player.value?.seekTo(currentTime.value);
   }
 };
 
 const setVolume = (newVolume) => {
   if (player.value) {
-    player.value.setVolume(newVolume);
+    player.value?.setVolume(newVolume);
     volume.value = newVolume;
   }
 };
@@ -161,10 +161,10 @@ const setVolume = (newVolume) => {
 const muteVolume = () => {
   if (player.value) {
     if (volumeOn.value) {
-      player.value.mute();
+      player.value?.mute();
       if (isPlaying.value) togglePlayPause();
     } else {
-      player.value.unMute();
+      player.value?.unMute();
       if (!isPlaying.value) togglePlayPause();
     }
     volumeOn.value = !volumeOn.value;
@@ -174,7 +174,7 @@ const muteVolume = () => {
 const closeYTPlayer = () => {
   isPlayingVideo.value = false;
   if (player.value) {
-    player.value.destroy();
+    player.value?.destroy();
   }
 };
 
@@ -190,10 +190,15 @@ const convertDuration = (duration) => {
 
 <template>
   <div
-    class="fixed bottom-0 z-50 flex w-full flex-col items-center justify-center space-y-3 sm:items-end sm:justify-end"
+    class="fixed bottom-0 z-50 flex flex-col items-center justify-center w-full space-y-3 sm:items-end sm:justify-end"
   >
-    <div class="relative flex w-full items-center justify-between bg-secondary px-5 py-3">
-      <div class="flex w-full items-center space-x-2 sm:w-fit">
+    <div
+      id="globalPlayerContainer"
+      ref="globalPlayerContainer"
+      class="hidden aspect-video w-1/4 min-w-[20rem] overflow-hidden rounded-lg px-2 lg:absolute lg:-top-72 lg:right-0 lg:z-50 lg:h-72"
+    ></div>
+    <div class="relative flex items-center justify-between w-full px-5 py-3 bg-secondary">
+      <div class="flex items-center w-full space-x-2 sm:w-fit">
         <button class="hover:text-primary" @click="seek(-10)">
           <IconBackward10 class="h-7 w-7" />
         </button>
@@ -206,7 +211,7 @@ const convertDuration = (duration) => {
         <button class="hover:text-primary" @click="seek(10)">
           <IconForward10 class="h-7 w-7" />
         </button>
-        <div class="hidden items-center gap-1 pl-5 text-xs md:flex">
+        <div class="items-center hidden gap-1 pl-5 text-xs md:flex">
           <p>{{ convertDuration(currentTime) }}</p>
           <p>/</p>
           <p>{{ convertDuration(duration) }}</p>
@@ -219,8 +224,8 @@ const convertDuration = (duration) => {
       <div v-else class="w-full sm:w-fit">
         <p class="font-bold text-primary">Video is restricted or unavailable.</p>
       </div>
-      <div class="hidden items-center gap-2 sm:flex">
-        <!-- <button @click="displayVideo" class="aspect-square rounded bg-red-500 p-1">
+      <div class="items-center hidden gap-2 sm:flex">
+        <!-- <button @click="displayVideo" class="p-1 bg-red-500 rounded aspect-square">
           D
         </button> -->
         <button @click="muteVolume">
@@ -243,7 +248,7 @@ const convertDuration = (duration) => {
         :max="duration"
         v-model="currentTime"
         @input="seekToTime"
-        class="absolute -top-1 left-0 h-1 w-full cursor-pointer overflow-hidden"
+        class="absolute left-0 w-full h-1 overflow-hidden cursor-pointer -top-1"
       />
       <button
         class="absolute -top-6 left-2 rounded-t-lg bg-primary px-3 py-0.5 text-xs font-semibold uppercase"

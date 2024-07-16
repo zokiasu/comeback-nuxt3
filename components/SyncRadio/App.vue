@@ -82,7 +82,7 @@
     const userData = computed(() => userStore.userDataStore)
     const moderators = computed(() => currentUsers.value.filter(user => user.status === 'moderator' || user.status === 'administrator'))
     const listeners = computed(() => currentUsers.value.filter(user => user.status === 'listener'))
-    const isAllowedToAddSong = computed(() => isEveryoneCanAddSong.value || isEveryoneCanAddSong.value)
+    const isAllowedToAddSong = computed(() => isEveryoneCanAddSong.value || isAdminRoom.value)
 
     function checkIfUserIsCreator(users, userId) {
         return users.some(user => user.id === userId && user.status === 'administrator');
@@ -545,7 +545,7 @@
             </div>
 
             <div id="playlist-video" class="flex flex-col-reverse justify-end flex-grow gap-3 h-fit lg:justify-start lg:flex-row">
-                <div class="bg-quinary h-fit rounded p-2 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%] lg:max-h-[55dvh] overflow-hidden">
+                <div class="bg-quinary h-fit rounded p-2 space-y-2 text-xs lg:w-[25%] lg:max-w-[25%] lg:min-w-[25%] lg:min-h-[55dvh] lg:max-h-[55dvh] overflow-hidden">
                     <div class="flex justify-between w-full">
                         <div class="flex gap-3">
                             <p class="font-semibold uppercase">Playlist</p>
@@ -584,8 +584,7 @@
                     >
                         Reload Player
                     </button>
-                    <LazySyncRadioYoutubePlayer
-                        v-if="actualVideoPlay"
+                    <SyncRadioYoutubePlayer
                         ref="playerRef"
                         @videoEnded="nextVideo"
                         @videoError="videoError"
