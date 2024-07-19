@@ -179,41 +179,27 @@ export function useFirebaseFunction() {
   }
   // Fetches a random music release from the 'releases' collection in Firestore.
   const getRandomMusic = async (): Promise<any> => {
-    const years = [2020, 2021, 2022, 2023, 2024];
-    const selectedYear = years[Math.floor(Math.random() * years.length)];
-    // console.log('selectedYear', selectedYear)
+    const colRef = query(collection(database as any, 'releases'));
+    const snapshot = await getDocs(colRef);
+    let releases = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   
-    // Filtrer les musiques par l'année sélectionnée
-    const countRef = collection(database as any, 'musics');
-    const yearQuery = query(countRef, where('year', '==', selectedYear));
-    const snapshot = await getCountFromServer(yearQuery);
-    const totalMusics = snapshot.data().count;
-    // console.log('totalMusics', totalMusics)
-
-    if (totalMusics === 0) {
-      return null;
-    }
-
-    // Générer un index aléatoire
-    const randomIndex = Math.floor(Math.random() * totalMusics);
-    // console.log('randomIndex', randomIndex)
-    const musicQuery = query(countRef, orderBy('name'), limit(((randomIndex + 1) <= totalMusics ? (randomIndex + 1) : totalMusics)));
-    // console.log('musicQuery', musicQuery)
-    const musicSnapshot = await getDocs(musicQuery);
-    // console.log('musicSnapshot', musicSnapshot)
-    const musicDoc = musicSnapshot.docs[randomIndex];
-    // console.log('musicDoc', musicDoc)
-
-    if (musicDoc) {
-      const musicData = musicDoc.data();
-      const isEmbeddable = await canVideoBeEmbedded(musicData.videoId, config.public.YOUTUBE_API_KEY);
-      if (!musicData.name.toLowerCase().includes('inst') && !musicData.name.toLowerCase().includes('sped-up') && isEmbeddable) {
-        return musicData; // Retourne la musique si elle peut être intégrée
+    releases = shuffleArray(releases); // Mélange les releases
+  
+    for (let release of releases) {
+      const colMusic = query(collection(database as any, 'releases', release.id, 'musics'));
+      const snapshotMusic = await getDocs(colMusic);
+      const musics = snapshotMusic.docs.map((doc) => doc.data());
+  
+      for (let music of musics) {
+        const isEmbeddable = await canVideoBeEmbedded(music.videoId, config.public.YOUTUBE_API_KEY);
+        if (!music.name.toLowerCase().includes('inst') && !music.name.toLowerCase().includes('sped-up') && isEmbeddable) {
+          return music; // Retourne immédiatement dès qu'une musique correspondante est trouvée
+        }
       }
     }
   
-    // Si aucune musique correspondante n'est trouvée après avoir parcouru toutes les musiques relance la fonction
-    return getRandomMusic();
+    // Si aucune musique correspondante n'est trouvée après avoir parcouru toutes les releases
+    return getRandomMusic(); // Récursion pour essayer à nouveau
   };
 
   // return a list of 10 random music from list release id

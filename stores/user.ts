@@ -4,9 +4,7 @@ import { ref } from 'vue'
 import { doc, getDoc, getFirestore } from 'firebase/firestore'
 
 export const useUserStore = defineStore('userStore', () => {
-  const authStore = ref(null)
   const firebaseUserStore = ref(null)
-
   const isLoginStore = ref(false)
   const isAdminStore = ref(false)
   const userDataStore = ref(null)
@@ -53,7 +51,6 @@ export const useUserStore = defineStore('userStore', () => {
   }
 
   return {
-    authStore,
     firebaseUserStore,
     userDataStore,
     isLoginStore,

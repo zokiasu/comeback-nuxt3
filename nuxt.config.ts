@@ -35,6 +35,7 @@ export default defineNuxtConfig({
     apiKey: process.env.ALGOLIA_API_KEY,
     useFetch: true,
     instantSearch: true,
+    recommend: true,
   },
 
   devtools: {

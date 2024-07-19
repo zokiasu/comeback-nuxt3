@@ -84,7 +84,7 @@ useHead({
             {{ artist.name }}
           </h1>
           <div class="flex gap-2">
-            <p v-if="artist.activeCareer" class="bg-quaternary px-2 py-1 text-xs font-semibold uppercase w-fit">
+            <p v-if="!artist.activeCareer" class="bg-quaternary px-2 py-1 text-xs font-semibold uppercase w-fit">
               Inactive (Withdrawn or Disband)
             </p>
             <NuxtLink

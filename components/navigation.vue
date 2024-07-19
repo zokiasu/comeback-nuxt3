@@ -134,13 +134,13 @@ onMounted(async () => {
             <p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>
             <IconSettings class="w-3.5 h-3.5" />
           </NuxtLink>
-          <button
+          <!-- <button
             @click="signOut"
             title="Logout"
             class="transition-all duration-300 p-1.5 ease-in-out rounded flex justify-between items-center gap-2 text-zinc-500 hover:text-white"
           >
             <IconLogout class="w-3.5 h-3.5" />
-          </button>
+          </button> -->
         </div>
       </div>
     </div>
