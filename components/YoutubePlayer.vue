@@ -7,13 +7,14 @@ const authorNamePlaying = useAuthorNamePlaying();
 const isPlaying = ref(false);
 const currentTime = ref(0);
 const duration = ref(0);
-let intervalId = null;
 const globalPlayerContainer = ref(null);
 const player = ref(null);
 const volumeOn = ref(true);
 const volume = ref(20);
 const errorDetected = ref(false);
 const isVideoDisplay = ref(false);
+
+let intervalId = null;
 
 const displayVideo = () => {
   const iframe = document.getElementById("globalPlayerContainer");
@@ -217,7 +218,7 @@ const convertDuration = (duration) => {
           <p>{{ convertDuration(duration) }}</p>
         </div>
       </div>
-      <div v-if="!errorDetected" class="w-full sm:w-fit">
+      <div v-if="!errorDetected" class="w-full sm:w-fit xl:flex xl:items-center xl:gap-1">
         <p class="font-semibold">{{ authorNamePlaying }}</p>
         <p class="text-xs">{{ musicNamePlaying }}</p>
       </div>

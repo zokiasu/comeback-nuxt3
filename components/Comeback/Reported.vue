@@ -5,31 +5,12 @@
       required: true,
     },
   })
+
+  const displayAll = ref(false)
   const maxDisplay = ref(12)
-  const minDisplay = ref(3)
-  const seeMore = ref(false)
 
-  const setMaxDisplay = () => {
-    const width = window.innerWidth
-
-    if (width < 1280) {
-      // Pour les écrans moyens
-      maxDisplay.value = 6
-      minDisplay.value = 6
-    } else {
-      // Pour les grands écrans
-      maxDisplay.value = 12
-      minDisplay.value = 12
-    }
-  }
-
-  onMounted(() => {
-    setMaxDisplay()
-    window.addEventListener('resize', setMaxDisplay)
-  })
-
-  onBeforeUnmount(() => {
-    window.removeEventListener('resize', setMaxDisplay)
+  const comebackToDisplay = computed(() => {
+    return comebackList.slice(0, maxDisplay.value)
   })
 </script>
 
@@ -37,10 +18,10 @@
   <CardDefault name="Comeback reported" :class="{ hidden: !comebackList }">
     <div
       v-if="comebackList.length"
-      class="grid grid-cols-1 gap-2 md:grid-cols-2 2xl:grid-cols-3 mb-5"
+      class="grid grid-cols-1 gap-2 mb-5 md:grid-cols-2 2xl:grid-cols-3"
     >
       <CardNews
-        v-for="comeback in comebackList.slice(0, maxDisplay)"
+        v-for="comeback in comebackList"
         :key="comeback.id"
         :message="comeback.message"
         :date="comeback.date"
@@ -54,24 +35,22 @@
         class="h-12 rounded"
       />
     </div>
-    <div v-if="comebackList.length > maxDisplay" class="flex w-full justify-center">
+    <div v-if="comebackList.length > maxDisplay" class="flex justify-center w-full">
       <button
-        v-if="seeMore"
+        v-if="!displayAll"
         type="button"
-        class="flex gap-1 items-center w-fit font-semibold border border-tertiary rounded p-1"
-        @click="maxDisplay = comebackList.length"
+        class="flex items-center gap-1 p-1 font-semibold border rounded w-fit border-tertiary"
+        @click="displayAll = true"
       >
-        <!-- <p>See More</p> -->
-        <IconPlus class="mx-auto h-3 w-3" />
+        <IconPlus class="w-3 h-3 mx-auto" />
       </button>
       <button
         v-else
         type="button"
-        class="flex gap-1 items-center w-fit font-semibold border border-tertiary rounded p-1"
-        @click="maxDisplay = minDisplay"
+        class="flex items-center gap-1 p-1 font-semibold border rounded w-fit border-tertiary"
+        @click="displayAll = false"
       >
-        <!-- <p>See Less</p> -->
-        <IconMinus class="mx-auto h-3 w-3" />
+        <IconMinus class="w-3 h-3 mx-auto" />
       </button>
     </div>
   </CardDefault>
