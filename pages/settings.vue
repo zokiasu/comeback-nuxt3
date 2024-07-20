@@ -15,7 +15,7 @@ const signOut = async () => {
 </script>
 
 <template>
-  <div class="h-screen min-h-[calc(100vh-80px)] max-h-[calc(100vh-80px)] p-2 gap-2 flex">
+  <div class="h-screen min-h-dvh-wo-nav max-h-dvh-wo-nav p-2 gap-2 flex">
     <nav
       ref="menuCollapsable"
       class="bg-quaternary h-full flex flex-col rounded p-2 gap-2 drop-shadow-xl transition-all ease-in-out duration-300 text-sm w-80"
