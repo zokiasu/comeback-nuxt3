@@ -25,7 +25,7 @@
 </script>
 
 <template>
-    <div class="h-screen min-h-[calc(100vh-80px)] max-h-[calc(100vh-80px)] rounded flex flex-col gap-5 px-5
+    <div class="h-screen min-h-dvh-wo-nav max-h-dvh-wo-nav rounded flex flex-col gap-5 px-5
     ">
         <div class="w-full flex justify-between">
             <p class="font-bold text-2xl">Profile Settings</p>

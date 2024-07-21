@@ -6,6 +6,14 @@ html:focus-within {
   scroll-behavior: smooth;
 }
 
+.min-h-dvh-wo-nav {
+  min-height: calc(100vh - 80px);
+}
+
+.max-h-dvh-wo-nav {
+  max-height: calc(100vh - 80px);
+}
+
 .remove-scrollbar::-webkit-scrollbar {
   display: none;
 }

@@ -48,12 +48,10 @@ const displayingFooter = computed(() => {
         alt="Comeback"
         quality="80"
         loading="lazy"
-        class="mx-auto block h-8 w-auto"
+        class="block w-auto h-8 mx-auto"
       />
     </div>
-    <main>
-      <slot />
-    </main>
+    <slot />
     <LazyFooter v-if="displayingFooter" />
     <LazyMobileNavigation
       class="md:hidden"
@@ -64,7 +62,7 @@ const displayingFooter = computed(() => {
     <LazyYoutubePlayer
       ref="YTPlayer"
       v-if="isPlayingVideo"
-      class="animate__animated animate__fadeInUp fixed bottom-0"
+      class="fixed bottom-0 animate__animated animate__fadeInUp"
     />
   </div>
 </template>
