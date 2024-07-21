@@ -1,28 +1,30 @@
 <script setup lang="ts">
-  import { Timestamp } from 'firebase/firestore'
+  import { ref, computed, onMounted } from 'vue';
+  import { Timestamp } from 'firebase/firestore';
+  import { useFirebaseFunction } from '@/composables/useFirebaseFunction';
 
-  const { getRealtimeNextComebacks, getRealtimeLastestReleases, getRealtimeLastestArtistsAdded, getRandomMusic } = useFirebaseFunction()
+  const { getRealtimeNextComebacks, getRealtimeLastestReleases, getRealtimeLastestArtistsAdded, getRandomMusic } = useFirebaseFunction();
 
-  const comebacks = ref([] as any[])
-  const artists = ref([] as any[])
-  const releases = ref([] as any[])
+  const comebacks = ref<any[]>([]);
+  const artists = ref<any[]>([]);
+  const releases = ref<any[]>([]);
 
-  const discoverOne = ref(null)
-  const discoverTwo = ref(null)
-  const discoverThree = ref(null)
-  const discoverFour = ref(null)
+  const discoverOne = ref(null);
+  const discoverTwo = ref(null);
+  const discoverThree = ref(null);
+  const discoverFour = ref(null);
 
   const comebacksToday = computed(() => {
-    return comebacks.value.filter((comebacks: any) => {
-      const comebacksDate = new Date(comebacks.date.seconds * 1000)
-      const today = new Date()
+    return comebacks.value.filter((comeback: any) => {
+      const comebacksDate = new Date(comeback.date.seconds * 1000);
+      const today = new Date();
       return (
         comebacksDate.getDate() === today.getDate() &&
         comebacksDate.getMonth() === today.getMonth() &&
         comebacksDate.getFullYear() === today.getFullYear()
-      )
-    })
-  })
+      );
+    });
+  });
 
   onMounted(() => {
     const comebacksDate = new Date();
@@ -38,13 +40,12 @@
     ]);
   });
 
-
   const reloadDiscoverMusic = async () => {
-    discoverOne.value?.reloadRandomMusic()
-    discoverTwo.value?.reloadRandomMusic()
-    discoverThree.value?.reloadRandomMusic()
-    discoverFour.value?.reloadRandomMusic()
-  }
+    discoverOne.value?.reloadRandomMusic();
+    discoverTwo.value?.reloadRandomMusic();
+    discoverThree.value?.reloadRandomMusic();
+    discoverFour.value?.reloadRandomMusic();
+  };
 
   useHead({
     title: 'Comeback',
@@ -64,8 +65,7 @@
       {
         hid: 'description',
         name: 'description',
-        content:
-          "Don't miss any Comeback. Track every next release by your favorite artists.",
+        content: "Don't miss any Comeback. Track every next release by your favorite artists.",
       },
       {
         hid: 'og:site_name',
@@ -85,8 +85,7 @@
       {
         hid: 'og:description',
         property: 'og:description',
-        content:
-          "Don't miss any Comeback. Track every next release by your favorite artists.",
+        content: "Don't miss any Comeback. Track every next release by your favorite artists.",
       },
       {
         hid: 'og:url',
@@ -106,7 +105,7 @@
         href: '/favicon.ico',
       },
     ],
-  })
+  });
 </script>
 
 <template>
@@ -114,11 +113,11 @@
     <!-- Home Header -->
     <HomeSlider :news-today="comebacksToday" />
     <!-- Home Body -->
-    <section class="container mx-auto space-y-16 p-5 py-10 2xl:space-y-20">
+    <section class="container p-5 py-10 mx-auto space-y-16 2xl:space-y-20">
       <!-- Comeback Reported List -->
       <ComebackReported :comebackList="comebacks" />
       <!-- Discover Music -->
-      <div class="text-center space-y-8 xl:space-y-10">
+      <div class="space-y-8 text-center xl:space-y-10">
         <p class="text-xl font-bold lg:text-4xl">Discover Music</p>
         <div class="space-y-5">
           <div class="grid grid-cols-2 gap-5 xl:grid-cols-4">
@@ -127,7 +126,7 @@
             <LazyDiscoverMusic ref="discoverThree" />
             <LazyDiscoverMusic ref="discoverFour" />
           </div>
-          <button @click="reloadDiscoverMusic()" class="px-3 py-1 rounded bg-quaternary">
+          <button @click="reloadDiscoverMusic" class="px-3 py-1 rounded bg-quaternary">
             Reload
           </button>
         </div>
