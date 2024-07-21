@@ -661,7 +661,7 @@ onMounted(async () => {
       :idActualUser="userData.id"
       :nameActualUser="userData.name"
       :isModerator="isAdminRoom"
-      class="md:row-start-1 md:row-end-5 md:col-start-2 md:col-end-3 lg:col-start-3 lg:col-end-4"
+      class="md:row-start-1 md:row-end-5 md:col-start-2 md:col-end-3 lg:col-start-3 lg:col-end-4 xl:row-end-4"
       :class="blurEffectLoading ? 'filter blur-sm' : ''"
     />
     
@@ -764,8 +764,8 @@ onMounted(async () => {
       grid-template-rows: 9% 1fr 30%;
     }
 
-    @media (min-width: 1440px) {
-      grid-template-rows: 9% 1fr 30%;
+    @media (min-width: 1920px) {
+      grid-template-rows: 9% 1fr 25%;
     }
   }
 

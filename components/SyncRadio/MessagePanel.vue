@@ -61,8 +61,8 @@
 </script>
 
 <template>
-    <section class="flex flex-col flex-grow space-y-3">
-        <div class="bg-quinary flex-grow rounded pb-4 lg:h-[90%] flex flex-col">
+    <section class="flex flex-col space-y-3">
+        <div class="flex flex-col flex-grow rounded bg-quinary">
             <p class="p-3 font-semibold uppercase">Chat together</p>
             <div ref="messageListContent" v-if="messageList.length" class="flex flex-col w-full gap-2 px-2 overflow-hidden overflow-y-auto h-52 lg:h-full scrollBarLight">
                 <SyncRadioMessageCard
@@ -76,17 +76,19 @@
                 />
             </div>
         </div>
-        <form
-            @submit.prevent="sendMessage"
-            class="flex gap-3"
-        >
-            <input
-                id="message-input"
-                v-model="message"
-                type="text"
-                placeholder="Message"
-                class="w-full px-5 py-2 transition-all duration-300 ease-in-out border-none rounded bg-quinary disabled:opacity-50 placeholder-tertiary drop-shadow-xl focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
-            />
-        </form>
+        <div>
+            <form
+                @submit.prevent="sendMessage"
+                class="flex gap-3"
+            >
+                <input
+                    id="message-input"
+                    v-model="message"
+                    type="text"
+                    placeholder="Message"
+                    class="w-full px-5 py-2 transition-all duration-300 ease-in-out border-none rounded bg-quinary disabled:opacity-50 placeholder-tertiary drop-shadow-xl focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+                />
+            </form>
+        </div>
     </section>
 </template>
