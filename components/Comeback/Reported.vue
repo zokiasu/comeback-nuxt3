@@ -26,7 +26,7 @@
 </script>
 
 <template>
-  <CardDefault name="Comeback reported" :class="{ hidden: !props.comebackList.length }">
+  <CardDefault name="Comeback reported">
     <div
       v-if="props.comebackList.length"
       class="grid grid-cols-1 gap-2 mb-5 md:grid-cols-2 2xl:grid-cols-3"
@@ -41,7 +41,7 @@
     </div>
     <div v-else class="grid grid-cols-1 gap-2 py-5 md:grid-cols-2 2xl:grid-cols-3">
       <SkeletonDefault
-        v-for="i in maxDisplay.value"
+        v-for="i in maxDisplay"
         :key="`comeback_skeleton_` + i"
         class="h-12 rounded"
       />
