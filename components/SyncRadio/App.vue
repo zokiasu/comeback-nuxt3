@@ -451,7 +451,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <main id="syncRadioApp" class="relative grid gap-3 px-5 pb-10 text-xs transition-all duration-300 ease-out lg:pb-0 grid-cols-custom grid-rows-custom min-h-dvh-wo-nav max-h-dvh-wo-nav">
+  <main id="syncRadioApp" class="relative grid gap-3 px-5 pb-10 text-xs transition-all duration-300 ease-out lg:pb-0 2xl:pb-5 xl:text-base grid-cols-custom grid-rows-custom min-h-dvh-wo-nav max-h-dvh-wo-nav">
   
     <section id="searchInputElement" class="space-y-2 lg:row-start-1 lg:col-start-1 lg:col-end-3">
       <div class="flex justify-between space-x-2 text-sm">
@@ -632,9 +632,10 @@ onMounted(async () => {
           <IconDelete class="w-5 h-5 cursor-pointer hover:text-primary" />
         </button>
       </div>
+      
       <div
         ref="roomPlaylistElement"
-        class="flex flex-col w-full h-full gap-2 overflow-hidden overflow-y-auto remove-scrollbar"
+        class="flex flex-col w-full h-full gap-2 overflow-hidden overflow-y-auto max-h-[93%] remove-scrollbar"
       >
         <SyncRadioYoutubeCard
           v-for="(video, index) in roomPlaylist"
@@ -664,7 +665,7 @@ onMounted(async () => {
       :class="blurEffectLoading ? 'filter blur-sm' : ''"
     />
     
-    <section id="recommandation" class="hidden p-3 text-xs rounded lg:row-start-3 lg:col-start-1 lg:col-end-2 lg:row-end-4 lg:block bg-quinary">
+    <section id="recommandation" class="hidden p-3 text-xs rounded lg:row-start-3 lg:col-start-1 lg:col-end-2 lg:block bg-quinary">
       <div class="flex items-center justify-between w-full">
         <p class="font-semibold uppercase">Recommandation</p>
         <button
@@ -762,6 +763,10 @@ onMounted(async () => {
     @media (min-width: 1024px) {
       grid-template-rows: 9% 1fr 30%;
     }
+
+    @media (min-width: 1440px) {
+      grid-template-rows: 9% 1fr 30%;
+    }
   }
 
   .grid-cols-custom {
@@ -773,6 +778,10 @@ onMounted(async () => {
 
     @media (min-width: 1024px) {
       grid-template-columns: 25% 1fr 20%;
+    }
+
+    @media (min-width: 1440px) {
+      grid-template-columns: 20% 1fr 20%;
     }
   }
 </style>
