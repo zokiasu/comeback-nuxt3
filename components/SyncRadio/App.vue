@@ -675,7 +675,7 @@ onMounted(async () => {
           <IconReload class="w-4 h-4" />
         </button>
       </div>
-      <div class="flex flex-col divide-y divide-tertiary/30">
+      <div class="flex flex-col justify-between h-full pb-5 divide-y divide-tertiary/30">
         <LazySyncRadioRecommandationCard
           id="recommandation-card-1"
           ref="recommandationCard1"
