@@ -75,50 +75,52 @@ const loadingDone = () => {
 <template>
   <NuxtLink
     :to="`/artist/${artist.id}`"
-    class="group flex justify-between w-full overflow-hidden rounded transition-all duration-500 ease-in-out hover:drop-shadow-lg"
+    class="flex justify-between w-full overflow-hidden transition-all duration-500 ease-in-out rounded group hover:drop-shadow-lg"
   >
-    <div class="flex gap-2 h-full min-w-[85%] md:max-w-[85%] overflow-hidden items-center md:space-x-3 bg-quinary py-1 px-3 sm:p-2">
-      <div class="relative hidden sm:block">
+    <section class="flex items-center w-full h-full gap-2 p-2 overflow-hidden shrink bg-quinary">
+      <div class="relative hidden lg:block">
         <div
           ref="skeleton"
-          class="absolute inset-0 z-10 mx-auto aspect-square h-8 w-8 rounded-lg bg-primary object-cover transition-all duration-1000 ease-in-out"
+          class="absolute inset-0 z-10 object-cover w-8 h-8 mx-auto transition-all duration-1000 ease-in-out rounded-lg aspect-square bg-primary"
         ></div>
         <NuxtImg
           :src="artist.image"
           :alt="artist.name + 's picture'"
           format="webp"
           @load="loadingDone"
-          class="h-8 w-8 min-w-8 rounded-full object-cover"
+          class="object-cover w-8 h-8 rounded-full min-w-8"
         />
       </div>
-      <div class="flex gap-1 w-full md:pr-5 items-center">
+      
+      <div class="flex flex-col w-full gap-1 lg:items-center lg:flex-row lg:pr-5">
         <h2
-          class="text-xs truncate font-semibold transition-all duration-300 ease-in-out group-hover:text-primary lg:text-sm"
+          class="text-xs font-semibold truncate transition-all duration-300 ease-in-out group-hover:text-primary lg:text-sm"
         >
           {{ artist.name }}
         </h2>
-        <p>-</p>
+        <p class="hidden lg:block">-</p>
         <p class="text-xs truncate">{{ message }}</p>
       </div>
-    </div>
+    </section>
+    
     <div
-      class="-mt-0.5 flex min-w-[15%] items-center justify-center bg-quaternary px-3 py-1 text-center md:mt-0 md:py-0"
+      class="-mt-0.5 flex min-w-[18%] items-center justify-center bg-quaternary px-3 py-1 text-center md:mt-0 md:py-0"
     >
       <p
         v-if="!isDatePassed(date) && !isSameDate(date)"
-        class="my-auto whitespace-nowrap text-lg md:text-xl font-bold"
+        class="my-auto text-lg font-bold whitespace-nowrap lg:text-xl"
       >
         D-{{ daysUntil(date) }}
       </p>
       <p
         v-if="isSameDate(date)"
-        class="my-auto whitespace-nowrap font-medium text-primary"
+        class="my-auto font-medium whitespace-nowrap text-primary"
       >
         Today
       </p>
       <p
         v-if="!isSameDate(date) && isDatePassed(date)"
-        class="my-auto whitespace-nowrap font-medium text-primary"
+        class="my-auto font-medium whitespace-nowrap text-primary"
       >
         Outed
       </p>

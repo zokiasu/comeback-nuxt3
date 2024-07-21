@@ -155,7 +155,7 @@ onMounted(async () => {
       :bg-in-class="`animate__fadeInUp`"
       :bg-out-class="`animate__fadeOutDown`"
     >
-      <NewsCreation :artistList="artistFetch" @close-modal="showModal = false" />
+      <ModalNewsCreation :artistList="artistFetch" @close-modal="showModal = false" />
     </Modal>
     <Modal
       v-model="showModalAlgolia"

@@ -72,24 +72,24 @@ useHead({
         format="webp"
         loading="lazy"
         @load="imageBackLoaded = true"
-        class="absolute inset-0 h-full w-full object-cover"
+        class="absolute inset-0 object-cover w-full h-full"
       />
       <div
         class="absolute inset-0 flex items-end p-5 transition-all duration-500 ease-in-out lg:p-10 xl:p-14 2xl:px-32"
         :class="imageBackLoaded ? 'bg-secondary/60' : 'bg-quinary'"
       >
         <div class="space-y-5 lg:container lg:mx-auto lg:px-5">
-          <SkeletonDefault v-if="isFetchingArtist" class="h-14 w-80 rounded" />
+          <SkeletonDefault v-if="isFetchingArtist" class="rounded h-14 w-80" />
           <h1 v-if="artist.name && !isFetchingArtist" class="text-3xl font-bold md:text-6xl xl:text-7xl">
             {{ artist.name }}
           </h1>
-          <div class="flex gap-2">
-            <p v-if="!artist.activeCareer" class="bg-quaternary px-2 py-1 text-xs font-semibold uppercase w-fit">
+          <div v-if="!isFetchingArtist" class="flex gap-2">
+            <p v-if="!artist.activeCareer" class="px-2 py-1 text-xs font-semibold uppercase bg-quaternary w-fit">
               Inactive (Withdrawn or Disband)
             </p>
             <NuxtLink
               :to="editLink"
-              class="bg-secondary px-2 py-1 text-xs font-semibold uppercase"
+              class="px-2 py-1 text-xs font-semibold uppercase bg-secondary"
             >
               Edit Artist
             </NuxtLink>
@@ -99,13 +99,13 @@ useHead({
     </section>
 
     <section
-      class="lg:container mx-auto space-y-8 p-5 py-8 lg:px-14 xl:px-5 lg:space-y-14 lg:py-10"
+      class="p-5 py-8 mx-auto space-y-8 lg:container lg:px-14 xl:px-5 lg:space-y-14 lg:py-10"
     >
       <div v-if="isFetchingArtist" class="space-y-2">
-        <SkeletonDefault class="h-5 w-3/4 rounded" />
-        <SkeletonDefault class="h-5 w-2/4 rounded" />
-        <SkeletonDefault class="h-5 w-2/6 rounded" />
-        <SkeletonDefault class="h-5 w-2/5 rounded" />
+        <SkeletonDefault class="w-3/4 h-5 rounded" />
+        <SkeletonDefault class="w-2/4 h-5 rounded" />
+        <SkeletonDefault class="w-2/6 h-5 rounded" />
+        <SkeletonDefault class="w-2/5 h-5 rounded" />
       </div>
 
       <div v-else class="grid grid-cols-1 gap-5 lg:gap-10 lg:grid-cols-3">
@@ -125,7 +125,7 @@ useHead({
             <SkeletonDefault
               v-for="i in 3"
               :key="`skeleton_platforms_` + i"
-              class="h-6 w-20 rounded"
+              class="w-20 h-6 rounded"
             />
           </div>
           <CardDefault name="Socials Media" v-if="artist.socialList?.length && !isFetchingArtist">
@@ -143,13 +143,13 @@ useHead({
             <SkeletonDefault
               v-for="i in 3"
               :key="`skeleton_socials_` + i"
-              class="h-6 w-20 rounded"
+              class="w-20 h-6 rounded"
             />
           </div>
           <CardDefault name="Description">
             <p
               v-if="artist.description"
-              class="max-w-6xl whitespace-pre-line leading-6 md:leading-8 text-xs md:text-base"
+              class="max-w-6xl text-xs leading-6 whitespace-pre-line md:leading-8 md:text-base"
             >
               {{ artist.description }}
             </p>
@@ -159,7 +159,7 @@ useHead({
               <div class="pt-2">
                 <NuxtLink
                   :to="editLink"
-                  class="bg-quaternary px-2 py-1 mt-5 text-xs font-semibold uppercase"
+                  class="px-2 py-1 mt-5 text-xs font-semibold uppercase bg-quaternary"
                 >
                   Add a description
                 </NuxtLink>
@@ -170,11 +170,11 @@ useHead({
         <div v-if="artist.releases.length">
           <CardDefault name="Discover Music">
             <div v-if="musicDiscover.length < 1" class="space-y-2">
-              <SkeletonDefault class="h-14 w-full rounded" />
-              <SkeletonDefault class="h-14 w-full rounded" />
-              <SkeletonDefault class="h-14 w-full rounded" />
-              <SkeletonDefault class="h-14 w-full rounded" />
-              <SkeletonDefault class="h-14 w-full rounded" />
+              <SkeletonDefault class="w-full rounded h-14" />
+              <SkeletonDefault class="w-full rounded h-14" />
+              <SkeletonDefault class="w-full rounded h-14" />
+              <SkeletonDefault class="w-full rounded h-14" />
+              <SkeletonDefault class="w-full rounded h-14" />
             </div>
             <transition-group v-else name="list-complete" tag="div" class="space-y-2">
               <MusicDisplay
@@ -198,7 +198,7 @@ useHead({
           <transition-group
             name="list-complete"
             tag="div"
-            class="snap-x snap-mandatory pb-3 overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
+            class="flex gap-3 pb-3 overflow-x-auto snap-x snap-mandatory scrollBarLight xl:flex-wrap"
           >
             <CardObject
               v-for="soloMember in members"
@@ -218,7 +218,7 @@ useHead({
           <transition-group
             name="list-complete"
             tag="div"
-            class="snap-x snap-mandatory pb-3 overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
+            class="flex gap-3 pb-3 overflow-x-auto snap-x snap-mandatory scrollBarLight xl:flex-wrap"
           >
             <CardObject
               v-for="release in albumEpRelease"
@@ -241,7 +241,7 @@ useHead({
           <transition-group
             name="list-complete"
             tag="div"
-            class="snap-x snap-mandatory pb-3 overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
+            class="flex gap-3 pb-3 overflow-x-auto snap-x snap-mandatory scrollBarLight xl:flex-wrap"
           >
             <CardObject
               v-for="release in singleRelease"
@@ -264,7 +264,7 @@ useHead({
           <transition-group
             name="list-complete"
             tag="div"
-            class="snap-x snap-mandatory pb-3 overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
+            class="flex gap-3 pb-3 overflow-x-auto snap-x snap-mandatory scrollBarLight xl:flex-wrap"
           >
             <CardObject
               v-for="groupMember in subUnitMembers"
@@ -284,7 +284,7 @@ useHead({
           <transition-group
             name="list-complete"
             tag="div"
-            class="snap-x snap-mandatory pb-3 overflow-x-auto scrollBarLight gap-3 flex xl:flex-wrap"
+            class="flex gap-3 pb-3 overflow-x-auto snap-x snap-mandatory scrollBarLight xl:flex-wrap"
           >
             <CardObject
               v-for="group in artist.groups"

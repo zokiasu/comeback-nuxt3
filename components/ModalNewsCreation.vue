@@ -99,7 +99,7 @@ const createNews = async () => {
 </script>
 
 <template>
-  <div class="space-y-5 py-2">
+  <div class="py-2 space-y-5">
     <div class="flex flex-col gap-1">
       <ComebackLabel label="Artist" />
       <VueMultiselect
@@ -124,7 +124,7 @@ const createNews = async () => {
     <button
       @click="createNews"
       :disabled="sendNews"
-      class="w-full rounded bg-primary py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+      class="w-full py-2 font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary hover:scale-105 hover:bg-red-900"
     >
       <p v-if="sendNews">Sending...</p>
       <p v-else>Send News</p>
