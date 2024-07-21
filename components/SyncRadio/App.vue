@@ -451,16 +451,17 @@ onMounted(async () => {
 </script>
 
 <template>
-  <main id="syncRadioApp" class="relative grid gap-3 px-5 pb-10 text-xs transition-all duration-300 ease-out min-h-dvh-wo-nav max-h-dvh-wo-nav lg:flex-row">
-    <section id="searchInputElement" class="space-y-2">
+  <main id="syncRadioApp" class="relative grid gap-3 px-5 pb-10 text-xs transition-all duration-300 ease-out lg:pb-0 grid-cols-custom grid-rows-custom min-h-dvh-wo-nav max-h-dvh-wo-nav">
+  
+    <section id="searchInputElement" class="space-y-2 lg:row-start-1 lg:col-start-1 lg:col-end-3">
       <div class="flex justify-between space-x-2 text-sm">
         <div class="flex">
           <button
             @click="searchOnComeback = true"
             class="px-3 py-1 rounded"
-            :class="searchOnComeback ? 'bg-primary' : 'hover:bg-quinary'"
+            :class="searchOnComeback ? 'border border-primary lg:bg-primary lg:border-none' : 'hover:bg-quinary'"
           >
-            <IconComeback class="w-4 h-4" />
+            <IconComeback class="w-4 h-4 lg:hidden" />
             <span class="hidden lg:block">
               Search on
               <span class="font-bold" :class="searchOnComeback ? 'text-tertiary ' : 'text-primary'">Comeback</span>
@@ -469,9 +470,9 @@ onMounted(async () => {
           <button
             @click="searchOnComeback = false"
             class="px-3 py-1 rounded"
-            :class="searchOnComeback ? 'hover:bg-quinary' : 'bg-primary'"
+            :class="searchOnComeback ? 'hover:bg-quinary' : 'border border-primary lg:bg-primary lg:border-none'"
           >
-            <IconYoutube class="w-4 h-4" />
+            <IconYoutube class="w-4 h-4 lg:hidden" />
             <span class="hidden lg:block">
               Add Youtube URL
             </span>
@@ -593,7 +594,7 @@ onMounted(async () => {
       </form>
     </section>
 
-    <section id="playerVideo" class="relative flex flex-col items-center justify-center w-full h-full bg-green-500 rounded aspect-video lg:aspect-auto">
+    <section id="playerVideo" class="relative flex flex-col items-center justify-center w-full h-full bg-green-500 rounded lg:row-start-2 lg:col-start-2 lg:col-end-3 aspect-video lg:aspect-auto">
       <p v-if="errorMessage" class="p-5 text-lg font-semibold">
         You are probably using your YouTube account on another page or device.
         Consider stopping it to fully enjoy SyncRadio.
@@ -614,7 +615,7 @@ onMounted(async () => {
       />
     </section>
   
-    <section id="playlist" class="p-2 space-y-2 overflow-hidden text-xs rounded bg-quinary">
+    <section id="playlist" class="p-2 space-y-2 overflow-hidden text-xs rounded lg:row-start-2 lg:col-start-1 lg:col-end-2 bg-quinary">
       <div class="flex justify-between w-full">
         <div class="flex gap-3">
           <p class="font-semibold uppercase">Playlist</p>
@@ -659,10 +660,11 @@ onMounted(async () => {
       :idActualUser="userData.id"
       :nameActualUser="userData.name"
       :isModerator="isAdminRoom"
+      class="md:row-start-1 md:row-end-5 md:col-start-2 md:col-end-3 lg:col-start-3 lg:col-end-4"
       :class="blurEffectLoading ? 'filter blur-sm' : ''"
     />
     
-    <section id="recommandation" class="hidden p-3 text-xs rounded lg:block bg-quinary">
+    <section id="recommandation" class="hidden p-3 text-xs rounded lg:row-start-3 lg:col-start-1 lg:col-end-2 lg:row-end-4 lg:block bg-quinary">
       <div class="flex items-center justify-between w-full">
         <p class="font-semibold uppercase">Recommandation</p>
         <button
@@ -695,10 +697,9 @@ onMounted(async () => {
     </section>
 
     <section v-if="isAdminRoom" id="moderation" class="w-full">
-      <div class="flex flex-col justify-between w-full gap-3 lg:flex-row">
         <div class="space-y-1">
           <p class="font-semibold">SETTINGS</p>
-          <div class="flex gap-5 text-xs">
+          <div class="flex flex-col gap-2 lg:gap-5 lg:flex-rowtext-xs">
             <div class="space-y-1">
               <p>Who’s allow to add songs?</p>
               <div class="flex gap-1">
@@ -720,6 +721,7 @@ onMounted(async () => {
                 </button>
               </div>
             </div>
+            
             <div class="space-y-1">
               <p>Did you want to save this room and playlist?</p>
               <div class="flex gap-1">
@@ -741,7 +743,6 @@ onMounted(async () => {
             </div>
           </div>
         </div>
-      </div>
     </section>
   </main>
 </template>
@@ -752,10 +753,14 @@ onMounted(async () => {
   }
 
   .grid-rows-custom {
-    grid-template-rows: 10% 1fr 25%;
+    grid-template-rows: 8% 1fr 15% 1fr 15%;
 
     @media (min-width: 768px) {
-      grid-template-rows: 10% 1fr 20%;
+      grid-template-rows: 12% 1fr 1fr;
+    }
+
+    @media (min-width: 1024px) {
+      grid-template-rows: 9% 1fr 30%;
     }
   }
 
@@ -763,7 +768,11 @@ onMounted(async () => {
     grid-template-columns: 1fr;
 
     @media (min-width: 768px) {
-      grid-template-columns: 20% 1fr 20%;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (min-width: 1024px) {
+      grid-template-columns: 25% 1fr 20%;
     }
   }
 </style>
