@@ -15,10 +15,10 @@ const signOut = async () => {
 </script>
 
 <template>
-  <div class="h-screen min-h-dvh-wo-nav max-h-dvh-wo-nav p-2 gap-2 flex">
+  <div class="flex h-screen gap-2 p-2 min-h-dvh-wo-nav max-h-dvh-wo-nav">
     <nav
       ref="menuCollapsable"
-      class="bg-quaternary h-full flex flex-col rounded p-2 gap-2 drop-shadow-xl transition-all ease-in-out duration-300 text-sm w-80"
+      class="flex flex-col h-full gap-2 p-2 text-sm transition-all duration-300 ease-in-out rounded bg-quaternary drop-shadow-xl w-80"
     >
       <NuxtLink
         to="/settings/profile"
@@ -32,23 +32,25 @@ const signOut = async () => {
       </NuxtLink>
       <NuxtLink
         to="/settings/general"
-        class="transition-all duration-300 px-3 py-1.5 ease-in-out rounded flex items-center gap-2"
+        class="transition-all duration-300 px-3 py-1.5 ease-in-out rounded flex justify-between items-end gap-2"
         :class="{
           'font-semibold text-white bg-quinary': routeN.name === 'settings-general',
           'text-zinc-500 hover:bg-quinary': routeN.name !== 'settings-general',
         }"
       >
         <p>General Settings</p>
+        <span class="px-2 text-[10px] font-bold text-primary">Coming Soon</span>
       </NuxtLink>
       <NuxtLink
         to="/settings/security"
-        class="transition-all duration-300 px-3 py-1.5 ease-in-out rounded flex items-center gap-2"
+        class="transition-all duration-300 px-3 py-1.5 ease-in-out rounded flex justify-between items-end gap-2"
         :class="{
           'font-semibold text-white bg-quinary': routeN.name === 'settings-security',
           'text-zinc-500 hover:bg-quinary': routeN.name !== 'settings-security',
         }"
       >
         <p>Security & Privacy</p>
+        <span class="px-2 text-[10px] font-bold text-primary">Coming Soon</span>
       </NuxtLink>
       <!-- <NuxtLink
         to="/settings/notification"
