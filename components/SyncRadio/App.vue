@@ -594,7 +594,7 @@ onMounted(async () => {
       </form>
     </section>
 
-    <section id="playerVideo" class="relative flex flex-col items-center justify-center w-full h-full bg-green-500 rounded lg:row-start-2 lg:col-start-2 lg:col-end-3 aspect-video lg:aspect-auto">
+    <section id="playerVideo" class="relative flex flex-col items-center justify-center w-full h-full rounded lg:row-start-2 lg:col-start-2 lg:col-end-3 aspect-video lg:aspect-auto">
       <p v-if="errorMessage" class="p-5 text-lg font-semibold">
         You are probably using your YouTube account on another page or device.
         Consider stopping it to fully enjoy SyncRadio.
