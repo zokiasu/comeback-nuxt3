@@ -43,7 +43,7 @@ const playVideo = () => {
                     <p>Added by</p>
                     <p class="font-semibold">{{ userName }}</p>
                 </div>
-                <div class="items-center gap-2 2xl:hidden" :class="isAdmin ? 'group-hover:flex':''">
+                <div class="items-center gap-2 2xl:hidden" :class="isAdmin ? '2xl:group-hover:flex':''">
                     <button @click="deleteInPlaylist">
                         <IconDelete class="w-3.5 h-3.5 cursor-pointer hover:text-primary" />
                     </button>
