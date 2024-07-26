@@ -635,7 +635,7 @@ onMounted(async () => {
       
       <div
         ref="roomPlaylistElement"
-        class="flex flex-col w-full h-full gap-2 overflow-hidden overflow-y-auto max-h-[93%] remove-scrollbar"
+        class="space-y-2 overflow-hidden overflow-y-auto max-h-[70%] md:max-h-[90%] xl:max-h-[93%] remove-scrollbar"
       >
         <SyncRadioYoutubeCard
           v-for="(video, index) in roomPlaylist"
@@ -697,10 +697,10 @@ onMounted(async () => {
       </div>
     </section>
 
-    <section v-if="isAdminRoom" id="moderation" class="w-full">
+    <section v-if="isAdminRoom" id="moderation" class="w-full"> 
         <div class="space-y-1">
           <p class="font-semibold">SETTINGS</p>
-          <div class="flex flex-col gap-2 lg:gap-5 lg:flex-rowtext-xs">
+          <div class="flex gap-2 md:flex-col lg:gap-5 lg:flex-rowtext-xs">
             <div class="space-y-1">
               <p>Who’s allow to add songs?</p>
               <div class="flex gap-1">
@@ -754,7 +754,7 @@ onMounted(async () => {
   }
 
   .grid-rows-custom {
-    grid-template-rows: 10% 1fr 15% 1fr 15%;
+    grid-template-rows: 9% 1fr 15% 1fr 10%;
 
     @media (min-width: 768px) {
       grid-template-rows: 9% 1fr 1fr;
