@@ -23,7 +23,7 @@ const playVideo = () => {
 <template>
     <button 
         @click="playVideo"
-        class="relative flex items-center h-20 gap-3 p-2 rounded-lg text-start" 
+        class="relative flex items-center h-full gap-3 p-2 rounded-lg min-h-14 max-h-20 text-start" 
         :class="{
             'group' : isAdmin,
             'bg-primary' : isActualPlaying,
