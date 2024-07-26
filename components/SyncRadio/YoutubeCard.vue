@@ -23,7 +23,7 @@ const playVideo = () => {
 <template>
     <button 
         @click="playVideo"
-        class="relative flex items-center h-full gap-3 p-2 rounded-lg min-h-14 max-h-20 text-start" 
+        class="relative flex items-center w-full gap-3 p-2 rounded-lg text-start" 
         :class="{
             'group' : isAdmin,
             'bg-primary' : isActualPlaying,
@@ -35,19 +35,17 @@ const playVideo = () => {
             :alt="name"
             class="hidden lg:block rounded object-cover h-full min-h-full min-w-[20%] max-w-[20%]"
         />
-        <div class="flex flex-col justify-between w-full h-full text-sm truncate">
+        <div class="relative w-full h-full text-sm truncate">
             <p class="font-semibold truncate">{{ name }}</p>
             <p class="text-xs">{{ channelName }}</p>
-            <div class="flex items-end justify-between w-full text-[10px]">
-                <div class="flex gap-1">
-                    <p>Added by</p>
-                    <p class="font-semibold">{{ userName }}</p>
-                </div>
-                <div class="items-center gap-2 2xl:hidden" :class="isAdmin ? '2xl:group-hover:flex':''">
-                    <button @click="deleteInPlaylist">
-                        <IconDelete class="w-3.5 h-3.5 cursor-pointer hover:text-primary" />
-                    </button>
-                </div>
+            <div class="hidden gap-1 text-xs lg:flex">
+                <p>Added by</p>
+                <p class="font-semibold">{{ userName }}</p>
+            </div>
+            <div class="absolute bottom-0 right-0 items-center gap-2 2xl:hidden" :class="isAdmin ? '2xl:group-hover:flex':''">
+                <button @click="deleteInPlaylist">
+                    <IconDelete class="w-3.5 h-3.5 cursor-pointer hover:text-primary" />
+                </button>
             </div>
         </div>
     </button>
