@@ -757,7 +757,7 @@ onMounted(async () => {
     grid-template-rows: 10% 1fr 15% 1fr 15%;
 
     @media (min-width: 768px) {
-      grid-template-rows: 12% 1fr 1fr;
+      grid-template-rows: 9% 1fr 1fr;
     }
 
     @media (min-width: 1024px) {
