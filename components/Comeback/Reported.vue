@@ -37,6 +37,7 @@
         :message="comeback.message"
         :date="comeback.date"
         :artist="comeback.artist"
+        :artists="comeback.artists"
       />
     </div>
     <div v-else class="grid grid-cols-1 gap-2 py-5 md:grid-cols-2 2xl:grid-cols-3">

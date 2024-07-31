@@ -60,14 +60,14 @@ onMounted(async () => {
     <div
       id="navbar"
       ref="navbar"
-      class="animate__animated animate__fadeInDown rounded-full px-5 transition-all duration-500 ease-in-out"
+      class="px-5 transition-all duration-500 ease-in-out rounded-full animate__animated animate__fadeInDown"
     >
-      <div class="mx-auto flex justify-between py-3 2xl:container">
+      <div class="flex justify-between py-3 mx-auto 2xl:container">
         <NuxtLink to="/">
-          <img src="~/assets/image/logo.png" alt="Comeback" class="block h-8 w-auto" />
+          <img src="~/assets/image/logo.png" alt="Comeback" class="block w-auto h-8" />
         </NuxtLink>
         
-        <nav class="flex items-center justify-center gap-x-5 text-sm">
+        <nav class="flex items-center justify-center text-sm gap-x-5">
           <NuxtLink
             :to="`/`"
             :class="route.name === 'index' ? 'font-semibold text-white' : 'text-zinc-500'"
@@ -86,8 +86,7 @@ onMounted(async () => {
             :class="route.name.startsWith('syncradio') ? 'font-semibold text-white' : 'text-zinc-500'"
           >
             SyncRadio
-            <span class="absolute -bottom-2
-             -right-4 px-2 text-xs font-bold text-primary">Beta</span>
+            <span class="absolute px-2 text-xs font-bold -bottom-2 -right-4 text-primary">Beta</span>
           </NuxtLink>
           <NuxtLink
             v-if="isAdmin === true"
@@ -96,28 +95,20 @@ onMounted(async () => {
           >
             Dashboard
           </NuxtLink>
-          <NuxtLink
-            v-if="isAdmin === true"
-            :to="`/artist/create`"
-            :class="route.name.startsWith('artist-create') ? 'font-semibold text-white' : 'text-zinc-500'"
-          >
-            Create Artist
-          </NuxtLink>
         </nav>
 
-        <div class="flex items-center justify-center gap-x-2 text-sm">
-          <button @click="showModalAlgolia = true" title="Search Artist" class="bg-quaternary p-2 rounded hover:bg-tertiary/20">
+        <div class="flex items-center justify-center text-sm gap-x-2">
+          <button @click="showModalAlgolia = true" title="Search Artist" class="p-2 rounded bg-quaternary hover:bg-tertiary/20">
             <IconSearch class="w-3.5 h-3.5" />
           </button>
           <button
             v-if="isLoginStore && artistFetch"
             @click="showModal = true"
             title="Add new comeback"
-            class="font-semibold bg-primary rounded px-2 py-1 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50"
+            class="px-2 py-1 font-semibold transition-all duration-300 ease-in-out rounded bg-primary hover:scale-110 hover:bg-primary/50"
           >
             New Comeback
           </button>
-          <!-- <GoogleSignInButton v-if="!isLoginStore" /> -->
           <NuxtLink
             v-if="!isLoginStore"
             :to="`/authentification`"
@@ -129,18 +120,11 @@ onMounted(async () => {
             v-else
             :to="`/settings/profile`"
             title="Settings"
-            class="flex items-center gap-2 bg-quaternary h-full px-2 py-1 rounded hover:bg-tertiary/20"
+            class="flex items-center h-full gap-2 px-2 py-1 rounded bg-quaternary hover:bg-tertiary/20"
           >
             <p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>
             <IconSettings class="w-3.5 h-3.5" />
           </NuxtLink>
-          <!-- <button
-            @click="signOut"
-            title="Logout"
-            class="transition-all duration-300 p-1.5 ease-in-out rounded flex justify-between items-center gap-2 text-zinc-500 hover:text-white"
-          >
-            <IconLogout class="w-3.5 h-3.5" />
-          </button> -->
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 import { Timestamp } from 'firebase/firestore'
 
 // récupérer les props message (string), date(any) et artist(string)
-const { message, date, artist } = defineProps({
+const { message, date, artist, artists } = defineProps({
   message: {
     type: String,
     required: true,
@@ -13,7 +13,11 @@ const { message, date, artist } = defineProps({
   },
   artist: {
     type: Object,
-    required: true,
+    required: false,
+  },
+  artists: {
+    type: Array,
+    required: false,
   },
 })
 
@@ -73,37 +77,54 @@ const loadingDone = () => {
 </script>
 
 <template>
-  <NuxtLink
-    :to="`/artist/${artist.id}`"
-    class="flex justify-between w-full overflow-hidden transition-all duration-500 ease-in-out rounded group hover:drop-shadow-lg"
-  >
-    <section class="flex items-center w-full h-full gap-2 p-2 overflow-hidden shrink bg-quinary">
-      <div class="relative hidden lg:block">
-        <div
-          ref="skeleton"
-          class="absolute inset-0 z-10 object-cover w-8 h-8 mx-auto transition-all duration-1000 ease-in-out rounded-lg aspect-square bg-primary"
-        ></div>
-        <NuxtImg
-          :src="artist.image"
-          :alt="artist.name + 's picture'"
-          format="webp"
-          @load="loadingDone"
-          class="object-cover w-8 h-8 rounded-full min-w-8"
-        />
+  <div class="flex justify-between w-full overflow-hidden transition-all duration-500 ease-in-out rounded">
+    <section class="w-full h-full p-2 space-y-1 overflow-hidden shrink bg-quinary">
+      <div class="flex flex-wrap gap-1">
+        <NuxtLink v-if="artist" :to="`/artist/${artist.id}`" class="flex items-center gap-2 group">
+          <div class="relative hidden lg:block">
+            <div
+              ref="skeleton"
+              class="absolute inset-0 z-10 object-cover w-4 h-4 mx-auto transition-all duration-1000 ease-in-out rounded-lg aspect-square bg-primary"
+            ></div>
+            <NuxtImg
+              :src="artist.image"
+              :alt="artist.name + 's picture'"
+              format="webp"
+              @load="loadingDone"
+              class="object-cover w-4 h-4 rounded-full"
+            />
+          </div>
+          <h2
+            class="text-xs font-semibold truncate transition-all duration-300 ease-in-out group-hover:text-primary lg:text-sm"
+          >
+            {{ artist.name }}
+          </h2>
+        </NuxtLink>
+        <NuxtLink v-else v-for="(artistObject, index) in artists" :key="artistObject.id" :to="`/artist/${artistObject.id}`" class="flex items-center gap-2 group">
+          <div class="relative hidden lg:block">
+            <div
+              ref="skeleton"
+              class="absolute inset-0 z-10 object-cover w-4 h-4 mx-auto transition-all duration-1000 ease-in-out rounded-lg aspect-square bg-primary"
+            ></div>
+            <NuxtImg
+              :src="artistObject.image"
+              :alt="artistObject.name + 's picture'"
+              format="webp"
+              @load="loadingDone"
+              class="object-cover w-4 h-4 rounded-full"
+            />
+          </div>
+          <h2
+            class="text-xs font-semibold truncate transition-all duration-300 ease-in-out group-hover:text-primary lg:text-sm"
+          >
+            {{ artistObject.name }}<span v-if="artists.length > 1 && index != (artists.length - 1)" class="group-hover:text-tertiary">, </span>
+          </h2>
+        </NuxtLink>
       </div>
-      
-      <div class="flex flex-col w-full gap-1 lg:items-center lg:flex-row lg:pr-5">
-        <h2
-          class="text-xs font-semibold truncate transition-all duration-300 ease-in-out group-hover:text-primary lg:text-sm"
-        >
-          {{ artist.name }}
-        </h2>
-        <p class="hidden lg:block">-</p>
-        <p class="text-xs truncate">{{ message }}</p>
-      </div>
+      <p class="text-xs truncate">{{ message }}</p>
     </section>
     
-    <div
+    <section
       class="-mt-0.5 flex min-w-[18%] items-center justify-center bg-quaternary px-3 py-1 text-center md:mt-0 md:py-0"
     >
       <p
@@ -124,8 +145,8 @@ const loadingDone = () => {
       >
         Outed
       </p>
-    </div>
-  </NuxtLink>
+    </section>
+  </div>
 </template>
 
 <style>
