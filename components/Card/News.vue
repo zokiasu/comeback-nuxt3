@@ -1,5 +1,7 @@
 <script setup>
-import { Timestamp } from 'firebase/firestore'
+import { ref } from 'vue';
+import { defineProps } from 'vue';
+import { Timestamp } from 'firebase/firestore';
 
 // récupérer les props message (string), date(any) et artist(string)
 const { message, date, artist, artists } = defineProps({
@@ -19,61 +21,49 @@ const { message, date, artist, artists } = defineProps({
     type: Array,
     required: false,
   },
-})
+});
 
-const skeleton = ref(null)
+const skeleton = ref(null);
 
 function daysUntil(futureDate) {
-  // Récupère la date d'aujourd'hui
-  const today = new Date()
-
-  // Récupère la date future
-  const future = new Date(futureDate.seconds * 1000)
-
-  // Calcule la différence en ms entre les deux dates
-  const differenceInTime = future.getTime() - today.getTime()
-
-  // Convertit la différence en ms en nombre de jours
-  const differenceInDays = differenceInTime / (1000 * 3600 * 24)
-
-  // Retourne le nombre de jours restants
-  return Math.ceil(differenceInDays)
+  const today = new Date();
+  const future = new Date(futureDate.seconds * 1000);
+  const differenceInTime = future.getTime() - today.getTime();
+  const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+  return Math.ceil(differenceInDays);
 }
 
 function isDatePassed(date) {
-  // Récupère la date d'aujourd'hui en timestamp
-  const today = new Date().getTime()
-
-  // Convertit la date entrée en paramètre en timestamp
-  const inputDate = new Date(date.seconds * 1000)
-
-  // Compare les deux timestamps
+  const today = new Date().getTime();
+  const inputDate = new Date(date.seconds * 1000);
   if (isNaN(inputDate)) {
-    throw new TypeError('Invalid date format')
+    throw new TypeError('Invalid date format');
   }
-  return inputDate < today
+  return inputDate < today;
 }
 
 function isSameDate(date) {
-  // Récupère la date d'aujourd'hui en timestamp
-  const today = new Date()
-  // Convertit la date entrée en paramètre en timestamp
-  const inputDate = new Date(date.seconds * 1000)
-
+  const today = new Date();
+  const inputDate = new Date(date.seconds * 1000);
   if (isNaN(inputDate)) {
-    throw new TypeError('Invalid date format')
+    throw new TypeError('Invalid date format');
   }
-  // Compare les deux timestamps
   return (
     inputDate.getFullYear() === today.getFullYear() &&
     inputDate.getMonth() === today.getMonth() &&
     inputDate.getDate() === today.getDate()
-  )
+  );
 }
 
 const loadingDone = () => {
-  skeleton.value.classList.add('opacity-0')
-}
+  if (skeleton.value) {
+    skeleton.value.classList.add('opacity-0');
+  }
+};
+
+const handleError = (artistName) => {
+  console.error('Failed to load image', artistName);
+};
 </script>
 
 <template>
@@ -88,9 +78,10 @@ const loadingDone = () => {
             ></div>
             <NuxtImg
               :src="artist.image"
-              :alt="artist.name + 's picture'"
+              :alt="artist.name + '\'s picture'"
               format="webp"
               @load="loadingDone"
+              @error="handleError"
               class="object-cover w-4 h-4 rounded-full"
             />
           </div>
@@ -111,6 +102,7 @@ const loadingDone = () => {
               :alt="artistObject.name + 's picture'"
               format="webp"
               @load="loadingDone"
+              @error="handleError(artistObject.name)"
               class="object-cover w-4 h-4 rounded-full"
             />
           </div>
