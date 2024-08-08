@@ -56,7 +56,9 @@ function isSameDate(date) {
 }
 
 const loadingDone = () => {
-  if (skeleton.value) {
+  if (skeleton.value[0]) {
+    skeleton.value[0].classList.add('opacity-0');
+  } else {
     skeleton.value.classList.add('opacity-0');
   }
 };
