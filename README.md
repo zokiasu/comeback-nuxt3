@@ -4,6 +4,9 @@
 ## Description
 **Comeback** est une plateforme de suivis de nouveautés musicale développée avec Nuxt 3. Elle permet aux utilisateurs de découvrir de la musique, suivre les actualités des artistes, et gérer les sorties musicales. Les utilisateurs peuvent ajouter des artistes, des informations sur les comebacks et les actualités, et interagir via des commentaires. La partie tableau de bord est réservée aux administrateurs pour la gestion avancée.
 
+## Stack
+VueJS 3 - NuxtJS 3 - Pinia - TailwindCSS - Firebase (Firestore, Realtime Database, Authentification) 
+
 ## Fonctionnalités
 
 ### Pour les Utilisateurs

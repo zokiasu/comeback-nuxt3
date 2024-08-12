@@ -184,20 +184,20 @@ watch([page], () => {
 </script>
 
 <template>
-  <div ref="scrollContainer" class="relative space-y-3 h-full overflow-y-scroll overflow-hidden scrollBarLight pr-2">
-    <section id="searchbar" class="sticky top-0 w-full space-y-2 bg-secondary pb-2 z-50">
+  <div ref="scrollContainer" class="relative h-full pr-2 space-y-3 overflow-hidden overflow-y-scroll scrollBarLight">
+    <section id="searchbar" class="sticky top-0 z-50 w-full pb-2 space-y-2 bg-secondary">
       <input
         id="search-input"
         v-model="search"
         type="text"
         placeholder="Search"
-        class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+        class="w-full px-5 py-2 transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
       />
-      <section class="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
+      <section class="flex flex-col w-full gap-2 sm:flex-row sm:justify-between">
         <div class="flex space-x-2">
           <select
             v-model="sort"
-            class="w-full rounded border-none bg-quinary p-2 text-xs uppercase placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none sm:w-fit"
+            class="w-full p-2 text-xs uppercase transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl hover:bg-tertiary hover:text-quinary focus:outline-none sm:w-fit"
           >
             <option value="name">Name</option>
             <option value="type">Type</option>
@@ -208,13 +208,13 @@ watch([page], () => {
           </select>
           <button
             @click="invertSort = !invertSort"
-            class="rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+            class="p-2 transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl hover:bg-tertiary hover:text-quinary focus:outline-none"
           >
-            <icon-sort v-if="!invertSort" class="h-6 w-6 text-tertiary" />
-            <icon-sort-reverse v-else class="h-6 w-6 text-tertiary" />
+            <icon-sort v-if="!invertSort" class="w-6 h-6 text-tertiary" />
+            <icon-sort-reverse v-else class="w-6 h-6 text-tertiary" />
           </button>
           <button
-            class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+            class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
             :class="needToBeVerifiedFilter ? 'bg-primary' : 'bg-quinary'"
             @click="needToBeVerifiedFilter = !needToBeVerifiedFilter"
           >
@@ -222,37 +222,37 @@ watch([page], () => {
           </button>
         </div>
 
-        <div class="flex w-full justify-between space-x-2 sm:justify-end">
+        <div class="flex justify-between w-full space-x-2 sm:justify-end">
           <button
             @click="page = 1"
             :disabled="startAt == 0"
-            class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+            class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
           >
             First
           </button>
           <button
             @click="page--"
             :disabled="startAt == 0"
-            class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+            class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
           >
             Prev
           </button>
           <input
             type="text"
-            class="w-10 rounded border-none bg-quinary p-2 text-center placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+            class="w-10 p-2 text-center transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl hover:bg-tertiary hover:text-quinary focus:outline-none"
             v-model.number="page"
           />
           <button
             @click="page++"
             :disabled="page == nbPage"
-            class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+            class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
           >
             Next
           </button>
           <button
             @click="page = nbPage"
             :disabled="page == nbPage"
-            class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+            class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
           >
             Last
           </button>
@@ -263,7 +263,7 @@ watch([page], () => {
     <div
       v-if="filteredReleaseList && (filteredReleaseList.length > 0)"
       id="release-list"
-      class="grid grid-cols-1 items-center justify-center gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 2xl:gap-2"
+      class="grid items-center justify-center grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-2"
     >
       <div v-for="release in filteredReleaseList.slice(startAt, endAt)" :key="`key_`+release.id" class="w-full h-full">
         <CardDashboardRelease
@@ -282,7 +282,7 @@ watch([page], () => {
         />
       </div>
     </div>
-    <p v-else class="w-full bg-quaternary p-5 text-center font-semibold uppercase">
+    <p v-else class="w-full p-5 font-semibold text-center uppercase bg-quaternary">
       No Release founded
     </p>
   </div>
