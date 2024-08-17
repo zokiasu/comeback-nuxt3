@@ -118,12 +118,12 @@ useHead({
     v-if="artist"
     class="container mx-auto min-h-[calc(100vh-60px)] space-y-5 p-5 lg:px-10"
   >
-    <div class="flex items-end justify-between border-b border-zinc-700 pb-1 text-lg font-semibold uppercase lg:text-xl">
+    <div class="flex items-end justify-between pb-1 text-lg font-semibold uppercase border-b border-zinc-700 lg:text-xl">
       <p>Artist Edition : {{ artistToEdit.name }}</p>
       <button
         @click="sendUpdateArtist"
         :disabled="isUploadingEdit"
-        class="w-fit rounded bg-primary px-3 py-1 text-base font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+        class="px-3 py-1 text-base font-semibold uppercase transition-all duration-300 ease-in-out rounded w-fit bg-primary hover:scale-105 hover:bg-red-900"
       >
         {{ isUploadingEdit ? 'Loading' : 'Saves' }}
       </button>
@@ -133,7 +133,7 @@ useHead({
       <div class="flex flex-col gap-2">
         <div class="flex items-end gap-2">
           <ComebackLabel label="Image" />
-          <p class="italic text-quinary text-sm">Picture will be automaticaly update based on Youtube Music</p>
+          <p class="text-sm italic text-quinary">Picture will be automaticaly update based on Youtube Music</p>
         </div>
         <NuxtImg
           v-if="artistToEdit.image"
@@ -141,7 +141,7 @@ useHead({
           :alt="artistToEdit.name"
           format="webp"
           loading="lazy"
-          class="w-full rounded object-cover md:w-auto md:max-w-lg xl:max-w-xl"
+          class="object-cover w-full rounded md:w-auto md:max-w-lg xl:max-w-xl"
         />
       </div>
       <!-- Name & Id -->
@@ -169,7 +169,7 @@ useHead({
           <ComebackLabel label="Type" />
           <select
             v-model="artistToEdit.type"
-            class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
+            class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
           >
             <option value="SOLO" class="text-secondary">SOLO</option>
             <option value="GROUP" class="text-secondary">GROUP</option>
@@ -179,10 +179,10 @@ useHead({
           <ComebackLabel label="Active Career" />
           <select
             v-model="artistToEdit.activeCareer"
-            class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
+            class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
           >
-            <option value="true" class="text-secondary">Active</option>
-            <option value="false" class="text-secondary">Inactive</option>
+            <option :value="true" class="text-secondary">Active</option>
+            <option :value="false" class="text-secondary">Inactive</option>
           </select>
         </div>
       </div>
@@ -250,24 +250,24 @@ useHead({
             :key="platform"
             class="flex w-full gap-1"
           >
-            <div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
+            <div class="w-full p-2 space-y-3 text-xs rounded bg-quinary">
               <input
                 type="text"
                 :value="platform.name"
                 placeholder="Platform's Name"
                 @input="artistToEdit.platformList[index].name = $event.target.value"
-                class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+                class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
               />
               <input
                 type="text"
                 :value="platform.link"
                 placeholder="Platform's Link"
                 @input="artistToEdit.platformList[index].link = $event.target.value"
-                class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+                class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
               />
             </div>
             <button
-              class="rounded bg-primary p-5 text-xs hover:bg-red-900"
+              class="p-5 text-xs rounded bg-primary hover:bg-red-900"
               @click="
                 artistToEdit.platformList.splice(
                   artistToEdit.platformList.indexOf(platform),
@@ -279,7 +279,7 @@ useHead({
             </button>
           </div>
           <button
-            class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
+            class="w-full p-2 text-xs font-semibold uppercase rounded bg-primary hover:bg-red-900"
             @click="artistToEdit.platformList.push({ name: '', link: '' })"
           >
             Add Platforms
@@ -293,24 +293,24 @@ useHead({
             :key="social"
             class="flex w-full gap-2"
           >
-            <div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
+            <div class="w-full p-2 space-y-3 text-xs rounded bg-quinary">
               <input
                 type="text"
                 :value="social.name"
                 placeholder="Social's Name"
                 @input="artistToEdit.socialList[index].name = $event.target.value"
-                class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+                class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
               />
               <input
                 type="text"
                 :value="social.link"
                 placeholder="Social's Link"
                 @input="artistToEdit.socialList[index].link = $event.target.value"
-                class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+                class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
               />
             </div>
             <button
-              class="rounded bg-primary p-5 text-xs hover:bg-red-900"
+              class="p-5 text-xs rounded bg-primary hover:bg-red-900"
               @click="
                 artistToEdit.socialList.splice(artistToEdit.socialList.indexOf(platform), 1)
               "
@@ -319,7 +319,7 @@ useHead({
             </button>
           </div>
           <button
-            class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
+            class="w-full p-2 text-xs font-semibold uppercase rounded bg-primary hover:bg-red-900"
             @click="artistToEdit.socialList.push({ name: '', link: '' })"
           >
             Add Socials
@@ -327,11 +327,11 @@ useHead({
         </div>
       </div>
     </div>
-    <div class="border-t border-zinc-700 pt-3">
+    <div class="pt-3 border-t border-zinc-700">
       <button
         @click="sendUpdateArtist"
         :disabled="isUploadingEdit"
-        class="w-full rounded bg-primary py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+        class="w-full py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary hover:scale-105 hover:bg-red-900"
       >
         {{ isUploadingEdit ? 'Loading' : 'Saves' }}
       </button>

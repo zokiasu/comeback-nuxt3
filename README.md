@@ -28,7 +28,7 @@ VueJS 3 - NuxtJS 3 - Pinia - TailwindCSS - Firebase (Firestore, Realtime Databas
 
 ## Projet Backend | cb-artist-generator
 
-Le projet **cb-artist-generator** est utilisé pour remplir et mettre à jour la base de données de Comeback. Il s'agit d'un script exécuté quotidiennement via un serveur CRON.
+Le projet **cb-artist-generator** est utilisé pour remplir et mettre à jour la base de données de Comeback. Il s'agit d'un script exécuté quotidiennement via une CRON.
 
 ### Fonctionnalités
 

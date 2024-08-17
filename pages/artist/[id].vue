@@ -19,6 +19,7 @@ onMounted(async () => {
   try {
     const fetchedArtist = await fetchArtistFullInfoById(route.params.id as any) as Artist;
     artist.value = fetchedArtist;
+    console.log('artist', artist.value)
     imageBackground.value = fetchedArtist.image;
     title.value = fetchedArtist.name;
     description.value = fetchedArtist.description;
