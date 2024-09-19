@@ -58,18 +58,13 @@ const switchTypeFilter = async (type) => {
 }
 
 const releasesDisplayed = computed(() => {
-  console.log(onlyAlbums.value, onlyEps.value, onlySingles.value)
   if(onlyAlbums.value) {
-    console.log('onlyAlbums')
     return releases.value.filter((release) => release.type === 'ALBUM')
   } else if(onlyEps.value) {
-    console.log('onlyEps')
     return releases.value.filter((release) => release.type === 'EP')
   } else if(onlySingles.value) {
-    console.log('onlySingles')
     return releases.value.filter((release) => release.type === 'SINGLE')
   } else {
-    console.log('all')
     return releases.value
   }
 })
@@ -143,9 +138,9 @@ useHead({
     </div>
     <!-- Stats -->
     <div class="border-y-2 text-xs border-quaternary py-3 space-y-2">
-      <p class="font-semibold text-base text-center">
+      <!-- <p class="font-semibold text-base text-center">
         {{ monthList[currentMonth].original }} {{ currentYear }}'s stats
-      </p>
+      </p> -->
       <div class="grid grid-cols-4 gap-1 lg:gap-5 justify-center items-center">
         <button 
           @click="switchTypeFilter('ALL')" 
@@ -174,6 +169,7 @@ useHead({
         </button>
       </div>
     </div>
+    <!-- <p class="text-primary text-sm italic">Some troubles have been noticed with our release recovery API and are working to resolve them quickly. We apologize for the inconvenience.</p> -->
     <!-- Releases -->
     <transition-group
       tag="div"

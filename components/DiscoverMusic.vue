@@ -23,7 +23,6 @@ const reloadRandomMusic = async () => {
   music.value = {}
   music.value = await getRandomMusic()
   imageLoaded.value = false
-  console.log('music', music.value)
 }
 
 defineExpose({

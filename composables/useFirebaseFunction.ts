@@ -14,6 +14,8 @@ import {
   limit,
   getCountFromServer,
   onSnapshot,
+  startAt,
+  endAt,
 } from 'firebase/firestore'
 import _ from 'lodash'
 import { useToast } from 'vue-toastification'
@@ -24,9 +26,7 @@ export function useFirebaseFunction() {
   const config = useRuntimeConfig()
   const toast = useToast()
 
-  /** 
-   * GENERAL FUNCTION FOR FIREBASE FUNCTION 
-  **/
+  ///////// GENERAL FUNCTION FOR FIREBASE FUNCTION \\\\\\\\\\
 
   // Converts a Firestore snapshot into an array of documents.
   const snapshotResultToArray = (result: any) => {
@@ -46,7 +46,7 @@ export function useFirebaseFunction() {
       return { id: docSnap.id, ...docSnap.data() };
     } else {
       // Gérer l'absence de document, par exemple en retournant null ou en affichant un message
-      console.log("Aucun document correspondant !");
+      // console.log("Aucun document correspondant !");
       return null;
     }
   };
@@ -63,6 +63,45 @@ export function useFirebaseFunction() {
       return null
     }
   }
+  // Fetches details of a YouTube video using the YouTube Data API.
+  const getVideoFullDetails = async (videoId: string, apiKey: string) => {
+    const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet,contentDetails,status&key=${apiKey}`
+
+    try {
+      const response = await fetch(url)
+      const data = await response.json()
+      return (data.items && data.items.length) ? data.items[0] : null
+    } catch (error) {
+      console.error('Erreur lors de la récupération des détails de la vidéo:', error)
+      return null
+    }
+  }
+
+  const getAllVideosFromPlaylist = async (playlistId: string, apiKey: string) => {
+    const baseUrl = `https://youtube.googleapis.com/youtube/v3/playlistItems`;
+    let allItems: any[] = [];
+    let pageToken = '';
+  
+    try {
+      do {
+        const url = `${baseUrl}?part=snippet,contentDetails,id,status&playlistId=${playlistId}&key=${apiKey}&maxResults=50&pageToken=${pageToken}`;
+        const response = await fetch(url);
+        const data = await response.json();
+  
+        if (data.items) {
+          allItems = allItems.concat(data.items);
+        }
+  
+        pageToken = data.nextPageToken;
+      } while (pageToken);
+  
+      return allItems;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des vidéos de la playlist:', error);
+      return null;
+    }
+  };
+
   // Checks if a YouTube video can be embedded.
   const canVideoBeEmbedded = async (videoId: string, apiKey: string) => {
     const videoDetails = await getVideoDetails(videoId, apiKey)
@@ -82,10 +121,8 @@ export function useFirebaseFunction() {
     const snapshot = await getDocs(colRef)
     return snapshot.size > 0
   }
-
-  /** 
-   * HOMEPAGE FUNCTION 
-  **/
+  
+  ///////// HOMEPAGE FUNCTION \\\\\\\\\\
 
   // Listens for real-time updates to the 'news' collection in Firestore where the date is greater than or equal to the provided start date.
   const getRealtimeNextComebacks = async (startDate: Timestamp, callback: Function) => {
@@ -108,7 +145,7 @@ export function useFirebaseFunction() {
   const getRealtimeLastestReleases = async (startDate: Timestamp, limitNumber: number, callback: Function) => {
     const colRef = query(
       collection(database as any, 'releases'),
-      where('date', '>=', startDate),
+      // where('date', '>=', startDate),
       where('needToBeVerified', '==', false),
       orderBy('date', 'desc'),
       limit(limitNumber),
@@ -155,19 +192,60 @@ export function useFirebaseFunction() {
   
       for (let music of musics) {
         const isEmbeddable = await canVideoBeEmbedded(music.videoId, config.public.YOUTUBE_API_KEY);
-        if (!music.name.toLowerCase().includes('inst') && isEmbeddable) {
+        if (!music.name.toLowerCase().includes('inst') && !music.name.toLowerCase().includes('sped-up') && isEmbeddable) {
           return music; // Retourne immédiatement dès qu'une musique correspondante est trouvée
         }
       }
     }
   
     // Si aucune musique correspondante n'est trouvée après avoir parcouru toutes les releases
-    return null;
+    return getRandomMusic(); // Récursion pour essayer à nouveau
   };
 
-  /**
-   * CALENDAR PAGE FUNCTION
-  **/
+  // return a list of 10 random music from list release id
+  const getRandomMusicFromListReleaseId = async (listReleaseId: string[]): Promise<any[]> => {
+    // Mélange la liste des identifiants de release
+    const shuffledList = shuffleArray(listReleaseId);
+    
+    // Sélectionne un sous-ensemble aléatoire de 10 identifiants ou moins si la liste est plus courte
+    const selectedReleaseIds = shuffledList.slice(0, 10);
+    
+    let releases = [];
+    for (let id of selectedReleaseIds) {
+      const docRef = doc(database as any, 'releases', id);
+      const docSnap = await getDoc(docRef);
+      const release = documentSnapshotToObject(docSnap);
+      releases.push(release);
+    }
+
+    releases = shuffleArray(releases); // Mélange les releases
+    let listMusicFromReleaseSelected: any[] = [];
+    let foundMusics = [];
+
+    for (let release of releases.splice(0, 10)) {
+      const colMusic = query(collection(database as any, 'releases', release.id, 'musics'));
+      const snapshotMusic = await getDocs(colMusic);
+      const musics = snapshotMusic.docs.map((doc) => doc.data());
+      listMusicFromReleaseSelected = listMusicFromReleaseSelected.concat(musics.filter((music: any) => !music.name.toLowerCase().includes('inst')));
+    }
+
+    const shuffledMusics = shuffleArray(listMusicFromReleaseSelected); // Mélange les musiques de l'album
+    for (let music of shuffledMusics) {
+      const isEmbeddable = await canVideoBeEmbedded(music.videoId, config.public.YOUTUBE_API_KEY);
+      if (isEmbeddable) {
+        foundMusics.push(music); // Ajoute la musique trouvée à la liste
+
+        if (foundMusics.length >= 5) {
+          return foundMusics; // Retourne la liste si elle contient 10 musiques
+        }
+      }
+    }
+
+    // Retourne la liste des musiques trouvées (peut être vide si aucune musique correspondante n'est trouvée)
+    return foundMusics;
+  };
+
+  ///////// CALENDAR PAGE FUNCTION \\\\\\\\\\
 
   //TODO: Add comment
   const getReleasesBetweenDates = async (startDate: Timestamp, endDate: Timestamp) => {
@@ -182,15 +260,13 @@ export function useFirebaseFunction() {
     return snapshotResultToArray(snapshot);
   }
 
-  /** 
-   * Release's Function
-  **/
+  ///////// Release's Function \\\\\\\\\\
 
   // Updates a document in the 'releases' collection in Firestore.
   const updateRelease = async (id: string, data: any): Promise<string> => {
     const docRef = doc(database as any, 'releases', id);
     return updateDoc(docRef, data).then(() => {
-      console.log('Document successfully updated!');
+      // console.log('Document successfully updated!');
       return 'success';
     }).catch((error) => {
       console.error('Error updating document:', error);
@@ -199,8 +275,27 @@ export function useFirebaseFunction() {
   }
   // Deletes a document in the 'releases' collection in Firestore.
   const deleteRelease = async (id: string): Promise<string> => {
-    return await deleteDoc(doc(database as any, 'releases', id)).then(() => {
-      console.log('Document successfully deleted!');
+    const musicsRef = collection(database as any, 'releases', id, 'musics');
+
+    try {
+      const snapshot = await getDocs(musicsRef);
+      const deleteMusicPromises = snapshot.docs.map((doc) => deleteMusic(doc.id));
+      await Promise.all(deleteMusicPromises);
+  
+      await deleteDoc(doc(database as any, 'releases', id));
+      // console.log('Document successfully deleted!');
+      return 'success';
+    } catch (error) {
+      console.error('Error removing document:', error);
+      return 'error';
+    }
+  }
+
+  const deleteMusic = async (musicId: string): Promise<string> => {
+    const docRef = doc(database as any, 'musics', musicId);
+
+    return await deleteDoc(docRef).then(() => {
+      // console.log('Document successfully deleted!');
       return 'success';
     }).catch((error) => {
       console.error('Error removing document:', error);
@@ -225,9 +320,13 @@ export function useFirebaseFunction() {
     return snapshotResultToArray(snapshot);
   }
 
-  /** 
-   * Artist's Function
-  **/
+  ///////// Artist's Function \\\\\\\\\\
+
+  const getAllArtists = async () => {
+    const colRef = collection(database as any, 'artists');
+    const snapshot = await getDocs(colRef);
+    return snapshotResultToArray(snapshot);
+  }
 
   // Fetches an artist with full details by its ID from the 'artists' collection in Firestore.
   const getArtistById = async (idArtist: string) => {
@@ -371,13 +470,13 @@ export function useFirebaseFunction() {
 
     for (const release of releases) {
       await deleteDoc(doc(database as any, 'releases', release.id)).then(() => {
-        console.log('Document successfully deleted!', release.name, release.artistName);
+        // console.log('Document successfully deleted!', release.name, release.artistName);
       });
     }
 
     for (const group of artistGroups) {
       await deleteDoc(doc(database as any, 'artists', id, 'groups', group.id)).then(() => {
-        console.log('Document successfully deleted!', group.name, release.artistName);
+        // console.log('Document successfully deleted!', group.name, release.artistName);
       });
       await deleteDoc(doc(database as any, 'artists', group.id, 'members', id));
     }
@@ -390,9 +489,7 @@ export function useFirebaseFunction() {
     await deleteDoc(doc(database as any, 'artists', id));0
   }
 
-  /** 
-   * Comeback's Function
-  **/
+  ///////// Comeback's Function \\\\\\\\\\
 
   // Checks if a comeback exists in the 'news' collection in Firestore for a specific artist on a specific date.
   const getComebackExist = async (date: Timestamp, artistName: string): Promise<boolean> => {
@@ -425,21 +522,36 @@ export function useFirebaseFunction() {
     }
   }
 
+  const updateUserData = async(user: any) => {
+    const docRef = doc(database as any, 'users', user.id);
+    await updateDoc(docRef, user).then(() => {
+      // console.log('Document successfully updated!');
+    }).catch((error) => {
+      console.error('Error updating document:', error);
+    });
+  }
+
   return {
     database,
     getRealtimeNextComebacks,
     getRealtimeLastestReleases,
     getRealtimeLastestArtistsAdded,
+    getRandomMusicFromListReleaseId,
     getReleasesBetweenDates,
     getRandomMusic,
     updateRelease,
     getAllReleases,
+    getAllArtists,
     getComebackExist,
     getReleaseByArtistId,
     createArtist,
     updateArtist,
+    updateUserData,
     getArtistById,
     getArtistByIdLight,
     deleteRelease,
+    getVideoDetails,
+    getVideoFullDetails,
+    getAllVideosFromPlaylist
   }
 }

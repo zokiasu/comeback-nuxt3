@@ -1,5 +1,5 @@
 <script setup>
-const { id, message, artist, date, user, verified } = defineProps({
+const { id, message, artist, artists, date, user, verified } = defineProps({
   id: {
     type: String,
     required: true,
@@ -10,7 +10,11 @@ const { id, message, artist, date, user, verified } = defineProps({
   },
   artist: {
     type: Object,
-    required: true,
+    required: false,
+  },
+  artists: {
+    type: Object,
+    required: false,
   },
   date: {
     type: Object,
@@ -50,21 +54,29 @@ const deleteNews = () => {
 
 <template>
   <div class="list-complete-item relative h-full space-y-2.5 rounded bg-quaternary p-3">
-    <div class="space-y-2">
-      <div class="flex w-full justify-between border-b border-zinc-500">
-        <p class="font-semibold">{{ artist.name }}</p>
-        <NuxtLink :to="'/artist/' + artist.id" target="_blank">{{ artist.id }}</NuxtLink>
-      </div>
-      <div class="w-full aspect-video bg-red-500 rounded">
+    <div class="flex flex-wrap gap-2">
+      <div v-if="artist" class="flex flex-col items-center justify-center overflow-hidden rounded bg-quinary w-fit">
         <NuxtImg
-          v-if="artist.image"
           :src="artist.image"
           :alt="artist.name"
           format="webp"
           loading="lazy"
-          class="rounded w-full h-full object-cover"
+          class="object-cover w-full h-10 aspect-video"
           @load="loadingDone"
         />
+        <p class="px-2 py-1">{{ artist.name }}</p>
+      </div>
+      
+      <div v-else v-for="artistObject in artists" :key="artistObject.id" class="flex flex-col items-center justify-center overflow-hidden rounded bg-quinary w-fit">
+        <NuxtImg
+          :src="artistObject.image"
+          :alt="artistObject.name"
+          format="webp"
+          loading="lazy"
+          class="object-cover w-full h-10 aspect-video"
+          @load="loadingDone"
+        />
+        <p class="px-2 py-1">{{ artistObject.name }}</p>
       </div>
     </div>
 
@@ -81,13 +93,13 @@ const deleteNews = () => {
     <div class="grid grid-cols-2 gap-3">
       <button
         disabled
-        class="rounded bg-quinary px-3 py-1 transition-all duration-300 ease-in-out hover:bg-tertiary/30"
+        class="px-3 py-1 transition-all duration-300 ease-in-out rounded bg-quinary hover:bg-tertiary/30"
       >
         Edit
       </button>
       <button
         @click="deleteNews"
-        class="rounded bg-quinary px-3 py-1 transition-all duration-300 ease-in-out hover:bg-tertiary/30"
+        class="px-3 py-1 transition-all duration-300 ease-in-out rounded bg-quinary hover:bg-tertiary/30"
       >
         Delete
       </button>

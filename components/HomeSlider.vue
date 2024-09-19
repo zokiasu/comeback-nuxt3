@@ -2,9 +2,9 @@
   <div class="relative max-h-[20rem] min-h-[20rem] md:max-h-[30rem] md:min-h-[30rem] lg:aspect-video lg:max-h-[40rem] lg:min-h-[40rem] w-full">
     <transition name="fade" mode="out-in">
       <section v-if="newsToday.length > 0" class="absolute inset-0">
-        <div class="absolute top-10 z-10">
+        <div class="absolute z-10 top-10">
           <p
-            class="w-fit bg-red-700 py-1 pl-8 pr-5 text-xs font-semibold uppercase drop-shadow-lg lg:text-xl xl:text-2xl"
+            class="py-1 pl-8 pr-5 text-xs font-semibold uppercase bg-red-700 w-fit drop-shadow-lg lg:text-xl xl:text-2xl"
           >
             Comeback Today
           </p>
@@ -21,13 +21,20 @@
         >
           <SwiperSlide
             v-for="comeback in newsToday"
-            :key="comeback.artist.id"
-            class="swiper-slide relative"
+            :key="comeback.id"
+            class="relative swiper-slide"
           >
             <ComebackSlider
+              v-if="comeback.artist"
               :image="comeback.artist.image"
               :name="comeback.artist.name"
               :id="comeback.artist.id"
+            />
+            <ComebackSlider
+              v-else
+              :image="comeback.artists[0].image"
+              :name="comeback.artists[0].name"
+              :id="comeback.artists[0].id"
             />
           </SwiperSlide>
         </Swiper>
@@ -45,7 +52,7 @@
             Track every next release by your favorite artists
           </p>
         </div>
-        <p class="absolute bottom-5 inset-x-0 z-20 text-center text-primary">
+        <p class="absolute inset-x-0 z-20 text-center bottom-5 text-primary">
           No Comeback Reported Today
         </p>
       </section>

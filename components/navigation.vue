@@ -1,5 +1,11 @@
 <script setup>
 import * as Mdl from '@kouts/vue-modal'
+import { useUserStore } from '@/stores/user'
+const { Modal } = Mdl
+
+const userStore = useUserStore()
+const userDataStore = computed(() => userStore.userDataStore)
+const isLoginStore = computed(() => userStore.isLoginStore)
 
 const { artistFetch, isAdmin, isLogin } = defineProps([
   'artistFetch',
@@ -7,20 +13,16 @@ const { artistFetch, isAdmin, isLogin } = defineProps([
   'isLogin',
 ])
 
-const { Modal } = Mdl
-
-const routeN = useRoute()
+const route = useRoute()
 
 const navbar = ref(null)
 const algolia = ref(null)
 const showModal = ref(false)
 const showModalAlgolia = ref(false)
 
-onMounted(async () => {
-  window.addEventListener('scroll', handleScroll)
-})
-
 function handleScroll() {
+  if(navbar.value === null) return
+  
   if (window.scrollY > 50) {
     navbar.value.classList.add(
       'bg-secondary',
@@ -45,6 +47,10 @@ const signOut = async () => {
   const router = useRouter()
   router.push('/')
 }
+
+onMounted(async () => {
+  window.addEventListener('scroll', handleScroll)
+})
 </script>
 
 <template>
@@ -52,72 +58,73 @@ const signOut = async () => {
     class="sticky top-0 z-50 px-3 py-2 transition-all duration-500 ease-in-out xl:py-3"
   >
     <div
+      id="navbar"
       ref="navbar"
-      class="animate__animated animate__fadeInDown rounded-full px-5 transition-all duration-500 ease-in-out"
+      class="px-5 transition-all duration-500 ease-in-out rounded-full animate__animated animate__fadeInDown"
     >
-      <div class="mx-auto flex justify-between py-3 2xl:container">
+      <div class="flex justify-between py-3 mx-auto 2xl:container">
         <NuxtLink to="/">
-          <img src="~/assets/image/logo.png" alt="Comeback" class="block h-8 w-auto" />
+          <img src="~/assets/image/logo.png" alt="Comeback" class="block w-auto h-8" />
         </NuxtLink>
-        <nav class="flex items-center justify-center gap-x-5 text-sm">
+        
+        <nav class="flex items-center justify-center text-sm gap-x-5">
           <NuxtLink
             :to="`/`"
-            :class="routeN.name === 'index' ? 'text-white' : 'text-zinc-500'"
+            :class="route.name === 'index' ? 'font-semibold text-white' : 'text-zinc-500'"
           >
             Home
           </NuxtLink>
           <NuxtLink
             :to="`/calendar`"
-            :class="routeN.name === 'calendar' ? 'text-white' : 'text-zinc-500'"
+            :class="route.name === 'calendar' ? 'font-semibold text-white' : 'text-zinc-500'"
           >
             Calendar
           </NuxtLink>
-          <!-- <NuxtLink
-            v-if="isLogin"
-            :to="`/profileDashboard`"
-            :class="routeN.name === 'calendar' ? 'text-white' : 'text-zinc-500'"
-          >
-            Profile Dashboard
-          </NuxtLink> -->
-          <!-- <NuxtLink
-            :to="`/artist`"
-            :class="routeN.name === 'artist' ? 'text-white' : 'text-zinc-500'"
-          >
-            Artists
-          </NuxtLink> -->
           <NuxtLink
-            v-if="isAdmin"
+            :to="`/syncradio`"
+            class="relative"
+            :class="route.name.startsWith('syncradio') ? 'font-semibold text-white' : 'text-zinc-500'"
+          >
+            SyncRadio
+            <span class="absolute px-2 text-xs font-bold -bottom-2 -right-4 text-primary">Beta</span>
+          </NuxtLink>
+          <NuxtLink
+            v-if="isAdmin === true"
             :to="`/dashboard/artist`"
-            :class="routeN.name.startsWith('dashboard-') ? 'text-white' : 'text-zinc-500'"
+            :class="route.name.startsWith('dashboard-') ? 'font-semibold text-white' : 'text-zinc-500'"
           >
             Dashboard
           </NuxtLink>
         </nav>
-        <div class="flex items-center justify-center gap-x-2 text-sm">
-          <button @click="showModalAlgolia = true" class="bg-quaternary p-2 rounded">
+
+        <div class="flex items-center justify-center text-sm gap-x-2">
+          <button @click="showModalAlgolia = true" title="Search Artist" class="p-2 rounded bg-quaternary hover:bg-tertiary/20">
             <IconSearch class="w-3.5 h-3.5" />
           </button>
           <button
-            v-if="isLogin && artistFetch"
+            v-if="isLoginStore && artistFetch"
             @click="showModal = true"
-            class="font-semibold bg-primary rounded px-2 py-1 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50"
+            title="Add new comeback"
+            class="px-2 py-1 font-semibold transition-all duration-300 ease-in-out rounded bg-primary hover:scale-110 hover:bg-primary/50"
           >
             New Comeback
           </button>
           <NuxtLink
-            v-if="!isLogin"
+            v-if="!isLoginStore"
             :to="`/authentification`"
             class="bg-quaternary px-2 py-1 text-[0.875rem] rounded"
           >
             Login
           </NuxtLink>
-          <button
+          <NuxtLink
             v-else
-            @click="signOut"
-            class="bg-quaternary p-2 rounded"
+            :to="`/settings/profile`"
+            title="Settings"
+            class="flex items-center h-full gap-2 px-2 py-1 rounded bg-quaternary hover:bg-tertiary/20"
           >
-            <IconLogout class="w-3.5 h-3.5" />
-          </button>
+            <p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>
+            <IconSettings class="w-3.5 h-3.5" />
+          </NuxtLink>
         </div>
       </div>
     </div>
@@ -132,7 +139,7 @@ const signOut = async () => {
       :bg-in-class="`animate__fadeInUp`"
       :bg-out-class="`animate__fadeOutDown`"
     >
-      <NewsCreation :artistList="artistFetch" @close-modal="showModal = false" />
+      <ModalNewsCreation :artistList="artistFetch" @close-modal="showModal = false" />
     </Modal>
     <Modal
       v-model="showModalAlgolia"

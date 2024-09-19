@@ -21,6 +21,17 @@ onMounted(async () => {
     artistFetch.value = tmp
   })
 })
+
+const displayingFooter = computed(() => {
+  return (
+    route &&
+    route.name &&
+    typeof route.name === 'string' &&
+    !route.name.startsWith('dashboard-') &&
+    !route.name.startsWith('settings-') &&
+    !route.name.startsWith('syncradio')
+  )
+})
 </script>
 
 <template>
@@ -31,19 +42,17 @@ onMounted(async () => {
       :isAdmin="isAdminStore"
       :isLogin="isLoginStore"
     />
-    <div class="inset-x-0 z-50 pb-4 pt-5 md:hidden">
+    <div class="inset-x-0 z-50 py-3 md:hidden">
       <img
         src="~/assets/image/logo.png"
         alt="Comeback"
         quality="80"
         loading="lazy"
-        class="mx-auto block h-9 w-auto"
+        class="block w-auto h-8 mx-auto"
       />
     </div>
-    <main>
-      <slot />
-    </main>
-    <LazyFooter v-if="route && route.name && typeof route.name === 'string' && !route.name.startsWith('dashboard-')" />
+    <slot />
+    <LazyFooter v-if="displayingFooter" />
     <LazyMobileNavigation
       class="md:hidden"
       :artistFetch="artistFetch"
@@ -53,7 +62,7 @@ onMounted(async () => {
     <LazyYoutubePlayer
       ref="YTPlayer"
       v-if="isPlayingVideo"
-      class="animate__animated animate__fadeInUp fixed bottom-0"
+      class="fixed bottom-0 animate__animated animate__fadeInUp"
     />
   </div>
 </template>

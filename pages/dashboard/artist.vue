@@ -27,7 +27,6 @@
       const index = artistFetch.value.indexOf(artist)
       await deletebyDoc('artists', id)
         .then(() => {
-          console.log('Document successfully deleted!')
           artistFetch.value.splice(index, 1)
           toast.success('Artist Deleted')
         })
@@ -59,15 +58,12 @@
   const getMaxArtistNumber = async () => {
     const coll = collection(db, "artists");
     const snapshot = await getCountFromServer(coll);
-    console.log('count: ', snapshot.data().count);
     maxArtist.value = snapshot.data().count;
   }
 
   const getArtist = async (firstCall = false) => {
     if (isLoading.value) return; // Empêche le démarrage d'un nouveau chargement si un est déjà en cours
     isLoading.value = true; // Verrouille le chargement
-
-    console.log('firstCall', firstCall, 'nextFetch', nextFetch.value, 'artistFetch', artistFetch.value, 'maxArtist', maxArtist.value)
 
     if(maxArtist.value === 0) {
       await getMaxArtistNumber();
@@ -113,8 +109,6 @@
       } else {
         artistFetch.value = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       }
-
-      console.log('artistFetch', artistFetch.value)
     } catch (error) {
       console.error("Erreur lors du chargement des artistes :", error);
     } finally {
@@ -123,8 +117,6 @@
   }
 
   const changeOnlyFilter = (filter) => {
-    console.log('changeOnlyFilter', filter)
-
     if(filter === 'desc') {
       onlyWithoutDesc.value = !onlyWithoutDesc.value;
       onlyWithoutSocials.value = false;
@@ -144,7 +136,6 @@
   }
 
   const handleScroll = () => {
-    console.log('handleScroll')
     const container = scrollContainer.value;
     if (!container) return;
 
@@ -200,7 +191,6 @@
   onMounted(async () => {
     await getArtist();
     if(scrollContainer.value) {
-      console.log('Attaching scroll event listener to:', scrollContainer.value);
       // scrollContainer.value.addEventListener('scroll', handleScroll);
     }
   });
@@ -214,7 +204,6 @@
   
   watch([limitFetch, typeFilter, onlyWithoutDesc, onlyWithoutSocials, onlyWithoutPlatforms, sort], async () => {
     try {
-      console.log('fetch', limitFetch.value, typeFilter.value, onlyWithoutDesc.value, onlyWithoutSocials.value, onlyWithoutPlatforms.value, sort.value)
       await getArtist(true);
     } catch (error) {
       console.error('Error in watcher:', error);

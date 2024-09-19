@@ -44,7 +44,7 @@ const compareFields = (field1, field2) => {
 
 const sendUpdateArtist = async () => {
 	isUploadingEdit.value = true;
-	if(artistToEdit.value.idYoutubeMusic == '' || artistToEdit.value.name == ''){
+	if(artistToEdit.value.name == '') {
 		toast.error('Please fill the required fields');
 		isUploadingEdit.value = false;
 		return;

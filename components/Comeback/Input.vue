@@ -22,10 +22,16 @@ const { name, placeholder, modelValue } = defineProps({
     required: false,
   },
 })
+
+const emit = defineEmits(['clear'])
+
+const clear = () => {
+  emit('clear')
+}
 </script>
 
 <template>
-  <div class="flex flex-col gap-1">
+  <div class="relative flex flex-col gap-1">
     <ComebackLabel v-if="label" :disabled="disabled" :label="label" />
     <input
       :type="type"
@@ -33,8 +39,11 @@ const { name, placeholder, modelValue } = defineProps({
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
       :disabled="disabled"
-      class="appearance-none border-b bg-transparent p-1.5 transition-all duration-150 ease-in-out focus:rounded focus:bg-tertiary focus:text-secondary focus:outline-none"
+      class="appearance-none rounded border bg-quaternary border-transparent py-1.5 px-2 transition-all duration-150 ease-in-out focus:rounded focus:border-primary outline-none"
       :class="{ 'border-zinc-500 text-zinc-500': disabled }"
     />
+    <button v-if="modelValue" @click="clear" class="absolute right-2 bottom-3">
+      <IconClose class="w-4 h-4" />
+    </button>
   </div>
 </template>

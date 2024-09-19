@@ -10,9 +10,3 @@
 	</svg>
 </template>
   
-<script>
-	export default {
-		name: 'IconLogin',
-	}
-</script>
-  

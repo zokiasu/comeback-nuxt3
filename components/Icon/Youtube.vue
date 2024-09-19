@@ -7,9 +7,3 @@
     <path d="M14.264 13.6v8.57l8.57-4.286-8.57-4.284Z" fill="#fff" />
   </svg>
 </template>
-
-<script>
-export default {
-  name: 'IconYoutube',
-}
-</script>

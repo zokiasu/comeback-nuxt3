@@ -9,6 +9,7 @@ export default defineNuxtConfig({
       FIREBASE_MESSAGIN_SENDER_ID: process.env.FIREBASE_MESSAGIN_SENDER_ID,
       FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
       FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
+      FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL,
       YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
     },
   },
@@ -34,6 +35,7 @@ export default defineNuxtConfig({
     apiKey: process.env.ALGOLIA_API_KEY,
     useFetch: true,
     instantSearch: true,
+    recommend: true,
   },
 
   devtools: {
@@ -52,11 +54,8 @@ export default defineNuxtConfig({
   },
 
   image: {
-    // Activer le support pour les images distantes
-    domains: ['https://lh3.googleusercontent.com/*'],
-    // Précisez ici d'autres domaines si nécessaire
-
-    // Configuration par défaut pour le traitement des images
+    provider: 'ipx',
+    domains: [],
     presets: {
       cover: {
         modifiers: {
@@ -66,4 +65,21 @@ export default defineNuxtConfig({
       },
     },
   },
+
+  app: {
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/png', sizes: '48x48', href: '/icons/icon-48x48.png' },
+        { rel: 'icon', type: 'image/png', sizes: '72x72', href: '/icons/icon-72x72.png' },
+        { rel: 'icon', type: 'image/png', sizes: '96x96', href: '/icons/icon-96x96.png' },
+        { rel: 'icon', type: 'image/png', sizes: '144x144', href: '/icons/icon-144x144.png' },
+        { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/icons/icon-192x192.png' },
+        { rel: 'icon', type: 'image/png', sizes: '512x512', href: '/icons/icon-512x512.png' },
+      ],
+      meta: [
+        { name: 'theme-color', content: '#9E0102' }
+      ]
+    }
+  }
 })

@@ -15,17 +15,17 @@ const { isArtist, artistId, mainTitle, subTitle, image, objectLink } = definePro
   },
   image: {
     type: String,
-    default: 'https://picsum.photos/200/200',
+    default: "https://picsum.photos/200/200",
   },
   objectLink: {
     type: String,
   },
   releaseDate: {
-    type: Object
+    type: Object,
   },
   releaseType: {
     type: String,
-    default: 'album',
+    default: "album",
   },
   isReleaseDisplay: {
     type: Boolean,
@@ -33,15 +33,15 @@ const { isArtist, artistId, mainTitle, subTitle, image, objectLink } = definePro
   },
   dateAlwaysDisplay: {
     type: Boolean,
-    default: false
-  }
-})
-const imageLoaded = ref(false)
+    default: false,
+  },
+});
+const imageLoaded = ref(false);
 
 const formatDate = (date) => {
-  const options = { day: '2-digit', month: '2-digit', year: '2-digit' }
-  return new Date(date.seconds * 1000).toLocaleDateString('fr-FR', options)
-}
+  const options = { day: "2-digit", month: "2-digit", year: "2-digit" };
+  return new Date(date.seconds * 1000).toLocaleDateString("fr-FR", options);
+};
 </script>
 
 <template>
@@ -61,19 +61,19 @@ const formatDate = (date) => {
         @load="imageLoaded = true"
         :class="isArtist ? 'rounded-full' : 'rounded'"
       />
-      <div 
-      v-if="!isArtist && releaseDate" 
-      class="absolute top-1 left-1 text-xs uppercase bg-quaternary px-1.5 rounded"
-      :class="dateAlwaysDisplay ? '':'opacity-0 group-hover:opacity-100'"
+      <div
+        v-if="!isArtist && releaseDate"
+        class="absolute top-1 left-1 text-xs uppercase bg-quaternary px-1.5 rounded"
+        :class="dateAlwaysDisplay ? '' : 'opacity-0 group-hover:opacity-100'"
       >
         <p>
           {{ formatDate(releaseDate) }}
         </p>
       </div>
-      <div 
-      v-if="!isArtist && releaseType" 
-      class="absolute bottom-1 right-1 text-xs uppercase bg-quaternary px-1.5 rounded"
-      :class="dateAlwaysDisplay ? '':'opacity-0 group-hover:opacity-100'"
+      <div
+        v-if="!isArtist && releaseType"
+        class="absolute bottom-1 right-1 text-xs uppercase bg-quaternary px-1.5 rounded"
+        :class="dateAlwaysDisplay ? '' : 'opacity-0 group-hover:opacity-100'"
       >
         <p>
           {{ releaseType }}
@@ -85,11 +85,7 @@ const formatDate = (date) => {
         {{ mainTitle }}
       </p>
       <p v-if="isArtist || isReleaseDisplay" class="truncate">{{ subTitle }}</p>
-      <LazyNuxtLink
-        v-else
-        :to="`/artist/${artistId}`"
-        class="hover:underline"
-      >
+      <LazyNuxtLink v-else :to="`/artist/${artistId}`" class="hover:underline">
         <p class="truncate">{{ subTitle }}</p>
       </LazyNuxtLink>
     </div>

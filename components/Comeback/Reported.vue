@@ -1,49 +1,43 @@
 <script setup>
-const { comebackList } = defineProps({
-  comebackList: {
-    type: Array,
-    required: true,
-  },
-})
-const maxDisplay = ref(12)
-const minDisplay = ref(3)
+  const props = defineProps({
+    comebackList: {
+      type: Array,
+      required: true,
+    },
+  });
 
-const setMaxDisplay = () => {
-  const width = window.innerWidth
+  const displayAll = ref(false);
+  const maxDisplay = ref(12);
 
-  if (width < 1280) {
-    // Pour les écrans moyens
-    maxDisplay.value = 6
-    minDisplay.value = 6
-  } else {
-    // Pour les grands écrans
-    maxDisplay.value = 12
-    minDisplay.value = 12
-  }
-}
+  const comebackToDisplay = computed(() => {
+    return displayAll.value ? props.comebackList : props.comebackList.slice(0, maxDisplay.value);
+  });
 
-onMounted(() => {
-  setMaxDisplay()
-  window.addEventListener('resize', setMaxDisplay)
-})
+  const toggleDisplayAll = () => {
+    displayAll.value = !displayAll.value;
+  };
 
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', setMaxDisplay)
-})
+  // Pour déboguer
+  // watchEffect(() => {
+  //   console.log('comebackList', props.comebackList);
+  //   console.log('displayAll', displayAll.value);
+  //   console.log('comebackToDisplay', comebackToDisplay.value);
+  // });
 </script>
 
 <template>
-  <CardDefault name="Comeback reported" :class="{ hidden: !comebackList }">
+  <CardDefault name="Comeback reported">
     <div
-      v-if="comebackList.length"
-      class="grid grid-cols-1 gap-2 md:grid-cols-2 2xl:grid-cols-3 mb-5"
+      v-if="props.comebackList.length"
+      class="grid grid-cols-1 gap-2 mb-5 md:grid-cols-2 2xl:grid-cols-3"
     >
       <CardNews
-        v-for="comeback in comebackList.slice(0, maxDisplay)"
+        v-for="comeback in comebackToDisplay"
         :key="comeback.id"
         :message="comeback.message"
         :date="comeback.date"
         :artist="comeback.artist"
+        :artists="comeback.artists"
       />
     </div>
     <div v-else class="grid grid-cols-1 gap-2 py-5 md:grid-cols-2 2xl:grid-cols-3">
@@ -53,24 +47,14 @@ onBeforeUnmount(() => {
         class="h-12 rounded"
       />
     </div>
-    <div class="flex w-full justify-center">
+    <div v-if="props.comebackList.length > maxDisplay" class="flex justify-center w-full">
       <button
-        v-if="comebackList.length != maxDisplay && comebackList.length > maxDisplay"
         type="button"
-        class="flex gap-1 items-center w-fit font-semibold border border-tertiary rounded p-1"
-        @click="maxDisplay = comebackList.length"
+        class="flex items-center gap-1 p-1 font-semibold border rounded w-fit border-tertiary"
+        @click="toggleDisplayAll"
       >
-        <!-- <p>See More</p> -->
-        <IconPlus class="mx-auto h-3 w-3" />
-      </button>
-      <button
-        v-if="comebackList.length == maxDisplay && comebackList.length >= maxDisplay"
-        type="button"
-        class="flex gap-1 items-center w-fit font-semibold border border-tertiary rounded p-1"
-        @click="maxDisplay = minDisplay"
-      >
-        <!-- <p>See Less</p> -->
-        <IconMinus class="mx-auto h-3 w-3" />
+        <IconPlus v-if="!displayAll" class="w-3 h-3 mx-auto" />
+        <IconMinus v-else class="w-3 h-3 mx-auto" />
       </button>
     </div>
   </CardDefault>

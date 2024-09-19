@@ -10,8 +10,10 @@ const datas = ref([]);
 const { result, search } = useAlgoliaSearch('Artists');
 
 // Définition d'une fonction de recherche débattue
-const debouncedSearch = debounce(async (query) => {
+const debouncedSearch = debounce(async (query: any) => {
   await useAsyncData('ssr-search-results', () => search({ query }));
+  console.log('result', result.value)
+  if(!result.value) return;
   datas.value = result.value.hits.slice(0, 10);
 }, 500); // Attend 500ms après le dernier appel avant d'exécuter la fonction
 
