@@ -69,6 +69,7 @@ const createNews = async () => {
   // }
 
   sendNews.value = true
+  
   add('news', news.value)
     .then(() => {
       news.value = {

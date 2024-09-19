@@ -100,7 +100,7 @@ const handleError = (artistName) => {
               class="absolute inset-0 z-10 object-cover w-4 h-4 mx-auto transition-all duration-1000 ease-in-out rounded-lg aspect-square bg-primary"
             ></div>
             <NuxtImg
-              :src="artistObject.image"
+              :src="artistObject.picture"
               :alt="artistObject.name + 's picture'"
               format="webp"
               @load="loadingDone"

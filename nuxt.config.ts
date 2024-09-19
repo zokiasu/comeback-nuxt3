@@ -81,5 +81,7 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#9E0102' }
       ]
     }
-  }
+  },
+
+  compatibilityDate: '2024-09-19'
 })
