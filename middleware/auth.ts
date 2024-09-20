@@ -1,94 +1,46 @@
-import { useUserStore } from '@/stores/user'
-import { doc, getDoc, getFirestore, Timestamp, setDoc } from 'firebase/firestore'
+import { defineNuxtRouteMiddleware, useRuntimeConfig, navigateTo } from '#app';
+import { useUserStore } from '@/stores/user';
+import { getAuth } from 'firebase-admin/auth';
+import { parseCookies } from 'h3';
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  const { userDataStore } = useUserStore()
-
-  // const checkAuthState = () => {
-  //   const { $auth } = useNuxtApp()
-  //   setUserData(null)
-  //   return new Promise((resolve, reject) => {
-  //     const unsubscribe = $auth.onAuthStateChanged(async (userState: any) => {
-  //       if (userState) {
-  //         setFirebaseUser(userState)
-  //         setIsLogin(true)
-  //         await getDatabaseUser(userState)
-  //         resolve(userState)
-  //       } else {
-  //         setFirebaseUser(null)
-  //         setIsLogin(false)
-  //         setUserData(null)
-  //         setIsAdmin(false)
-  //         resolve(null)
-  //       }
-  //       unsubscribe()
-  //     }, error => {
-  //       reject(error)
-  //     })
-  //   })
-  // }
-
-  // const getDatabaseUser = async (user: any) => {
-  //   const uid = user.uid
-  //   const db = getFirestore()
-  //   const userRef = doc(db, 'users', uid)
-  //   const userSnap = await getDoc(userRef)
-  //   if (userSnap.exists()) {
-  //     const userData = userSnap.data()
-  //     setUserData(userData)
-  //     setIsAdmin(userData.role === 'ADMIN')
-  //   } else {
-  //     console.log('No such document!')
-  //     await createDatabaseUser(user)
-  //   }
-  // }
-
-  // const createDatabaseUser = async (user: any) => {
-  //   const db = getFirestore()
-  //   const userRef = doc(db, 'users', user.uid)
-  //   const today = new Date()
-  //   today.setHours(0, 0, 0, 0)
-  //   const todayTimestamp = Timestamp.fromDate(today)
-
-  //   await setDoc(userRef, {
-  //     id: user.uid,
-  //     email: user.email,
-  //     name: user.displayName,
-  //     photoURL: user.photoURL,
-  //     role: 'USER',
-  //     createdAt: todayTimestamp,
-  //     updatedAt: todayTimestamp,
-  //   })
-
-  //   setUserData({
-  //     uid: user.uid,
-  //     email: user.email,
-  //     name: user.displayName,
-  //     photoURL: user.photoURL,
-  //     role: 'USER'
-  //   })
-  // }
+  const userStore = useUserStore();
+  const { $adminAuth } = useNuxtApp();
+  const event = useRequestEvent();
 
   try {
-    // const user = await checkAuthState()
-    if(userDataStore === null) {
-      // En cas d'erreur, rediriger vers la page de connexion
-      return navigateTo({
-        path: '/authentification',
-        query: {
-          redirect: to.fullPath,
-        },
-      })
+    const cookies = parseCookies(event);
+    const idToken = cookies.authToken;
+
+    if (!idToken) {
+      throw new Error('No token found');
     }
 
+    // Vérifier le token avec Firebase Admin SDK
+    const decodedToken = await $adminAuth.verifyIdToken(idToken);
+
+    // Récupérer les informations de l'utilisateur depuis Firebase
+    const user = await $adminAuth.getUser(decodedToken.uid);
+
+    // Mettre à jour le store utilisateur
+    // userStore.setUserData({
+    //   id: user.uid,
+    //   email: user.email,
+    //   name: user.displayName,
+    //   photoURL: user.photoURL,
+    //   role: user.customClaims?.role || 'USER',
+    // });
+    userStore.setIsLogin(true);
+    // userStore.setIsAdmin(userStore.userDataStore.role === 'ADMIN');
+
   } catch (error) {
-    console.error('Erreur lors de la vérification de l\'état de l\'utilisateur:', error)
-    // En cas d'erreur, rediriger vers la page de connexion
+    console.error('Erreur lors de la vérification de l\'authentification:', error);
+    // Rediriger vers la page de connexion
     return navigateTo({
       path: '/authentification',
       query: {
         redirect: to.fullPath,
       },
-    })
+    });
   }
-})
+});

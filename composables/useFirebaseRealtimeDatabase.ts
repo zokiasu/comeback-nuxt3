@@ -2,7 +2,13 @@ import { ref, onValue, push, set, get, update, remove, query, orderByChild, equa
 import { useToast } from 'vue-toastification'
 
 export function useFirebaseRealtimeDatabase() {
-  const { $database: database } = useNuxtApp()
+  const { $firestore, $adminFirestore } = useNuxtApp()
+
+  // Détermine si le code est exécuté côté serveur ou client
+  const isServer = typeof window === 'undefined';
+
+  // Sélectionne le SDK approprié
+  const database = isServer ? $adminFirestore : $firestore
   const toast = useToast()
 
   // Read data from a specific path in Realtime Database

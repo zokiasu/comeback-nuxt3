@@ -1,35 +1,37 @@
-import { getAuth } from 'firebase/auth'
-import { initializeApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'
-import { getAnalytics } from 'firebase/analytics'
-import { getDatabase } from 'firebase/database'
+// plugins/firebase.client.ts
+import { defineNuxtPlugin } from '#app';
+import { initializeApp, getApps } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getAnalytics } from 'firebase/analytics';
+import { getDatabase } from 'firebase/database';
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const config = useRuntimeConfig()
+  const config = useRuntimeConfig().public;
 
   const firebaseConfig = {
-    apiKey: config.public.FIREBASE_API_KEY,
-    authDomain: config.public.FIREBASE_AUTH_DOMAIN,
-    databaseURL: config.public.FIREBASE_DATABASE_URL,
-    projectId: config.public.FIREBASE_PROJECT_ID,
-    storageBucket: config.public.FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: config.public.FIREBASE_MESSAGIN_SENDER_ID,
-    appId: config.public.FIREBASE_APP_ID,
-    measurementId: config.public.FIREBASE_MEASUREMENT_ID,
+    apiKey: config.FIREBASE_API_KEY,
+    authDomain: config.FIREBASE_AUTH_DOMAIN,
+    databaseURL: config.FIREBASE_DATABASE_URL,
+    projectId: config.FIREBASE_PROJECT_ID,
+    storageBucket: config.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: config.FIREBASE_MESSAGIN_SENDER_ID,
+    appId: config.FIREBASE_APP_ID,
+    measurementId: config.FIREBASE_MEASUREMENT_ID,
+  };
+
+  // Vérifiez si l'application Firebase est déjà initialisée
+  if (!getApps().length) {
+    initializeApp(firebaseConfig);
   }
-  
 
-  nuxtApp.hook('app:beforeMount', () => {
-    const app = initializeApp(firebaseConfig)
-    const analytics = getAnalytics(app)
+  const auth = getAuth();
+  const firestore = getFirestore();
+  const analytics = getAnalytics();
+  const database = getDatabase();
 
-    const auth = getAuth(app)
-    const firestore = getFirestore(app)
-    const database = getDatabase(app)
-
-    nuxtApp.provide('auth', auth)
-    nuxtApp.provide('firestore', firestore)
-    nuxtApp.provide('analytics', analytics)
-    nuxtApp.provide('database', database)
-  })
-})
+  nuxtApp.provide('auth', auth);
+  nuxtApp.provide('firestore', firestore);
+  nuxtApp.provide('analytics', analytics);
+  nuxtApp.provide('database', database);
+});

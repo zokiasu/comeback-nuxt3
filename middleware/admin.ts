@@ -1,15 +1,16 @@
-import { useUserStore } from '@/stores/user'
-// middleware/auth.ts
-export default defineNuxtRouteMiddleware(async (to, from) => {
-  const { firebaseUserStore, isAdminStore } = useUserStore()
+import { defineNuxtRouteMiddleware, navigateTo } from '#app';
+import { useUserStore } from '@/stores/user';
 
-  // redirect the user to the login page
-  if (!firebaseUserStore && !isAdminStore) {
+export default defineNuxtRouteMiddleware((to, from) => {
+  const userStore = useUserStore();
+
+  if (!userStore.isLoginStore || !userStore.isAdminStore) {
+    // Rediriger vers la page de connexion
     return navigateTo({
       path: '/authentification',
       query: {
         redirect: to.fullPath,
       },
-    })
+    });
   }
-})
+});

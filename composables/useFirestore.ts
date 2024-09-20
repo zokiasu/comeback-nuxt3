@@ -104,7 +104,13 @@ export const fetchArtistFullInfoById = async (idArtist: string) => {
 }
 
 export const fetchArtistBasicInfoById = async (idArtist: string) => {
-  const { $firestore } = useNuxtApp()
+  const { $firestore, $adminFirestore } = useNuxtApp()
+
+  // Détermine si le code est exécuté côté serveur ou client
+  const isServer = typeof window === 'undefined';
+
+  // Sélectionne le SDK approprié
+  const database = isServer ? $adminFirestore : $firestore
 
   const colArtist = query(
     collection($firestore as any, 'artists'),

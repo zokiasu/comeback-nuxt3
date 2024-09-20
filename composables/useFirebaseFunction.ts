@@ -21,7 +21,13 @@ import _ from 'lodash'
 import { useToast } from 'vue-toastification'
 
 export function useFirebaseFunction() {
-  const { $firestore: database } = useNuxtApp()
+  const { $firestore, $adminFirestore } = useNuxtApp()
+
+  // Détermine si le code est exécuté côté serveur ou client
+  const isServer = typeof window === 'undefined';
+
+  // Sélectionne le SDK approprié
+  const database = isServer ? $adminFirestore : $firestore
   const { shuffleArray } = useGeneralFunction()
   const config = useRuntimeConfig()
   const toast = useToast()

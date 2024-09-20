@@ -5,18 +5,31 @@
   const { $auth } = useNuxtApp()
   const { setUserData, setFirebaseUser, setIsLogin, setIsAdmin } = useUserStore()
 
-  onMounted(() => {
+  onMounted(async () => {
     setUserData(null)
-    $auth.onAuthStateChanged((userState) => {
+    $auth.onAuthStateChanged(async (userState) => {
       if (userState) {
         setFirebaseUser(userState)
         setIsLogin(true)
         getDatabaseUser(userState)
+
+        const idToken = await userState.getIdToken()
+        await fetch('/api/session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ idToken }),
+        })
       } else {
         setFirebaseUser(null)
         setIsLogin(false)
         setUserData(null)
         setIsAdmin(false)
+
+        await fetch('/api/logout', {
+          method: 'POST',
+        })
       }
     })
 
