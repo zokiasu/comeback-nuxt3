@@ -32,7 +32,7 @@
             />
             <ComebackSlider
               v-else
-              :image="comeback.artists[0].image"
+              :image="comeback.artists[0].picture"
               :name="comeback.artists[0].name"
               :id="comeback.artists[0].id"
             />
