@@ -17,6 +17,8 @@ export default defineNuxtConfig({
     },
   },
 
+  ssr: true,
+
   plugins: [
     '~/plugins/firebase.client.ts',
     '~/plugins/toast.js',

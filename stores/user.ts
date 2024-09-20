@@ -9,7 +9,7 @@ export const useUserStore = defineStore('userStore', () => {
 
   const setUserData = (user: any) => {
     userDataStore.value = user;
-    isAdminStore.value = user.role ? user.role === 'ADMIN' : false;
+    isAdminStore.value = user?.role ? user.role === 'ADMIN' : false;
   };
 
   const setFirebaseUser = (user: any) => {
