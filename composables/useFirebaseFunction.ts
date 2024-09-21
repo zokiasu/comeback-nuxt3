@@ -22,12 +22,11 @@ import { useToast } from 'vue-toastification'
 
 export function useFirebaseFunction() {
   const { $firestore, $adminFirestore } = useNuxtApp()
-
   // Détermine si le code est exécuté côté serveur ou client
   const isServer = typeof window === 'undefined';
-
   // Sélectionne le SDK approprié
   const database = isServer ? $adminFirestore : $firestore
+
   const { shuffleArray } = useGeneralFunction()
   const config = useRuntimeConfig()
   const toast = useToast()
@@ -537,8 +536,36 @@ export function useFirebaseFunction() {
     });
   }
 
+  const getNextComebacks = async (startDate: Timestamp) => {
+    const colRef = database
+      .collection('news')
+      .where('date', '>=', startDate)
+      .orderBy('date', 'asc');
+    const snapshot = await colRef.get();
+    return snapshotResultToArray(snapshot);
+  };
+
+  const getLatestReleases = async (startDate: Timestamp, limitNumber: number) => {
+    const colRef = database
+      .collection('releases')
+      .where('needToBeVerified', '==', false)
+      .orderBy('date', 'desc')
+      .limit(limitNumber);
+    const snapshot = await colRef.get();
+    return snapshotResultToArray(snapshot);
+  };
+
+  const getLatestArtistsAdded = async (limitNumber: number) => {
+    const colRef = database.collection('artists').orderBy('createdAt', 'desc').limit(limitNumber);
+    const snapshot = await colRef.get();
+    return snapshotResultToArray(snapshot);
+  };
+
   return {
     database,
+    getNextComebacks,
+    getLatestReleases,
+    getLatestArtistsAdded,
     getRealtimeNextComebacks,
     getRealtimeLastestReleases,
     getRealtimeLastestArtistsAdded,
