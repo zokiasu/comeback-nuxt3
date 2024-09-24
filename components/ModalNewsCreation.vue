@@ -135,7 +135,7 @@ const clearSearch = () => {
       <ComebackLabel label="Artist(s)" />
       <div class="flex flex-wrap gap-5">
         <div v-for="artist in news.artists" :key="artist.id" class="flex items-center gap-3">
-          <img :src="artist.picture" class="w-8 h-8 rounded-full" />
+          <img :src="artist.picture" class="object-cover w-8 h-8 rounded-full" />
           <p>{{ artist.name }}</p>
         </div>
       </div>
