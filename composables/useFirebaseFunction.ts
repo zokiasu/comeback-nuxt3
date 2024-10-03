@@ -378,14 +378,15 @@ export function useFirebaseFunction() {
     if (data.groups) {
       for (const group of data.groups) {
         await setDoc(doc(database as any, 'artists', artistId, 'groups', group.id), group);
-        await setDoc(doc(database as any, 'artists', group.id, 'members', artistId), { id: artistId });
+        await setDoc(doc(database as any, 'artists', group.id, 'members', artistId), artistData);
       }
     }
 
     if (data.members) {
       for (const member of data.members) {
         await setDoc(doc(database as any, 'artists', artistId, 'members', member.id), member);
-        await setDoc(doc(database as any, 'artists', member.id, 'groups', artistId), { id: artistId });
+        await setDoc(
+          doc(database as any, 'artists', member.id, 'groups', artistId), artistData)
       }
     }
 

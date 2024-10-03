@@ -43,60 +43,72 @@ const compareFields = (field1, field2) => {
 }
 
 const sendUpdateArtist = async () => {
-	isUploadingEdit.value = true;
-	if(artistToEdit.value.name == '') {
-		toast.error('Please fill the required fields');
-		isUploadingEdit.value = false;
-		return;
-	}
-  const today = new Date();
-  today.setDate(today.getDate());
-  today.setHours(0, 0, 0, 0);
-  const todayTimestamp = Timestamp.fromDate(today);
-  artistToEdit.value['createdAt'] = todayTimestamp;
-  artistToEdit.value['updatedAt'] = todayTimestamp;
-	if(isAdminStore) {
-		artistToEdit.value['verified'] = true;
-	}
-	createArtist(artistToEdit.value).then((res) => {
-    if (res != null) {
-      toast.success('Artist created');
-      isUploadingEdit.value = false;
-      const router = useRouter()
-      router.push(`/`)
-    } else {
-      toast.error('Error: Artist not created');
-      isUploadingEdit.value = false;
-    }
-  }).catch((error) => {
-    toast.error('Error: ' + error);
-    isUploadingEdit.value = false;
-  })
+  isUploadingEdit.value = true
+
+  if (artistToEdit.value.name == '') {
+    toast.error('Please fill the required fields')
+    isUploadingEdit.value = false
+    return
+  }
+
+  const today = new Date()
+
+  today.setDate(today.getDate())
+  today.setHours(0, 0, 0, 0)
+
+  const todayTimestamp = Timestamp.fromDate(today)
+
+  artistToEdit.value['createdAt'] = todayTimestamp
+  artistToEdit.value['updatedAt'] = todayTimestamp
+
+  if (isAdminStore) {
+    artistToEdit.value['verified'] = true
+  }
+  
+  createArtist(artistToEdit.value)
+    .then((res) => {
+      if (res != null) {
+        toast.success('Artist created')
+        isUploadingEdit.value = false
+        const router = useRouter()
+        router.push(`/`)
+      } else {
+        toast.error('Error: Artist not created')
+        isUploadingEdit.value = false
+      }
+    })
+    .catch((error) => {
+      toast.error('Error: ' + error)
+      isUploadingEdit.value = false
+    })
 }
 
 const updateLink = _.debounce((listName, value, index) => {
-  if(value == '') {
-    artistToEdit.value[listName][index].link = value;
-    return;
+  if (value == '') {
+    artistToEdit.value[listName][index].link = value
+    return
   }
-  
+
   if (isValidUrl(value)) {
-    artistToEdit.value[listName][index].link = value;
+    artistToEdit.value[listName][index].link = value
   } else {
-    console.error('Invalid URL');
-    toast.error('Invalid URL');
+    console.error('Invalid URL')
+    toast.error('Invalid URL')
   }
-}, 500);
+}, 500)
 
 const isValidUrl = (url) => {
-  const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-  return !!pattern.test(url);
-};
+  const pattern = new RegExp(
+    '^(https?:\\/\\/)?' + // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$',
+    'i',
+  ) // fragment locator
+  return !!pattern.test(url)
+}
 
 onMounted(async () => {
   artistList.value = await queryByCollection('artists')
@@ -119,13 +131,11 @@ useHead({
 </script>
 
 <template>
-  <div
-    class="container mx-auto min-h-[calc(100vh-60px)] space-y-5 p-5 lg:px-10"
-  >
-    <div class="flex items-center justify-between border-b border-zinc-700 pb-1 text-lg font-semibold uppercase lg:text-xl">
-      <p>
-        Artist Creation
-      </p>
+  <div class="container mx-auto min-h-[calc(100vh-60px)] space-y-5 p-5 lg:px-10">
+    <div
+      class="flex items-center justify-between border-b border-zinc-700 pb-1 text-lg font-semibold uppercase lg:text-xl"
+    >
+      <p>Artist Creation</p>
       <div>
         <button
           @click="sendUpdateArtist"
@@ -140,8 +150,10 @@ useHead({
       <!-- Picture -->
       <div class="flex flex-col gap-2">
         <div class="flex items-end gap-2">
-            <ComebackLabel label="Image" />
-            <p class="italic text-quinary text-sm">Picture will be automaticaly update based on Youtube Music</p>
+          <ComebackLabel label="Image" />
+          <p class="text-sm italic text-quinary">
+            Picture will be automaticaly update based on Youtube Music
+          </p>
         </div>
         <NuxtImg
           v-if="artistToEdit.image"
@@ -178,8 +190,8 @@ useHead({
         </div>
         <!-- Styles -->
         <div v-if="stylesList" class="flex flex-col gap-1">
-            <ComebackLabel label="Styles" />
-            <VueMultiselect
+          <ComebackLabel label="Styles" />
+          <VueMultiselect
             v-model="artistToEdit.styles"
             label="name"
             track-by="name"
@@ -189,7 +201,7 @@ useHead({
             :close-on-select="false"
             :clear-on-select="false"
             :preserve-search="false"
-            />
+          />
         </div>
       </div>
       <!-- Description -->
@@ -302,7 +314,10 @@ useHead({
             <button
               class="rounded bg-primary p-5 text-xs hover:bg-red-900"
               @click="
-                artistToEdit.socialList.splice(artistToEdit.socialList.indexOf(platform), 1)
+                artistToEdit.socialList.splice(
+                  artistToEdit.socialList.indexOf(platform),
+                  1,
+                )
               "
             >
               Delete
