@@ -4,15 +4,16 @@ import { Timestamp } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
 import _ from 'lodash'
 
+const { isAdminStore } = useUserStore()
+const { getArtistByIdWithGroupsAndMembers, updateArtist } = useFirebaseFunction()
+
 definePageMeta({
   middleware: 'auth',
 })
 
-const { isAdminStore } = useUserStore()
 const title = ref('Edit Artist Page')
 const description = ref('Edit Artist Page')
 const route = useRoute()
-
 const toast = useToast()
 
 const isUploadingEdit = ref(false)
@@ -88,8 +89,8 @@ const sendUpdateArtist = async () => {
 }
 
 onMounted(async () => {
-  artist.value = await fetchArtistBasicInfoById(route.params.id)
-  artistToEdit.value = await fetchArtistBasicInfoById(route.params.id)
+  artist.value = await getArtistByIdWithGroupsAndMembers(route.params.id)
+  artistToEdit.value = await getArtistByIdWithGroupsAndMembers(route.params.id)
 
   title.value = 'EDIT ARTIST : ' + artist.value.name
   description.value = artist.value.description

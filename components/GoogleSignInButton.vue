@@ -4,9 +4,7 @@
   const auth = ref(useAuth())
 
   const handleLoginWithGoogleClick = () => {
-    auth.value.loginWithGoogle().then(() => {
-      // console.log('Logged in with Google')
-    })
+    auth.value.loginWithGoogle()
   }
 </script>
 

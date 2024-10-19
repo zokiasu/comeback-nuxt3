@@ -1,7 +1,16 @@
 <script setup lang="ts">
   import * as Mdl from '@kouts/vue-modal'
+  import { type Release } from '@/types/release'
+  import { useUserStore } from '@/stores/user'
 
   const { Modal } = Mdl
+  const { getReleaseByArtistId, updateRelease, getReleaseByIdWithMusics } = useFirebaseFunction()
+  const { isLoginStore } = useUserStore()
+  const router = useRouter();
+
+  const title = ref('Release Page')
+  const description = ref('Release')
+
   const showModal = ref(false)
   const sendNewStreamingPlatform = ref(false)
   const newStreamingPlatform = ref({
@@ -9,28 +18,23 @@
     link: '',
   })
 
-  import { type Release } from '@/types/release'
-  import { useUserStore } from '@/stores/user'
-  const { isAdminStore, isLoginStore } = useUserStore()
-  const router = useRouter();
-
-  const title = ref('Release Page')
-  const description = ref('Release')
-  const { getReleaseByArtistId, updateRelease } = useFirebaseFunction()
-
   const release = ref<Release>({} as Release)
   const artistRelease = ref<Release[]>([] as Release[])
   const imageLoaded = ref(false)
 
   const createNewPlatformStreaming = async () => {
     sendNewStreamingPlatform.value = true
+
     const tmp = [...release.value.platformList]
     tmp.push(newStreamingPlatform.value)
+
     await updateRelease(release.value.id, {
       platformList: tmp,
     })
+
     sendNewStreamingPlatform.value = false
     showModal.value = false
+
     newStreamingPlatform.value = {
       name: '',
       link: '',
@@ -39,12 +43,12 @@
 
   onMounted(async () => {
     const route = useRoute()
-    release.value = (await fetchReleaseById(route.params.id as string)) as Release
+    release.value = (await getReleaseByIdWithMusics(route.params.id as string)) as Release
     artistRelease.value = (await getReleaseByArtistId(release.value.artistsId))
       .sort((a, b) => b.date - a.date)
       .filter((rel) => rel.id !== release.value.id)
       .slice(0, 8) as Release[]
-    // sort release.musics by index
+      
     release.value.musics = release.value.musics.sort((a, b) => a?.index - b?.index)
     title.value = release.value.name + ' by ' + release.value.artistsName
     description.value = release.value.name + ' by ' + release.value.artistsName

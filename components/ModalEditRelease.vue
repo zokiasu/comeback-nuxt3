@@ -38,7 +38,7 @@ const validVerifiedRelease = async () => {
   if (dateToChange.value) {
     const dateToTimestamp = new Timestamp(dateToChange.value / 1000, 0);
     if (dateToTimestamp.toDate().getFullYear() !== yearReleased) {
-      // console.log('Date and Year Released are not the same');
+      console.log('Date and Year Released are not the same');
       return;
     } else {
       releaseToUpdate.needToBeVerified = false;

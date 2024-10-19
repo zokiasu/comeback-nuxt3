@@ -1,7 +1,9 @@
 <script setup>
 import { useToast } from 'vue-toastification'
-const artistUpdateList = ref([])
+const { updateArtist } = useFirebaseFunction()
 const toast = useToast()
+
+const artistUpdateList = ref([])
 
 onMounted(async () => {
   artistUpdateList.value = await queryByCollection('updateArtistPending')
@@ -33,23 +35,7 @@ const confirmEdition = async (id, artist, index) => {
   updateArtist(artist).then(async () => {
     await deletebyDoc('updateArtistPending', id)
     artistUpdateList.value.splice(index, 1)
-    toast.success('Artist Updated', {
-      position: 'top-right',
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: false,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: false,
-      closeButton: 'button',
-      icon: true,
-      rtl: false,
-      transition: 'Vue-Toastification__bounce',
-      maxToasts: 5,
-      newestOnTop: true,
-    })
+    toast.success('Artist Updated')
   })
 }
 </script>

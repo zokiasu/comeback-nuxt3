@@ -2,9 +2,8 @@
 import { useUserStore } from '@/stores/user'
 import { type Artist } from '@/types/artist'
 import type { Music } from '~/types/music';
-const { isAdminStore, isLoginStore } = useUserStore()
-const { getRandomMusicFromListReleaseId } = useFirebaseFunction()
-const router = useRouter();
+const { isLoginStore } = useUserStore()
+const { getRandomMusicFromListReleaseId, getArtistById } = useFirebaseFunction()
 
 const title = ref('Artist Page')
 const description = ref('Artist')
@@ -17,9 +16,8 @@ const musicDiscover = ref([] as Music[])
 
 onMounted(async () => {
   try {
-    const fetchedArtist = await fetchArtistFullInfoById(route.params.id as any) as Artist;
+    const fetchedArtist = await getArtistById(route.params.id as any) as Artist;
     artist.value = fetchedArtist;
-    console.log('artist', artist.value)
     imageBackground.value = fetchedArtist.image;
     title.value = fetchedArtist.name;
     description.value = fetchedArtist.description;

@@ -17,6 +17,7 @@
   const onlyWithoutDesc = ref(false)
   const onlyWithoutSocials = ref(false)
   const onlyWithoutPlatforms = ref(false)
+  const onlyWithoutStyles = ref(false)
   const isLoading = ref(false)
   const nextFetch = ref(null)
   const maxArtist = ref(0)
@@ -80,6 +81,9 @@
     else if (onlyWithoutPlatforms.value) {
       colRef = query(colRef, where('platformList', '==', []));
     }
+    else if (onlyWithoutStyles.value) {
+      colRef = query(colRef, where('styles', '==', []));
+    }
 
     if(typeFilter.value != '') {
       colRef = query(colRef, where('type', '==', typeFilter.value));
@@ -121,17 +125,25 @@
       onlyWithoutDesc.value = !onlyWithoutDesc.value;
       onlyWithoutSocials.value = false;
       onlyWithoutPlatforms.value = false;
+      onlyWithoutStyles.value = false;
     }
     if(filter === 'socials') {
       onlyWithoutSocials.value = !onlyWithoutSocials.value;
       onlyWithoutDesc.value = false;
       onlyWithoutPlatforms.value = false;
-
+      onlyWithoutStyles.value = false;
     }
     if(filter === 'platforms') {
       onlyWithoutPlatforms.value = !onlyWithoutPlatforms.value;
       onlyWithoutDesc.value = false;
       onlyWithoutSocials.value = false;
+      onlyWithoutStyles.value = false;
+    }
+    if(filter === 'styles') {
+      onlyWithoutStyles.value = !onlyWithoutStyles.value;
+      onlyWithoutDesc.value = false;
+      onlyWithoutSocials.value = false;
+      onlyWithoutPlatforms.value = false;
     }
   }
 
@@ -202,7 +214,7 @@
     }
   });
   
-  watch([limitFetch, typeFilter, onlyWithoutDesc, onlyWithoutSocials, onlyWithoutPlatforms, sort], async () => {
+  watch([limitFetch, typeFilter, onlyWithoutDesc, onlyWithoutSocials, onlyWithoutPlatforms, onlyWithoutStyles, sort], async () => {
     try {
       await getArtist(true);
     } catch (error) {
@@ -259,6 +271,13 @@
             :class="onlyWithoutPlatforms ? 'bg-primary' : 'bg-quinary'"
           >
             No Platforms
+          </button>
+          <button 
+            @click="changeOnlyFilter('styles')" 
+            class="w-full rounded px-2 py-1 text-xs uppercase lg:text-nowrap hover:bg-zinc-500"
+            :class="onlyWithoutStyles ? 'bg-primary' : 'bg-quinary'"
+          >
+            No Styles
           </button>
         </div>
         <div class="flex space-x-2">

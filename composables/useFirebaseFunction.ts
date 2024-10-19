@@ -1,22 +1,4 @@
-import {
-  collection,
-  getDoc,
-  getDocs,
-  addDoc,
-  deleteDoc,
-  doc,
-  setDoc,
-  updateDoc,
-  Timestamp,
-  query,
-  where,
-  orderBy,
-  limit,
-  getCountFromServer,
-  onSnapshot,
-  startAt,
-  endAt,
-} from 'firebase/firestore'
+import { collection, getDoc, getDocs, addDoc, deleteDoc, doc, setDoc, updateDoc, Timestamp, query, where, orderBy, limit, getCountFromServer, onSnapshot, startAt, endAt } from 'firebase/firestore'
 import _ from 'lodash'
 import { useToast } from 'vue-toastification'
 
@@ -46,7 +28,6 @@ export function useFirebaseFunction() {
       return { id: docSnap.id, ...docSnap.data() };
     } else {
       // Gérer l'absence de document, par exemple en retournant null ou en affichant un message
-      // console.log("Aucun document correspondant !");
       return null;
     }
   };
@@ -247,7 +228,7 @@ export function useFirebaseFunction() {
 
   ///////// CALENDAR PAGE FUNCTION \\\\\\\\\\
 
-  //TODO: Add comment
+  // Fetches releases between two dates from the 'releases' collection in Firestore.
   const getReleasesBetweenDates = async (startDate: Timestamp, endDate: Timestamp) => {
     const colRef = query(
       collection(database as any, 'releases'),
@@ -262,17 +243,53 @@ export function useFirebaseFunction() {
 
   ///////// Release's Function \\\\\\\\\\
 
+  // Fetches all releases from the 'releases' collection in Firestore.
+  const getAllReleases = async () => {
+    const colRef = collection(database as any, 'releases');
+    const snapshot = await getDocs(colRef);
+    return snapshotResultToArray(snapshot);
+  }
+
+  // Fetches releases by a specific artist from the 'releases' collection in Firestore.
+  const getReleaseByArtistId = async (artistId: string) => {
+    const colRef = query(collection(database as any, 'releases'), where('artistsId', '==', artistId));
+    const snapshot = await getDocs(colRef);
+    return snapshotResultToArray(snapshot);
+  }
+
+  // Fetches a release by its ID from the 'releases' collection in Firestore.
+  const getReleaseById = async (id: string) => {
+    const colRef = query(collection(database as any, 'releases'), where('id', '==', id));
+    const snapshot = await getDocs(colRef);
+    const release = snapshotResultToArray(snapshot);
+    return release[0];
+  }
+
+  // Fetches a release by its ID from the 'releases' collection in Firestore.
+  const getReleaseByIdWithMusics = async (id: string) => {
+    const colRef = query(collection(database as any, 'releases'), where('id', '==', id));
+    const colMusic = query(collection(database as any, 'releases', id, 'musics'))
+
+    const snapshot = await getDocs(colRef);
+    const snapshotMusic = await getDocs(colMusic);
+
+    const release = snapshotResultToArray(snapshot);
+    release[0].musics = snapshotResultToArray(snapshotMusic);
+
+    return release[0];
+  }
+
   // Updates a document in the 'releases' collection in Firestore.
   const updateRelease = async (id: string, data: any): Promise<string> => {
     const docRef = doc(database as any, 'releases', id);
     return updateDoc(docRef, data).then(() => {
-      // console.log('Document successfully updated!');
       return 'success';
     }).catch((error) => {
       console.error('Error updating document:', error);
       return 'error';
     });
   }
+
   // Deletes a document in the 'releases' collection in Firestore.
   const deleteRelease = async (id: string): Promise<string> => {
     const musicsRef = collection(database as any, 'releases', id, 'musics');
@@ -283,7 +300,6 @@ export function useFirebaseFunction() {
       await Promise.all(deleteMusicPromises);
   
       await deleteDoc(doc(database as any, 'releases', id));
-      // console.log('Document successfully deleted!');
       return 'success';
     } catch (error) {
       console.error('Error removing document:', error);
@@ -291,11 +307,11 @@ export function useFirebaseFunction() {
     }
   }
 
+  // Deletes a document in the 'musics' collection in Firestore.
   const deleteMusic = async (musicId: string): Promise<string> => {
     const docRef = doc(database as any, 'musics', musicId);
 
     return await deleteDoc(docRef).then(() => {
-      // console.log('Document successfully deleted!');
       return 'success';
     }).catch((error) => {
       console.error('Error removing document:', error);
@@ -303,25 +319,9 @@ export function useFirebaseFunction() {
     });
   }
 
-  // Fetches releases by a specific artist from the 'releases' collection in Firestore.
-  const getReleaseByArtistId = async (artistId: string) => {
-    const colRef = query(collection(database as any, 'releases'), where('artistsId', '==', artistId));
-    const snapshot = await getDocs(colRef);
-    return snapshotResultToArray(snapshot);
-  }
-  //TODO: Add comment
-  const getReleaseById = async (id: string) => {
-    //TODO
-  }
-  // Fetches all releases from the 'releases' collection in Firestore.
-  const getAllReleases = async () => {
-    const colRef = collection(database as any, 'releases');
-    const snapshot = await getDocs(colRef);
-    return snapshotResultToArray(snapshot);
-  }
-
   ///////// Artist's Function \\\\\\\\\\
 
+  // Fetches all artists from the 'artists' collection in Firestore.
   const getAllArtists = async () => {
     const colRef = collection(database as any, 'artists');
     const snapshot = await getDocs(colRef);
@@ -346,6 +346,27 @@ export function useFirebaseFunction() {
     artist.groups = groups;
     artist.members = members;
     artist.releases = releases;
+
+    return artist;
+  }
+
+  // Fetches an artist with full details by its ID from the 'artists' collection in Firestore.
+  const getArtistByIdWithGroupsAndMembers = async (idArtist: string) => {
+    const docRef = doc(database as any, 'artists', idArtist);
+    const docSnap = await getDoc(docRef);
+    const artist = documentSnapshotToObject(docSnap);
+
+    const colGroup = collection(database as any, 'artists', idArtist, 'groups');
+    const colMember = collection(database as any, 'artists', idArtist, 'members');
+    
+    const snapshotGroup = await getDocs(colGroup);
+    const snapshotMember = await getDocs(colMember);
+
+    const groups = snapshotResultToArray(snapshotGroup);
+    const members = snapshotResultToArray(snapshotMember);
+
+    artist.groups = groups;
+    artist.members = members;
 
     return artist;
   }
@@ -471,13 +492,13 @@ export function useFirebaseFunction() {
 
     for (const release of releases) {
       await deleteDoc(doc(database as any, 'releases', release.id)).then(() => {
-        // console.log('Document successfully deleted!', release.name, release.artistName);
+        console.log('Document successfully deleted!', release.name, release.artistName);
       });
     }
 
     for (const group of artistGroups) {
       await deleteDoc(doc(database as any, 'artists', id, 'groups', group.id)).then(() => {
-        // console.log('Document successfully deleted!', group.name, release.artistName);
+        console.log('Document successfully deleted!', group.name, release.artistName);
       });
       await deleteDoc(doc(database as any, 'artists', group.id, 'members', id));
     }
@@ -526,7 +547,6 @@ export function useFirebaseFunction() {
   const updateUserData = async(user: any) => {
     const docRef = doc(database as any, 'users', user.id);
     await updateDoc(docRef, user).then(() => {
-      // console.log('Document successfully updated!');
     }).catch((error) => {
       console.error('Error updating document:', error);
     });
@@ -543,6 +563,7 @@ export function useFirebaseFunction() {
     updateRelease,
     getAllReleases,
     getAllArtists,
+    getReleaseById,
     getComebackExist,
     getReleaseByArtistId,
     createArtist,
@@ -550,9 +571,12 @@ export function useFirebaseFunction() {
     updateUserData,
     getArtistById,
     getArtistByIdLight,
+    getArtistByIdWithGroupsAndMembers,
     deleteRelease,
     getVideoDetails,
     getVideoFullDetails,
-    getAllVideosFromPlaylist
+    getAllVideosFromPlaylist,
+    deleteArtist,
+    getReleaseByIdWithMusics
   }
 }
