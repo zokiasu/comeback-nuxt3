@@ -2,6 +2,8 @@
   import * as Mdl from '@kouts/vue-modal'
   import { type Release } from '@/types/release'
   import { useUserStore } from '@/stores/user'
+  import { Timestamp } from 'firebase/firestore'
+  import VueDatePicker from '@vuepic/vue-datepicker'
 
   const { Modal } = Mdl
   const { getReleaseByArtistId, updateRelease, getReleaseByIdWithMusics } = useFirebaseFunction()
@@ -12,11 +14,13 @@
   const description = ref('Release')
 
   const showModal = ref(false)
+  const showModalEdit = ref(false)
   const sendNewStreamingPlatform = ref(false)
   const newStreamingPlatform = ref({
     name: '',
     link: '',
   })
+  const dateToDateFormat = ref(null)
 
   const release = ref<Release>({} as Release)
   const artistRelease = ref<Release[]>([] as Release[])
@@ -41,6 +45,14 @@
     }
   }
 
+  const verifyShowModal = () => {
+    if(isLoginStore) {
+      showModal.value = true;
+    } else {
+      router.push('/authentification')
+    }
+  }
+
   onMounted(async () => {
     const route = useRoute()
     release.value = (await getReleaseByIdWithMusics(route.params.id as string)) as Release
@@ -50,17 +62,19 @@
       .slice(0, 8) as Release[]
       
     release.value.musics = release.value.musics.sort((a, b) => a?.index - b?.index)
-    title.value = release.value.name + ' by ' + release.value.artistsName
-    description.value = release.value.name + ' by ' + release.value.artistsName
+    title.value = release.value.name + ' par ' + release.value.artistsName
+    description.value = release.value.name + ' par ' + release.value.artistsName
+    dateToDateFormat.value = release.value.date ? release.value.date.toDate() : null
   })
 
-  const verifyShowModal = () => {
-    if(isLoginStore) {
-      showModal.value = true;
-    } else {
-      router.push('/authentification')
-    }
-  }
+
+  watch([dateToDateFormat], () => {
+    if(!dateToDateFormat.value) return
+    const tmpDate = new Date(dateToDateFormat.value)
+    tmpDate.setHours(0, 0, 0, 0)
+    release.value.date = Timestamp.fromDate(tmpDate)
+    release.value.year = tmpDate.getFullYear()
+  })
 
   useHead({
     title,
@@ -130,6 +144,9 @@
                 <p>-</p>
                 <p>{{ release.year }}</p>
               </div>
+              <button @click="showModalEdit = true" class="rounded bg-quaternary text-sm py-1 px-2 hover:bg-tertiary/10">
+                Edit
+              </button>
               <!-- <div class="space-y-2 text-xs">
                 <p>1, 054, 258, 031 streams on Youtube Music</p>
                 <p>1, 054, 258, 031 streams on Youtube Music</p>
@@ -152,6 +169,7 @@
         </div>
       </div>
     </section>
+
     <section class="container mx-auto space-y-12 p-5 py-5 md:px-10 xl:px-0">
       <!-- Skeleton -->
       <section v-if="!release.name" class="space-y-2">
@@ -195,6 +213,7 @@
               :artistName="release.artistsName"
               :musicId="song.videoId"
               :musicName="song.name"
+              :hasMv="song.hasMv"
               :musicImage="song.thumbnails[2].url"
               :duration="song?.duration?.toString() || '0'"
               class="w-full bg-quinary"
@@ -226,6 +245,7 @@
         </CardDefault>
       </section>
     </section>
+
     <Modal
       v-model="showModal"
       title="Add a Streaming Platforms"
@@ -247,6 +267,69 @@
         >
           <p v-if="sendNewStreamingPlatform">Sending...</p>
           <p v-else>Send News</p>
+        </button>
+      </div>
+    </Modal>
+
+    <Modal
+      v-model="showModalEdit"
+      title="Edit Release"
+      wrapper-class="animate__animated modal-wrapper"
+      :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
+      :in-class="`animate__fadeInDown`"
+      :out-class="`animate__bounceOut`"
+      bg-class="animate__animated"
+      :bg-in-class="`animate__fadeInUp`"
+      :bg-out-class="`animate__fadeOutDown`"
+    >
+      <div class="space-y-3">
+        <ComebackInput v-model="release.name" label="Name" />
+
+        <div class="grid grid-cols-2 gap-3">
+          <ComebackInput v-model="release.artistsName" label="Artist Name" disabled />
+
+          <div class="grid grid-cols-1 gap-1">
+            <ComebackLabel label="Type" />
+            <select
+              v-model="release.type"
+              class="bg-quaternary rounded py-1.5 px-2 transition-all duration-150 ease-in-out border border-transparent hover:cursor-pointer focus:border-primary focus:outline-none"
+            >
+              <option value="ALBUM">ALBUM</option>
+              <option value="EP">EP</option>
+              <option value="SINGLE">SINGLE</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <ComebackInput v-model="release.year" label="Year" />
+          <div class="flex flex-col gap-1">
+            <ComebackLabel label="Date" />
+            <VueDatePicker v-model="dateToDateFormat" placeholder="Select Date" auto-apply :enable-time-picker="false" dark />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <ComebackLabel label="Tracklist" />
+          <div class="space-y-2">
+            <div v-for="music in release.musics" :key="music.videoId" class="bg-quinary space-y-1 py-1 pl-2 pr-1 rounded">
+              <div class="flex w-full justify-between items-center gap-2">
+                <p>{{ music.name }}</p>
+                <div class="flex items-center text-xs gap-2 bg-quaternary w-fit px-2 py-1 rounded">
+                  <label class="whitespace-nowrap">Has MV</label>
+                  <input type="checkbox" v-model="music.hasMv" />
+                </div>
+              </div>
+              <ComebackInput v-if="music.hasMv" v-model="music.videoId" />
+            </div>
+          </div>
+        </div>
+
+        <button
+          @click="updateRelease(release.id, release)"
+          class="w-full rounded bg-primary py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+        >
+          <p>Update Release</p>
         </button>
       </div>
     </Modal>
