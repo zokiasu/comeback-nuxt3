@@ -6,6 +6,7 @@ export function useFirebaseFunction() {
   const { $firestore: database } = useNuxtApp()
   const { shuffleArray } = useGeneralFunction()
   const config = useRuntimeConfig()
+  const userStore = useUserStore()
   const toast = useToast()
 
   ///////// GENERAL FUNCTION FOR FIREBASE FUNCTION \\\\\\\\\\
@@ -545,10 +546,24 @@ export function useFirebaseFunction() {
   }
 
   const updateUserData = async(user: any) => {
+    user.updatedAt = Timestamp.fromDate(new Date());
     const docRef = doc(database as any, 'users', user.id);
     await updateDoc(docRef, user).then(() => {
+      userStore.setUserData(user)
     }).catch((error) => {
       console.error('Error updating document:', error);
+    });
+  }
+  
+  const getUserData = (id: string) => {
+    const docRef = doc(database as any, 'users', id);
+    return new Promise((resolve) => {
+      const unsubscribe = onSnapshot(docRef, (docSnap) => {
+        const userData = documentSnapshotToObject(docSnap);
+        resolve(userData);
+      });
+      // Retourner la fonction unsubscribe pour permettre l'arrêt de l'écoute si nécessaire
+      return unsubscribe;
     });
   }
 
@@ -569,6 +584,7 @@ export function useFirebaseFunction() {
     createArtist,
     updateArtist,
     updateUserData,
+    getUserData,
     getArtistById,
     getArtistByIdLight,
     getArtistByIdWithGroupsAndMembers,
