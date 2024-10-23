@@ -54,26 +54,26 @@ const deleteNews = () => {
 
 <template>
   <div class="list-complete-item relative h-full space-y-2.5 rounded bg-quaternary p-3">
-    <div class="flex flex-wrap gap-2">
-      <div v-if="artist" class="flex flex-col items-center justify-center overflow-hidden rounded bg-quinary w-fit">
+    <div class="grid grid-cols-3 gap-2">
+      <div v-if="artist" class="flex flex-col items-center justify-center overflow-hidden rounded bg-quinary w-full">
         <NuxtImg
           :src="artist.image"
           :alt="artist.name"
           format="webp"
           loading="lazy"
-          class="object-cover w-full h-10 aspect-video"
+          class="object-cover w-full h-10"
           @load="loadingDone"
         />
         <p class="px-2 py-1">{{ artist.name }}</p>
       </div>
       
-      <div v-else v-for="artistObject in artists" :key="artistObject.id" class="flex flex-col items-center justify-center overflow-hidden rounded bg-quinary w-fit">
+      <div v-else v-for="artistObject in artists" :key="artistObject.id" class="flex flex-col items-center justify-center overflow-hidden rounded bg-quinary w-full">
         <NuxtImg
           :src="artistObject.image"
           :alt="artistObject.name"
           format="webp"
           loading="lazy"
-          class="object-cover w-full h-10 aspect-video"
+          class="object-cover w-full h-10"
           @load="loadingDone"
         />
         <p class="px-2 py-1">{{ artistObject.name }}</p>
