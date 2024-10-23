@@ -22,6 +22,7 @@ const groupList = ref(null)
 const membersList = ref(null)
 const artistList = ref(null)
 const stylesList = ref(null)
+const tagsList = ref(null)
 const artistToEdit = ref({
   id: '',
   idYoutubeMusic: '',
@@ -99,8 +100,10 @@ onMounted(async () => {
   groupList.value = artistList.value.filter((artist) => artist.type == 'GROUP')
   membersList.value = artistList.value.filter((artist) => artist.type == 'SOLO')
 
-  stylesList.value = await queryByCollection('general')
-  stylesList.value = stylesList.value[0].styles
+  const generalData = await queryByCollection('general')
+  console.log(generalData)
+  stylesList.value = generalData[0].styles
+  tagsList.value = generalData[0].generalTags
 })
 
 useHead({
@@ -129,6 +132,7 @@ useHead({
         {{ isUploadingEdit ? 'Loading' : 'Saves' }}
       </button>
     </div>
+
     <div class="space-y-5">
       <!-- Picture -->
       <div class="flex flex-col gap-2">
@@ -187,20 +191,38 @@ useHead({
           </select>
         </div>
       </div>
-      <!-- Styles -->
-      <div v-if="stylesList" class="flex flex-col gap-1">
-        <ComebackLabel label="Styles" />
-        <VueMultiselect
-          v-model="artistToEdit.styles"
-          label="name"
-          track-by="name"
-          placeholder="Search or add a style"
-          :options="stylesList"
-          :multiple="true"
-          :close-on-select="false"
-          :clear-on-select="false"
-          :preserve-search="false"
-        />
+      <!-- Styles & General Tags -->
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <!-- Styles -->
+        <div v-if="stylesList" class="flex flex-col gap-1">
+          <ComebackLabel label="Styles" />
+          <VueMultiselect
+            v-model="artistToEdit.styles"
+            label="name"
+            track-by="name"
+            placeholder="Add a style"
+            :options="stylesList"
+            :multiple="true"
+            :close-on-select="false"
+            :clear-on-select="false"
+            :preserve-search="false"
+          />
+        </div>
+        <!-- General Tags -->
+        <div v-if="tagsList" class="flex flex-col gap-1">
+          <ComebackLabel label="General Tags" />
+          <VueMultiselect
+            v-model="artistToEdit.generalTags"
+            label="name"
+            track-by="name"
+            placeholder="Add a tag"
+            :options="tagsList"
+            :multiple="true"
+            :close-on-select="false"
+            :clear-on-select="false"
+            :preserve-search="false"
+          />
+        </div>
       </div>
       <!-- Description -->
       <div class="flex flex-col gap-1">
@@ -328,6 +350,7 @@ useHead({
         </div>
       </div>
     </div>
+
     <div class="pt-3 border-t border-zinc-700">
       <button
         @click="sendUpdateArtist"

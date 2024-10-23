@@ -99,6 +99,9 @@
 						<p v-for="style in artist.styles" :key="style.name" class="w-fit rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">
 							{{ style.name }}
 						</p>
+						<p v-for="tag in artist.generalTags" :key="tag.name" class="w-fit rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">
+							{{ tag.name }}
+						</p>
 					</div>
 					<div v-if="!isFetchingArtist" class="flex gap-2">
 						<p

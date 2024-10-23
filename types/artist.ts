@@ -10,6 +10,7 @@ export interface Artist {
   type: string
   image: string
   styles: Object[]
+  generalTags: Object[]
   socialList: {
     name: string
     link: string

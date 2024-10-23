@@ -80,17 +80,17 @@ const collapseMenuToggle = () => {
         <p v-if="!collapseMenu">News</p>
       </NuxtLink>
       <NuxtLink
-        to="/dashboard/styles"
+        to="/dashboard/datas"
         class="transition-all duration-300 ease-in-out py-3 rounded flex items-center gap-2"
         :class="{
-          'font-semibold text-white bg-quinary': routeN.name === 'dashboard-styles',
-          'text-zinc-500 hover:bg-quinary': routeN.name !== 'dashboard-styles',
+          'font-semibold text-white bg-quinary': routeN.name === 'dashboard-datas',
+          'text-zinc-500 hover:bg-quinary': routeN.name !== 'dashboard-datas',
           'px-5': !collapseMenu,
           'flex-col': collapseMenu,
         }"
       >
         <IconStyle class="w-4 h-4" />
-        <p v-if="!collapseMenu">Styles</p>
+        <p v-if="!collapseMenu">General Datas</p>
       </NuxtLink>
       <NuxtLink
         to="/dashboard/users"

@@ -290,7 +290,7 @@ export function useFirebaseFunction() {
         const musicsRef = collection(database as any, 'releases', id, 'musics');
         const musicsSnapshot = await getDocs(musicsRef);
         const updatePromises = musicsSnapshot.docs.map(async (musicDoc) => {
-          const musicId = musicDoc.id;
+          const musicId = musicDoc.data().videoId;
           const musicRef = doc(database as any, 'musics', musicId);
           const musicData = { date: data.date, year: data.year };
 
