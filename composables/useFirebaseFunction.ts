@@ -283,12 +283,34 @@ export function useFirebaseFunction() {
   // Updates a document in the 'releases' collection in Firestore.
   const updateRelease = async (id: string, data: any): Promise<string> => {
     const docRef = doc(database as any, 'releases', id);
-    return updateDoc(docRef, data).then(() => {
+    try {
+      await updateDoc(docRef, data);
+
+      if (data.date || data.year) {
+        const musicsRef = collection(database as any, 'releases', id, 'musics');
+        const musicsSnapshot = await getDocs(musicsRef);
+        const updatePromises = musicsSnapshot.docs.map(async (musicDoc) => {
+          const musicId = musicDoc.id;
+          const musicRef = doc(database as any, 'musics', musicId);
+          const musicData = { date: data.date, year: data.year };
+
+          const musicDocSnapshot = await getDoc(musicRef);
+          if (!musicDocSnapshot.exists()) {
+            await setDoc(musicRef, { ...musicData, id: musicId });
+          } else {
+            await updateDoc(musicRef, musicData);
+          }
+
+          await updateDoc(doc(musicsRef, musicId), musicData);
+        });
+        await Promise.all(updatePromises);
+      }
+
       return 'success';
-    }).catch((error) => {
-      console.error('Error updating document:', error);
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du document:', error);
       return 'error';
-    });
+    }
   }
 
   // Deletes a document in the 'releases' collection in Firestore.
