@@ -105,7 +105,7 @@
 							v-if="!artist.activeCareer"
 							class="w-fit bg-quaternary px-2 py-1 text-xs font-semibold uppercase"
 						>
-							Inactive (Withdrawn or Disband)
+							Inactive (Withdrawn/Disband/Not Debut)
 						</p>
 						<NuxtLink
 							:to="editLink"
