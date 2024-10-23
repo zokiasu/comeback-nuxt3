@@ -30,6 +30,8 @@ const icon = computed(() => {
     return '/youtube.png'
   } else if (link.includes('apple') && link.includes('music')) {
     return '/apple_music.png'
+  } else if (link.includes('amazon') && link.includes('music')) {
+    return '/amazon_music.png'
   } else if (link.includes('spotify')) {
     return '/spotify.png'
   } else if (link.includes('tidal')) {
