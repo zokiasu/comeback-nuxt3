@@ -107,7 +107,7 @@ const createNews = async () => {
         label="name"
         track-by="name"
         :options="artistList"
-        placeholder="Search or add a group"
+        placeholder="Search an artist"
         :multiple="false"
         :close-on-select="true"
         :clear-on-select="false"
