@@ -35,6 +35,7 @@ const artistToEdit = ref({
   platformList: [],
   socialList: [],
   styles: [],
+  generalTags: [],
   groups: [],
   members: [],
 })
