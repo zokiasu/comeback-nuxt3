@@ -2,21 +2,28 @@
 import VueMultiselect from 'vue-multiselect'
 import { Timestamp } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
+import * as Mdl from '@kouts/vue-modal'
 import _ from 'lodash'
-
-const { isAdminStore } = useUserStore()
-const { getArtistByIdWithGroupsAndMembers, updateArtist } = useFirebaseFunction()
 
 definePageMeta({
   middleware: 'auth',
 })
 
-const title = ref('Edit Artist Page')
-const description = ref('Edit Artist Page')
+const ModalCreateArtist = defineAsyncComponent(() =>
+  import('@/components/ModalCreateArtist.vue')
+)
+
+const { Modal } = Mdl
 const route = useRoute()
 const toast = useToast()
+const { isAdminStore } = useUserStore()
+const { getArtistByIdWithGroupsAndMembers, updateArtist } = useFirebaseFunction()
+
+const title = ref('Edit Artist Page')
+const description = ref('Edit Artist Page')
 
 const isUploadingEdit = ref(false)
+const showModalCreateArtist = ref(false)
 const artist = ref(null)
 const groupList = ref(null)
 const membersList = ref(null)
@@ -89,6 +96,19 @@ const sendUpdateArtist = async () => {
   }
 }
 
+const closeModalCreateArtist = async () => {
+  artistList.value = await queryByCollection('artists')
+  groupList.value = artistList.value.filter((artist) => artist.type == 'GROUP')
+  membersList.value = artistList.value
+  showModalCreateArtist.value = false
+}
+
+const adjustTextarea = (event) => {
+  const textarea = event.target || event // Cibler le textarea via `ref` ou l'événement d'entrée
+  textarea.style.height = 'auto' // Réinitialise la hauteur pour recalculer correctement
+  textarea.style.height = `${textarea.scrollHeight}px` // Ajuste la hauteur à la hauteur de contenu
+}
+
 onMounted(async () => {
   artist.value = await getArtistByIdWithGroupsAndMembers(route.params.id)
   artistToEdit.value = await getArtistByIdWithGroupsAndMembers(route.params.id)
@@ -98,12 +118,16 @@ onMounted(async () => {
 
   artistList.value = await queryByCollection('artists')
   groupList.value = artistList.value.filter((artist) => artist.type == 'GROUP')
-  membersList.value = artistList.value.filter((artist) => artist.type == 'SOLO')
+  membersList.value = artistList.value
 
   const generalData = await queryByCollection('general')
-  console.log(generalData)
   stylesList.value = generalData[0].styles
   tagsList.value = generalData[0].generalTags
+
+  const textarea = document.querySelector('textarea') // Vous pouvez aussi utiliser this.$refs si applicable
+  if (textarea) {
+    adjustTextarea(textarea)
+  }
 })
 
 useHead({
@@ -235,13 +259,22 @@ useHead({
       </div>
       <!-- Group -->
       <div v-if="groupList" class="flex flex-col gap-1">
-        <ComebackLabel label="Group" />
+        <div class="flex justify-between gap-3">
+          <ComebackLabel label="Group" />
+          <button
+            v-if="isAdminStore"
+            class="w-fit rounded bg-primary px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
+            @click="showModalCreateArtist = true"
+          >
+            Create New Artist
+          </button>
+        </div>
         <VueMultiselect
           v-model="artistToEdit.groups"
           label="name"
           track-by="name"
           :options="groupList"
-          placeholder="Search or add a group"
+          placeholder="Search a group"
           :multiple="true"
           :close-on-select="false"
           :clear-on-select="false"
@@ -250,20 +283,29 @@ useHead({
       </div>
       <!-- Members -->
       <div v-if="membersList && artistToEdit.type != 'SOLO'" class="flex flex-col gap-1">
-        <ComebackLabel label="Members" />
+        <div class="flex justify-between gap-3">
+          <ComebackLabel label="Members" />
+          <button
+            v-if="isAdminStore"
+            class="w-fit rounded bg-primary px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
+            @click="showModalCreateArtist = true"
+          >
+            Create New Artist
+          </button>
+        </div>
         <VueMultiselect
           v-model="artistToEdit.members"
           label="name"
           track-by="name"
           :options="membersList"
-          placeholder="Search or add a member"
+          placeholder="Search a member"
           :multiple="true"
           :close-on-select="false"
           :clear-on-select="false"
           :preserve-search="false"
         />
       </div>
-        <!-- Platforms & Socials -->
+      <!-- Platforms & Socials -->
       <div class="flex gap-2">
         <!-- Platforms -->
         <div class="w-full space-y-2">
@@ -360,5 +402,26 @@ useHead({
         {{ isUploadingEdit ? 'Loading' : 'Saves' }}
       </button>
     </div>
+    
+    <Modal
+      v-model="showModalCreateArtist"
+      title="Create Artist"
+      wrapper-class="modal-wrapper"
+      :modal-class="`modal-lg`"
+      :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
+      :in-class="`animate__bounceIn`"
+      :out-class="`animate__bounceOut`"
+      bg-class="animate__animated"
+      :bg-in-class="`animate__fadeInUp`"
+      :bg-out-class="`animate__fadeOutDown`"
+    >
+      <ModalCreateArtist
+        :stylesList="stylesList"
+        :tagsList="tagsList"
+        :groupList="groupList"
+        :membersList="membersList"
+        @close-modal="closeModalCreateArtist"
+      />
+    </Modal>
   </div>
 </template>
