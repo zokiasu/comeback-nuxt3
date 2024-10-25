@@ -53,6 +53,14 @@
     }
   }
 
+  const editRelease = async () => {
+    if(isLoginStore) {
+      showModalEdit.value = true
+    } else {
+      router.push('/authentification')
+    }
+  }
+
   onMounted(async () => {
     const route = useRoute()
     release.value = (await getReleaseByIdWithMusics(route.params.id as string)) as Release
@@ -144,7 +152,7 @@
                 <p>-</p>
                 <p>{{ release.year }}</p>
               </div>
-              <button @click="showModalEdit = true" class="rounded bg-quaternary text-sm py-1 px-2 hover:bg-tertiary/10">
+              <button @click="editRelease" class="rounded bg-quaternary text-sm py-1 px-2 hover:bg-tertiary/10">
                 Edit
               </button>
               <!-- <div class="space-y-2 text-xs">

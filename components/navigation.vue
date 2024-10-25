@@ -105,14 +105,14 @@ onMounted(async () => {
             v-if="isLoginStore && artistFetch"
             @click="showModal = true"
             title="Add new comeback"
-            class="px-2 py-1 font-semibold transition-all duration-300 ease-in-out rounded bg-primary hover:scale-110 hover:bg-primary/50"
+            class="px-3 py-1 font-semibold transition-all duration-300 ease-in-out rounded bg-primary hover:scale-110 hover:bg-primary/50"
           >
             New Comeback
           </button>
           <NuxtLink
             v-if="!isLoginStore"
             :to="`/authentification`"
-            class="bg-quaternary px-2 py-1 text-[0.875rem] rounded"
+            class="bg-quaternary px-3 py-1 text-[0.875rem] rounded"
           >
             Login
           </NuxtLink>
@@ -120,7 +120,7 @@ onMounted(async () => {
             v-else
             :to="`/settings/profile`"
             title="Settings"
-            class="flex items-center h-full gap-2 px-2 py-1 rounded bg-quaternary hover:bg-tertiary/20"
+            class="flex items-center h-full gap-2 px-3 py-1 rounded bg-quaternary hover:bg-tertiary/20"
           >
             <p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>
             <IconSettings class="w-3.5 h-3.5" />

@@ -202,29 +202,27 @@ export function useFirebaseFunction() {
 
     releases = shuffleArray(releases); // Mélange les releases
     let listMusicFromReleaseSelected: any[] = [];
-    let foundMusics = [];
-
-    for (let release of releases.splice(0, 10)) {
+    // récupère toutes les musiques des albums sélectionnés
+    for (let release of releases) {
       const colMusic = query(collection(database as any, 'releases', release.id, 'musics'));
       const snapshotMusic = await getDocs(colMusic);
       const musics = snapshotMusic.docs.map((doc) => doc.data());
-      listMusicFromReleaseSelected = listMusicFromReleaseSelected.concat(musics.filter((music: any) => !music.name.toLowerCase().includes('inst')));
+      listMusicFromReleaseSelected = listMusicFromReleaseSelected.concat(musics.filter((music: any) => !music.name.toLowerCase().includes('inst') && !music.name.toLowerCase().includes('sped-up')));
     }
 
-    const shuffledMusics = shuffleArray(listMusicFromReleaseSelected); // Mélange les musiques de l'album
-    for (let music of shuffledMusics) {
+    // mélange les musiques des albums sélectionnés
+    const shuffledMusics = shuffleArray(listMusicFromReleaseSelected);
+    // filtre les musiques qui ne sont pas embeddable
+    const filteredMusics = shuffledMusics.filter(async (music: any) => {
       const isEmbeddable = await canVideoBeEmbedded(music.videoId, config.public.YOUTUBE_API_KEY);
-      if (isEmbeddable) {
-        foundMusics.push(music); // Ajoute la musique trouvée à la liste
+      return !music.name.toLowerCase().includes('inst') && !music.name.toLowerCase().includes('sped-up') && isEmbeddable
+    })
 
-        if (foundMusics.length >= 5) {
-          return foundMusics; // Retourne la liste si elle contient 10 musiques
-        }
-      }
-    }
+    // mélange les musiques qui sont embeddable
+    const filteredShuffledMusics = shuffleArray(filteredMusics);
 
-    // Retourne la liste des musiques trouvées (peut être vide si aucune musique correspondante n'est trouvée)
-    return foundMusics;
+    // retourne les 5 premières musiques qui sont embeddable
+    return filteredShuffledMusics.slice(0, 5);
   };
 
   ///////// CALENDAR PAGE FUNCTION \\\\\\\\\\

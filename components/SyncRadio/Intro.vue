@@ -132,6 +132,7 @@
             <button @click="createARoom" :disabled="!userData" class="font-semibold disabled:opacity-50 bg-primary rounded w-full py-3 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50">
                 Create My Party
             </button>
+            <p class="text-sm">* You can create a party only if you are <button @click="router.push('/authentification')" class="text-primary hover:text-red-500">logged in</button></p>
         </div>
         <div class="flex flex-wrap gap-3 w-full px-20">
             <NuxtLink v-for="room in roomList" :key="room.id" :to="'/syncradio?id=' + room.id" class="bg-primary rounded flex-grow py-3 transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50">

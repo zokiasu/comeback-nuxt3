@@ -28,13 +28,9 @@
 			isFetchingArtist.value = false
 		}
 
-		if (artist.value.releases.length) {
-			const releaseIds = artist.value.releases
-				.map((release) => release.id)
-				.filter((id) => id)
-			const fetchedMusicDiscover = await getRandomMusicFromListReleaseId(
-				releaseIds as string[],
-			)
+		if (artist.value.releases.length > 5) {
+			const releaseIds = artist.value.releases.map((release) => release.id).filter((id) => id)
+			const fetchedMusicDiscover = await getRandomMusicFromListReleaseId(releaseIds as string[])
 			musicDiscover.value = fetchedMusicDiscover as Music[]
 		}
 	})
@@ -199,7 +195,7 @@
 						</div>
 					</CardDefault>
 				</div>
-				<div v-if="artist.releases.length">
+				<div v-if="artist.releases.length > 5">
 					<CardDefault name="Discover Music">
 						<div v-if="musicDiscover.length < 1" class="space-y-2">
 							<SkeletonDefault class="h-14 w-full rounded" />
