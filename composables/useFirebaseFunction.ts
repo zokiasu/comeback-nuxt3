@@ -282,16 +282,37 @@ export function useFirebaseFunction() {
   const updateRelease = async (id: string, data: any): Promise<string> => {
     const docRef = doc(database as any, 'releases', id);
     try {
-      await updateDoc(docRef, data);
+      const musics = { ...data.musics };
+      
+      const releaseData = { ...data };
+      delete releaseData.musics;
+      releaseData.updatedAt = Timestamp.fromDate(new Date());
+
+      await updateDoc(docRef, releaseData);
 
       if (data.date || data.year) {
-        const musicsRef = collection(database as any, 'releases', id, 'musics');
-        const musicsSnapshot = await getDocs(musicsRef);
-        const updatePromises = musicsSnapshot.docs.map(async (musicDoc) => {
-          const musicId = musicDoc.data().videoId;
-          const musicRef = doc(database as any, 'musics', musicId);
-          const musicData = { date: data.date, year: data.year };
+        await updateMusicsForRelease(id, data);
+      }
 
+      return 'success';
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du document:', error);
+      return 'error';
+    }
+  }
+
+  // Updates the musics for a release in the 'releases' collection in Firestore.
+  const updateMusicsForRelease = async (id: string, data: any) => {
+    try {
+      const musicsRef = collection(database as any, 'releases', id, 'musics');
+      const musicsSnapshot = await getDocs(musicsRef);
+      const updatePromises = musicsSnapshot.docs.map(async (musicDoc) => {
+        try {
+          const musicId = musicDoc.data().videoId;
+          const musicData = { date: data.date, year: data.year, updatedAt: Timestamp.fromDate(new Date()) };
+
+          // Mise à jour dans la collection /musics/videoId/
+          const musicRef = doc(database as any, 'musics', musicId);
           const musicDocSnapshot = await getDoc(musicRef);
           if (!musicDocSnapshot.exists()) {
             await setDoc(musicRef, { ...musicData, id: musicId });
@@ -299,15 +320,15 @@ export function useFirebaseFunction() {
             await updateDoc(musicRef, musicData);
           }
 
-          await updateDoc(doc(musicsRef, musicId), musicData);
-        });
-        await Promise.all(updatePromises);
-      }
-
-      return 'success';
+          // Mise à jour dans la collection /releases/idRelease/musics/idMusic
+          await updateDoc(doc(musicsRef, musicDoc.data().id), musicData);
+        } catch (error) {
+          console.error(`Erreur lors de la mise à jour de la musique ${musicDoc.id}:`, error);
+        }
+      });
+      await Promise.all(updatePromises);
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du document:', error);
-      return 'error';
+      console.error('Erreur lors de la mise à jour des musiques pour la sortie:', error);
     }
   }
 

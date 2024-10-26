@@ -42,7 +42,7 @@ const clear = () => {
       class="appearance-none rounded border bg-quaternary border-transparent py-1.5 px-2 transition-all duration-150 ease-in-out focus:rounded focus:border-primary outline-none"
       :class="{ 'border-zinc-500 text-zinc-500': disabled }"
     />
-    <button v-if="modelValue" @click="clear" class="absolute right-2 bottom-3">
+    <button v-if="modelValue && !disabled" @click="clear" class="absolute right-2 bottom-3">
       <IconClose class="w-4 h-4" />
     </button>
   </div>

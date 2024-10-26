@@ -1,14 +1,17 @@
 import { type Release } from './release'
+import { Timestamp } from 'firebase/firestore'
 
 export interface Artist {
   id: string
-  name: string
   idYoutubeMusic: string
+  name: string
+  image: string
   description: string
+  birthDate: Timestamp
+  debutDate: Timestamp
+  type: string
   verified: boolean
   activeCareer: boolean
-  type: string
-  image: string
   styles: Object[]
   generalTags: Object[]
   socialList: {
@@ -19,6 +22,8 @@ export interface Artist {
     name: string
     link: string
   }[]
+  createdAt: Timestamp
+  updatedAt: Timestamp
   members: Partial<Artist>[]
   groups: Partial<Artist>[]
   releases: Partial<Release>[]
