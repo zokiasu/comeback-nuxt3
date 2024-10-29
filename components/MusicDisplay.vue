@@ -35,6 +35,9 @@ const { musicName, musicId, duration, artistName, artistId, artistImage, albumNa
   hasMv: {
     type: Boolean,
   },
+  horizontalMode: {
+    type: Boolean,
+  },
 })
 
 const idYoutubeVideo = useIdYoutubeVideo()
@@ -61,15 +64,15 @@ const convertDuration = (duration: any) => {
 </script>
 
 <template>
-  <div class="bg-transparent space-y-0.5">
+  <div class="bg-transparent w-full flex" :class="horizontalMode ? 'flex-row gap-2' : 'flex-col gap-0.5'">
     <button
       v-if="musicId"
       @click="playVideo(musicId)"
       :disabled="idYoutubeVideo == musicId"
-      class="flex items-center w-full justify-between rounded bg-quaternary p-2 px-3"
+      class="flex w-full gap-2 items-center rounded bg-quaternary p-2 px-3"
       :class="idYoutubeVideo == musicId ? '' : 'group hover:bg-tertiary/10'"
     >
-      <div class="flex w-11/12 items-center gap-3">
+      <div>
         <NuxtImg
           v-if="musicImage != null || musicImage != undefined"
           format="webp"
@@ -77,42 +80,45 @@ const convertDuration = (duration: any) => {
           :src="musicImage"
           class="hidden h-10 w-10 rounded shadow shadow-secondary md:block"
         />
-        <div class="w-4/5">
-          <div v-if="musicName" class="flex items-center gap-2 text-start">
-            <p class="truncate whitespace-nowrap text-sm font-semibold">
-              {{ musicName }}
-            </p>
-            <p class="hidden truncate md:block">-</p>
-            <p class="hidden truncate md:block">{{ convertDuration(duration) }}</p>
-          </div>
-          <div v-if="artistName || albumId" class="flex items-center gap-2 text-xs">
-            <NuxtImg
-              v-if="artistImage"
-              format="webp"
-              :alt="artistName"
-              :src="artistImage"
-              class="h-3 w-3 rounded-full object-cover shadow shadow-secondary"
-            />
-            <NuxtLink
-              v-if="artistName"
-              :to="`/artist/${artistId}`"
-              class="whitespace-nowrap hover:underline"
-            >
-              {{ artistName }}
-            </NuxtLink>
-            <p v-if="albumId" class="truncate text-xs md:block">-</p>
-            <NuxtLink
-              v-if="albumId"
-              :to="`/release/${albumId}`"
-              class="truncate text-xs hover:underline md:block"
-            >
-              {{ albumName }}
-            </NuxtLink>
-            <!-- <p class="hidden sm:block">1, 054, 258, 031 on Youtube (Music)</p> -->
-          </div>
-        </div>
       </div>
       <div>
+        <div v-if="musicName" class="flex items-center gap-2 text-start max-w-[40rem]">
+          <p class="truncate whitespace-nowrap text-sm font-semibold max-w-96">
+            {{ musicName }}
+          </p>
+          <p class="hidden truncate md:block">-</p>
+          <p class="hidden truncate md:block">{{ convertDuration(duration) }}</p>
+        </div>
+        <div v-if="artistName || albumId" class="flex items-center gap-2 text-xs">
+          <NuxtImg
+            v-if="artistImage"
+            format="webp"
+            :alt="artistName"
+            :src="artistImage"
+            class="h-3 w-3 rounded-full object-cover shadow shadow-secondary"
+          />
+          <NuxtLink
+            v-if="artistName && artistId"
+            :to="`/artist/${artistId}`"
+            class="whitespace-nowrap hover:underline"
+          >
+            {{ artistName }}
+          </NuxtLink>
+          <p v-if="artistName && !artistId" class="whitespace-nowrap">
+            {{ artistName }}
+          </p>
+          <p v-if="albumId" class="truncate text-xs md:block">-</p>
+          <NuxtLink
+            v-if="albumId"
+            :to="`/release/${albumId}`"
+            class="truncate text-xs hover:underline md:block"
+          >
+            {{ albumName }}
+          </NuxtLink>
+          <!-- <p class="hidden sm:block">1, 054, 258, 031 on Youtube (Music)</p> -->
+        </div>
+      </div>
+      <div class="ml-auto">
         <IconPlay
           v-if="idYoutubeVideo != musicId"
           class="h-10 w-10 transition-all duration-300 ease-in-out"
@@ -120,12 +126,12 @@ const convertDuration = (duration: any) => {
         <IconPause v-else class="h-10 w-10 transition-all duration-300 ease-in-out" />
       </div>
     </button>
-    <button v-if="hasMv" @click="displayVideo = true" class="flex items-center text-xs w-full py-1 uppercase font-semibold tracking-widest justify-center rounded bg-primary hover:bg-primary/50">
+    <button v-if="hasMv" @click="displayVideo = true" class="flex items-center text-xs py-1 uppercase font-semibold tracking-widest justify-center rounded bg-primary hover:bg-primary/50" :class="horizontalMode ? 'w-fit' : 'w-full'">
       <p>Music Video</p>
     </button>
     <div v-if="displayVideo && hasMv" @click="displayVideo = false" class="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
       <iframe 
-        class="w-[80%] aspect-video" 
+        class="w-[60%] aspect-video" 
         :src="`https://www.youtube.com/embed/` + musicId" 
         :title="musicName + ' M/V'" 
         frameborder="0" 

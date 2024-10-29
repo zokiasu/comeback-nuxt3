@@ -610,6 +610,7 @@ export function useFirebaseFunction() {
 
   return {
     database,
+    snapshotResultToArray,
     getRealtimeNextComebacks,
     getRealtimeLastestReleases,
     getRealtimeLastestArtistsAdded,
