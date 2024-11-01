@@ -28,25 +28,23 @@
 			isFetchingArtist.value = false
 		}
 
-		if (artist.value.releases.length > 5) {
+		if (artist.value.releases.length > 3) {
 			const releaseIds = artist.value.releases.map((release) => release.id).filter((id) => id)
 			const fetchedMusicDiscover = await getRandomMusicFromListReleaseId(releaseIds as string[])
 			musicDiscover.value = fetchedMusicDiscover as Music[]
 		}
 	})
 
-	const members = computed(
-		() => artist.value?.members?.filter((member) => member.type === 'SOLO') || [],
-	)
-	const subUnitMembers = computed(
-		() => artist.value?.members?.filter((member) => member.type === 'GROUP') || [],
-	)
-	const singleRelease = computed(
-		() => artist.value?.releases?.filter((release) => release.type === 'SINGLE') || [],
-	)
-	const albumEpRelease = computed(
-		() => artist.value?.releases?.filter((release) => release.type !== 'SINGLE') || [],
-	)
+	const members = computed(() => artist.value?.members?.filter((member) => member.type === 'SOLO') || [])
+	const subUnitMembers = computed(() => artist.value?.members?.filter((member) => member.type === 'GROUP') || [])
+	const singleRelease = computed(() => {
+		const singles = artist.value?.releases?.filter((release) => release.type === 'SINGLE') || []
+		return singles.sort((a, b) => b.date.toDate() - a.date.toDate())
+	})
+	const albumEpRelease = computed(() => {
+		const albums = artist.value?.releases?.filter((release) => release.type !== 'SINGLE') || []
+		return albums.sort((a, b) => b.date.toDate() - a.date.toDate())
+	})
 	const editLink = computed(() => {
 		if (!isLoginStore) {
 			return '/authentification'
@@ -91,6 +89,10 @@
 					>
 						{{ artist.name }}
 					</h1>
+					<div v-if="artist.birthDate || artist.debutDate" class="font-semibold flex gap-2">
+						<p v-if="artist.birthDate" class="w-fit rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">Birthday : {{ artist.birthDate ? artist.birthDate.toDate().toLocaleDateString('en-US', {day: 'numeric', month: 'long', year: 'numeric'}) : 'Unknown' }}</p>
+						<p v-if="artist.debutDate" class="w-fit rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">Debut Date : {{ artist.debutDate ? artist.debutDate.toDate().toLocaleDateString('en-US', {day: 'numeric', month: 'long', year: 'numeric'}) : 'Unknown' }}</p>
+					</div>
 					<div v-if="!isFetchingArtist" class="flex gap-2">
 						<p v-for="style in artist.styles" :key="style.name" class="w-fit rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">
 							{{ style.name }}
@@ -195,7 +197,7 @@
 						</div>
 					</CardDefault>
 				</div>
-				<div v-if="artist.releases.length > 5">
+				<div v-if="artist.releases.length > 3">
 					<CardDefault name="Discover Music">
 						<div v-if="musicDiscover.length < 1" class="space-y-2">
 							<SkeletonDefault class="h-14 w-full rounded" />

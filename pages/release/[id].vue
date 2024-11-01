@@ -4,11 +4,13 @@
   import { useUserStore } from '@/stores/user'
   import { Timestamp } from 'firebase/firestore'
   import VueDatePicker from '@vuepic/vue-datepicker'
+  import { useToast } from 'vue-toastification'
 
   const { Modal } = Mdl
   const { getReleaseByArtistId, updateRelease, getReleaseByIdWithMusics } = useFirebaseFunction()
   const { isLoginStore } = useUserStore()
-  const router = useRouter();
+  const toast = useToast()
+  const router = useRouter()
 
   const title = ref('Release Page')
   const description = ref('Release')
@@ -43,6 +45,12 @@
       name: '',
       link: '',
     }
+  }
+
+  const updateReleaseFunction = (releaseId: string, release: any) => {
+    updateRelease(releaseId, release)
+    toast.info('Release updated')
+    showModalEdit.value = false
   }
 
   const verifyShowModal = () => {
@@ -334,7 +342,7 @@
         </div>
 
         <button
-          @click="updateRelease(release.id, release)"
+          @click="updateReleaseFunction(release.id, release)"
           class="w-full rounded bg-primary py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
         >
           <p>Update Release</p>

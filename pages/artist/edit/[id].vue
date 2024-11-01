@@ -143,6 +143,9 @@ onMounted(async () => {
   artist.value = await getArtistByIdWithGroupsAndMembers(route.params.id)
   artistToEdit.value = await getArtistByIdWithGroupsAndMembers(route.params.id)
 
+  birthdayToDateFormat.value = artist.value.birthDate ? artist.value.birthDate.toDate() : null
+  debutDateToDateFormat.value = artist.value.debutDate ? artist.value.debutDate.toDate() : null
+
   title.value = 'EDIT ARTIST : ' + artist.value.name
   description.value = artist.value.description
 
@@ -187,7 +190,7 @@ useHead({
       </button>
     </div>
 
-    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+    <div class="grid grid-cols-1 gap-5 2xl:grid-cols-2">
       <!-- Picture -->
       <div class="flex flex-col gap-2">
         <div class="flex items-end gap-2">
@@ -204,7 +207,7 @@ useHead({
         />
       </div>
       <!-- Name & Id YTM & Birthday & Debut Date -->
-      <div class="space-y-5">
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-1">
         <ComebackInput
           label="Unique Id"
           :placeholder="artist.id"
@@ -249,48 +252,76 @@ useHead({
 
     <div class="space-y-5">
       <!-- Gender & Type & Active Career -->
-      <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
         <!-- Gender -->
-        <div class="grid grid-cols-1 gap-1">
-          <div class="flex items-end gap-2">
-            <ComebackLabel label="Gender" />
-            <p class="text-sm italic text-quinary">It's only for stat we don't assume any gender jugement</p>
+        <div class="grid grid-cols-1 gap-1 w-full">
+          <ComebackLabel label="Gender" />
+          <div class="flex gap-2">
+            <div v-for="gender in ['UNKNOWN', 'MALE', 'FEMALE', 'MIXTE']" :key="gender" class="flex items-center w-full gap-2">
+              <input 
+                type="radio" 
+                :id="gender"
+                :value="gender"
+                v-model="artistToEdit.gender"
+                class="hidden"
+              />
+              <button 
+                @click="artistToEdit.gender = gender"
+                class="px-3 py-1 rounded text-sm w-full"
+                :class="artistToEdit.gender === gender ? 'bg-primary text-white' : 'bg-quaternary'"
+              >
+                {{ gender }}
+              </button>
+            </div>
           </div>
-          <select
-            v-model="artistToEdit.gender"
-            class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
-          >
-            <option default value="UNKNOWN" class="text-secondary">UNKNOWN</option>
-            <option value="MALE" class="text-secondary">MALE</option>
-            <option value="FEMALE" class="text-secondary">FEMALE</option>
-            <option value="MIXTE" class="text-secondary">MIXTE</option>
-          </select>
         </div>
         <!-- Type -->
-        <div class="grid grid-cols-1 gap-1">
+        <div class="grid grid-cols-1 gap-1 w-full">
           <ComebackLabel label="Type" />
-          <select
-            v-model="artistToEdit.type"
-            class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
-          >
-            <option value="SOLO" class="text-secondary">SOLO</option>
-            <option value="GROUP" class="text-secondary">GROUP</option>
-          </select>
+          <div class="flex gap-2">
+            <div v-for="type in ['SOLO', 'GROUP']" :key="type" class="flex items-center w-full gap-2">
+              <input 
+                type="radio"
+                :id="type"
+                :value="type" 
+                v-model="artistToEdit.type"
+                class="hidden"
+              />
+              <button
+                @click="artistToEdit.type = type"
+                class="px-3 py-1 rounded text-sm w-full"
+                :class="artistToEdit.type === type ? 'bg-primary text-white' : 'bg-quaternary'"
+              >
+                {{ type }}
+              </button>
+            </div>
+          </div>
         </div>
         <!-- Active Career -->
-        <div class="grid grid-cols-1 gap-1">
+        <div class="grid grid-cols-1 gap-1 w-full">
           <ComebackLabel label="Active Career" />
-          <select
-            v-model="artistToEdit.activeCareer"
-            class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
-          >
-            <option :value="true" class="text-secondary">Active</option>
-            <option :value="false" class="text-secondary">Inactive</option>
-          </select>
+          <div class="flex gap-2">
+            <div v-for="status in [{value: true, label: 'Active'}, {value: false, label: 'Inactive'}]" :key="status.value" class="flex items-center w-full gap-2">
+              <input
+                type="radio"
+                :id="status.label"
+                :value="status.value"
+                v-model="artistToEdit.activeCareer"
+                class="hidden"
+              />
+              <button
+                @click="artistToEdit.activeCareer = status.value"
+                class="px-3 py-1 rounded text-sm w-full"
+                :class="artistToEdit.activeCareer === status.value ? 'bg-primary text-white' : 'bg-quaternary'"
+              >
+                {{ status.label }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       <!-- Styles & General Tags -->
-      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+      <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
         <!-- Styles -->
         <div v-if="stylesList" class="flex flex-col gap-1">
           <ComebackLabel label="Styles" />
@@ -380,7 +411,7 @@ useHead({
         />
       </div>
       <!-- Platforms & Socials -->
-      <div class="flex gap-2">
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <!-- Platforms -->
         <div class="w-full space-y-2">
           <ComebackLabel label="Platforms" />
