@@ -1,5 +1,4 @@
 <script setup>
-import VueMultiselect from 'vue-multiselect'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import { Timestamp } from 'firebase/firestore'
@@ -8,7 +7,6 @@ import { useUserStore } from '@/stores/user'
 import debounce from 'lodash.debounce';
 
 const { userDataStore } = useUserStore()
-const { getComebackExist } = useFirebaseFunction()
 const toast = useToast()
 const { result, search } = useAlgoliaSearch('Artists');
 

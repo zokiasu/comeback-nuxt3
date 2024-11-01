@@ -9,6 +9,7 @@ export interface Artist {
   description: string
   birthDate: Timestamp
   debutDate: Timestamp
+  gender: string
   type: string
   verified: boolean
   activeCareer: boolean

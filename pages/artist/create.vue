@@ -1,5 +1,7 @@
 <script setup>
 import VueMultiselect from 'vue-multiselect'
+import '@vuepic/vue-datepicker/dist/main.css'
+import VueDatePicker from '@vuepic/vue-datepicker'
 import { Timestamp } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
 import * as Mdl from '@kouts/vue-modal'
@@ -25,6 +27,8 @@ const membersList = ref(null)
 const artistList = ref(null)
 const stylesList = ref(null)
 const tagsList = ref(null)
+const birthdayToDateFormat = ref(null)
+const debutDateToDateFormat = ref(null)
 const artistToEdit = ref({
   id: '',
   idYoutubeMusic: '',
@@ -34,6 +38,9 @@ const artistToEdit = ref({
   image: 'https://i.ibb.co/wLhbFZx/Frame-255.png',
   verified: false,
   activeCareer: true,
+  gender: 'UNKNOWN',
+  birthDate: null,
+  debutDate: null,
   platformList: [],
   socialList: [],
   styles: [],
@@ -96,6 +103,28 @@ const adjustTextarea = (event) => {
   textarea.style.height = `${textarea.scrollHeight}px`
 }
 
+watch(birthdayToDateFormat, () => {
+  if(birthdayToDateFormat.value) {
+    console.log('birthdayToDateFormat', birthdayToDateFormat.value)
+    const tmpDate = new Date(birthdayToDateFormat.value)
+    tmpDate.setHours(0, 0, 0, 0)
+    artistToEdit.value.birthDate = Timestamp.fromDate(tmpDate)
+  } else {
+    artistToEdit.value.birthDate = null
+  }
+})
+
+watch(debutDateToDateFormat, () => {
+  if(debutDateToDateFormat.value) {
+    console.log('debutDateToDateFormat', debutDateToDateFormat.value)
+    const tmpDate = new Date(debutDateToDateFormat.value)
+    tmpDate.setHours(0, 0, 0, 0)
+    artistToEdit.value.debutDate = Timestamp.fromDate(tmpDate)
+  } else {
+    artistToEdit.value.debutDate = null
+  }
+})
+
 onMounted(async () => {
   artistList.value = await queryByCollection('artists')
   groupList.value = artistList.value.filter((artist) => artist.type == 'GROUP')
@@ -134,25 +163,24 @@ useHead({
       </div>
     </div>
 
-    <div class="space-y-5">
+    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
       <!-- Picture -->
       <div class="flex flex-col gap-2">
         <div class="flex items-end gap-2">
           <ComebackLabel label="Image" />
-          <p class="text-sm italic text-quinary">
-            Picture will be automaticaly update based on Youtube Music
-          </p>
+          <p class="text-sm italic text-quinary">Picture will be automaticaly update based on Youtube Music</p>
         </div>
         <NuxtImg
           v-if="artistToEdit.image"
           :src="artistToEdit.image"
+          :alt="artistToEdit.name"
           format="webp"
           loading="lazy"
-          class="w-full rounded object-cover md:w-auto md:max-w-lg xl:max-w-xl"
+          class="object-cover w-full rounded"
         />
       </div>
-      <!-- Name & Id -->
-      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+      <!-- Name & Id YTM & Birthday & Debut Date -->
+      <div class="space-y-4">
         <ComebackInput
           label="Name *"
           placeholder="Artist Name*"
@@ -163,15 +191,56 @@ useHead({
           placeholder="ID Youtube Music"
           v-model="artistToEdit.idYoutubeMusic"
         />
+        <!-- Birthday -->
+        <div class="space-y-1" :class="{ 'hidden': artistToEdit.type == 'GROUP' }">
+          <ComebackLabel label="Birthday" />
+          <VueDatePicker 
+            v-model="birthdayToDateFormat" 
+            placeholder="Select Date" 
+            auto-apply 
+            :enable-time-picker="false" 
+            dark
+          />
+        </div>
+        <!-- Debut Date -->
+        <div class="space-y-1">
+          <ComebackLabel label="Debut Date" />
+          <VueDatePicker 
+            v-model="debutDateToDateFormat" 
+            placeholder="Select Date" 
+            auto-apply 
+            :enable-time-picker="false" 
+            dark
+          />
+        </div>
       </div>
-      <!-- Type & Active Career-->
-      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+    </div>
+
+    <div class="space-y-5">
+      <!-- Gender & Type & Active Career -->
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <!-- Gender -->
+        <div class="grid grid-cols-1 gap-1">
+          <div class="flex items-end gap-2">
+            <ComebackLabel label="Gender" />
+            <p class="text-sm italic text-quinary">It's only for stat we don't assume any gender jugement</p>
+          </div>
+          <select
+            v-model="artistToEdit.gender"
+            class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
+          >
+            <option default value="UNKNOWN" class="text-secondary">UNKNOWN</option>
+            <option value="MALE" class="text-secondary">MALE</option>
+            <option value="FEMALE" class="text-secondary">FEMALE</option>
+            <option value="MIXTE" class="text-secondary">MIXTE</option>
+          </select>
+        </div>
         <!-- Type -->
         <div class="grid grid-cols-1 gap-1">
           <ComebackLabel label="Type" />
           <select
             v-model="artistToEdit.type"
-            class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
+            class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
           >
             <option value="SOLO" class="text-secondary">SOLO</option>
             <option value="GROUP" class="text-secondary">GROUP</option>
@@ -182,7 +251,7 @@ useHead({
           <ComebackLabel label="Active Career" />
           <select
             v-model="artistToEdit.activeCareer"
-            class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
+            class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
           >
             <option :value="true" class="text-secondary">Active</option>
             <option :value="false" class="text-secondary">Inactive</option>

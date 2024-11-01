@@ -1,5 +1,7 @@
 <script setup>
 import VueMultiselect from 'vue-multiselect'
+import '@vuepic/vue-datepicker/dist/main.css'
+import VueDatePicker from '@vuepic/vue-datepicker'
 import { Timestamp } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
 import * as Mdl from '@kouts/vue-modal'
@@ -30,6 +32,8 @@ const membersList = ref(null)
 const artistList = ref(null)
 const stylesList = ref(null)
 const tagsList = ref(null)
+const birthdayToDateFormat = ref(null)
+const debutDateToDateFormat = ref(null)
 const artistToEdit = ref({
   id: '',
   idYoutubeMusic: '',
@@ -37,11 +41,15 @@ const artistToEdit = ref({
   type: '',
   description: '',
   image: '',
-  platforms: [],
+  gender: 'UNKNOWN',
+  verified: true,
+  activeCareer: true,
+  birthDate: null,
+  debutDate: null,
   platformList: [],
-  socials: [],
   socialList: [],
   styles: [],
+  generalTags: [],
   groups: [],
   members: [],
 })
@@ -109,6 +117,28 @@ const adjustTextarea = (event) => {
   textarea.style.height = `${textarea.scrollHeight}px` // Ajuste la hauteur à la hauteur de contenu
 }
 
+watch(birthdayToDateFormat, () => {
+  if(birthdayToDateFormat.value) {
+    console.log('birthdayToDateFormat', birthdayToDateFormat.value)
+    const tmpDate = new Date(birthdayToDateFormat.value)
+    tmpDate.setHours(0, 0, 0, 0)
+    artistToEdit.value.birthDate = Timestamp.fromDate(tmpDate)
+  } else {
+    artistToEdit.value.birthDate = null
+  }
+})
+
+watch(debutDateToDateFormat, () => {
+  if(debutDateToDateFormat.value) {
+    console.log('debutDateToDateFormat', debutDateToDateFormat.value)
+    const tmpDate = new Date(debutDateToDateFormat.value)
+    tmpDate.setHours(0, 0, 0, 0)
+    artistToEdit.value.debutDate = Timestamp.fromDate(tmpDate)
+  } else {
+    artistToEdit.value.debutDate = null
+  }
+})
+
 onMounted(async () => {
   artist.value = await getArtistByIdWithGroupsAndMembers(route.params.id)
   artistToEdit.value = await getArtistByIdWithGroupsAndMembers(route.params.id)
@@ -157,7 +187,7 @@ useHead({
       </button>
     </div>
 
-    <div class="space-y-5">
+    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
       <!-- Picture -->
       <div class="flex flex-col gap-2">
         <div class="flex items-end gap-2">
@@ -170,30 +200,73 @@ useHead({
           :alt="artistToEdit.name"
           format="webp"
           loading="lazy"
-          class="object-cover w-full rounded md:w-auto md:max-w-lg xl:max-w-xl"
+          class="object-cover w-full rounded"
         />
       </div>
-      <!-- Name & Id -->
-      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <ComebackInput
-          label="Name"
-          :placeholder="artist.name"
-          v-model="artistToEdit.name"
-        />
+      <!-- Name & Id YTM & Birthday & Debut Date -->
+      <div class="space-y-5">
         <ComebackInput
           label="Unique Id"
           :placeholder="artist.id"
           v-model="artistToEdit.id"
           disabled
         />
-      </div>
-      <!-- Id YTM & Type & Activity -->
-      <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <ComebackInput
+          label="Name"
+          :placeholder="artist.name"
+          v-model="artistToEdit.name"
+        />
         <ComebackInput
           label="Id Youtube Music"
           :placeholder="artist.idYoutubeMusic"
           v-model="artistToEdit.idYoutubeMusic"
         />
+        <!-- Birthday & Debut Date -->
+        <div class="grid grid-cols-1 gap-5" :class="{ 'md:grid-cols-2': artistToEdit.type == 'SOLO' }">
+          <div class="space-y-1" :class="{ 'hidden': artistToEdit.type == 'GROUP' }">
+            <ComebackLabel label="Birthday" />
+            <VueDatePicker 
+              v-model="birthdayToDateFormat" 
+              placeholder="Select Date" 
+              auto-apply 
+              :enable-time-picker="false" 
+              dark
+            />
+          </div>
+          <div class="space-y-1">
+            <ComebackLabel label="Debut Date" />
+            <VueDatePicker 
+              v-model="debutDateToDateFormat" 
+              placeholder="Select Date" 
+              auto-apply 
+              :enable-time-picker="false" 
+              dark
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-5">
+      <!-- Gender & Type & Active Career -->
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <!-- Gender -->
+        <div class="grid grid-cols-1 gap-1">
+          <div class="flex items-end gap-2">
+            <ComebackLabel label="Gender" />
+            <p class="text-sm italic text-quinary">It's only for stat we don't assume any gender jugement</p>
+          </div>
+          <select
+            v-model="artistToEdit.gender"
+            class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
+          >
+            <option default value="UNKNOWN" class="text-secondary">UNKNOWN</option>
+            <option value="MALE" class="text-secondary">MALE</option>
+            <option value="FEMALE" class="text-secondary">FEMALE</option>
+            <option value="MIXTE" class="text-secondary">MIXTE</option>
+          </select>
+        </div>
+        <!-- Type -->
         <div class="grid grid-cols-1 gap-1">
           <ComebackLabel label="Type" />
           <select
@@ -204,6 +277,7 @@ useHead({
             <option value="GROUP" class="text-secondary">GROUP</option>
           </select>
         </div>
+        <!-- Active Career -->
         <div class="grid grid-cols-1 gap-1">
           <ComebackLabel label="Active Career" />
           <select
