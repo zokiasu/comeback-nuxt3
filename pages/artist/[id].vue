@@ -89,19 +89,19 @@
 					>
 						{{ artist.name }}
 					</h1>
-					<div v-if="artist.birthDate || artist.debutDate" class="font-semibold flex gap-2">
-						<p v-if="artist.birthDate" class="w-fit rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">Birthday : {{ artist.birthDate ? artist.birthDate.toDate().toLocaleDateString('en-US', {day: 'numeric', month: 'long', year: 'numeric'}) : 'Unknown' }}</p>
-						<p v-if="artist.debutDate" class="w-fit rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">Debut Date : {{ artist.debutDate ? artist.debutDate.toDate().toLocaleDateString('en-US', {day: 'numeric', month: 'long', year: 'numeric'}) : 'Unknown' }}</p>
+					<div v-if="artist.birthDate || artist.debutDate" class="font-semibold flex flex-wrap gap-2">
+						<p v-if="artist.birthDate" class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">Birthday : {{ artist.birthDate ? artist.birthDate.toDate().toLocaleDateString('en-US', {day: 'numeric', month: 'long', year: 'numeric'}) : 'Unknown' }}</p>
+						<p v-if="artist.debutDate" class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">Debut Date : {{ artist.debutDate ? artist.debutDate.toDate().toLocaleDateString('en-US', {day: 'numeric', month: 'long', year: 'numeric'}) : 'Unknown' }}</p>
 					</div>
-					<div v-if="!isFetchingArtist" class="flex gap-2">
-						<p v-for="style in artist.styles" :key="style.name" class="w-fit rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">
+					<div v-if="!isFetchingArtist" class="flex flex-wrap gap-2">
+						<p v-for="style in artist.styles" :key="style.name" class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">
 							{{ style.name }}
 						</p>
-						<p v-for="tag in artist.generalTags" :key="tag.name" class="w-fit rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">
+						<p v-for="tag in artist.generalTags" :key="tag.name" class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">
 							{{ tag.name }}
 						</p>
 					</div>
-					<div v-if="!isFetchingArtist" class="flex gap-2">
+					<div v-if="!isFetchingArtist" class="flex flex-wrap gap-2">
 						<p
 							v-if="!artist.activeCareer"
 							class="w-fit bg-quaternary px-2 py-1 text-xs font-semibold uppercase"
