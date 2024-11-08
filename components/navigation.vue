@@ -48,6 +48,13 @@ const signOut = async () => {
   router.push('/')
 }
 
+const profilePath = computed(() => {
+  if (!userDataStore.value || !userDataStore.value.id) {
+    return '/settings/profile'
+  }
+  return `/profile/${userDataStore.value.id}`
+})
+
 onMounted(async () => {
   window.addEventListener('scroll', handleScroll)
 })
@@ -117,12 +124,19 @@ onMounted(async () => {
             Login
           </NuxtLink>
           <NuxtLink
-            v-else
-            :to="`/settings/profile`"
+            v-if="isLoginStore"
+            :to="profilePath"
             title="Settings"
             class="flex items-center h-full gap-2 px-3 py-1 rounded bg-quaternary hover:bg-tertiary/20"
           >
             <p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>
+          </NuxtLink>
+          <NuxtLink
+            v-if="isLoginStore"
+            :to="`/settings/profile`"
+            title="Settings"
+            class="flex items-center h-full gap-2 px-3 py-1 rounded bg-quaternary hover:bg-tertiary/20"
+          >
             <IconSettings class="w-3.5 h-3.5" />
           </NuxtLink>
         </div>

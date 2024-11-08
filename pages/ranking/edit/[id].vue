@@ -2,8 +2,8 @@
   <div class="flex flex-col space-y-5 min-h-dvh-wo-nav lg:max-h-dvh-wo-nav p-5">
     <div class="flex gap-2 justify-between items-end">
       <ComebackInput label="Ranking Name" placeholder="Ranking Name" v-model="rankingName" class="w-full"/>
-      <button @click="createRanking" class="bg-primary hover:bg-primary/80 text-white px-3 py-2 lg:py-1.5 rounded whitespace-nowrap text-sm lg:text-base">
-        Create Ranking
+      <button @click="updateRanking" class="bg-primary hover:bg-primary/80 text-white px-3 py-2 lg:py-1.5 rounded whitespace-nowrap text-sm lg:text-base">
+        Update Ranking
       </button>
     </div>
     <div class="flex flex-col-reverse lg:grid lg:grid-cols-2 gap-4 lg:flex-1">
@@ -55,7 +55,6 @@
             </button>
           </div>
         </div>
-        <!-- Musics -->
         <div v-if="searchMusics.length > 0" class="grid grid-cols-1 gap-4 max-h-[35dvh] lg:max-h-[65dvh] scrollBarLight pr-2 overflow-x-hidden overflow-y-auto">
           <div v-for="song in searchMusics" :key="song.videoId" class="flex gap-2">
             <button @click="addMusicToRanking(song)" class="flex justify-center items-center px-3 bg-quaternary rounded hover:bg-quinary">
@@ -80,7 +79,7 @@
       <!-- Ranking -->
       <div class="h-full mx-auto space-y-3 w-full border border-quaternary rounded p-2 lg:p-5">
         <p class="text-xl xl:text-2xl text-center font-bold">Ranking</p>
-        <div class="space-y-2 max-h-[75dvh] scrollBarLight pr-2 overflow-y-auto">
+        <div v-if="rankingMusics.length > 0" class="space-y-2 max-h-[75dvh] scrollBarLight pr-2 overflow-y-auto">
           <draggable 
             v-model="rankingMusics"
             class="space-y-2"
@@ -111,12 +110,15 @@
             </template>
           </draggable>
         </div>
+        <div v-else class="grid grid-cols-1 gap-4 max-h-[35dvh] lg:max-h-[65dvh] scrollBarLight pr-2 overflow-x-hidden overflow-y-auto">
+            <p class="text-center text-tertiary/50 font-semibold">Loading data...</p>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
   import draggable from 'vuedraggable'
   import { useFirebaseRealtimeDatabase } from "~/composables/useFirebaseRealtimeDatabase";
   import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
@@ -128,11 +130,12 @@
   })
 
   const toast = useToast()
+  const route = useRoute()
   const router = useRouter()
   const { userDataStore } = useUserStore()
   const { $firestore: database } = useNuxtApp()
   const { snapshotResultToArray } = useFirebaseFunction()
-  const { writeDataWithRandomId } = useFirebaseRealtimeDatabase();
+  const { writeData, readData } = useFirebaseRealtimeDatabase();
 
   const yearFilter = ref(2024)
   const musics = ref<any[]>([])
@@ -161,27 +164,27 @@
     return snapshotResultToArray(snapshot);
   }
 
+  const getRanking = async (id: string) => {
+    const path = `/rankings/${userDataStore.id}/${id}`
+    return await readData(path)
+  }
+
   const changeYearFilter = async (year: number) => {
     yearFilter.value = year
     musics.value = []
     musics.value = await getAllMusics() as any[]
   }
 
-  const createRanking = async () => {
+  const updateRanking = async () => {
     console.log(rankingName.value, rankingMusics.value)
 
     if (!userDataStore?.id) return
-
-    if (!rankingName.value) return toast.error('Ranking name is required')
-
-    if (rankingMusics.value.length < 3) return toast.error('Ranking must have at least 3 musics')
-
-    const path = `/rankings/${userDataStore.id}`
-    await writeDataWithRandomId(path, {
+    const path = `/rankings/${userDataStore.id}/${route.params.id}`
+    await writeData(path, {
       name: rankingName.value,
       musics: rankingMusics.value
     }).then(() => {
-      toast.success('Ranking created')
+      toast.success('Ranking updated')
       router.push(`/profile/${userDataStore.id}`)
     })
   }
@@ -218,5 +221,8 @@
 
   onMounted(async () => {
     musics.value = await getAllMusics() as any[]
+    const rankingData = await getRanking(route.params.id as string)
+    rankingName.value = rankingData.name
+    rankingMusics.value = rankingData.musics
   })
 </script>

@@ -174,6 +174,8 @@ const muteVolume = () => {
 
 const closeYTPlayer = () => {
   isPlayingVideo.value = false;
+  idYoutubeVideo.value = '';
+  
   if (player.value) {
     player.value?.destroy();
   }
@@ -191,7 +193,7 @@ const convertDuration = (duration) => {
 
 <template>
   <div
-    class="fixed bottom-0 z-50 flex flex-col items-center justify-center w-full space-y-3 sm:items-end sm:justify-end"
+    class="fixed bottom-0 z-[1100] flex flex-col items-center justify-center w-full space-y-3 sm:items-end sm:justify-end"
   >
     <div
       id="globalPlayerContainer"

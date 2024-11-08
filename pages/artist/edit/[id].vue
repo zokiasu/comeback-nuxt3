@@ -17,6 +17,7 @@ const ModalCreateArtist = defineAsyncComponent(() =>
 
 const { Modal } = Mdl
 const route = useRoute()
+const router = useRouter()
 const toast = useToast()
 const { isAdminStore } = useUserStore()
 const { getArtistByIdWithGroupsAndMembers, updateArtist } = useFirebaseFunction()
@@ -85,7 +86,6 @@ const sendUpdateArtist = async () => {
     updatedFields['id'] = artist.value.id
     updateArtist(updatedFields).then(async () => {
       toast.success('Artist Updated')
-      const router = useRouter()
       router.push(`/artist/${route.params.id}`)
     })
   } else {
@@ -94,7 +94,6 @@ const sendUpdateArtist = async () => {
       .then(() => {
         isUploadingEdit.value = false
         toast.success('Artist Update')
-        const router = useRouter()
         router.push(`/artist/${route.params.id}`)
       })
       .catch((error) => {

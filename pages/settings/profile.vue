@@ -28,17 +28,14 @@
 </script>
 
 <template>
-    <div class="h-screen min-h-dvh-wo-nav max-h-dvh-wo-nav rounded flex flex-col gap-5 px-5
-    ">
+    <div class="h-screen min-h-dvh-wo-nav max-h-dvh-wo-nav rounded flex flex-col gap-5 px-5">
         <div class="w-full flex justify-between">
             <p class="font-bold text-2xl">Profile Settings</p>
             <button @click="updateUserDetails" class="bg-primary hover:bg-primary/90 rounded px-5 py-1">
                 Save
             </button>
         </div>
-        <div v-if="userDetails" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-
-            <div class="space-y-5">
+        <div v-if="userDetails" class="grid grid-cols-1 lg:grid-cols-2 gap-5">            <div class="space-y-5">
                 <div class="space-y-1">
                     <p class="uppercase font-semibold">ID</p>
                     <p class="opacity-50">{{ userDetails.id }}</p>

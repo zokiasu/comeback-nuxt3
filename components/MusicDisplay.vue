@@ -64,32 +64,35 @@ const convertDuration = (duration: any) => {
 </script>
 
 <template>
-  <div class="bg-transparent w-full flex" :class="horizontalMode ? 'flex-row gap-2' : 'flex-col gap-0.5'">
+  <div class="bg-transparent w-full grid" :class="hasMv && horizontalMode ? 'grid-cols-5 gap-2' : 'grid-cols-1 gap-0.5'">
     <button
       v-if="musicId"
       @click="playVideo(musicId)"
       :disabled="idYoutubeVideo == musicId"
-      class="flex w-full gap-2 items-center rounded bg-quaternary p-2 px-3"
-      :class="idYoutubeVideo == musicId ? '' : 'group hover:bg-tertiary/10'"
+      class="flex gap-2 w-full items-center rounded bg-quaternary p-2 px-3 col-span-1"
+      :class="{
+        'group hover:bg-tertiary/10': idYoutubeVideo != musicId,
+        'col-span-4': hasMv && horizontalMode,
+      }"
     >
-      <div>
+      <div class="shrink-0 w-10 hidden md:block">
         <NuxtImg
           v-if="musicImage != null || musicImage != undefined"
           format="webp"
           :alt="musicName"
           :src="musicImage"
-          class="hidden h-10 w-10 rounded shadow shadow-secondary md:block"
+          class="h-10 w-10 rounded shadow shadow-secondary"
         />
       </div>
-      <div>
-        <div v-if="musicName" class="flex items-center gap-2 text-start max-w-[40rem]">
-          <p class="truncate whitespace-nowrap text-sm font-semibold max-w-96">
+      <div class="flex-1 min-w-0 overflow-hidden">
+        <div v-if="musicName" class="flex items-center gap-2 text-start w-full">
+          <p class="truncate text-sm font-semibold">
             {{ musicName }}
           </p>
-          <p class="hidden truncate md:block">-</p>
-          <p class="hidden truncate md:block">{{ convertDuration(duration) }}</p>
+          <p class="hidden md:block">-</p>
+          <p class="hidden md:block text-right">{{ convertDuration(duration) }}</p>
         </div>
-        <div v-if="artistName || albumId" class="flex items-center gap-2 text-xs">
+        <div v-if="artistName || albumId" class="flex items-center gap-2 text-xs min-w-0 overflow-hidden">
           <NuxtImg
             v-if="artistImage"
             format="webp"
@@ -118,7 +121,7 @@ const convertDuration = (duration: any) => {
           <!-- <p class="hidden sm:block">1, 054, 258, 031 on Youtube (Music)</p> -->
         </div>
       </div>
-      <div class="ml-auto">
+      <div class="shrink-0 w-10 flex justify-center">
         <IconPlay
           v-if="idYoutubeVideo != musicId"
           class="h-10 w-10 transition-all duration-300 ease-in-out"
@@ -126,12 +129,13 @@ const convertDuration = (duration: any) => {
         <IconPause v-else class="h-10 w-10 transition-all duration-300 ease-in-out" />
       </div>
     </button>
-    <button v-if="hasMv" @click="displayVideo = true" class="flex items-center text-xs py-1 uppercase font-semibold tracking-widest justify-center rounded bg-primary hover:bg-primary/50" :class="horizontalMode ? 'w-fit' : 'w-full'">
-      <p>Music Video</p>
+    <button v-if="hasMv" @click="displayVideo = true" class="flex items-center w-full text-xs py-1 px-2 uppercase font-semibold tracking-widest justify-center rounded bg-primary hover:bg-primary/50" :class="horizontalMode ? 'w-fit' : 'w-full'">
+      <p class="hidden lg:block">Music Video</p>
+      <p class="lg:hidden">M/V</p>
     </button>
-    <div v-if="displayVideo && hasMv" @click="displayVideo = false" class="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
+    <div v-if="displayVideo && hasMv" @click="displayVideo = false" class="fixed inset-0 flex flex-col items-center gap-5 lg:gap-10 justify-center bg-black/80 z-50">
       <iframe 
-        class="w-[60%] aspect-video" 
+        class="w-full md:w-[80%] lg:w-[60%] aspect-video" 
         :src="`https://www.youtube.com/embed/` + musicId" 
         :title="musicName + ' M/V'" 
         frameborder="0" 
@@ -139,6 +143,8 @@ const convertDuration = (duration: any) => {
         referrerpolicy="strict-origin-when-cross-origin" 
         allowfullscreen
       ></iframe>
+
+      <p class="text-tertiary/80 cursor-pointer hover:text-tertiary">Close M/V</p>
     </div>
   </div>
 </template>
