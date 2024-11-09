@@ -210,7 +210,7 @@
 							<MusicDisplay
 								v-for="song in musicDiscover"
 								:key="song.videoId"
-								:artistId="artist.id"
+								:artistId="''"
 								:artistName="artist.name"
 								:musicId="song.videoId"
 								:musicName="song.name"

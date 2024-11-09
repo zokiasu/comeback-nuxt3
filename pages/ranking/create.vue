@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col space-y-5 min-h-dvh-wo-nav lg:max-h-dvh-wo-nav p-5">
     <div class="flex gap-2 justify-between items-end">
-      <ComebackInput label="Ranking Name" placeholder="Ranking Name" v-model="rankingName" class="w-full"/>
+      <ComebackInput label="Ranking Name" placeholder="Enter a ranking name" v-model="rankingName" class="w-full"/>
       <button @click="createRanking" class="bg-primary hover:bg-primary/80 text-white px-3 py-2 lg:py-1.5 rounded whitespace-nowrap text-sm lg:text-base">
         Create Ranking
       </button>
@@ -58,7 +58,11 @@
         <!-- Musics -->
         <div v-if="searchMusics.length > 0" class="grid grid-cols-1 gap-4 max-h-[35dvh] lg:max-h-[65dvh] scrollBarLight pr-2 overflow-x-hidden overflow-y-auto">
           <div v-for="song in searchMusics" :key="song.videoId" class="flex gap-2">
-            <button @click="addMusicToRanking(song)" class="flex justify-center items-center px-3 bg-quaternary rounded hover:bg-quinary">
+            <button
+              @click="addMusicToRanking(song)" 
+              class="flex justify-center items-center px-3 bg-quaternary rounded hover:bg-quinary" 
+              :class="checkIsInRanking(song) ? 'opacity-30 cursor-not-allowed' : ''"
+            >
               <IconPlus class="w-5 h-5" />
             </button>
             <MusicDisplay
@@ -123,13 +127,9 @@
   import { useToast } from 'vue-toastification'
   import { useUserStore } from '@/stores/user'
 
-  definePageMeta({
-    middleware: 'auth',
-  })
-
   const toast = useToast()
   const router = useRouter()
-  const { userDataStore } = useUserStore()
+  const { userDataStore, isLoginStore } = useUserStore()
   const { $firestore: database } = useNuxtApp()
   const { snapshotResultToArray } = useFirebaseFunction()
   const { writeDataWithRandomId } = useFirebaseRealtimeDatabase();
@@ -170,20 +170,29 @@
   const createRanking = async () => {
     console.log(rankingName.value, rankingMusics.value)
 
-    if (!userDataStore?.id) return
+    if (!userDataStore?.id || !isLoginStore) return
 
     if (!rankingName.value) return toast.error('Ranking name is required')
 
     if (rankingMusics.value.length < 3) return toast.error('Ranking must have at least 3 musics')
 
     const path = `/rankings/${userDataStore.id}`
-    await writeDataWithRandomId(path, {
-      name: rankingName.value,
-      musics: rankingMusics.value
-    }).then(() => {
+    
+    try {
+      await writeDataWithRandomId(path, {
+        name: rankingName.value,
+        musics: rankingMusics.value
+      })
       toast.success('Ranking created')
-      router.push(`/profile/${userDataStore.id}`)
-    })
+      router.push(`/profile/${userDataStore?.id}`)
+    } catch (error) {
+      console.error('Error updating ranking:', error)
+      toast.error('Error updating ranking')
+    }
+  }
+
+  const checkIsInRanking = (music: any) => {
+    return rankingMusics.value.some(m => m.videoId === music.videoId)
   }
 
   const searchMusics = computed(() => {
@@ -218,5 +227,9 @@
 
   onMounted(async () => {
     musics.value = await getAllMusics() as any[]
+
+    if(!isLoginStore) {
+      toast.info('You must be logged in to create a ranking')
+    }
   })
 </script>

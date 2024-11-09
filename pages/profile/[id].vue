@@ -1,6 +1,6 @@
 <template>
-    <div v-if="profileData" class="p-5 space-y-5 min-h-dvh-wo-nav max-h-dvh-wo-nav xl:container xl:mx-auto">
-        <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 p-5 rounded relative bg-quaternary">
+    <div v-if="profileData" class="p-3 xl:p-5 space-y-5 min-h-dvh-wo-nav max-h-dvh-wo-nav xl:container xl:mx-auto">
+        <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 p-3 xl:p-5 rounded relative bg-quaternary">
             <NuxtImg
                 :src="profileData.picture || 'https://i.ibb.co/wLhbFZx/Frame-255.png'"
                 :alt="profileData.name"
@@ -19,9 +19,9 @@
             >
                 Edit Profile
             </NuxtLink>
-            <p class="text-sm absolute bottom-5 right-5">Registered at : {{ createdAt }}</p>
+            <p class="text-sm lg:absolute lg:bottom-5 lg:right-5">Registered at : {{ createdAt }}</p>
         </div>
-        <div class="space-y-5 p-5 rounded bg-quaternary">
+        <div class="space-y-5 p-3 xl:p-5 rounded bg-quaternary">
             <div class="flex items-center justify-between">
                 <h2 class="text-xl font-semibold">Rankings</h2>
                 <NuxtLink
@@ -31,7 +31,7 @@
                     Create a Ranking
                 </NuxtLink>
             </div>
-            <div v-if="rankings" class="flex relative gap-5 overflow-x-auto remove-scrollbar">
+            <div v-if="rankings" class="flex relative gap-2 xl:gap-5 overflow-x-auto remove-scrollbar">
                 <CardProfileRanking v-for="ranking in rankings" :key="ranking.id" :ranking="ranking" :isProfile="isProfile" />
             </div>
         </div>

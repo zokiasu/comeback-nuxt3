@@ -35,7 +35,8 @@
                 Save
             </button>
         </div>
-        <div v-if="userDetails" class="grid grid-cols-1 lg:grid-cols-2 gap-5">            <div class="space-y-5">
+        <div v-if="userDetails" class="grid grid-cols-1 lg:grid-cols-2 gap-5">            
+            <div class="space-y-5">
                 <div class="space-y-1">
                     <p class="uppercase font-semibold">ID</p>
                     <p class="opacity-50">{{ userDetails.id }}</p>
@@ -92,7 +93,7 @@
                             placeholder="Search Artist..."
                             class="w-full rounded border-none bg-quinary px-3 py-1 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
                         />
-                        <div class="pr-2 overflow-hidden overflow-y-auto w-full max-h-[20dvh] xl:max-h-[55dvh] grid grid-cols-3 xl:grid-cols-5 gap-2 justify-between scrollBarLight">
+                        <div class="pr-2 overflow-hidden overflow-y-auto w-full max-h-[20dvh] xl:max-h-[50dvh] grid grid-cols-3 xl:grid-cols-5 gap-2 justify-between scrollBarLight">
                             <button 
                                 @click="userDetails.picture = artist.image" 
                                 v-for="artist in artistFiltered" 
