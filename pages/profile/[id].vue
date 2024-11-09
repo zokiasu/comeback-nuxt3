@@ -32,7 +32,7 @@
                 </NuxtLink>
             </div>
             <div v-if="rankings" class="flex relative gap-2 xl:gap-5 overflow-x-auto remove-scrollbar">
-                <CardProfileRanking v-for="ranking in rankings" :key="ranking.id" :ranking="ranking" :isProfile="isProfile" />
+                <CardProfileRanking v-for="ranking in rankings" :key="ranking.id" :ranking="ranking" :isProfile="isProfile" @delete="deleteRanking(ranking.id)" />
             </div>
         </div>
     </div>
@@ -48,7 +48,7 @@
 
   const route = useRoute()
   const { userDataStore } = useUserStore()
-  const { readData } = useFirebaseRealtimeDatabase();
+  const { readData, deleteData } = useFirebaseRealtimeDatabase();
   const { getUserData } = useFirebaseFunction()
 
   const createdAt = ref(null)
@@ -58,6 +58,11 @@
   const isProfile = computed(() => {
     return route.params.id === profileData.value.id
   })
+
+  const deleteRanking = async (id) => {
+    await deleteData(`/rankings/${userDataStore.id}/${id}`)
+    rankings.value = rankings.value.filter(ranking => ranking.id !== id)
+  }
 
   onMounted(async () => {
     profileData.value = await getUserData(route.params.id)
@@ -71,8 +76,6 @@
     if (rankings.value) {
       rankings.value = Object.keys(rankings.value).map(key => ({ id: key, ...rankings.value[key] }))
     }
-    console.log('route.params.id', route.params.id)
-    console.log('userDataStore.id', userDataStore.id)
   })
 </script>
 

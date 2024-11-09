@@ -6,7 +6,7 @@
           <NuxtLink :to="`/ranking/edit/${ranking.id}`">
             <IconEdit class="w-4 h-4 hover:text-primary" />
           </NuxtLink>
-          <IconDelete class="w-4 h-4 hover:text-primary cursor-pointer" />
+          <IconDelete @click="deleteRanking" class="w-4 h-4 hover:text-primary cursor-pointer" />
         </div>
       </div>
       <div @click="showModal = true" v-for="(music, index) in ranking.musics.slice(0, 3)" class="space-y-2 p-2 cursor-pointer">
@@ -56,6 +56,12 @@
 
   const { Modal } = Mdl
   const showModal = ref(false)
+
+  const emit = defineEmits(['delete'])
+
+  const deleteRanking = () => {
+    emit('delete')
+  }
 </script>
 
 <style>
