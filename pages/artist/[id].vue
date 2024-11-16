@@ -2,6 +2,7 @@
 	import { useUserStore } from '@/stores/user'
 	import { type Artist } from '@/types/artist'
 	import type { Music } from '~/types/music'
+
 	const { isLoginStore } = useUserStore()
 	const { getRandomMusicFromListReleaseId, getArtistById } = useFirebaseFunction()
 
@@ -28,11 +29,9 @@
 			isFetchingArtist.value = false
 		}
 
-		if (artist.value.releases.length > 3) {
-			const releaseIds = artist.value.releases.map((release) => release.id).filter((id) => id)
-			const fetchedMusicDiscover = await getRandomMusicFromListReleaseId(releaseIds as string[])
-			musicDiscover.value = fetchedMusicDiscover as Music[]
-		}
+		const releaseIds = artist.value.releases.map((release) => release.id).filter((id) => id)
+		const fetchedMusicDiscover = await getRandomMusicFromListReleaseId(releaseIds as string[])
+		musicDiscover.value = fetchedMusicDiscover as Music[]
 	})
 
 	const members = computed(() => artist.value?.members?.filter((member) => member.type === 'SOLO') || [])
@@ -197,7 +196,7 @@
 						</div>
 					</CardDefault>
 				</div>
-				<div v-if="artist.releases.length > 3">
+				<div>
 					<CardDefault name="Discover Music">
 						<div v-if="musicDiscover.length < 1" class="space-y-2">
 							<SkeletonDefault class="h-14 w-full rounded" />
