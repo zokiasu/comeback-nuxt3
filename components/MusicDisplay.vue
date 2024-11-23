@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const { musicName, musicId, duration, artistName, artistId, artistImage, albumName, albumId, musicImage } = defineProps({
+import { Timestamp } from 'firebase/firestore';
+
+const { musicName, musicId, duration, artistName, artistId, artistImage, albumName, albumId, musicImage, musicDate, hasMv, horizontalMode } = defineProps({
   musicName: {
     type: String,
     required: true,
@@ -31,6 +33,9 @@ const { musicName, musicId, duration, artistName, artistId, artistImage, albumNa
   musicId: {
     type: String,
     required: true,
+  },
+  musicDate: {
+    type: Timestamp,
   },
   hasMv: {
     type: Boolean,
@@ -105,10 +110,10 @@ const convertDuration = (duration: any) => {
             :to="`/artist/${artistId}`"
             class="whitespace-nowrap hover:underline"
           >
-            {{ artistName }}
+            {{ artistName }} - {{ musicDate ? new Date(musicDate.toDate()).toLocaleDateString('fr-FR') : '' }}
           </NuxtLink>
           <p v-if="artistName && !artistId" class="whitespace-nowrap">
-            {{ artistName }}
+            {{ artistName }} - {{ musicDate ? new Date(musicDate.toDate()).toLocaleDateString('fr-FR') : '' }}
           </p>
           <p v-if="albumId" class="truncate text-xs md:block">-</p>
           <NuxtLink

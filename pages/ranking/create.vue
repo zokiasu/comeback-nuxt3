@@ -41,19 +41,29 @@
           />
         </div>
         <!-- Sort -->
-        <div class="flex flex-wrap items-center gap-2">
-          <p class="text-xs uppercase">Sort by :</p>
-          <div class="flex flex-wrap gap-2">
-            <button class="w-fit rounded px-3 py-1 text-xs uppercase lg:text-nowrap hover:bg-zinc-500" :class="sorting === 'name' ? 'bg-primary' : 'bg-quinary'" @click="sorting = 'name'" >
-              Name
-            </button>
-            <button class="w-fit rounded px-3 py-1 text-xs uppercase lg:text-nowrap hover:bg-zinc-500" :class="sorting === 'artist' ? 'bg-primary' : 'bg-quinary'" @click="sorting = 'artist'" >
-              Artist Name
-            </button>
-            <button class="w-fit rounded px-3 py-1 text-xs uppercase lg:text-nowrap hover:bg-zinc-500" :class="sorting === 'date' ? 'bg-primary' : 'bg-quinary'" @click="sorting = 'date'" >
-              Release Date
-            </button>
+         <div class="flex items-center justify-between">
+          <div class="flex flex-wrap items-center gap-2">
+            <p class="text-xs uppercase">Sort by :</p>
+            <div class="flex flex-wrap gap-2">
+              <button class="w-fit rounded px-3 py-1 text-xs uppercase lg:text-nowrap hover:bg-zinc-500" :class="sorting === 'name' ? 'bg-primary' : 'bg-quinary'" @click="sorting = 'name'" >
+                Name
+              </button>
+              <button class="w-fit rounded px-3 py-1 text-xs uppercase lg:text-nowrap hover:bg-zinc-500" :class="sorting === 'artist' ? 'bg-primary' : 'bg-quinary'" @click="sorting = 'artist'" >
+                Artist Name
+              </button>
+              <button class="w-fit rounded px-3 py-1 text-xs uppercase lg:text-nowrap hover:bg-zinc-500" :class="sorting === 'date' ? 'bg-primary' : 'bg-quinary'" @click="sorting = 'date'" >
+                Release Date
+              </button>
+            </div>
           </div>
+          
+          <button
+              @click="invertSort = !invertSort"
+              class="rounded border-none bg-quinary p-1 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+            >
+              <icon-sort v-if="!invertSort" class="h-4 w-4 text-tertiary" />
+              <icon-sort-reverse v-else class="h-4 w-4 text-tertiary" />
+            </button>
         </div>
         <!-- Musics -->
         <div v-if="searchMusics.length > 0" class="grid grid-cols-1 gap-4 max-h-[35dvh] lg:max-h-[65dvh] scrollBarLight pr-2 overflow-x-hidden overflow-y-auto">
@@ -70,6 +80,7 @@
               :artistName="song?.artists[0]?.name || ''"
               :musicId="song.videoId || ''"
               :musicName="song.name || ''"
+              :musicDate="song.date"
               :musicImage="song.thumbnails[2].url || ''"
               :duration="song?.duration?.toString() || '0'"
               :hasMv="song.hasMv"
@@ -80,6 +91,9 @@
         <div v-else class="grid grid-cols-1 gap-4 max-h-[35dvh] lg:max-h-[65dvh] scrollBarLight pr-2 overflow-x-hidden overflow-y-auto">
             <p class="text-center text-tertiary/50 font-semibold">Loading data...</p>
         </div>
+        <p v-if="searchMusics.length > 0" class="text-xs italic text-right">
+          {{ searchMusics.length }} results
+        </p>
       </div>
       <!-- Ranking -->
       <div class="h-full mx-auto space-y-3 w-full border border-quaternary rounded p-2 lg:p-5">
@@ -104,6 +118,7 @@
                   :musicId="element.videoId || ''"
                   :musicName="element.name || ''"
                   :musicImage="element.thumbnails[2].url || ''"
+                  :musicDate="element.date"
                   :duration="element?.duration?.toString() || '0'"
                   :hasMv="element.hasMv"
                   horizontalMode
@@ -141,9 +156,9 @@
   const rankingName = ref('')
   const rankingMusics = ref<any[]>([])
   const sorting = ref('date')
+  const invertSort = ref(true)
 
   const addMusicToRanking = (music: any) => {
-    console.log(music)
     if (!rankingMusics.value.includes(music)) {
       rankingMusics.value.push(music)
       toast.success('Music added to ranking')
@@ -209,17 +224,26 @@
     }).sort((a, b) => {
       // Sort by name
       if (sorting.value === 'name') {
-        return a.name.localeCompare(b.name)
+        if (!invertSort.value) {
+          return a.name.localeCompare(b.name)
+        }
+        return b.name.localeCompare(a.name)
       }
-      // Sort by artist name
+      // Sort by artist name 
       if (sorting.value === 'artist') {
-        return a.artists[0]?.name.localeCompare(b.artists[0]?.name)
+        if (!invertSort.value) {
+          return a.artists[0]?.name.localeCompare(b.artists[0]?.name)
+        }
+        return b.artists[0]?.name.localeCompare(a.artists[0]?.name)
       }
       // Sort by date
       if (sorting.value === 'date') {
-        const dateA = new Date(a.year, a.month, a.day).getTime()
-        const dateB = new Date(b.year, b.month, b.day).getTime()
-        return dateA - dateB
+        const dateA = a.date.toDate().getTime()
+        const dateB = b.date.toDate().getTime()
+        if (!invertSort.value) {
+          return dateA - dateB
+        }
+        return dateB - dateA
       }
       return 0
     })
