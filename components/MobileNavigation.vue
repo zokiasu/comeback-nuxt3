@@ -11,6 +11,16 @@ const { artistFetch, isAdmin, isLogin } = defineProps([
   'isAdmin',
   'isLogin',
 ])
+
+const userStore = useUserStore()
+const userDataStore = computed(() => userStore.userDataStore)
+
+const profilePath = computed(() => {
+  if (!userDataStore.value || !userDataStore.value.id) {
+    return '/settings/profile'
+  }
+  return `/profile/${userDataStore.value.id}`
+})
 </script>
 
 <template>
@@ -39,6 +49,13 @@ const { artistFetch, isAdmin, isLogin } = defineProps([
       >
         <IconSearch class="mx-auto h-5 w-5" />
       </button>
+      <NuxtLink
+        v-if="isLogin && userDataStore"
+        :to="profilePath"
+        class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50"
+      >
+        <IconArtist class="mx-auto h-5 w-5" />
+      </NuxtLink>
       <NuxtLink
         v-if="isAdmin"
         :to="`/dashboard/artist`"

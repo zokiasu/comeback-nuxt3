@@ -126,7 +126,7 @@ onMounted(async () => {
           <NuxtLink
             v-if="isLoginStore && userDataStore"
             :to="profilePath"
-            title="Settings"
+            title="Profile"
             class="flex items-center h-full gap-2 px-3 py-1 rounded bg-quaternary hover:bg-tertiary/20"
           >
             <p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>

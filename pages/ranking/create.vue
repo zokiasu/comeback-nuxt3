@@ -169,9 +169,14 @@
 
   const getAllMusics = async () => {
     const colRef = collection(database as any, 'musics');
+    const startDate = new Date(`${yearFilter.value}-01-01`);
+    const endDate = new Date(`${yearFilter.value}-12-31`);
+    
     const snapshot = await getDocs(query(
       colRef,
-      where('year', '==', yearFilter.value)
+      where('date', '>=', startDate),
+      where('date', '<=', endDate),
+      orderBy('date', 'desc')
     ));
     return snapshotResultToArray(snapshot);
   }
