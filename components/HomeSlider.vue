@@ -9,28 +9,26 @@
             Comeback Today
           </p>
         </div>
-        <ClientOnly>
-          <swiper-container ref="containerRef">
-            <swiper-slide
-              v-for="comeback in newsToday"
-              :key="comeback.id"
-              class="relative swiper-slide"
-            >
-              <ComebackSlider
-                v-if="comeback.artist"
-                :image="comeback.artist.image"
-                :name="comeback.artist.name"
-                :id="comeback.artist.id"
-              />
-              <ComebackSlider
-                v-else
-                :image="comeback.artists[0].picture"
-                :name="comeback.artists[0].name"
-                :id="comeback.artists[0].id"
-              />
-            </swiper-slide>
-          </swiper-container>
-        </ClientOnly>
+        <swiper-container ref="containerRef">
+          <swiper-slide
+            v-for="comeback in newsToday"
+            :key="comeback.id"
+            class="relative swiper-slide"
+          >
+            <ComebackSlider
+              v-if="comeback.artist"
+              :image="comeback.artist.image"
+              :name="comeback.artist.name"
+              :id="comeback.artist.id"
+            />
+            <ComebackSlider
+              v-else
+              :image="comeback.artists[0].picture"
+              :name="comeback.artists[0].name"
+              :id="comeback.artists[0].id"
+            />
+          </swiper-slide>
+        </swiper-container>
       </section>
       
       <section v-else class="absolute inset-0 bg-[url('/slider-placeholder.webp')] bg-cover bg-center bg-no-repeat">
