@@ -30,6 +30,8 @@ export default defineNuxtConfig({
     '@nuxtjs/algolia'
   ],
 
+  ssr: false,
+
   algolia: {
     applicationId: process.env.ALGOLIA_APPLICATION_ID,
     apiKey: process.env.ALGOLIA_API_KEY,
