@@ -146,7 +146,6 @@
   const sorting = ref('date')
 
   const addMusicToRanking = (music: any) => {
-    console.log(music)
     if (!rankingMusics.value.includes(music)) {
       rankingMusics.value.push(music)
       toast.success('Music added to ranking')
@@ -176,7 +175,6 @@
   }
 
   const updateRanking = async () => {
-    console.log('updateRanking', rankingName.value, rankingMusics.value)
     if (!userDataStore.id || !isLoginStore) return
 
     const path = `/rankings/${userDataStore.id}/${route.params.id}`

@@ -48,7 +48,6 @@
 	})
 
 	const validVerifiedRelease = async () => {
-		console.log(dateToChange.value)
 		if (dateToChange.value) {
 			const dateToTimestamp = new Timestamp(dateToChange.value / 1000, 0)
 			if (dateToTimestamp.toDate().getFullYear() !== releaseToUpdate.year) {
@@ -58,7 +57,7 @@
 				releaseToUpdate.needToBeVerified = false
 			}
 		}
-		console.log(releaseToUpdate)
+
 		for (const key in releaseToUpdate) {
 			//@ts-ignore
 			if (releaseToUpdate[key] === '') {
@@ -70,7 +69,7 @@
 		await updateRelease(id, releaseToUpdate).then((res) => {
 			if (res == 'success') {
 				emit('verifiedRelease')
-        toast.success('Release updated')
+        		toast.success('Release updated')
 			} else {
 				console.log('Error updating release')
 			}
