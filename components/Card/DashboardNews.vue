@@ -80,8 +80,6 @@ const deleteNews = () => {
       </div>
     </div>
 
-    {{ artistObject }}
-
     <div>
       <ComebackLabel label="Message" class="border-b border-zinc-500" />
       <p>{{ message }}</p>
