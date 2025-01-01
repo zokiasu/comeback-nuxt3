@@ -9,7 +9,11 @@ export function useFirebaseFunction() {
   const userStore = useUserStore()
   const toast = useToast()
 
+
+
   ///////// GENERAL FUNCTION FOR FIREBASE FUNCTION \\\\\\\\\\
+
+
 
   // Converts a Firestore snapshot into an array of documents.
   const snapshotResultToArray = (result: any) => {
@@ -103,8 +107,12 @@ export function useFirebaseFunction() {
     const snapshot = await getDocs(colRef)
     return snapshot.size > 0
   }
+
+
   
   ///////// HOMEPAGE FUNCTION \\\\\\\\\\
+
+
 
   // Listens for real-time updates to the 'news' collection in Firestore where the date is greater than or equal to the provided start date.
   const getRealtimeNextComebacks = async (startDate: Timestamp, callback: Function) => {
@@ -225,7 +233,11 @@ export function useFirebaseFunction() {
     return filteredShuffledMusics.slice(0, 5);
   };
 
+
+
   ///////// CALENDAR PAGE FUNCTION \\\\\\\\\\
+
+
 
   // Fetches releases between two dates from the 'releases' collection in Firestore.
   const getReleasesBetweenDates = async (startDate: Timestamp, endDate: Timestamp) => {
@@ -240,7 +252,11 @@ export function useFirebaseFunction() {
     return snapshotResultToArray(snapshot);
   }
 
+
+
   ///////// Release's Function \\\\\\\\\\
+
+
 
   // Fetches all releases from the 'releases' collection in Firestore.
   const getAllReleases = async () => {
@@ -361,7 +377,11 @@ export function useFirebaseFunction() {
     });
   }
 
+
+
   ///////// Artist's Function \\\\\\\\\\
+
+
 
   // Fetches all artists from the 'artists' collection in Firestore.
   const getAllArtists = async () => {
@@ -540,7 +560,7 @@ export function useFirebaseFunction() {
 
     for (const group of artistGroups) {
       await deleteDoc(doc(database as any, 'artists', id, 'groups', group.id)).then(() => {
-        console.log('Document successfully deleted!', group.name, release.artistName);
+        console.log('Document successfully deleted!', group.name);
       });
       await deleteDoc(doc(database as any, 'artists', group.id, 'members', id));
     }
@@ -553,7 +573,39 @@ export function useFirebaseFunction() {
     await deleteDoc(doc(database as any, 'artists', id));0
   }
 
+
+
   ///////// Comeback's Function \\\\\\\\\\
+
+  const createStyle = async (newStyle: string, styleFetch: any[]) => {
+    await updateDoc(doc(database as any, 'general', 'data'), {
+      styles: [
+        {
+          created: Timestamp.now(),
+          name: newStyle,
+          createdBy: userStore?.userDataStore?.id ?? '',
+        },
+        ...styleFetch,
+      ],
+    }).then(() => {
+      toast.success('Style added')
+    })
+  }
+
+  const createTag = async (newGeneralTag: string, generalTagFetch: any[]) => {
+    await updateDoc(doc(database as any, 'general', 'data'), {
+      generalTags: [
+        {
+          created: Timestamp.now(),
+          name: newGeneralTag,
+          createdBy: userStore?.userDataStore?.id ?? '',
+        },
+        ...generalTagFetch,
+      ],
+    }).then(() => {
+      toast.success('Tag added')
+    })
+  }
 
   // Checks if a comeback exists in the 'news' collection in Firestore for a specific artist on a specific date.
   const getComebackExist = async (date: Timestamp, artistName: string): Promise<boolean> => {
@@ -635,6 +687,8 @@ export function useFirebaseFunction() {
     getVideoFullDetails,
     getAllVideosFromPlaylist,
     deleteArtist,
-    getReleaseByIdWithMusics
+    getReleaseByIdWithMusics,
+    createStyle,
+    createTag,
   }
 }

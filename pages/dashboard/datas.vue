@@ -4,6 +4,7 @@ import { useToast } from 'vue-toastification'
 
 const { $firestore: db } = useNuxtApp()
 const toast = useToast()
+const { createStyle, createTag } = useFirebaseFunction()
 
 const styleFetch = ref([] as any[])
 const newStyle = ref('')
@@ -27,36 +28,6 @@ onMounted(async () => {
     })
   })
 })
-
-const createStyle = async () => {
-  await updateDoc(doc(db as any, 'general', 'data'), {
-    styles: [
-      {
-        created: Timestamp.now(),
-        name: newStyle.value,
-      },
-      ...styleFetch.value,
-    ],
-  }).then(() => {
-    toast.success('Style added')
-    newStyle.value = ''
-  })
-}
-
-const createTag = async () => {
-  await updateDoc(doc(db as any, 'general', 'data'), {
-    generalTags: [
-      {
-        created: Timestamp.now(),
-        name: newGeneralTag.value,
-      },
-      ...generalTagFetch.value,
-    ],
-  }).then(() => {
-    toast.success('Tag added')
-    newGeneralTag.value = ''
-  })
-}
 
 const deleteStyle = async (name: string) => {
   styleFetch.value = styleFetch.value.filter((style) => style.name !== name)
@@ -88,10 +59,16 @@ const deleteTag = async (name: string) => {
           type="text"
           placeholder="Add new style"
           class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
-          @keyup.enter="createStyle"
+          @keyup.enter="async () => {
+            await createStyle(newStyle, styleFetch);
+            newStyle = '';
+          }"
         />
         <button
-          @click="createStyle"
+          @click="async () => {
+            await createStyle(newStyle, styleFetch);
+            newStyle = '';
+          }"
           class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
         >
           Send
@@ -122,10 +99,16 @@ const deleteTag = async (name: string) => {
           type="text"
           placeholder="Add new tag"
           class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
-          @keyup.enter="createTag"
+          @keyup.enter="async () => {
+            await createTag(newGeneralTag, generalTagFetch);
+            newGeneralTag = '';
+          }"
         />
         <button
-          @click="createTag"
+          @click="async () => {
+            await createTag(newGeneralTag, generalTagFetch);
+            newGeneralTag = '';
+          }"
           class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
         >
           Send
