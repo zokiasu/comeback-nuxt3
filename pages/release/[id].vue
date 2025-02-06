@@ -7,7 +7,7 @@
   import { useToast } from 'vue-toastification'
 
   const { Modal } = Mdl
-  const { getReleaseByArtistId, updateRelease, getReleaseByIdWithMusics } = useFirebaseFunction()
+  const { getReleaseByArtistIdYoutubeMusic, updateRelease, getReleaseByIdWithMusics } = useFirebaseFunction()
   const { isLoginStore } = useUserStore()
   const toast = useToast()
   const router = useRouter()
@@ -72,15 +72,17 @@
   onMounted(async () => {
     const route = useRoute()
     release.value = (await getReleaseByIdWithMusics(route.params.id as string)) as Release
-    artistRelease.value = (await getReleaseByArtistId(release.value.artistsId))
-      .sort((a, b) => b.date - a.date)
-      .filter((rel) => rel.id !== release.value.id)
-      .slice(0, 8) as Release[]
-      
-    release.value.musics = release.value.musics.sort((a, b) => a?.index - b?.index)
-    title.value = release.value.name + ' par ' + release.value.artistsName
-    description.value = release.value.name + ' par ' + release.value.artistsName
-    dateToDateFormat.value = release.value.date ? release.value.date.toDate() : null
+    if(release.value) {
+      release.value.musics = release.value.musics.sort((a, b) => a?.index - b?.index)
+      artistRelease.value = (await getReleaseByArtistIdYoutubeMusic(release.value.idYoutubeMusic))
+        .sort((a, b) => b.date - a.date)
+        .filter((rel) => rel.id !== release.value.id)
+        .slice(0, 8) as Release[]
+      dateToDateFormat.value = release.value.date ? release.value.date.toDate() : null
+
+      title.value = release.value.name + ' par ' + release.value.artistsName
+      description.value = release.value.name + ' par ' + release.value.artistsName
+    }
   })
 
 
@@ -114,7 +116,7 @@
           :class="imageLoaded ? 'bg-black opacity-30' : ' bg-primary opacity-100'"
         />
         <NuxtImg
-          v-if="release.image"
+          v-if="release && release.image"
           format="webp"
           preload
           :src="release.image"
@@ -129,7 +131,7 @@
       >
         <div class="container mx-auto flex items-center gap-5 space-y-2.5 lg:items-end">
           <NuxtImg
-            v-if="release.image"
+            v-if="release && release.image"
             format="webp"
             preload
             :alt="release.name"
@@ -142,7 +144,7 @@
           />
           <div class="mt-auto space-y-3">
             <!-- Data Fetched -->
-            <div v-if="release.name" class="space-y-2">
+            <div v-if="release && release.name" class="space-y-2">
               <h1 class="text-2xl font-black lg:text-5xl 2xl:text-7xl">
                 {{ release.name }}
               </h1>
@@ -188,7 +190,7 @@
 
     <section class="container mx-auto space-y-12 p-5 py-5 md:px-10 xl:px-0">
       <!-- Skeleton -->
-      <section v-if="!release.name" class="space-y-2">
+      <section v-if="!release || !release.name" class="space-y-2">
         <SkeletonDefault class="h-3 w-3/4 rounded-full" />
         <SkeletonDefault class="h-3 w-full rounded-full" />
         <SkeletonDefault class="h-3 w-full rounded-full" />
@@ -196,7 +198,7 @@
         <SkeletonDefault class="h-3 w-2/4 rounded-full" />
       </section>
       <!-- Platforms -->
-      <section v-if="release.platformList?.length" class="space-y-2">
+      <section v-if="release && release.platformList?.length" class="space-y-2">
         <p class="font-black">Streaming Platforms</p>
         <div class="flex gap-1.5">
           <ComebackExternalLink
@@ -215,7 +217,7 @@
         </div>
       </section>
       <!-- Musics -->
-      <section v-if="release.musics?.length" class="space-y-2">
+      <section v-if="release && release.musics?.length" class="space-y-2">
         <CardDefault :name="`Tracks (${release.musics?.length})`">
           <transition-group
             name="list-complete" 
@@ -247,14 +249,14 @@
           >
             <CardObject 
                 v-for="release in artistRelease"
-                :key="release.id"
+                :key="release.idYoutubeMusic"
                 :artistId="release.artistsId"
                 :mainTitle="release.name"
                 :subTitle="release.artistsName"
                 :image="release.image"
                 :releaseDate="release.date"
                 :releaseType="release.type"
-                :objectLink="`/release/${release.id}`"
+                :objectLink="`/release/${release.idYoutubeMusic}`"
                 isReleaseDisplay
               />
           </transition-group>

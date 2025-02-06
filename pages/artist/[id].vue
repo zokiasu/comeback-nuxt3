@@ -28,8 +28,8 @@
 		} finally {
 			isFetchingArtist.value = false
 		}
-
-		const releaseIds = artist.value.releases.map((release) => release.id).filter((id) => id)
+		console.log(artist.value)
+		const releaseIds = artist.value.releases.map((release) => release.idYoutubeMusic).filter((id) => id)
 		const fetchedMusicDiscover = await getRandomMusicFromListReleaseId(releaseIds as string[])
 		musicDiscover.value = fetchedMusicDiscover as Music[]
 	})
@@ -251,13 +251,13 @@
 					>
 						<CardObject
 							v-for="release in albumEpRelease"
-							:key="release.id"
+							:key="release.idYoutubeMusic"
 							:artistId="release.artistsId"
 							:mainTitle="release.name"
 							:image="release.image"
 							:releaseDate="release.date"
 							:releaseType="release.type"
-							:objectLink="`/release/${release.id}`"
+							:objectLink="`/release/${release.idYoutubeMusic}`"
 							isReleaseDisplay
 							dateAlwaysDisplay
 						/>
@@ -274,13 +274,13 @@
 					>
 						<CardObject
 							v-for="release in singleRelease"
-							:key="release.id"
+							:key="release.idYoutubeMusic"
 							:artistId="release.artistsId"
 							:mainTitle="release.name"
 							:image="release.image"
 							:releaseDate="release.date"
 							:releaseType="release.type"
-							:objectLink="`/release/${release.id}`"
+							:objectLink="`/release/${release.idYoutubeMusic}`"
 							isReleaseDisplay
 							dateAlwaysDisplay
 						/>

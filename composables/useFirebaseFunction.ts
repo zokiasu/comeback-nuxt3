@@ -212,7 +212,7 @@ export function useFirebaseFunction() {
     let listMusicFromReleaseSelected: any[] = [];
     // récupère toutes les musiques des albums sélectionnés
     for (let release of releases) {
-      const colMusic = query(collection(database as any, 'releases', release.id, 'musics'));
+      const colMusic = query(collection(database as any, 'releases', release.idYoutubeMusic, 'musics'));
       const snapshotMusic = await getDocs(colMusic);
       const musics = snapshotMusic.docs.map((doc) => doc.data());
       listMusicFromReleaseSelected = listMusicFromReleaseSelected.concat(musics.filter((music: any) => !music.name.toLowerCase().includes('inst') && !music.name.toLowerCase().includes('sped-up')));
@@ -266,15 +266,18 @@ export function useFirebaseFunction() {
   }
 
   // Fetches releases by a specific artist from the 'releases' collection in Firestore.
-  const getReleaseByArtistId = async (artistId: string) => {
+  const getReleaseByArtistIdYoutubeMusic = async (artistId: string) => {
+    console.log('artistId', artistId);
     const colRef = query(collection(database as any, 'releases'), where('artistsId', '==', artistId));
     const snapshot = await getDocs(colRef);
-    return snapshotResultToArray(snapshot);
+    const release = snapshotResultToArray(snapshot);
+    console.log('release', release)
+    return release;
   }
 
   // Fetches a release by its ID from the 'releases' collection in Firestore.
   const getReleaseById = async (id: string) => {
-    const colRef = query(collection(database as any, 'releases'), where('id', '==', id));
+    const colRef = query(collection(database as any, 'releases'), where('idYoutubeMusic', '==', id));
     const snapshot = await getDocs(colRef);
     const release = snapshotResultToArray(snapshot);
     return release[0];
@@ -282,16 +285,21 @@ export function useFirebaseFunction() {
 
   // Fetches a release by its ID from the 'releases' collection in Firestore.
   const getReleaseByIdWithMusics = async (id: string) => {
-    const colRef = query(collection(database as any, 'releases'), where('id', '==', id));
+    console.log('id', id);
+    const colRef = query(collection(database as any, 'releases'), where('idYoutubeMusic', '==', id));
     const colMusic = query(collection(database as any, 'releases', id, 'musics'))
 
     const snapshot = await getDocs(colRef);
     const snapshotMusic = await getDocs(colMusic);
 
     const release = snapshotResultToArray(snapshot);
-    release[0].musics = snapshotResultToArray(snapshotMusic);
+    console.log(release);
+    if(release.length > 0){
+      release[0].musics = snapshotResultToArray(snapshotMusic);
 
-    return release[0];
+      return release[0];
+    }
+    return null;
   }
 
   // Updates a document in the 'releases' collection in Firestore.
@@ -403,8 +411,8 @@ export function useFirebaseFunction() {
     const groups = snapshotResultToArray(snapshotGroup);
     const members = snapshotResultToArray(snapshotMember);
 
-    const releases = await getReleaseByArtistId(idArtist);
-
+    const releases = await getReleaseByArtistIdYoutubeMusic(artist.idYoutubeMusic);
+    console.log('releases', releases)
     artist.groups = groups;
     artist.members = members;
     artist.releases = releases;
@@ -414,6 +422,7 @@ export function useFirebaseFunction() {
 
   // Fetches an artist with full details by its ID from the 'artists' collection in Firestore.
   const getArtistByIdWithGroupsAndMembers = async (idArtist: string) => {
+    console.log('getArtistByIdWithGroupsAndMembers', idArtist);
     const docRef = doc(database as any, 'artists', idArtist);
     const docSnap = await getDoc(docRef);
     const artist = documentSnapshotToObject(docSnap);
@@ -547,13 +556,13 @@ export function useFirebaseFunction() {
   };
 
   const deleteArtist = async (id: string) => {
-    const releases = await getReleaseByArtistId(id);
+    const releases = await getReleaseByArtistIdYoutubeMusic(id);
     const artistTodelete = await getArtistById(id);
     const artistGroups = artistTodelete.groups;
     const artistMembers = artistTodelete.members;
 
     for (const release of releases) {
-      await deleteDoc(doc(database as any, 'releases', release.id)).then(() => {
+      await deleteDoc(doc(database as any, 'releases', release.idYoutubeMusic)).then(() => {
         console.log('Document successfully deleted!', release.name, release.artistName);
       });
     }
@@ -674,7 +683,7 @@ export function useFirebaseFunction() {
     getAllArtists,
     getReleaseById,
     getComebackExist,
-    getReleaseByArtistId,
+    getReleaseByArtistIdYoutubeMusic,
     createArtist,
     updateArtist,
     updateUserData,

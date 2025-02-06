@@ -15,14 +15,14 @@ const { releases } = defineProps({
     >
       <CardObject 
         v-for="release in releases"
-        :key="release.id"
+        :key="release.idYoutubeMusic"
         :artistId="release.artistsId"
         :mainTitle="release.name"
         :subTitle="release.artistsName"
         :image="release.image"
         :releaseDate="release.date"
         :releaseType="release.type"
-        :objectLink="`/release/${release.id}`"
+        :objectLink="`/release/${release.idYoutubeMusic}`"
       />
     </div>
     <div v-else class="relative w-full pb-5 flex justify-between gap-5 snap-x snap-mandatory overflow-x-auto scrollBarLight">

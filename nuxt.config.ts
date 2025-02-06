@@ -15,10 +15,10 @@ export default defineNuxtConfig({
   },
 
   plugins: [
-    '~/plugins/firebase.client.ts',
-    '~/plugins/toast.js',
-    '~/plugins/VueDatePicker.js',
-    '~/plugins/vueModal.js',
+    './plugins/firebase.client.ts',
+    './plugins/toast.js',
+    './plugins/VueDatePicker.js',
+    './plugins/vueModal.js',
   ],
 
   modules: [
@@ -81,4 +81,6 @@ export default defineNuxtConfig({
       ]
     }
   },
+
+  compatibilityDate: '2025-02-02',
 })

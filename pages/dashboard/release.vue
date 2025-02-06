@@ -45,7 +45,7 @@ const nextPage = async () => {
 }
 
 const deleteRelease = async (id) => {
-  const release = releaseFetch.value.find((release) => release.id === id)
+  const release = releaseFetch.value.find((release) => release.idYoutubeMusic === id)
   if (release) {
     const index = releaseFetch.value.indexOf(release)
     releaseFetch.value.splice(index, 1)
@@ -55,7 +55,7 @@ const deleteRelease = async (id) => {
 }
 
 const verifiedRelease = async (id) => {
-  const release = releaseFetch.value.find((release) => release.id === id)
+  const release = releaseFetch.value.find((release) => release.idYoutubeMusic === id)
   if (release) {
     const index = releaseFetch.value.indexOf(release)
     release.needToBeVerified = false
@@ -152,8 +152,7 @@ const filteredReleaseList = computed(() => {
         return (
           release.name.toLowerCase().includes(search.value.toLowerCase()) ||
           release.artistsName.toLowerCase().includes(search.value.toLowerCase()) ||
-          release.idYoutubeMusic.includes(search.value) ||
-          release.id.includes(search.value)
+          release.idYoutubeMusic.includes(search.value)
         )
       })
   }
@@ -255,9 +254,9 @@ watch([page], () => {
       id="release-list"
       class="grid items-center justify-center grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-2"
     >
-      <div v-for="release in filteredReleaseList.slice(startAt, endAt)" :key="`key_`+release.id" class="w-full h-full">
+      <div v-for="release in filteredReleaseList.slice(startAt, endAt)" :key="`key_`+release.idYoutubeMusic" class="w-full h-full">
         <CardDashboardRelease
-          :id="release.id"
+          :id="release.idYoutubeMusic"
           :artistsName="release.artistsName"
           :createdAt="release.createdAt"
           :date="release.date"
