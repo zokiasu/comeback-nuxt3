@@ -2,17 +2,18 @@
   import { ref, computed, onMounted } from 'vue';
   import { Timestamp } from 'firebase/firestore';
   import { useFirebaseFunction } from '@/composables/useFirebaseFunction';
+  import DiscoverMusic from '~/components/DiscoverMusic.vue';
 
-  const { getRealtimeNextComebacks, getRealtimeLastestReleases, getRealtimeLastestArtistsAdded, getRandomMusic } = useFirebaseFunction();
+  const { getRealtimeNextComebacks, getRealtimeLastestReleases, getRealtimeLastestArtistsAdded } = useFirebaseFunction();
 
   const comebacks = ref<any[]>([]);
   const artists = ref<any[]>([]);
   const releases = ref<any[]>([]);
 
-  const discoverOne = ref(null);
-  const discoverTwo = ref(null);
-  const discoverThree = ref(null);
-  const discoverFour = ref(null);
+  const discoverOne = ref<InstanceType<typeof DiscoverMusic> | null>(null);
+  const discoverTwo = ref<InstanceType<typeof DiscoverMusic> | null>(null);
+  const discoverThree = ref<InstanceType<typeof DiscoverMusic> | null>(null);
+  const discoverFour = ref<InstanceType<typeof DiscoverMusic> | null>(null);
 
   const comebacksToday = computed(() => {
     return comebacks.value.filter((comeback: any) => {
@@ -121,10 +122,10 @@
         <p class="text-xl font-bold lg:text-4xl">Discover Music</p>
         <div class="space-y-5">
           <div class="grid grid-cols-2 gap-5 xl:grid-cols-4">
-            <LazyDiscoverMusic ref="discoverOne" />
-            <LazyDiscoverMusic ref="discoverTwo" />
-            <LazyDiscoverMusic ref="discoverThree" />
-            <LazyDiscoverMusic ref="discoverFour" />
+            <LazyDiscoverMusic ref="discoverOne" :year="new Date().getFullYear()" />
+            <LazyDiscoverMusic ref="discoverTwo" :year="new Date().getFullYear() - 1" />
+            <LazyDiscoverMusic ref="discoverThree" :year="new Date().getFullYear() - 2" />
+            <LazyDiscoverMusic ref="discoverFour" :year="new Date().getFullYear() - 3" />
           </div>
           <button @click="reloadDiscoverMusic" class="px-3 py-1 rounded bg-quaternary">
             Reload

@@ -14,12 +14,12 @@
     const hasMv = computed(() => music.value?.hasMv || false)
 
     onMounted(async () => {
-        music.value = await getRandomMusic()
+        music.value = await getRandomMusic(new Date().getFullYear())
     })
 
     const reloadRandomMusic = async () => {
         music.value = null
-        music.value = await getRandomMusic()
+        music.value = await getRandomMusic(new Date().getFullYear())
     }
 
     const addInPlaylist = () => {

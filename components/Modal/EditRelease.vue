@@ -35,6 +35,7 @@
 	const releaseToUpdate = reactive<Release>({} as Release)
   
 	releaseToUpdate.platformList = platformList
+	releaseToUpdate.year = yearReleased
 
 	const releaseDate = computed(() => {
 		let dateComputed = new Date()
@@ -101,7 +102,7 @@
 			<div>
 				<ComebackInput
 					label="YEAR"
-					:placeholder="String(yearReleased)"
+					:placeholder="yearReleased.toString()"
 					v-model="releaseToUpdate.year"
 				/>
 			</div>
