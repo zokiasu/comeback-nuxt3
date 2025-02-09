@@ -91,16 +91,11 @@ export default defineNuxtConfig({
       crawlLinks: true,
       routes: [
         '/',
-        '/dashboard/artist',
-        '/dashboard/release'
       ]
     }
   },
 
-  generate: {
-  },
-
-  ssr: true,
+  ssr: false,
   
   experimental: {
     payloadExtraction: false
