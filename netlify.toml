@@ -1,23 +1,5 @@
 [build]
-  command = "npm install && npm run generate"
-  publish = "dist"
-
-[build.environment]
-  NODE_VERSION = "18"
-  NPM_FLAGS = "--legacy-peer-deps --force"
-  NITRO_PRESET = "static"
-
-[dev]
-  framework = "#custom"
-  command = "npm run dev"
-  targetPort = 3000
-  port = 8888
-  autoLaunch = true
-
+  command = "npm run build"
+  functions = "netlify-functions"
 [images]
   remote_images = ["https://lh3.googleusercontent.com/.*","https://i.ibb.co/.*"]
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
