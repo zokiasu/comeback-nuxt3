@@ -1,9 +1,16 @@
 [build]
-  command = "npm run build"
+  command = "npm run netlify-build"
   publish = ".output/public"
 
 [build.environment]
   NODE_VERSION = "18"
+  NPM_FLAGS = "--version"
+  NITRO_PRESET = "netlify"
 
 [images]
   remote_images = ["https://lh3.googleusercontent.com/.*","https://i.ibb.co/.*"]
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -6,7 +6,8 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "netlify-build": "NITRO_PRESET=netlify nuxt build"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
