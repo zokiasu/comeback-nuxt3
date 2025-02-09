@@ -16,13 +16,6 @@
   const toggleDisplayAll = () => {
     displayAll.value = !displayAll.value;
   };
-
-  // Pour déboguer
-  // watchEffect(() => {
-  //   console.log('comebackList', props.comebackList);
-  //   console.log('displayAll', displayAll.value);
-  //   console.log('comebackToDisplay', comebackToDisplay.value);
-  // });
 </script>
 
 <template>

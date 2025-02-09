@@ -12,7 +12,6 @@ const { musicName, musicId, duration, artistName, artistId, artistImage, albumNa
   },
   artistId: {
     type: String,
-    required: true,
   },
   albumId: {
     type: String,
@@ -110,10 +109,10 @@ const convertDuration = (duration: any) => {
             :to="`/artist/${artistId}`"
             class="whitespace-nowrap hover:underline"
           >
-            {{ artistName }} - {{ musicDate ? new Date(musicDate.toDate()).toLocaleDateString('fr-FR') : '' }}
+            {{ artistName }}
           </NuxtLink>
           <p v-if="artistName && !artistId" class="whitespace-nowrap">
-            {{ artistName }} - {{ musicDate ? new Date(musicDate.toDate()).toLocaleDateString('fr-FR') : '' }}
+            {{ artistName }}
           </p>
           <p v-if="albumId" class="truncate text-xs md:block">-</p>
           <NuxtLink

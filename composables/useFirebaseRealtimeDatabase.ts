@@ -74,7 +74,6 @@ export function useFirebaseRealtimeDatabase() {
       if (snapshot.exists()) {
         return snapshot.val()
       } else {
-        console.log('No data available')
         return null
       }
     } catch (error) {

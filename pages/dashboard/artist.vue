@@ -63,14 +63,23 @@
   }
 
   const getArtist = async (firstCall = false) => {
-    if (isLoading.value) return; // Empêche le démarrage d'un nouveau chargement si un est déjà en cours
-    isLoading.value = true; // Verrouille le chargement
+    if (isLoading.value) return;
+    isLoading.value = true;
 
     if(maxArtist.value === 0) {
       await getMaxArtistNumber();
     }
 
     let colRef = query(collection(db, 'artists'), orderBy(sort.value, 'desc'));
+
+    if (search.value) {
+      const searchTerm = search.value;
+      colRef = query(colRef, 
+        orderBy('name'),
+        where('name', '>=', searchTerm),
+        where('name', '<=', searchTerm + '\uf8ff')
+      );
+    }
 
     if(onlyWithoutDesc.value) {
       colRef = query(colRef, where('description', '==', ''));
@@ -98,17 +107,29 @@
 
       const snapshot = await getDocs(colRef);
 
-      const lastVisible = snapshot.docs[snapshot.docs.length-1];
+      if (snapshot.empty) {
+        isLoading.value = false;
+        return;
+      }
 
-      nextFetch.value = query(collection(db, 'artists'), orderBy(sort.value, 'desc'), startAfter(lastVisible), limit(limitFetch.value));
+      const lastVisible = snapshot.docs[snapshot.docs.length-1];
+      
+      if (lastVisible) {
+        nextFetch.value = query(
+          collection(db, 'artists'), 
+          orderBy(sort.value, 'desc'), 
+          startAfter(lastVisible), 
+          limit(limitFetch.value)
+        );
+      } else {
+        nextFetch.value = null;
+      }
 
       if (nextFetch.value != null && !firstCall) {
         const newArtists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
-        // Filtrer les nouveaux artistes qui ont déjà un ID présent dans artistFetch
         const filteredNewArtists = newArtists.filter(newArtist => !artistFetch.value.some(artist => artist.id === newArtist.id));
 
-        // Concaténer la liste filtrée
         artistFetch.value = [...artistFetch.value, ...filteredNewArtists];
       } else {
         artistFetch.value = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
@@ -116,7 +137,7 @@
     } catch (error) {
       console.error("Erreur lors du chargement des artistes :", error);
     } finally {
-      isLoading.value = false; // Déverrouille le chargement une fois terminé
+      isLoading.value = false;
     }
   }
 
@@ -155,49 +176,29 @@
     const threshold = container.scrollHeight * 0.98;
     
     if (scrollPosition > threshold && !isLoading.value) {
-      getArtist(); // Charge plus d'artistes
+      getArtist();
     }
   };
 
   const filteredArtistList = computed(() => {
     if (page != 1) page.value = 1
     if (!artistFetch.value) return artistFetch.value
-    if (!search.value) {
-      return artistFetch.value
-        .sort((a, b) => {
-          if (sort.value === 'createdAt') {
-            if (!invertSort.value) return a.createdAt - b.createdAt
-            return b.createdAt - a.createdAt
-          }
-          if (sort.value === 'type') {
-            if (!invertSort.value) return a.type.localeCompare(b.type)
-            return b.type.localeCompare(a.type)
-          }
-          if (sort.value === 'name') {
-            if (!invertSort.value) return a.name.localeCompare(b.name)
-            return b.name.localeCompare(a.name)
-          }
-        })
-    } else {
-      return artistFetch.value
-        .sort((a, b) => {
-          if (sort.value === 'createdAt') {
-            if (!invertSort.value) return a.createdAt - b.createdAt
-            return b.createdAt - a.createdAt
-          }
-          if (sort.value === 'type') {
-            if (!invertSort.value) return a.type.localeCompare(b.type)
-            return b.type.localeCompare(a.type)
-          }
-          if (sort.value === 'name') {
-            if (!invertSort.value) return a.name.localeCompare(b.name)
-            return b.name.localeCompare(a.name)
-          }
-        })
-        .filter((artist) => {
-          return artist.name.toLowerCase().includes(search.value.toLowerCase())
-        })
-    }
+    
+    return artistFetch.value
+      .sort((a, b) => {
+        if (sort.value === 'createdAt') {
+          if (!invertSort.value) return a.createdAt - b.createdAt
+          return b.createdAt - a.createdAt
+        }
+        if (sort.value === 'type') {
+          if (!invertSort.value) return a.type.localeCompare(b.type)
+          return b.type.localeCompare(a.type)
+        }
+        if (sort.value === 'name') {
+          if (!invertSort.value) return a.name.localeCompare(b.name)
+          return b.name.localeCompare(a.name)
+        }
+      })
   })
 
   onMounted(async () => {
@@ -214,7 +215,7 @@
     }
   });
   
-  watch([limitFetch, typeFilter, onlyWithoutDesc, onlyWithoutSocials, onlyWithoutPlatforms, onlyWithoutStyles, sort], async () => {
+  watch([limitFetch, typeFilter, onlyWithoutDesc, onlyWithoutSocials, onlyWithoutPlatforms, onlyWithoutStyles, sort, search], async () => {
     try {
       await getArtist(true);
     } catch (error) {
