@@ -1,21 +1,30 @@
 import { type Artist } from './artist'
 import { type Release } from './release'
+import { Timestamp } from 'firebase/firestore'
 
 export interface Music {
   id: string
-  index: Number
+  index: number
   videoId: string
   name: string
-  duration: Number
+  duration: number
   hasMv: boolean
-  type: string
-  album: {
+  type: 'SONG' | 'MV' | 'LIVE' | 'COVER'
+  date?: Timestamp
+  year?: number
+  album?: {
     albumId: string,
     name: string,
+    type?: string
   }
-  mvThumbnails: any
-  thumbnails: any
-  images: string[]
-  artists: Artist[]
-  releases: Release[]
+  mvThumbnails?: any[]
+  thumbnails?: any[]
+  images?: string[]
+  artists?: {
+    artistId: string,
+    name: string
+  }[]
+  createdAt?: Timestamp
+  updatedAt?: Timestamp
+  releases?: Release[]
 }

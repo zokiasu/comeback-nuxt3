@@ -188,8 +188,6 @@
   }
 
   const createRanking = async () => {
-    console.log(rankingName.value, rankingMusics.value)
-
     if (!userDataStore?.id || !isLoginStore) return
 
     if (!rankingName.value) return toast.error('Ranking name is required')

@@ -105,7 +105,6 @@ const adjustTextarea = (event) => {
 
 watch(birthdayToDateFormat, () => {
   if(birthdayToDateFormat.value) {
-    console.log('birthdayToDateFormat', birthdayToDateFormat.value)
     const tmpDate = new Date(birthdayToDateFormat.value)
     tmpDate.setHours(0, 0, 0, 0)
     artistToEdit.value.birthDate = Timestamp.fromDate(tmpDate)
@@ -116,7 +115,6 @@ watch(birthdayToDateFormat, () => {
 
 watch(debutDateToDateFormat, () => {
   if(debutDateToDateFormat.value) {
-    console.log('debutDateToDateFormat', debutDateToDateFormat.value)
     const tmpDate = new Date(debutDateToDateFormat.value)
     tmpDate.setHours(0, 0, 0, 0)
     artistToEdit.value.debutDate = Timestamp.fromDate(tmpDate)
