@@ -4,7 +4,7 @@
 	import type { Music } from '~/types/music'
 
 	const { isLoginStore } = useUserStore()
-	const { getRandomMusicFromListReleaseId, getArtistById } = useFirebaseFunction()
+	const { getRandomMusicFromArtistId, getFullArtistById } = useFirebaseFunction()
 
 	const title = ref('Artist Page')
 	const description = ref('Artist')
@@ -17,33 +17,35 @@
 
 	onMounted(async () => {
 		try {
-			const fetchedArtist = (await getArtistById(route.params.id as any)) as Artist
+			const fetchedArtist = await getFullArtistById(route.params.id as any)
 			artist.value = fetchedArtist
 			imageBackground.value = fetchedArtist.image
 			title.value = fetchedArtist.name
 			description.value = fetchedArtist.description
+			if (artist.value.idYoutubeMusic) {
+				const fetchedMusicDiscover = await getRandomMusicFromArtistId(artist.value.id, artist.value.name)
+				musicDiscover.value = fetchedMusicDiscover as Music[]
+			}
 		} catch (error) {
 			console.error(error)
 			isFetchingArtist.value = false
 		} finally {
 			isFetchingArtist.value = false
 		}
-
-		const releaseIds = artist.value.releases.map((release) => release.id).filter((id) => id)
-		const fetchedMusicDiscover = await getRandomMusicFromListReleaseId(releaseIds as string[])
-		musicDiscover.value = fetchedMusicDiscover as Music[]
 	})
 
 	const members = computed(() => artist.value?.members?.filter((member) => member.type === 'SOLO') || [])
 	const subUnitMembers = computed(() => artist.value?.members?.filter((member) => member.type === 'GROUP') || [])
 	const singleRelease = computed(() => {
 		const singles = artist.value?.releases?.filter((release) => release.type === 'SINGLE') || []
-		return singles.sort((a, b) => b.date.toDate() - a.date.toDate())
+		return singles.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0))
 	})
+
 	const albumEpRelease = computed(() => {
 		const albums = artist.value?.releases?.filter((release) => release.type !== 'SINGLE') || []
-		return albums.sort((a, b) => b.date.toDate() - a.date.toDate())
+		return albums.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0))
 	})
+
 	const editLink = computed(() => {
 		if (!isLoginStore) {
 			return '/authentification'
@@ -196,7 +198,7 @@
 						</div>
 					</CardDefault>
 				</div>
-				<div>
+				<div v-if="artist.idYoutubeMusic && musicDiscover">
 					<CardDefault name="Discover Music">
 						<div v-if="musicDiscover.length < 1" class="space-y-2">
 							<SkeletonDefault class="h-14 w-full rounded" />
@@ -205,7 +207,7 @@
 							<SkeletonDefault class="h-14 w-full rounded" />
 							<SkeletonDefault class="h-14 w-full rounded" />
 						</div>
-						<transition-group v-else name="list-complete" tag="div" class="space-y-2">
+						<transition-group v-else-if="musicDiscover.length > 0" name="list-complete" tag="div" class="space-y-2">
 							<MusicDisplay
 								v-for="song in musicDiscover"
 								:key="song.videoId"
@@ -251,13 +253,13 @@
 					>
 						<CardObject
 							v-for="release in albumEpRelease"
-							:key="release.id"
+							:key="release.idYoutubeMusic"
 							:artistId="release.artistsId"
 							:mainTitle="release.name"
 							:image="release.image"
 							:releaseDate="release.date"
 							:releaseType="release.type"
-							:objectLink="`/release/${release.id}`"
+							:objectLink="`/release/${release.idYoutubeMusic}`"
 							isReleaseDisplay
 							dateAlwaysDisplay
 						/>
@@ -274,13 +276,13 @@
 					>
 						<CardObject
 							v-for="release in singleRelease"
-							:key="release.id"
+							:key="release.idYoutubeMusic"
 							:artistId="release.artistsId"
 							:mainTitle="release.name"
 							:image="release.image"
 							:releaseDate="release.date"
 							:releaseType="release.type"
-							:objectLink="`/release/${release.id}`"
+							:objectLink="`/release/${release.idYoutubeMusic}`"
 							isReleaseDisplay
 							dateAlwaysDisplay
 						/>

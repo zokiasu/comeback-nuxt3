@@ -1,7 +1,17 @@
 <script setup lang="ts">
+	// Déclaration du module pour vue-modal
+	declare module '@kouts/vue-modal'
+
 	import * as Mdl from '@kouts/vue-modal'
 	import '@kouts/vue-modal/dist/vue-modal.css'
 	import { useToast } from 'vue-toastification'
+	import type { PropType } from 'vue'
+
+	// Interface pour la structure d'une plateforme
+	interface Platform {
+		name: string
+		link: string
+	}
 
 	const {
 		id,
@@ -49,7 +59,7 @@
 			required: true,
 		},
 		platformList: {
-			type: Array,
+			type: Array as PropType<Platform[]>,
 			required: true,
 		},
 		type: {
@@ -64,7 +74,7 @@
 
 	const { Modal } = Mdl
 	const { deleteRelease } = useFirebaseFunction()
-	const emit = defineEmits(['deleteRelease'])
+	const emit = defineEmits(['deleteRelease', 'updateRelease'])
 
 	const showModal = ref(false)
 	const imageLoaded = ref(false)
@@ -111,6 +121,11 @@
 
 	const showUpdateVerifiedRelease = () => {
 		showModal.value = true
+	}
+
+	const onReleaseVerified = () => {
+		showModal.value = false
+		emit('updateRelease')
 	}
 </script>
 
@@ -166,8 +181,8 @@
 				</p>
 				<div v-if="platformList.length" class="flex flex-col space-y-1">
 					<a
-						v-for="platform in platformList"
-						:key="platform"
+						v-for="(platform, index) in platformList"
+						:key="platform.name + index"
 						:href="platform.link"
 						target="_blank"
 						class="overflow-hidden rounded bg-quinary text-xs"
@@ -225,7 +240,7 @@
 				:needToBeVerified="needToBeVerified"
 				:artistsName="artistsName"
 				:platformList="platformList"
-				@verifiedRelease="showModal = false"
+				@verifiedRelease="onReleaseVerified"
 			/>
 		</Modal>
 	</div>

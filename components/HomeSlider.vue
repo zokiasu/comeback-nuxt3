@@ -9,17 +9,8 @@
             Comeback Today
           </p>
         </div>
-        <Swiper
-          :modules="[SwiperAutoplay, SwiperParallax]"
-          :slides-per-view="1"
-          :loop="true"
-          :parallax="true"
-          :autoplay="{
-            delay: 3500,
-            disableOnInteraction: false,
-          }"
-        >
-          <SwiperSlide
+        <swiper-container ref="containerRef">
+          <swiper-slide
             v-for="comeback in newsToday"
             :key="comeback.id"
             class="relative swiper-slide"
@@ -36,8 +27,8 @@
               :name="comeback.artists[0].name"
               :id="comeback.artists[0].id"
             />
-          </SwiperSlide>
-        </Swiper>
+          </swiper-slide>
+        </swiper-container>
       </section>
       
       <section v-else class="absolute inset-0 bg-[url('/slider-placeholder.webp')] bg-cover bg-center bg-no-repeat">
@@ -61,6 +52,20 @@
 </template>
 
 <script setup lang="ts">
+// Référence pour le conteneur Swiper
+const containerRef = ref(null)
+
+// Initialiser Swiper avec des options
+const swiper = useSwiper(containerRef, {
+  slidesPerView: 1,
+  loop: true,
+  parallax: true,
+  autoplay: {
+    delay: 3500,
+    disableOnInteraction: false,
+  },
+})
+
 const { newsToday } = defineProps({
   newsToday: {
     type: Array,

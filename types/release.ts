@@ -7,16 +7,18 @@ export interface Release {
   idYoutubeMusic: string
   name: string
   type: string
-  year: Number
+  year: number
   needToBeVerified: boolean
   platformList: {
     name: string
     link: string
   }[]
   date: Timestamp
-  image: string
+  image?: string
   artistsId: string
   artistsName: string
-  artists: Partial<Artist>[]
-  musics: Partial<Music>[]
+  artists?: Partial<Artist>[]
+  musics?: Partial<Music>[]
+  createdAt?: Timestamp
+  updatedAt?: Timestamp
 }

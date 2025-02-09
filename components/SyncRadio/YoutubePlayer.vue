@@ -120,9 +120,7 @@ onBeforeUnmount(() => {
 });
 
 function updateVideoId(newId, time = 0) {
-    //console.log('updateVideoId', player.value, newId, time)
     if (idYoutubeVideo.value === newId) {
-        //console.log('idYoutubeVideo.value === newId', idYoutubeVideo.value, newId)
         return;
     }
 
@@ -130,9 +128,6 @@ function updateVideoId(newId, time = 0) {
         idYoutubeVideo.value = newId;
         currentTime.value = time;
         initYTPlayer();
-        // if (player.value && currentTime.value > 0) {
-        //     player.value?.seekTo(currentTime.value);
-        // }
     } else {
         idYoutubeVideo.value = newId;
         player.value?.loadVideoById(newId);

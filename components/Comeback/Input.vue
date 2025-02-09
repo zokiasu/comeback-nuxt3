@@ -9,7 +9,7 @@ const { name, placeholder, modelValue } = defineProps({
     required: false,
   },
   modelValue: {
-    type: String,
+    type: [String, Number],
     required: false,
   },
   disabled: {
@@ -23,10 +23,20 @@ const { name, placeholder, modelValue } = defineProps({
   },
 })
 
-const emit = defineEmits(['clear'])
+const emit = defineEmits(['update:modelValue', 'clear'])
+
+const updateValue = (event) => {
+  const value = event.target.value
+  if (typeof modelValue === 'number') {
+    emit('update:modelValue', value ? parseInt(value) : null)
+  } else {
+    emit('update:modelValue', value)
+  }
+}
 
 const clear = () => {
   emit('clear')
+  emit('update:modelValue', '')
 }
 </script>
 
@@ -36,8 +46,8 @@ const clear = () => {
     <input
       :type="type"
       :placeholder="placeholder"
-      :value="modelValue"
-      @input="$emit('update:modelValue', $event.target.value)"
+      :value="modelValue?.toString()"
+      @input="updateValue($event)"
       :disabled="disabled"
       class="appearance-none rounded border bg-quaternary border-transparent py-1.5 px-2 transition-all duration-150 ease-in-out focus:rounded focus:border-primary outline-none"
       :class="{ 'border-zinc-500 text-zinc-500': disabled }"

@@ -2,7 +2,7 @@
 import VueMultiselect from 'vue-multiselect'
 import '@vuepic/vue-datepicker/dist/main.css'
 import VueDatePicker from '@vuepic/vue-datepicker'
-import { Timestamp } from 'firebase/firestore'
+import { Timestamp, doc, onSnapshot } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
 import * as Mdl from '@kouts/vue-modal'
 import _ from 'lodash'
@@ -11,14 +11,11 @@ definePageMeta({
   middleware: 'auth',
 })
 
-const ModalCreateArtist = defineAsyncComponent(() =>
-  import('@/components/ModalCreateArtist.vue')
-)
-
 const { Modal } = Mdl
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
+const { $firestore: db } = useNuxtApp()
 const { isAdminStore } = useUserStore()
 const { getArtistByIdWithGroupsAndMembers, updateArtist } = useFirebaseFunction()
 
@@ -54,6 +51,9 @@ const artistToEdit = ref({
   groups: [],
   members: [],
 })
+
+const showModalCreateStyle = ref(false)
+const showModalCreateTag = ref(false)
 
 const compareFields = (field1, field2) => {
   return _.isEqual(field1, field2)
@@ -118,7 +118,6 @@ const adjustTextarea = (event) => {
 
 watch(birthdayToDateFormat, () => {
   if(birthdayToDateFormat.value) {
-    console.log('birthdayToDateFormat', birthdayToDateFormat.value)
     const tmpDate = new Date(birthdayToDateFormat.value)
     tmpDate.setHours(0, 0, 0, 0)
     artistToEdit.value.birthDate = Timestamp.fromDate(tmpDate)
@@ -129,7 +128,6 @@ watch(birthdayToDateFormat, () => {
 
 watch(debutDateToDateFormat, () => {
   if(debutDateToDateFormat.value) {
-    console.log('debutDateToDateFormat', debutDateToDateFormat.value)
     const tmpDate = new Date(debutDateToDateFormat.value)
     tmpDate.setHours(0, 0, 0, 0)
     artistToEdit.value.debutDate = Timestamp.fromDate(tmpDate)
@@ -137,6 +135,14 @@ watch(debutDateToDateFormat, () => {
     artistToEdit.value.debutDate = null
   }
 })
+
+const closeModalCreateStyle = () => {
+  showModalCreateStyle.value = false
+}
+
+const closeModalCreateTag = () => {
+  showModalCreateTag.value = false
+}
 
 onMounted(async () => {
   artist.value = await getArtistByIdWithGroupsAndMembers(route.params.id)
@@ -152,9 +158,20 @@ onMounted(async () => {
   groupList.value = artistList.value.filter((artist) => artist.type == 'GROUP')
   membersList.value = artistList.value
 
-  const generalData = await queryByCollection('general')
-  stylesList.value = generalData[0].styles
-  tagsList.value = generalData[0].generalTags
+  onSnapshot(doc(db, 'general', 'data'), (doc) => {
+    if (!doc.exists()) return
+    
+    stylesList.value = doc?.data().styles
+    tagsList.value = doc?.data().generalTags
+
+    stylesList.value.sort((a, b) => {
+      return a.name.localeCompare(b.name)
+    })
+
+    tagsList.value.sort((a, b) => {
+      return a.name.localeCompare(b.name)
+    })
+  })
 
   const textarea = document.querySelector('textarea') // Vous pouvez aussi utiliser this.$refs si applicable
   if (textarea) {
@@ -249,7 +266,7 @@ useHead({
       </div>
     </div>
 
-    <div class="space-y-5">
+    <div class="space-y-5 lg:space-y-10">
       <!-- Gender & Type & Active Career -->
       <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
         <!-- Gender -->
@@ -323,7 +340,15 @@ useHead({
       <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
         <!-- Styles -->
         <div v-if="stylesList" class="flex flex-col gap-1">
-          <ComebackLabel label="Styles" />
+          <div class="flex justify-between gap-3">
+            <ComebackLabel label="Styles" />
+            <button
+              class="w-fit rounded bg-primary px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
+              @click="showModalCreateStyle = true"
+            >
+              Create New Style
+            </button>
+          </div>
           <VueMultiselect
             v-model="artistToEdit.styles"
             label="name"
@@ -338,7 +363,15 @@ useHead({
         </div>
         <!-- General Tags -->
         <div v-if="tagsList" class="flex flex-col gap-1">
-          <ComebackLabel label="General Tags" />
+          <div class="flex justify-between gap-3">
+            <ComebackLabel label="General Tags" />
+            <button
+              class="w-fit rounded bg-primary px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
+              @click="showModalCreateTag = true"
+            >
+              Create New Tag
+            </button>
+          </div>
           <VueMultiselect
             v-model="artistToEdit.generalTags"
             label="name"
@@ -525,6 +558,42 @@ useHead({
         :groupList="groupList"
         :membersList="membersList"
         @close-modal="closeModalCreateArtist"
+      />
+    </Modal>
+    
+    <Modal
+      v-model="showModalCreateStyle"
+      title="Create Style"
+      wrapper-class="modal-wrapper"
+      :modal-class="`modal-lg`"
+      :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
+      :in-class="`animate__bounceIn`"
+      :out-class="`animate__bounceOut`"
+      bg-class="animate__animated"
+      :bg-in-class="`animate__fadeInUp`"
+      :bg-out-class="`animate__fadeOutDown`"
+    >
+      <ModalCreateStyleTag
+        :styleFetch="stylesList"
+        @close-modal="closeModalCreateStyle"
+      />
+    </Modal>
+    
+    <Modal
+      v-model="showModalCreateTag"
+      title="Create Tag"
+      wrapper-class="modal-wrapper"
+      :modal-class="`modal-lg`"
+      :modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
+      :in-class="`animate__bounceIn`"
+      :out-class="`animate__bounceOut`"
+      bg-class="animate__animated"
+      :bg-in-class="`animate__fadeInUp`"
+      :bg-out-class="`animate__fadeOutDown`"
+    >
+      <ModalCreateTag
+        :generalTags="tagsList"
+        @close-modal="closeModalCreateTag"
       />
     </Modal>
   </div>

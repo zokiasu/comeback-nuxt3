@@ -57,7 +57,7 @@ const deleteNews = () => {
     <div class="grid grid-cols-3 gap-2">
       <div v-if="artist" class="flex flex-col items-center justify-center overflow-hidden rounded bg-quinary w-full">
         <NuxtImg
-          :src="artist.image"
+          :src="artist.picture"
           :alt="artist.name"
           format="webp"
           loading="lazy"
@@ -69,7 +69,7 @@ const deleteNews = () => {
       
       <div v-else v-for="artistObject in artists" :key="artistObject.id" class="flex flex-col items-center justify-center overflow-hidden rounded bg-quinary w-full">
         <NuxtImg
-          :src="artistObject.image"
+          :src="artistObject.picture"
           :alt="artistObject.name"
           format="webp"
           loading="lazy"

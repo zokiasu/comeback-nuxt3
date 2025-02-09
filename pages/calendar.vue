@@ -179,14 +179,14 @@ useHead({
     >
       <CardObject
         v-for="release in releasesDisplayed"
-        :key="release.id"
+        :key="release.idYoutubeMusic"
         :artistId="release.artistsId"
         :mainTitle="release.name"
         :subTitle="release.artistsName"
         :image="release.image"
         :releaseDate="release.date"
         :releaseType="release.type"
-        :objectLink="`/release/${release.id}`"
+        :objectLink="`/release/${release.idYoutubeMusic}`"
         dateAlwaysDisplay
         class="!min-w-full"
       />

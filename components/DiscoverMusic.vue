@@ -2,8 +2,15 @@
 const { getRandomMusic } = useFirebaseFunction()
 const music = ref({} as any)
 
+const props = defineProps({
+  year: {
+    type: Number,
+    default: new Date().getFullYear()
+  }
+})
+
 onMounted(async () => {
-  music.value = await getRandomMusic()
+  music.value = await getRandomMusic(props.year)
 })
 
 const idYoutubeVideo = useIdYoutubeVideo()
@@ -21,7 +28,7 @@ const playVideo = (videoId: any) => {
 
 const reloadRandomMusic = async () => {
   music.value = {}
-  music.value = await getRandomMusic()
+  music.value = await getRandomMusic(props.year)
   imageLoaded.value = false
 }
 

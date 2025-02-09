@@ -1,12 +1,17 @@
 <script setup>
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 import { collection, onSnapshot } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
+import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
 
 const toast = useToast()
 const { $firestore: db } = useNuxtApp()
-const { getAllReleases } = useFirebaseFunction()
+const { getPaginatedReleases } = useFirebaseFunction()
 
-const releaseFetch = ref(null)
+const releaseFetch = ref([])
+const cursors = ref([null]) // Initialisez avec null pour la première page
+const pageSize = ref(24) // Nombre de releases par page
+const unsubscribe = ref(null) // Pour stocker la fonction de désabonnement
 
 const search = ref('')
 const sort = ref('date')
@@ -15,37 +20,35 @@ const invertSort = ref(true)
 const artistPerPage = ref(24)
 const startAt = ref(0)
 const endAt = ref(artistPerPage.value)
-const page = ref(1)
+const page = ref(0) // Index de la page actuelle
 
 const needToBeVerifiedFilter = ref(false)
+const noNeedToBeVerifiedFilter = ref(false)
 
-let lastVisible;
-
-const fetchPage = async (pageSize) => {
-  let query = collection(db, 'releases').orderBy('date').limit(pageSize);
-
-  if (lastVisible) {
-    query = query.startAfter(lastVisible);
+const fetchPage = async (direction = 'next') => {
+  const cursor = cursors.value[page.value]
+  const { releases, newLastVisible } = await getPaginatedReleases(cursor, pageSize.value, direction)
+  releaseFetch.value = releases
+  if (direction === 'next') {
+    page.value++
+    cursors.value[page.value] = newLastVisible
+  } else if (direction === 'prev' && page.value > 0) {
+    page.value--
   }
-
-  const snapshot = await getDocs(query);
-
-  lastVisible = snapshot.docs[snapshot.docs.length - 1];
-
-  return snapshot.docs.map(doc => doc.data());
 }
 
 const nextPage = async () => {
-  const releases = await fetchPage(9);
+  await fetchPage('next')
+}
 
-  // Appliquez vos filtres ici
-  // ...
-
-  return releases;
+const previousPage = async () => {
+  if (page.value > 0) {
+    await fetchPage('prev')
+  }
 }
 
 const deleteRelease = async (id) => {
-  const release = releaseFetch.value.find((release) => release.id === id)
+  const release = releaseFetch.value.find((release) => release.idYoutubeMusic === id)
   if (release) {
     const index = releaseFetch.value.indexOf(release)
     releaseFetch.value.splice(index, 1)
@@ -55,7 +58,7 @@ const deleteRelease = async (id) => {
 }
 
 const verifiedRelease = async (id) => {
-  const release = releaseFetch.value.find((release) => release.id === id)
+  const release = releaseFetch.value.find((release) => release.idYoutubeMusic === id)
   if (release) {
     const index = releaseFetch.value.indexOf(release)
     release.needToBeVerified = false
@@ -73,15 +76,37 @@ const verifiedRelease = async (id) => {
   }
 }
 
+// Fonction pour écouter les changements en temps réel
+const listenToReleaseChanges = () => {
+  const colRef = collection(db, 'releases')
+  unsubscribe.value = onSnapshot(colRef, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === 'modified') {
+        const updatedRelease = { id: change.doc.id, ...change.doc.data() }
+        const index = releaseFetch.value.findIndex(release => release.idYoutubeMusic === updatedRelease.idYoutubeMusic)
+        if (index !== -1) {
+          releaseFetch.value[index] = updatedRelease
+        }
+      }
+    })
+  })
+}
+
 onMounted(async () => {
-  releaseFetch.value = await getAllReleases()
+  await fetchPage()
+  listenToReleaseChanges()
+})
+
+onUnmounted(() => {
+  if (unsubscribe.value) {
+    unsubscribe.value()
+  }
 })
 
 const filteredReleaseList = computed(() => {
   if (page != 1) page.value = 1
 
   let releases = releaseFetch.value ? [...releaseFetch.value] : [];
-
 
   if (!search.value) {
     return releases
@@ -149,11 +174,11 @@ const filteredReleaseList = computed(() => {
       })
       .filter((release) => {
         if (needToBeVerifiedFilter.value) return release.needToBeVerified
+        if (noNeedToBeVerifiedFilter.value) return !release.needToBeVerified
         return (
           release.name.toLowerCase().includes(search.value.toLowerCase()) ||
           release.artistsName.toLowerCase().includes(search.value.toLowerCase()) ||
-          release.idYoutubeMusic.includes(search.value) ||
-          release.id.includes(search.value)
+          release.idYoutubeMusic.includes(search.value)
         )
       })
   }
@@ -204,25 +229,32 @@ watch([page], () => {
             <icon-sort-reverse v-else class="w-6 h-6 text-tertiary" />
           </button>
           <button
-            class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
+            class="w-full px-2 py-1 text-xs uppercase rounded hover:bg-zinc-500 sm:w-fit"
             :class="needToBeVerifiedFilter ? 'bg-primary' : 'bg-quinary'"
             @click="needToBeVerifiedFilter = !needToBeVerifiedFilter"
           >
             Only NTBV
           </button>
+          <button
+            class="w-full px-2 py-1 text-xs uppercase rounded hover:bg-zinc-500 sm:w-fit"
+            :class="noNeedToBeVerifiedFilter ? 'bg-primary' : 'bg-quinary'"
+            @click="noNeedToBeVerifiedFilter = !noNeedToBeVerifiedFilter"
+          >
+            Only NNTBV
+          </button>
         </div>
 
         <div class="flex justify-between w-full space-x-2 sm:justify-end">
-          <button
+          <!-- <button
             @click="page = 1"
             :disabled="startAt == 0"
             class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
           >
             First
-          </button>
+          </button> -->
           <button
-            @click="page--"
-            :disabled="startAt == 0"
+            @click="previousPage"
+            :disabled="page == 0"
             class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
           >
             Prev
@@ -233,19 +265,18 @@ watch([page], () => {
             v-model.number="page"
           />
           <button
-            @click="page++"
-            :disabled="page == nbPage"
+            @click="nextPage"
             class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
           >
             Next
           </button>
-          <button
+          <!-- <button
             @click="page = nbPage"
             :disabled="page == nbPage"
             class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
           >
             Last
-          </button>
+          </button> -->
         </div>
       </section>
     </section>
@@ -255,9 +286,9 @@ watch([page], () => {
       id="release-list"
       class="grid items-center justify-center grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-2"
     >
-      <div v-for="release in filteredReleaseList.slice(startAt, endAt)" :key="`key_`+release.id" class="w-full h-full">
+      <div v-for="release in filteredReleaseList.slice(startAt, endAt)" :key="`key_`+release.idYoutubeMusic" class="w-full h-full">
         <CardDashboardRelease
-          :id="release.id"
+          :id="release.idYoutubeMusic"
           :artistsName="release.artistsName"
           :createdAt="release.createdAt"
           :date="release.date"

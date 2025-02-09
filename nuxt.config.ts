@@ -25,7 +25,7 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxt/image',
     '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt',
+    'pinia-plugin-persistedstate/nuxt',
     'nuxt-swiper',
     '@nuxtjs/algolia'
   ],
@@ -83,5 +83,20 @@ export default defineNuxtConfig({
     }
   },
 
-  compatibilityDate: '2024-09-19'
+  compatibilityDate: '2025-02-09',
+
+  nitro: {
+    prerender: {
+      crawlLinks: false,
+      routes: ['/']
+    },
+    errorHandler: '~/error.handler.ts'
+  },
+
+  routeRules: {
+    '/': { prerender: true },
+    '/artist/**': { ssr: true },
+    '/ranking/**': { ssr: true },
+    '/calendar': { ssr: true }
+  },
 })
