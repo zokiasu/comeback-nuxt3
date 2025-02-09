@@ -15,10 +15,10 @@ export default defineNuxtConfig({
   },
 
   plugins: [
-    './plugins/firebase.client.ts',
-    './plugins/toast.js',
-    './plugins/VueDatePicker.js',
-    './plugins/vueModal.js',
+    '~/plugins/firebase.client.ts',
+    '~/plugins/toast.js',
+    '~/plugins/VueDatePicker.js',
+    '~/plugins/vueModal.js',
   ],
 
   modules: [
@@ -66,7 +66,6 @@ export default defineNuxtConfig({
   },
 
   app: {
-    baseURL: '/',
     head: {
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
