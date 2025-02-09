@@ -66,6 +66,8 @@ export default defineNuxtConfig({
   },
 
   app: {
+    buildAssetsDir: '/_nuxt/',
+    baseURL: '/',
     head: {
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -83,16 +85,10 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: 'netlify',
-    prerender: {
-      crawlLinks: true,
-      routes: [
-        '/'
-      ]
-    }
+    preset: 'netlify'
   },
 
-  ssr: true,
+  ssr: false,
   
   experimental: {
     payloadExtraction: false

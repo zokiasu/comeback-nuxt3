@@ -1,11 +1,18 @@
 [build]
-  command = "npm run netlify-build"
-  publish = ".output/public"
+  command = "npm run build"
+  publish = ".nuxt/dist/client"
 
 [build.environment]
   NODE_VERSION = "18"
   NPM_FLAGS = "--version"
   NITRO_PRESET = "netlify"
+
+[dev]
+  framework = "#custom"
+  command = "npm run dev"
+  targetPort = 3000
+  port = 8888
+  autoLaunch = true
 
 [images]
   remote_images = ["https://lh3.googleusercontent.com/.*","https://i.ibb.co/.*"]
