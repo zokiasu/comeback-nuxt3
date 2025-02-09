@@ -67,6 +67,7 @@ export default defineNuxtConfig({
 
   app: {
     buildAssetsDir: '/_nuxt/',
+    cdnURL: process.env.NUXT_APP_CDN_URL,
     baseURL: '/',
     head: {
       link: [
@@ -85,10 +86,13 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: 'netlify'
+    preset: 'netlify',
+    prerender: {
+      crawlLinks: false
+    }
   },
 
-  ssr: false,
+  ssr: true,
   
   experimental: {
     payloadExtraction: false
