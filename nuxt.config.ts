@@ -83,5 +83,20 @@ export default defineNuxtConfig({
     }
   },
 
-  compatibilityDate: '2025-02-09'
+  compatibilityDate: '2025-02-09',
+
+  nitro: {
+    prerender: {
+      crawlLinks: false,
+      routes: ['/']
+    },
+    errorHandler: '~/error.handler.ts'
+  },
+
+  routeRules: {
+    '/': { prerender: true },
+    '/artist/**': { ssr: true },
+    '/ranking/**': { ssr: true },
+    '/calendar': { ssr: true }
+  },
 })

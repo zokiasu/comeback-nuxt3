@@ -17,23 +17,29 @@ export function useFirebaseFunction() {
 
   // Converts a Firestore snapshot into an array of documents.
   const snapshotResultToArray = (result: any) => {
+    if (!result?.docs) return []
+    
     const docs = Array.from(result.docs).map((doc: any) => {
+      if (!doc) return null
       return {
+        id: doc.id,
         ...doc.data(),
       }
-    })
-    // remove double data
-    docs.filter((doc: any, index: number, self: any) => self.findIndex((t: any) => t.id === doc.id) === index)
+    }).filter(Boolean)
     
-    return docs
+    return docs.filter((doc: any, index: number, self: any) => 
+      self.findIndex((t: any) => t?.id === doc?.id) === index
+    )
   }
   // Transforme un DocumentSnapshot en objet JavaScript
   const documentSnapshotToObject = (docSnap: any) => {
-    if (docSnap.exists()) {
-      return { id: docSnap.id, ...docSnap.data() };
-    } else {
-      // Gérer l'absence de document, par exemple en retournant null ou en affichant un message
-      return null;
+    if (!docSnap?.exists()) return null
+    try {
+      const data = docSnap.data()
+      return { id: docSnap.id, ...data }
+    } catch (error) {
+      console.error('Erreur lors de la conversion du document:', error)
+      return null
     }
   };
   // Fetches details of a YouTube video using the YouTube Data API.
@@ -392,31 +398,33 @@ export function useFirebaseFunction() {
 
   // Fetches an artist with full details by its ID from the 'artists' collection in Firestore.
   const getFullArtistById = async (idArtist: string) => {
+    if (!idArtist) return null
+    
     try {
-      const [artistDoc, groupsSnapshot, membersSnapshot] = await Promise.all([
-        getDoc(doc(database as any, 'artists', idArtist)),
+      const artistDoc = await getDoc(doc(database as any, 'artists', idArtist))
+      if (!artistDoc?.exists()) return null
+
+      const artist = documentSnapshotToObject(artistDoc)
+      if (!artist) return null
+
+      const [groupsSnapshot, membersSnapshot] = await Promise.all([
         getDocs(collection(database as any, 'artists', idArtist, 'groups')),
         getDocs(collection(database as any, 'artists', idArtist, 'members'))
-      ]);
+      ])
 
-      const artist = documentSnapshotToObject(artistDoc);
-      if (!artist) return null;
-
-      const [groups, members, releases] = await Promise.all([
-        snapshotResultToArray(groupsSnapshot),
-        snapshotResultToArray(membersSnapshot),
-        getReleasesByArtistId(idArtist)
-      ]);
+      const groups = snapshotResultToArray(groupsSnapshot) || []
+      const members = snapshotResultToArray(membersSnapshot) || []
+      const releases = await getReleasesByArtistId(idArtist) || []
 
       return {
         ...artist,
         groups,
         members,
         releases
-      };
+      }
     } catch (error) {
-      console.error('Erreur lors de la récupération des données de l\'artiste:', error);
-      return null;
+      console.error('Erreur lors de la récupération des données de l\'artiste:', error)
+      return null
     }
   }
 
