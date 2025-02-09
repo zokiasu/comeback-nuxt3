@@ -86,10 +86,19 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: 'netlify',
+    preset: 'static',
     prerender: {
-      crawlLinks: false
+      crawlLinks: true,
+      routes: [
+        '/',
+        '/dashboard/artist',
+        '/dashboard/release'
+      ]
     }
+  },
+
+  generate: {
+    fallback: '404.html'
   },
 
   ssr: true,

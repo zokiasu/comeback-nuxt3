@@ -1,11 +1,11 @@
 [build]
-  command = "npm install && npm run build"
-  publish = ".output/public"
+  command = "npm install && npm run generate"
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "18"
   NPM_FLAGS = "--legacy-peer-deps --force"
-  NITRO_PRESET = "netlify"
+  NITRO_PRESET = "static"
 
 [dev]
   framework = "#custom"
