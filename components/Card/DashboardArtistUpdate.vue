@@ -1,5 +1,5 @@
 <script setup>
-const { getArtistById } = useFirebaseFunction()
+const { getFullArtistById } = useFirebaseFunction()
 
 const { id, taskId, image, name, description, type, idYoutubeMusic, styles, socialList, platformList, groups, members, } = defineProps({
   id: {
@@ -58,7 +58,7 @@ const skeleton = ref(null)
 const skeleton_changed = ref(null)
 
 onMounted(async () => {
-  artist.value = await getArtistById(id)
+  artist.value = await getFullArtistById(id)
 })
 
 const loadingDone = () => {

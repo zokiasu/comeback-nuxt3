@@ -391,7 +391,7 @@ export function useFirebaseFunction() {
   }
 
   // Fetches an artist with full details by its ID from the 'artists' collection in Firestore.
-  const getArtistById = async (idArtist: string) => {
+  const getFullArtistById = async (idArtist: string) => {
     try {
       const [artistDoc, groupsSnapshot, membersSnapshot] = await Promise.all([
         getDoc(doc(database as any, 'artists', idArtist)),
@@ -405,7 +405,7 @@ export function useFirebaseFunction() {
       const [groups, members, releases] = await Promise.all([
         snapshotResultToArray(groupsSnapshot),
         snapshotResultToArray(membersSnapshot),
-        getReleasesByArtistId(idArtist, artist.idYoutubeMusic)
+        getReleasesByArtistId(idArtist)
       ]);
 
       return {
@@ -556,7 +556,7 @@ export function useFirebaseFunction() {
 
   const deleteArtist = async (id: string) => {
     const releases = await getReleaseByArtistIdYoutubeMusic(id);
-    const artistTodelete = await getArtistById(id);
+    const artistTodelete = await getFullArtistById(id);
     const artistGroups = artistTodelete.groups;
     const artistMembers = artistTodelete.members;
 
@@ -702,25 +702,15 @@ export function useFirebaseFunction() {
     return { releases, newLastVisible, newFirstVisible };
   };
 
-  const getReleasesByArtistId = async (artistId: string, idYoutubeMusic: string) => {
+  const getReleasesByArtistId = async (artistId: string) => {
     try {
       // Recherche d'abord par l'ID Firebase
       const colRefById = query(
         collection(database as any, 'releases'), 
-        where('artistsId', 'array-contains', artistId)
+        where('artistsId', '==', artistId)
       );
       const snapshotById = await getDocs(colRefById);
       let releases = snapshotResultToArray(snapshotById);
-
-      // Si aucun résultat, essaie avec l'idYoutubeMusic
-      if (releases.length === 0 && idYoutubeMusic) {
-        const colRefByYtId = query(
-          collection(database as any, 'releases'), 
-          where('artistsId', '==', idYoutubeMusic)
-        );
-        const snapshotByYtId = await getDocs(colRefByYtId);
-        releases = snapshotResultToArray(snapshotByYtId);
-      }
 
       return releases.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
     } catch (error) {
@@ -749,7 +739,7 @@ export function useFirebaseFunction() {
     updateArtist,
     updateUserData,
     getUserData,
-    getArtistById,
+    getFullArtistById,
     getArtistByIdLight,
     getArtistByIdWithGroupsAndMembers,
     deleteRelease,
