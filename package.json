@@ -1,52 +1,62 @@
 {
-  "name": "nuxt-app",
-  "private": true,
-  "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
-  },
-  "devDependencies": {
-    "@nuxt/devtools": "latest",
-    "@nuxt/image": "^1.8.1",
-    "@nuxtjs/tailwindcss": "^6.12.2",
-    "@types/lodash": "^4.17.15",
-    "@types/node": "^22",
-    "nuxt": "^3.15.0",
-    "picomatch": "^4.0.2",
-    "prettier": "^3.4.2",
-    "prettier-plugin-tailwindcss": "^0.6.9"
-  },
-  "dependencies": {
-    "@firebase/app-types": "^0.9.3",
-    "@kouts/vue-modal": "^5.0.1",
-    "@nuxtjs/algolia": "^1.10.2",
-    "@pinia/nuxt": "^0.9.0",
-    "@vuepic/vue-datepicker": "^10.0.0",
-    "animate.css": "^4.1.1",
-    "body-scroll-freezer": "^1.0.5",
-    "firebase": "^11.1.0",
-    "firebase-admin": "^13.0.2",
-    "lodash": "^4.17.21",
-    "lodash.debounce": "^4.0.8",
-    "nuxt-swiper": "^2.0.0",
-    "pinia": "^2.3.0",
-    "pinia-plugin-persistedstate": "^4.2.0",
-    "typescript": "^5.7.2",
-    "vue-multiselect": "^3.1.0",
-    "vue-toastification": "^2.0.0-rc.5",
-    "vuedraggable": "^4.1.0"
-  },
-  "overrides": {
-    "vue": "latest",
-    "picomatch": "^4.0.2"
-  },
-  "resolutions": {
-    "picomatch": "^4.0.2"
-  },
-  "alias": {
-    "process": false
-  }
+	"name": "nuxt-app",
+	"private": true,
+	"scripts": {
+		"build": "nuxt build",
+		"dev": "nuxt dev",
+		"generate": "nuxt generate",
+		"preview": "nuxt preview",
+		"postinstall": "nuxt prepare",
+		"lint": "eslint --ext .js,.ts,.vue .",
+		"lint:fix": "eslint --ext .js,.ts,.vue . --fix --quiet && prettier --write \"**/*.{js,ts,vue,css,scss,json,md}\"",
+		"format": "prettier --write \"**/*.{js,ts,vue,css,scss,json,md}\"",
+		"format:check": "prettier --check \"**/*.{js,ts,vue,css,scss,json,md}\""
+	},
+	"devDependencies": {
+		"@nuxt/devtools": "latest",
+		"@nuxt/image": "^1.8.1",
+		"@nuxtjs/eslint-config-typescript": "^12.1.0",
+		"@nuxtjs/tailwindcss": "^6.12.2",
+		"@types/lodash": "^4.17.15",
+		"@types/node": "^22",
+		"@typescript-eslint/parser": "^8.24.0",
+		"eslint": "^8.57.1",
+		"eslint-config-prettier": "^9.1.0",
+		"eslint-plugin-prettier": "^5.2.3",
+		"nuxt": "^3.15.0",
+		"picomatch": "^4.0.2",
+		"prettier": "^3.4.2",
+		"prettier-plugin-tailwindcss": "^0.6.9",
+		"vue-eslint-parser": "^9.4.3"
+	},
+	"dependencies": {
+		"@firebase/app-types": "^0.9.3",
+		"@kouts/vue-modal": "^5.0.1",
+		"@nuxtjs/algolia": "^1.10.2",
+		"@pinia/nuxt": "^0.9.0",
+		"@vuepic/vue-datepicker": "^10.0.0",
+		"animate.css": "^4.1.1",
+		"body-scroll-freezer": "^1.0.5",
+		"firebase": "^11.1.0",
+		"firebase-admin": "^13.0.2",
+		"lodash": "^4.17.21",
+		"lodash.debounce": "^4.0.8",
+		"nuxt-swiper": "^2.0.0",
+		"pinia": "^2.3.0",
+		"pinia-plugin-persistedstate": "^4.2.0",
+		"typescript": "^5.7.2",
+		"vue-multiselect": "^3.1.0",
+		"vue-toastification": "^2.0.0-rc.5",
+		"vuedraggable": "^4.1.0"
+	},
+	"overrides": {
+		"vue": "latest",
+		"picomatch": "^4.0.2"
+	},
+	"resolutions": {
+		"picomatch": "^4.0.2"
+	},
+	"alias": {
+		"process": false
+	}
 }

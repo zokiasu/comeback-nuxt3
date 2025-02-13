@@ -1,5 +1,17 @@
 <script setup>
-	const { id, image, name, description, type, idYoutubeMusic, styles, socialList, platformList, createdAt } = defineProps({
+	const {
+		id,
+		image,
+		name,
+		description,
+		type,
+		idYoutubeMusic,
+		styles,
+		socialList,
+		platformList,
+		createdAt,
+		updatedAt,
+	} = defineProps({
 		id: {
 			type: String,
 			required: true,
@@ -40,12 +52,22 @@
 			type: Object,
 			required: true,
 		},
+		updatedAt: {
+			type: Object,
+			required: true,
+		},
 	})
 
 	const skeleton = ref(null)
-  const showFullDescription = ref(false);
+	const showFullDescription = ref(false)
 
 	const createdAtDate = new Date(createdAt.seconds * 1000).toLocaleDateString('fr-FR', {
+		day: '2-digit',
+		month: '2-digit',
+		year: '2-digit',
+	})
+
+	const updatedAtDate = new Date(updatedAt.seconds * 1000).toLocaleDateString('fr-FR', {
 		day: '2-digit',
 		month: '2-digit',
 		year: '2-digit',
@@ -98,17 +120,33 @@
 </script>
 
 <template>
-	<div class="list-complete-item relative flex h-full flex-col justify-between space-y-3 rounded bg-quaternary p-3">
-		<div class="space-y-2 flex flex-col justify-between">
+	<div
+		class="list-complete-item relative flex h-full w-full flex-col rounded bg-quaternary p-3"
+	>
+		<div class="flex flex-grow flex-col space-y-2">
 			<div class="relative">
-				<div ref="skeleton" class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"></div>
-				<NuxtImg :src="image" :alt="name" format="webp" loading="lazy" @load="loadingDone" class="aspect-video w-full rounded bg-zinc-500 object-cover" />
+				<div
+					ref="skeleton"
+					class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"
+				></div>
+				<NuxtImg
+					:src="image"
+					:alt="name"
+					format="webp"
+					loading="lazy"
+					class="aspect-video w-full rounded bg-zinc-500 object-cover"
+					@load="loadingDone"
+				/>
 			</div>
 
 			<div class="flex w-full items-center justify-between">
 				<div>
 					<p class="space-x-1">
-						<NuxtLink :to="'/artist/' + id" target="_blank" class="font-semibold hover:text-primary">
+						<NuxtLink
+							:to="'/artist/' + id"
+							target="_blank"
+							class="font-semibold hover:text-primary"
+						>
 							{{ name }}
 						</NuxtLink>
 						<span class="text-xs">[ {{ type }} ]</span>
@@ -118,83 +156,158 @@
 					</p>
 				</div>
 				<div class="space-x-1">
-					<NuxtLink :to="'/artist/edit/' + id" target="_blank" class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500">Edit</NuxtLink>
-					<button @click="deleteArtist" class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500">Delete</button>
+					<NuxtLink
+						:to="'/artist/edit/' + id"
+						target="_blank"
+						class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+					>
+						Edit
+					</NuxtLink>
+					<button
+						class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+						@click="deleteArtist"
+					>
+						Delete
+					</button>
 				</div>
 			</div>
-      
+
 			<div v-if="styles.length" class="flex gap-1">
-				<p v-for="style in styles" :key="style.name" class="rounded bg-quinary px-2 py-1 text-xs uppercase">
+				<p
+					v-for="style in styles"
+					:key="style.name"
+					class="rounded bg-quinary px-2 py-1 text-xs uppercase"
+				>
 					{{ style.name }}
 				</p>
 			</div>
-      <div v-else>
-        <p class="text-xs text-primary">
-          No styles
-        </p>
-      </div>
+			<div v-else>
+				<p class="text-xs text-primary">No styles</p>
+			</div>
 
-      <div>
-        <p v-if="description" :class="{ collapsed: !showFullDescription }" @click="showFullDescription = !showFullDescription" class="text-xs cursor-pointer">
-          {{ description }}
-        </p>
-        <p v-else class="text-xs text-primary">
-          No description
-        </p>
-      </div>
+			<div>
+				<p
+					v-if="description"
+					:class="{ collapsed: !showFullDescription }"
+					class="cursor-pointer text-xs"
+					@click="showFullDescription = !showFullDescription"
+				>
+					{{ description }}
+				</p>
+				<p v-else class="text-xs text-primary">No description</p>
+			</div>
 
 			<div class="space-y-2">
-				<div @click="showSocialLinks = !showSocialLinks" class="flex w-full items-center justify-between border-b border-zinc-500 pb-1">
-					<p class="text-sm font-semibold uppercase">Socials <span :class="{ 'text-primary': socialList.length === 0 }">({{ socialList.length }})</span></p>
+				<div
+					class="flex w-full items-center justify-between border-b border-zinc-500 pb-1"
+					@click="showSocialLinks = !showSocialLinks"
+				>
+					<p class="text-sm font-semibold uppercase">
+						Socials
+						<span :class="{ 'text-primary': socialList.length === 0 }">
+							({{ socialList.length }})
+						</span>
+					</p>
 					<IconPlus v-if="!showSocialLinks" class="h-4 w-4" />
 					<IconMinus v-else class="h-4 w-4" />
 				</div>
 
-				<transition @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter" @before-leave="beforeLeave" @leave="leave" @after-leave="afterLeave">
-					<div v-show="showSocialLinks" class="collapse-content overflow-hidden" ref="socialLinksEl" id="socialLinkContent">
+				<transition
+					@before-enter="beforeEnter"
+					@enter="enter"
+					@after-enter="afterEnter"
+					@before-leave="beforeLeave"
+					@leave="leave"
+					@after-leave="afterLeave"
+				>
+					<div
+						v-show="showSocialLinks"
+						id="socialLinkContent"
+						ref="socialLinksEl"
+						class="collapse-content overflow-hidden"
+					>
 						<div v-if="socialList.length" class="flex flex-col space-y-1.5">
-							<a v-for="social in socialList" :key="social" :href="social.link" target="_blank" class="overflow-hidden rounded bg-quinary text-xs">
+							<a
+								v-for="social in socialList"
+								:key="social"
+								:href="social.link"
+								target="_blank"
+								class="overflow-hidden rounded bg-quinary text-xs"
+							>
 								<p class="bg-secondary px-1.5 py-1 uppercase">{{ social.name }}</p>
 								<p class="px-1.5 py-1">{{ social.link }}</p>
 							</a>
 						</div>
-						<p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">No Socials Link</p>
+						<p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
+							No Socials Link
+						</p>
 					</div>
 				</transition>
 			</div>
 
 			<div class="space-y-2">
-				<div @click="showPlatformsLinks = !showPlatformsLinks" class="flex w-full items-center justify-between border-b border-zinc-500 pb-1">
-					<p class="text-sm font-semibold uppercase">Platforms <span :class="{ 'text-primary': platformList.length === 0 }">({{ platformList.length }})</span></p>
+				<div
+					class="flex w-full items-center justify-between border-b border-zinc-500 pb-1"
+					@click="showPlatformsLinks = !showPlatformsLinks"
+				>
+					<p class="text-sm font-semibold uppercase">
+						Platforms
+						<span :class="{ 'text-primary': platformList.length === 0 }">
+							({{ platformList.length }})
+						</span>
+					</p>
 					<IconPlus v-if="!showPlatformsLinks" class="h-4 w-4" />
 					<IconMinus v-else class="h-4 w-4" />
 				</div>
 
-				<transition @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter" @before-leave="beforeLeave" @leave="leave" @after-leave="afterLeave">
-					<div v-show="showPlatformsLinks" class="collapse-content overflow-hidden" ref="platformsLinksEl" id="socialLinkContent">
-						<div v-if="platformList.length" class="flex flex-col space-y-1 overflow-hidden">
-							<a v-for="platform in platformList" :key="platform" :href="platform.link" target="_blank" class="overflow-hidden rounded bg-quinary text-xs">
+				<transition
+					@before-enter="beforeEnter"
+					@enter="enter"
+					@after-enter="afterEnter"
+					@before-leave="beforeLeave"
+					@leave="leave"
+					@after-leave="afterLeave"
+				>
+					<div
+						v-show="showPlatformsLinks"
+						id="socialLinkContent"
+						ref="platformsLinksEl"
+						class="collapse-content overflow-hidden"
+					>
+						<div
+							v-if="platformList.length"
+							class="flex flex-col space-y-1 overflow-hidden"
+						>
+							<a
+								v-for="platform in platformList"
+								:key="platform"
+								:href="platform.link"
+								target="_blank"
+								class="overflow-hidden rounded bg-quinary text-xs"
+							>
 								<p class="bg-secondary px-1.5 py-1 uppercase">{{ platform.name }}</p>
 								<p class="px-1.5 py-1">{{ platform.link }}</p>
 							</a>
 						</div>
-						<p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">No Platforms Link</p>
+						<p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
+							No Platforms Link
+						</p>
 					</div>
 				</transition>
 			</div>
 		</div>
-
-		<p class="mt-auto">
-			{{ createdAtDate }}
-		</p>
+		<div class="mt-auto flex flex-col justify-between text-xs md:flex-row">
+			<p class="mt-auto">Created at {{ createdAtDate }}</p>
+			<p class="mt-auto">Updated at {{ updatedAtDate }}</p>
+		</div>
 	</div>
 </template>
 
 <style scoped>
-.collapsed {
-  display: -webkit-box;
-  -webkit-line-clamp: 1; /* Limite à deux lignes */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
+	.collapsed {
+		display: -webkit-box;
+		-webkit-line-clamp: 1; /* Limite à deux lignes */
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
 </style>

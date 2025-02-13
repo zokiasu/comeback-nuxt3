@@ -1,8 +1,35 @@
 module.exports = {
-  root: true,
-  extends: ['@nuxtjs/eslint-config-typescript', 'plugin:prettier/recommended'],
-  rules: {
-    // Disables eslint throwing an error on script setup vue files
-    'import/first': 'off',
-  },
+	root: true,
+	env: {
+		browser: true,
+		node: true,
+	},
+	parser: 'vue-eslint-parser',
+	parserOptions: {
+		parser: '@typescript-eslint/parser',
+		sourceType: 'module',
+		ecmaVersion: 'latest',
+	},
+	extends: ['@nuxtjs/eslint-config-typescript', 'plugin:prettier/recommended'],
+	plugins: ['prettier'],
+	rules: {
+		'import/first': 'off',
+		'vue/multi-word-component-names': 'off',
+		'prettier/prettier': 'error',
+		'no-console': 'off',
+		'no-unused-vars': 'warn',
+		'@typescript-eslint/no-unused-vars': 'warn',
+		'vue/require-default-prop': 'off',
+		'require-await': 'off',
+		'no-useless-escape': 'warn',
+		eqeqeq: 'warn',
+		camelcase: 'warn',
+		'vue/no-template-shadow': 'warn',
+		'vue/require-prop-types': 'warn',
+		'array-callback-return': 'warn',
+		'vue/no-side-effects-in-computed-properties': 'warn',
+		'vue/require-v-for-key': 'error',
+		'no-dupe-keys': 'error',
+	},
+	ignorePatterns: ['node_modules/*', '.nuxt/*', '.output/*', 'dist/*'],
 }

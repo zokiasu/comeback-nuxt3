@@ -1,3 +1,3 @@
 <template>
-    <ComingSoon />
+	<ComingSoon />
 </template>
