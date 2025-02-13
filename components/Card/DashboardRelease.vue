@@ -115,7 +115,7 @@
 			})
 			.catch((err) => {
 				const toast = useToast()
-				toast.error('Error when deleting release')
+				toast.error('Error when deleting release', err)
 			})
 	}
 
@@ -153,6 +153,7 @@
 
 			<div class="relative aspect-square w-full rounded bg-primary">
 				<NuxtImg
+					v-show="imageLoaded"
 					ref="skeleton"
 					:src="image"
 					:alt="name"
@@ -160,7 +161,6 @@
 					loading="lazy"
 					class="w-full rounded transition-all duration-1000 ease-in-out"
 					@load="showImage()"
-					v-show="imageLoaded"
 				/>
 			</div>
 
@@ -204,14 +204,14 @@
 			</p>
 			<div class="space-x-1">
 				<button
-					@click="showUpdateVerifiedRelease"
 					class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+					@click="showUpdateVerifiedRelease"
 				>
 					Edit
 				</button>
 				<button
-					@click="callDeleteRelease"
 					class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+					@click="callDeleteRelease"
 				>
 					Delete
 				</button>
@@ -234,13 +234,13 @@
 				:id="id"
 				:name="name"
 				:type="type"
-				:idYoutubeMusic="idYoutubeMusic"
+				:id-youtube-music="idYoutubeMusic"
 				:date="date"
-				:yearReleased="yearReleased"
-				:needToBeVerified="needToBeVerified"
-				:artistsName="artistsName"
-				:platformList="platformList"
-				@verifiedRelease="onReleaseVerified"
+				:year-released="yearReleased"
+				:need-to-be-verified="needToBeVerified"
+				:artists-name="artistsName"
+				:platform-list="platformList"
+				@verified-release="onReleaseVerified"
 			/>
 		</Modal>
 	</div>

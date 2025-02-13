@@ -1,8 +1,8 @@
 <script setup lang="ts">
-	import { type Release } from '@/types/release'
 	import { Timestamp } from 'firebase/firestore'
 	import VueDatePicker from '@vuepic/vue-datepicker'
 	import { useToast } from 'vue-toastification'
+	import { type Release } from '@/types/release'
 
 	const {
 		id,
@@ -28,19 +28,19 @@
 
 	const emit = defineEmits(['verifiedRelease'])
 
-  const toast = useToast()
+	const toast = useToast()
 	const { updateRelease } = useFirebaseFunction()
 
 	const dateToChange = ref(null)
 	const releaseToUpdate = reactive<Release>({} as Release)
-  
+
 	releaseToUpdate.platformList = platformList
 	releaseToUpdate.year = yearReleased
 
 	const releaseDate = computed(() => {
 		let dateComputed = new Date()
 		if (date) {
-			//@ts-ignore
+			// @ts-ignore
 			dateComputed = new Date(date.seconds * 1000)
 			return `${dateComputed.getDate()}-${dateComputed.getMonth() + 1}-${dateComputed.getFullYear()}`
 		} else {
@@ -60,9 +60,9 @@
 		}
 
 		for (const key in releaseToUpdate) {
-			//@ts-ignore
+			// @ts-ignore
 			if (releaseToUpdate[key] === '') {
-				//@ts-ignore
+				// @ts-ignore
 				delete releaseToUpdate[key]
 			}
 		}
@@ -70,7 +70,7 @@
 		await updateRelease(id, releaseToUpdate).then((res) => {
 			if (res == 'success') {
 				emit('verifiedRelease')
-        		toast.success('Release updated')
+				toast.success('Release updated')
 			} else {
 				console.log('Error updating release')
 			}
@@ -101,9 +101,9 @@
 			</div>
 			<div>
 				<ComebackInput
+					v-model="releaseToUpdate.year"
 					label="YEAR"
 					:placeholder="yearReleased.toString()"
-					v-model="releaseToUpdate.year"
 				/>
 			</div>
 		</div>
@@ -121,15 +121,15 @@
 						type="text"
 						:value="platform.name"
 						placeholder="Platform's Name"
-						@input="releaseToUpdate.platformList[index].name = $event.target.value"
 						class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+						@input="releaseToUpdate.platformList[index].name = $event.target.value"
 					/>
 					<input
 						type="text"
 						:value="platform.link"
 						placeholder="Platform's Link"
-						@input="releaseToUpdate.platformList[index].link = $event.target.value"
 						class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+						@input="releaseToUpdate.platformList[index].link = $event.target.value"
 					/>
 				</div>
 				<button
@@ -153,8 +153,8 @@
 		</div>
 
 		<button
-			@click="validVerifiedRelease()"
 			class="w-full rounded bg-primary px-2 py-1 uppercase hover:bg-zinc-500"
+			@click="validVerifiedRelease()"
 		>
 			Validate
 		</button>

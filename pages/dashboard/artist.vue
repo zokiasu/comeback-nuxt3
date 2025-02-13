@@ -1,341 +1,371 @@
 <script setup>
-  import { collection, getDocs, query, where, startAfter, orderBy, limit, getCountFromServer } from 'firebase/firestore'
-  import { useToast } from 'vue-toastification'
+	import {
+		collection,
+		getDocs,
+		query,
+		where,
+		startAfter,
+		orderBy,
+		limit,
+		getCountFromServer,
+	} from 'firebase/firestore'
+	import { useToast } from 'vue-toastification'
 
-  const toast = useToast()
-  const { $firestore: db } = useNuxtApp()
+	const toast = useToast()
+	const { $firestore: db } = useNuxtApp()
 
-  const artistFetch = ref([])
-  const search = ref('')
-  const invertSort = ref(true)
-  const page = ref(1)
+	const artistFetch = ref([])
+	const search = ref('')
+	const invertSort = ref(true)
+	const page = ref(1)
 
-  const scrollContainer = ref(null)
-  const sort = ref('createdAt')
-  const limitFetch = ref(50)
-  const typeFilter = ref('')
-  const onlyWithoutDesc = ref(false)
-  const onlyWithoutSocials = ref(false)
-  const onlyWithoutPlatforms = ref(false)
-  const onlyWithoutStyles = ref(false)
-  const isLoading = ref(false)
-  const nextFetch = ref(null)
-  const maxArtist = ref(0)
+	const scrollContainer = ref(null)
+	const sort = ref('createdAt')
+	const limitFetch = ref(50)
+	const typeFilter = ref('')
+	const onlyWithoutDesc = ref(false)
+	const onlyWithoutSocials = ref(false)
+	const onlyWithoutPlatforms = ref(false)
+	const onlyWithoutStyles = ref(false)
+	const isLoading = ref(false)
+	const nextFetch = ref(null)
+	const maxArtist = ref(0)
 
-  const deleteArtist = async (id) => {
-    const artist = artistFetch.value.find((artist) => artist.id === id)
-    if (artist) {
-      const index = artistFetch.value.indexOf(artist)
-      await deletebyDoc('artists', id)
-        .then(() => {
-          artistFetch.value.splice(index, 1)
-          toast.success('Artist Deleted')
-        })
-        .catch((error) => {
-          console.error('Error removing document: ', error)
-          toast.error('Error Removing Artist')
-        })
-    } else {
-      toast.error('Release Not Found', {
-        position: 'top-right',
-        timeout: 5000,
-        closeOnClick: true,
-        pauseOnFocusLoss: false,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 0.6,
-        showCloseButtonOnHover: false,
-        hideProgressBar: false,
-        closeButton: 'button',
-        icon: true,
-        rtl: false,
-        transition: 'Vue-Toastification__bounce',
-        maxToasts: 5,
-        newestOnTop: true,
-      })
-    }
-  }
+	const deleteArtist = async (id) => {
+		const artist = artistFetch.value.find((artist) => artist.id === id)
+		if (artist) {
+			const index = artistFetch.value.indexOf(artist)
+			await deletebyDoc('artists', id)
+				.then(() => {
+					artistFetch.value.splice(index, 1)
+					toast.success('Artist Deleted')
+				})
+				.catch((error) => {
+					console.error('Error removing document: ', error)
+					toast.error('Error Removing Artist')
+				})
+		} else {
+			toast.error('Release Not Found', {
+				position: 'top-right',
+				timeout: 5000,
+				closeOnClick: true,
+				pauseOnFocusLoss: false,
+				pauseOnHover: true,
+				draggable: true,
+				draggablePercent: 0.6,
+				showCloseButtonOnHover: false,
+				hideProgressBar: false,
+				closeButton: 'button',
+				icon: true,
+				rtl: false,
+				transition: 'Vue-Toastification__bounce',
+				maxToasts: 5,
+				newestOnTop: true,
+			})
+		}
+	}
 
-  const getMaxArtistNumber = async () => {
-    const coll = collection(db, "artists");
-    const snapshot = await getCountFromServer(coll);
-    maxArtist.value = snapshot.data().count;
-  }
+	const getMaxArtistNumber = async () => {
+		const coll = collection(db, 'artists')
+		const snapshot = await getCountFromServer(coll)
+		maxArtist.value = snapshot.data().count
+	}
 
-  const getArtist = async (firstCall = false) => {
-    if (isLoading.value) return;
-    isLoading.value = true;
+	const getArtist = async (firstCall = false) => {
+		if (isLoading.value) return
+		isLoading.value = true
 
-    if(maxArtist.value === 0) {
-      await getMaxArtistNumber();
-    }
+		if (maxArtist.value === 0) {
+			await getMaxArtistNumber()
+		}
 
-    let colRef = query(collection(db, 'artists'), orderBy(sort.value, 'desc'));
+		let colRef = query(collection(db, 'artists'), orderBy(sort.value, 'desc'))
 
-    if (search.value) {
-      const searchTerm = search.value;
-      colRef = query(colRef, 
-        orderBy('name'),
-        where('name', '>=', searchTerm),
-        where('name', '<=', searchTerm + '\uf8ff')
-      );
-    }
+		if (search.value) {
+			const searchTerm = search.value
+			colRef = query(
+				colRef,
+				orderBy('name'),
+				where('name', '>=', searchTerm),
+				where('name', '<=', searchTerm + '\uF8FF'),
+			)
+		}
 
-    if(onlyWithoutDesc.value) {
-      colRef = query(colRef, where('description', '==', ''));
-    }
-    else if (onlyWithoutSocials.value) {
-      colRef = query(colRef, where('socialList', '==', []));
-    }
-    else if (onlyWithoutPlatforms.value) {
-      colRef = query(colRef, where('platformList', '==', []));
-    }
-    else if (onlyWithoutStyles.value) {
-      colRef = query(colRef, where('styles', '==', []));
-    }
+		if (onlyWithoutDesc.value) {
+			colRef = query(colRef, where('description', '==', ''))
+		} else if (onlyWithoutSocials.value) {
+			colRef = query(colRef, where('socialList', '==', []))
+		} else if (onlyWithoutPlatforms.value) {
+			colRef = query(colRef, where('platformList', '==', []))
+		} else if (onlyWithoutStyles.value) {
+			colRef = query(colRef, where('styles', '==', []))
+		}
 
-    if(typeFilter.value != '') {
-      colRef = query(colRef, where('type', '==', typeFilter.value));
-    }
+		if (typeFilter.value !== '') {
+			colRef = query(colRef, where('type', '==', typeFilter.value))
+		}
 
-    colRef = query(colRef, limit(limitFetch.value));
+		colRef = query(colRef, limit(limitFetch.value))
 
-    try {
-      if(nextFetch.value != null && !firstCall) {
-        colRef = nextFetch.value;
-      }
+		try {
+			if (nextFetch.value != null && !firstCall) {
+				colRef = nextFetch.value
+			}
 
-      const snapshot = await getDocs(colRef);
+			const snapshot = await getDocs(colRef)
 
-      if (snapshot.empty) {
-        isLoading.value = false;
-        return;
-      }
+			if (snapshot.empty) {
+				isLoading.value = false
+				return
+			}
 
-      const lastVisible = snapshot.docs[snapshot.docs.length-1];
-      
-      if (lastVisible) {
-        nextFetch.value = query(
-          collection(db, 'artists'), 
-          orderBy(sort.value, 'desc'), 
-          startAfter(lastVisible), 
-          limit(limitFetch.value)
-        );
-      } else {
-        nextFetch.value = null;
-      }
+			const lastVisible = snapshot.docs[snapshot.docs.length - 1]
 
-      if (nextFetch.value != null && !firstCall) {
-        const newArtists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        const filteredNewArtists = newArtists.filter(newArtist => !artistFetch.value.some(artist => artist.id === newArtist.id));
+			if (lastVisible) {
+				nextFetch.value = query(
+					collection(db, 'artists'),
+					orderBy(sort.value, 'desc'),
+					startAfter(lastVisible),
+					limit(limitFetch.value),
+				)
+			} else {
+				nextFetch.value = null
+			}
 
-        artistFetch.value = [...artistFetch.value, ...filteredNewArtists];
-      } else {
-        artistFetch.value = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      }
-    } catch (error) {
-      console.error("Erreur lors du chargement des artistes :", error);
-    } finally {
-      isLoading.value = false;
-    }
-  }
+			if (nextFetch.value != null && !firstCall) {
+				const newArtists = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
 
-  const changeOnlyFilter = (filter) => {
-    if(filter === 'desc') {
-      onlyWithoutDesc.value = !onlyWithoutDesc.value;
-      onlyWithoutSocials.value = false;
-      onlyWithoutPlatforms.value = false;
-      onlyWithoutStyles.value = false;
-    }
-    if(filter === 'socials') {
-      onlyWithoutSocials.value = !onlyWithoutSocials.value;
-      onlyWithoutDesc.value = false;
-      onlyWithoutPlatforms.value = false;
-      onlyWithoutStyles.value = false;
-    }
-    if(filter === 'platforms') {
-      onlyWithoutPlatforms.value = !onlyWithoutPlatforms.value;
-      onlyWithoutDesc.value = false;
-      onlyWithoutSocials.value = false;
-      onlyWithoutStyles.value = false;
-    }
-    if(filter === 'styles') {
-      onlyWithoutStyles.value = !onlyWithoutStyles.value;
-      onlyWithoutDesc.value = false;
-      onlyWithoutSocials.value = false;
-      onlyWithoutPlatforms.value = false;
-    }
-  }
+				const filteredNewArtists = newArtists.filter(
+					(newArtist) => !artistFetch.value.some((artist) => artist.id === newArtist.id),
+				)
 
-  const handleScroll = () => {
-    const container = scrollContainer.value;
-    if (!container) return;
+				artistFetch.value = [...artistFetch.value, ...filteredNewArtists]
+			} else {
+				artistFetch.value = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+			}
+		} catch (error) {
+			console.error('Erreur lors du chargement des artistes :', error)
+		} finally {
+			isLoading.value = false
+		}
+	}
 
-    const scrollPosition = container.scrollTop + container.clientHeight;
-    const threshold = container.scrollHeight * 0.98;
-    
-    if (scrollPosition > threshold && !isLoading.value) {
-      getArtist();
-    }
-  };
+	const changeOnlyFilter = (filter) => {
+		if (filter === 'desc') {
+			onlyWithoutDesc.value = !onlyWithoutDesc.value
+			onlyWithoutSocials.value = false
+			onlyWithoutPlatforms.value = false
+			onlyWithoutStyles.value = false
+		}
+		if (filter === 'socials') {
+			onlyWithoutSocials.value = !onlyWithoutSocials.value
+			onlyWithoutDesc.value = false
+			onlyWithoutPlatforms.value = false
+			onlyWithoutStyles.value = false
+		}
+		if (filter === 'platforms') {
+			onlyWithoutPlatforms.value = !onlyWithoutPlatforms.value
+			onlyWithoutDesc.value = false
+			onlyWithoutSocials.value = false
+			onlyWithoutStyles.value = false
+		}
+		if (filter === 'styles') {
+			onlyWithoutStyles.value = !onlyWithoutStyles.value
+			onlyWithoutDesc.value = false
+			onlyWithoutSocials.value = false
+			onlyWithoutPlatforms.value = false
+		}
+	}
 
-  const filteredArtistList = computed(() => {
-    if (page != 1) page.value = 1
-    if (!artistFetch.value) return artistFetch.value
-    
-    return artistFetch.value
-      .sort((a, b) => {
-        if (sort.value === 'createdAt') {
-          if (!invertSort.value) return a.createdAt - b.createdAt
-          return b.createdAt - a.createdAt
-        }
-        if (sort.value === 'type') {
-          if (!invertSort.value) return a.type.localeCompare(b.type)
-          return b.type.localeCompare(a.type)
-        }
-        if (sort.value === 'name') {
-          if (!invertSort.value) return a.name.localeCompare(b.name)
-          return b.name.localeCompare(a.name)
-        }
-      })
-  })
+	const filteredArtistList = computed(() => {
+		if (page !== 1) page.value = 1
+		if (!artistFetch.value) return artistFetch.value
 
-  onMounted(async () => {
-    await getArtist();
-    if(scrollContainer.value) {
-      // scrollContainer.value.addEventListener('scroll', handleScroll);
-    }
-  });
+		return artistFetch.value.sort((a, b) => {
+			if (sort.value === 'createdAt') {
+				return invertSort.value ? b.createdAt - a.createdAt : a.createdAt - b.createdAt
+			}
+			if (sort.value === 'updatedAt') {
+				return invertSort.value ? b.updatedAt - a.updatedAt : a.updatedAt - b.updatedAt
+			}
+			if (sort.value === 'type') {
+				return invertSort.value
+					? b.type.localeCompare(a.type)
+					: a.type.localeCompare(b.type)
+			}
+			return invertSort.value
+				? b.name.localeCompare(a.name)
+				: a.name.localeCompare(b.name)
+		})
+	})
 
-  onUnmounted(() => {
-    if (scrollContainer.value) {
-      // Retirez l'écouteur d'événements lors du démontage du composant
-      // scrollContainer.value.removeEventListener('scroll', handleScroll);
-    }
-  });
-  
-  watch([limitFetch, typeFilter, onlyWithoutDesc, onlyWithoutSocials, onlyWithoutPlatforms, onlyWithoutStyles, sort, search], async () => {
-    try {
-      await getArtist(true);
-    } catch (error) {
-      console.error('Error in watcher:', error);
-    }
-  })
+	onMounted(async () => {
+		await getArtist()
+	})
+
+	watch(
+		[
+			limitFetch,
+			typeFilter,
+			onlyWithoutDesc,
+			onlyWithoutSocials,
+			onlyWithoutPlatforms,
+			onlyWithoutStyles,
+			sort,
+			search,
+		],
+		async () => {
+			try {
+				await getArtist(true)
+			} catch (error) {
+				console.error('Error in watcher:', error)
+			}
+		},
+	)
 </script>
 
 <template>
-  <div ref="scrollContainer" class="relative space-y-3 h-full overflow-y-scroll overflow-hidden scrollBarLight pr-2">
+	<div
+		ref="scrollContainer"
+		class="scrollBarLight relative h-full space-y-3 overflow-hidden overflow-y-scroll pr-2"
+	>
+		<section id="searchbar" class="sticky top-0 z-20 w-full space-y-2 bg-secondary pb-2">
+			<input
+				id="search-input"
+				v-model="search"
+				type="text"
+				placeholder="Search"
+				class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+			/>
+			<div class="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
+				<div class="flex w-fit flex-wrap justify-between gap-2 sm:flex-nowrap">
+					<div
+						class="flex w-full flex-row items-center justify-between gap-2 rounded bg-quinary px-2 py-1 text-xs uppercase sm:w-fit sm:justify-start"
+					>
+						<p class="sm:text-nowrap">Fetch Number</p>
+						<select
+							v-model="limitFetch"
+							class="rounded border-none bg-quinary p-2 text-xs uppercase placeholder-tertiary transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
+						>
+							<option value="10">10</option>
+							<option value="20">20</option>
+							<option value="30">30</option>
+							<option value="40">40</option>
+							<option value="50">50</option>
+							<option value="100">100</option>
+							<option value="200">200</option>
+							<option value="500">500</option>
+						</select>
+					</div>
+					<button
+						class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 lg:text-nowrap"
+						:class="onlyWithoutDesc ? 'bg-primary' : 'bg-quinary'"
+						@click="changeOnlyFilter('desc')"
+					>
+						No description
+					</button>
+					<button
+						class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 lg:text-nowrap"
+						:class="onlyWithoutSocials ? 'bg-primary' : 'bg-quinary'"
+						@click="changeOnlyFilter('socials')"
+					>
+						No Socials
+					</button>
+					<button
+						class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 lg:text-nowrap"
+						:class="onlyWithoutPlatforms ? 'bg-primary' : 'bg-quinary'"
+						@click="changeOnlyFilter('platforms')"
+					>
+						No Platforms
+					</button>
+					<button
+						class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 lg:text-nowrap"
+						:class="onlyWithoutStyles ? 'bg-primary' : 'bg-quinary'"
+						@click="changeOnlyFilter('styles')"
+					>
+						No Styles
+					</button>
+				</div>
+				<div class="flex space-x-2">
+					<select
+						v-model="sort"
+						class="w-full rounded border-none bg-quinary p-2 text-xs uppercase placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none sm:w-fit"
+					>
+						<option value="name">Name</option>
+						<option value="type">Type</option>
+						<option value="createdAt">Last Created</option>
+						<option value="updatedAt">Last Updated</option>
+					</select>
+					<button
+						class="rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+						@click="invertSort = !invertSort"
+					>
+						<icon-sort v-if="!invertSort" class="h-6 w-6 text-tertiary" />
+						<icon-sort-reverse v-else class="h-6 w-6 text-tertiary" />
+					</button>
+				</div>
+			</div>
+		</section>
 
-    <section id="searchbar" class="sticky top-0 w-full space-y-2 bg-secondary pb-2 z-20">
-      <input
-        id="search-input"
-        v-model="search"
-        type="text"
-        placeholder="Search"
-        class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
-      />
-      <div class="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
-        <div class="flex flex-wrap sm:flex-nowrap w-fit justify-between gap-2">
-          <div class="flex flex-row items-center justify-between sm:justify-start gap-2 w-full sm:w-fit rounded bg-quinary px-2 py-1 text-xs uppercase">
-            <p class="sm:text-nowrap">Fetch Number</p>
-            <select
-              v-model="limitFetch"
-              class="rounded border-none bg-quinary p-2 text-xs uppercase placeholder-tertiary transition-all duration-300 ease-in-out focus:outline-none sm:w-fit">
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="30">30</option>
-              <option value="40">40</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-              <option value="200">200</option>
-              <option value="500">500</option>
-            </select>
-          </div>
-          <button 
-            @click="changeOnlyFilter('desc')" 
-            class="w-full rounded px-2 py-1 text-xs uppercase lg:text-nowrap hover:bg-zinc-500"
-            :class="onlyWithoutDesc ? 'bg-primary' : 'bg-quinary'"
-          >
-            No description
-          </button>
-          <button 
-            @click="changeOnlyFilter('socials')" 
-            class="w-full rounded px-2 py-1 text-xs uppercase lg:text-nowrap hover:bg-zinc-500"
-            :class="onlyWithoutSocials ? 'bg-primary' : 'bg-quinary'"
-          >
-            No Socials
-          </button>
-          <button 
-            @click="changeOnlyFilter('platforms')" 
-            class="w-full rounded px-2 py-1 text-xs uppercase lg:text-nowrap hover:bg-zinc-500"
-            :class="onlyWithoutPlatforms ? 'bg-primary' : 'bg-quinary'"
-          >
-            No Platforms
-          </button>
-          <button 
-            @click="changeOnlyFilter('styles')" 
-            class="w-full rounded px-2 py-1 text-xs uppercase lg:text-nowrap hover:bg-zinc-500"
-            :class="onlyWithoutStyles ? 'bg-primary' : 'bg-quinary'"
-          >
-            No Styles
-          </button>
-        </div>
-        <div class="flex space-x-2">
-          <select
-            v-model="sort"
-            class="w-full rounded border-none bg-quinary p-2 text-xs uppercase placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none sm:w-fit"
-          >
-            <option value="name">Name</option>
-            <option value="type">Type</option>
-            <option value="createdAt">Last Created</option>
-          </select>
-          <button
-            @click="invertSort = !invertSort"
-            class="rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
-          >
-            <icon-sort v-if="!invertSort" class="h-6 w-6 text-tertiary" />
-            <icon-sort-reverse v-else class="h-6 w-6 text-tertiary" />
-          </button>
-        </div>
-      </div>
-    </section>
+		<transition-group
+			v-if="filteredArtistList.length > 0"
+			id="artist-list"
+			name="list-complete"
+			tag="div"
+			class="grid grid-cols-1 items-center justify-center gap-2 transition-all duration-300 ease-in-out md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+		>
+			<LazyCardDashboardArtist
+				v-for="artist in filteredArtistList"
+				:id="artist.id"
+				:key="artist.id"
+				:image="artist.image"
+				:name="artist.name"
+				:description="artist.description"
+				:type="artist.type"
+				:id-youtube-music="artist.idYoutubeMusic"
+				:styles="artist.styles"
+				:social-list="artist.socialList"
+				:platform-list="artist.platformList"
+				:created-at="artist.createdAt"
+				:updated-at="artist.updatedAt"
+				@delete-artist="deleteArtist"
+			/>
+		</transition-group>
 
-    <transition-group
-      v-if="filteredArtistList.length > 0"
-      id="artist-list"
-      name="list-complete"
-      tag="div"
-      class="grid grid-cols-1 items-center justify-center gap-2 transition-all duration-300 ease-in-out md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-    >
-      <LazyCardDashboardArtist
-        v-for="artist in filteredArtistList"
-        :key="artist.id"
-        :id="artist.id"
-        :image="artist.image"
-        :name="artist.name"
-        :description="artist.description"
-        :type="artist.type"
-        :idYoutubeMusic="artist.idYoutubeMusic"
-        :styles="artist.styles"
-        :socialList="artist.socialList"
-        :platformList="artist.platformList"
-        :createdAt="artist.createdAt"
-        @deleteArtist="deleteArtist"
-      />
-    </transition-group>
+		<p v-else class="w-full bg-quaternary p-5 text-center font-semibold uppercase">
+			No artist found
+		</p>
 
-    <p v-else class="w-full bg-quaternary p-5 text-center font-semibold uppercase">
-      No artist found
-    </p>
-
-    <div v-if="filteredArtistList.length > 0 && artistFetch.length != 0 && artistFetch.length != maxArtist" class="flex flex-col items-center space-y-2 text-xs">
-      <button v-if="!onlyWithoutDesc && !onlyWithoutPlatforms && !onlyWithoutSocials" @click="getArtist()" class="w-full flex gap-1 md:w-fit bg-quinary mx-auto rounded px-2 py-1 uppercase hover:bg-zinc-500">
-        <p v-if="!isLoading">Load More</p><p v-else>Loading...</p> ({{ artistFetch.length }} / {{ maxArtist }})
-      </button>
-      <button @click="limitFetch = maxArtist" class="mx-auto underline underline-offset-4">
-        <p>Load All</p>
-      </button>
-    </div>
-  </div>
+		<div
+			v-if="
+				filteredArtistList.length > 0 &&
+				artistFetch.length != 0 &&
+				artistFetch.length != maxArtist
+			"
+			class="flex flex-col items-center space-y-2 text-xs"
+		>
+			<p>({{ artistFetch.length }} / {{ maxArtist }})</p>
+			<div v-if="!isLoading" class="flex gap-2">
+				<button
+					v-if="!onlyWithoutDesc && !onlyWithoutPlatforms && !onlyWithoutSocials"
+					class="mx-auto flex w-full gap-1 rounded bg-quinary px-2 py-1 uppercase hover:bg-zinc-500 md:w-fit"
+					@click="getArtist()"
+				>
+					<p>Load More</p>
+				</button>
+				<button
+					class="mx-auto flex w-full gap-1 rounded bg-quinary px-2 py-1 uppercase hover:bg-zinc-500 md:w-fit"
+					@click="limitFetch = maxArtist"
+				>
+					<p>Load All</p>
+				</button>
+			</div>
+			<p
+				v-else
+				class="mx-auto flex w-full gap-1 rounded bg-quinary px-2 py-1 uppercase hover:bg-zinc-500 md:w-fit"
+			>
+				Loading...
+			</p>
+		</div>
+	</div>
 </template>

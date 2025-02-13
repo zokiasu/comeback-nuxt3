@@ -1,69 +1,84 @@
-import { collection, getDoc, getDocs, addDoc, deleteDoc, doc, setDoc, updateDoc, Timestamp, query, where, orderBy, limit, getCountFromServer } from 'firebase/firestore'
+import {
+	collection,
+	getDoc,
+	getDocs,
+	addDoc,
+	deleteDoc,
+	doc,
+	setDoc,
+	updateDoc,
+	Timestamp,
+	query,
+	where,
+	orderBy,
+	limit,
+	getCountFromServer,
+} from 'firebase/firestore'
 
 /** GENERAL FUNCTION **/
 export const queryByCollection = async (col: string) => {
-  const { $firestore } = useNuxtApp()
+	const { $firestore } = useNuxtApp()
 
-  const colRef = collection($firestore as any, col)
+	const colRef = collection($firestore as any, col)
 
-  const snapshot = await getDocs(colRef)
+	const snapshot = await getDocs(colRef)
 
-  const docs = Array.from(snapshot.docs).map((doc) => {
-    return {
-      ...doc.data(),
-      taskId: doc.id,
-    }
-  })
+	const docs = Array.from(snapshot.docs).map((doc) => {
+		return {
+			...doc.data(),
+			taskId: doc.id,
+		}
+	})
 
-  return docs
+	return docs
 }
 
 export const queryByDoc = async (col: string, id: string) => {
-  const { $firestore } = useNuxtApp()
+	const { $firestore } = useNuxtApp()
 
-  const colRef = doc($firestore as any, col, id)
+	const colRef = doc($firestore as any, col, id)
 
-  const snapshot = await getDoc(colRef)
+	const snapshot = await getDoc(colRef)
 
-  const docs = snapshot.data()
+	const docs = snapshot.data()
 
-  return docs
+	return docs
 }
 
 export const set = async (col: string, document: Object) => {
-  const { $firestore } = useNuxtApp()
+	const { $firestore } = useNuxtApp()
 
-  await setDoc(doc($firestore as any, col), document, { merge: true })
+	await setDoc(doc($firestore as any, col), document, { merge: true })
 }
 
 export const add = async (col: string, document: Object) => {
-  const { $firestore } = useNuxtApp()
+	const { $firestore } = useNuxtApp()
 
-  const colRef = collection($firestore as any, col)
+	const colRef = collection($firestore as any, col)
 
-  const docRef = await addDoc(colRef, document)
+	const docRef = await addDoc(colRef, document)
 
-  return docRef
+	return docRef
 }
 
 export const update = async (col: string, id: string, document: any) => {
-  const { $firestore } = useNuxtApp()
+	const { $firestore } = useNuxtApp()
 
-  const docRef = doc($firestore as any, col, id)
+	const docRef = doc($firestore as any, col, id)
 
-  await updateDoc(docRef, document)
+	await updateDoc(docRef, document)
 
-  return docRef
+	return docRef
 }
 
 export const deletebyDoc = async (col: string, id: string) => {
-  const { $firestore } = useNuxtApp()
+	const { $firestore } = useNuxtApp()
 
-  const docRef = doc($firestore as any, col, id)
+	const docRef = doc($firestore as any, col, id)
 
-  await deleteDoc(docRef)
-    .then(() => {})
-    .catch((error) => {
-      console.error('deletebyDoc : Error removing document: ', error)
-    })
+	await deleteDoc(docRef)
+		.then(() => {})
+		.catch((error) => {
+			console.error('deletebyDoc : Error removing document: ', error)
+		})
 }

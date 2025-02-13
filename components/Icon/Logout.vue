@@ -9,4 +9,3 @@
 		/>
 	</svg>
 </template>
-  

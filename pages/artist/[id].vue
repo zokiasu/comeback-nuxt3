@@ -23,7 +23,10 @@
 			title.value = fetchedArtist.name
 			description.value = fetchedArtist.description
 			if (artist.value.idYoutubeMusic) {
-				const fetchedMusicDiscover = await getRandomMusicFromArtistId(artist.value.id, artist.value.name)
+				const fetchedMusicDiscover = await getRandomMusicFromArtistId(
+					artist.value.id,
+					artist.value.name,
+				)
 				musicDiscover.value = fetchedMusicDiscover as Music[]
 			}
 		} catch (error) {
@@ -34,15 +37,21 @@
 		}
 	})
 
-	const members = computed(() => artist.value?.members?.filter((member) => member.type === 'SOLO') || [])
-	const subUnitMembers = computed(() => artist.value?.members?.filter((member) => member.type === 'GROUP') || [])
+	const members = computed(
+		() => artist.value?.members?.filter((member) => member.type === 'SOLO') || [],
+	)
+	const subUnitMembers = computed(
+		() => artist.value?.members?.filter((member) => member.type === 'GROUP') || [],
+	)
 	const singleRelease = computed(() => {
-		const singles = artist.value?.releases?.filter((release) => release.type === 'SINGLE') || []
+		const singles =
+			artist.value?.releases?.filter((release) => release.type === 'SINGLE') || []
 		return singles.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0))
 	})
 
 	const albumEpRelease = computed(() => {
-		const albums = artist.value?.releases?.filter((release) => release.type !== 'SINGLE') || []
+		const albums =
+			artist.value?.releases?.filter((release) => release.type !== 'SINGLE') || []
 		return albums.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0))
 	})
 
@@ -75,8 +84,8 @@
 				:alt="artist.name + '_back'"
 				format="webp"
 				loading="lazy"
-				@load="imageBackLoaded = true"
 				class="absolute inset-0 h-full w-full object-cover"
+				@load="imageBackLoaded = true"
 			/>
 			<div
 				class="absolute inset-0 flex items-end p-5 transition-all duration-500 ease-in-out lg:p-10 xl:p-14 2xl:px-32"
@@ -90,15 +99,54 @@
 					>
 						{{ artist.name }}
 					</h1>
-					<div v-if="artist.birthDate || artist.debutDate" class="font-semibold flex flex-wrap gap-2">
-						<p v-if="artist.birthDate" class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">Birthday : {{ artist.birthDate ? artist.birthDate.toDate().toLocaleDateString('en-US', {day: 'numeric', month: 'long', year: 'numeric'}) : 'Unknown' }}</p>
-						<p v-if="artist.debutDate" class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">Debut Date : {{ artist.debutDate ? artist.debutDate.toDate().toLocaleDateString('en-US', {day: 'numeric', month: 'long', year: 'numeric'}) : 'Unknown' }}</p>
+					<div
+						v-if="artist.birthDate || artist.debutDate"
+						class="flex flex-wrap gap-2 font-semibold"
+					>
+						<p
+							v-if="artist.birthDate"
+							class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase"
+						>
+							Birthday :
+							{{
+								artist.birthDate
+									? artist.birthDate.toDate().toLocaleDateString('en-US', {
+											day: 'numeric',
+											month: 'long',
+											year: 'numeric',
+										})
+									: 'Unknown'
+							}}
+						</p>
+						<p
+							v-if="artist.debutDate"
+							class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase"
+						>
+							Debut Date :
+							{{
+								artist.debutDate
+									? artist.debutDate.toDate().toLocaleDateString('en-US', {
+											day: 'numeric',
+											month: 'long',
+											year: 'numeric',
+										})
+									: 'Unknown'
+							}}
+						</p>
 					</div>
 					<div v-if="!isFetchingArtist" class="flex flex-wrap gap-2">
-						<p v-for="style in artist.styles" :key="style.name" class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">
+						<p
+							v-for="style in artist.styles"
+							:key="style.name"
+							class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase"
+						>
 							{{ style.name }}
 						</p>
-						<p v-for="tag in artist.generalTags" :key="tag.name" class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase">
+						<p
+							v-for="tag in artist.generalTags"
+							:key="tag.name"
+							class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase"
+						>
 							{{ tag.name }}
 						</p>
 					</div>
@@ -154,8 +202,8 @@
 						/>
 					</div>
 					<CardDefault
-						name="Socials Media"
 						v-if="artist.socialList?.length && !isFetchingArtist"
+						name="Socials Media"
 					>
 						<div class="flex flex-wrap gap-2">
 							<LazyComebackExternalLink
@@ -207,15 +255,20 @@
 							<SkeletonDefault class="h-14 w-full rounded" />
 							<SkeletonDefault class="h-14 w-full rounded" />
 						</div>
-						<transition-group v-else-if="musicDiscover.length > 0" name="list-complete" tag="div" class="space-y-2">
+						<transition-group
+							v-else-if="musicDiscover.length > 0"
+							name="list-complete"
+							tag="div"
+							class="space-y-2"
+						>
 							<MusicDisplay
 								v-for="song in musicDiscover"
 								:key="song.videoId"
-								:artistId="''"
-								:artistName="artist.name"
-								:musicId="song.videoId"
-								:musicName="song.name"
-								:musicImage="song.thumbnails[2].url"
+								:artist-id="''"
+								:artist-name="artist.name"
+								:music-id="song.videoId"
+								:music-name="song.name"
+								:music-image="song.thumbnails[2].url"
 								:duration="song?.duration?.toString() || '0'"
 								class="w-full bg-quinary"
 							/>
@@ -234,11 +287,11 @@
 						<CardObject
 							v-for="soloMember in members"
 							:key="`artistMembers_` + soloMember.id"
-							isArtist
-							:artistId="soloMember.id"
-							:mainTitle="soloMember.name"
+							is-artist
+							:artist-id="soloMember.id"
+							:main-title="soloMember.name"
 							:image="soloMember.image"
-							:objectLink="`/artist/${soloMember.id}`"
+							:object-link="`/artist/${soloMember.id}`"
 						/>
 					</transition-group>
 				</CardDefault>
@@ -254,14 +307,14 @@
 						<CardObject
 							v-for="release in albumEpRelease"
 							:key="release.idYoutubeMusic"
-							:artistId="release.artistsId"
-							:mainTitle="release.name"
+							:artist-id="release.artistsId"
+							:main-title="release.name"
 							:image="release.image"
-							:releaseDate="release.date"
-							:releaseType="release.type"
-							:objectLink="`/release/${release.idYoutubeMusic}`"
-							isReleaseDisplay
-							dateAlwaysDisplay
+							:release-date="release.date"
+							:release-type="release.type"
+							:object-link="`/release/${release.idYoutubeMusic}`"
+							is-release-display
+							date-always-display
 						/>
 					</transition-group>
 				</CardDefault>
@@ -277,14 +330,14 @@
 						<CardObject
 							v-for="release in singleRelease"
 							:key="release.idYoutubeMusic"
-							:artistId="release.artistsId"
-							:mainTitle="release.name"
+							:artist-id="release.artistsId"
+							:main-title="release.name"
 							:image="release.image"
-							:releaseDate="release.date"
-							:releaseType="release.type"
-							:objectLink="`/release/${release.idYoutubeMusic}`"
-							isReleaseDisplay
-							dateAlwaysDisplay
+							:release-date="release.date"
+							:release-type="release.type"
+							:object-link="`/release/${release.idYoutubeMusic}`"
+							is-release-display
+							date-always-display
 						/>
 					</transition-group>
 				</CardDefault>
@@ -300,11 +353,11 @@
 						<CardObject
 							v-for="groupMember in subUnitMembers"
 							:key="`artistMembers_` + groupMember.id"
-							isArtist
-							:artistId="groupMember.id"
-							:mainTitle="groupMember.name"
+							is-artist
+							:artist-id="groupMember.id"
+							:main-title="groupMember.name"
 							:image="groupMember.image"
-							:objectLink="`/artist/${groupMember.id}`"
+							:object-link="`/artist/${groupMember.id}`"
 						/>
 					</transition-group>
 				</CardDefault>
@@ -320,11 +373,11 @@
 						<CardObject
 							v-for="group in artist.groups"
 							:key="`artistMembers_` + group.id"
-							isArtist
-							:artistId="group.id"
-							:mainTitle="group.name"
+							is-artist
+							:artist-id="group.id"
+							:main-title="group.name"
 							:image="group.image"
-							:objectLink="`/artist/${group.id}`"
+							:object-link="`/artist/${group.id}`"
 						/>
 					</transition-group>
 				</CardDefault>
