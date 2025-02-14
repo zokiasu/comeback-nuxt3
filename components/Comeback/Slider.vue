@@ -1,41 +1,39 @@
 <template>
-	<div class="relative overflow-hidden">
+	<div class="relative h-full w-full overflow-hidden">
 		<div
-			class="absolute inset-0 z-10 max-h-[20rem] min-h-[20rem] w-full bg-quinary object-cover transition-all duration-500 ease-in-out md:max-h-[30rem] md:min-h-[30rem] lg:aspect-video lg:max-h-[40rem] lg:min-h-[40rem]"
+			class="absolute inset-0 z-10 bg-quinary transition-all duration-500 ease-in-out"
 			:class="imageLoaded ? 'opacity-0' : 'opacity-100'"
 		></div>
 		<NuxtImg
 			format="webp"
 			:alt="name"
 			:src="image"
-			class="max-h-[20rem] min-h-[20rem] w-full object-cover md:max-h-[30rem] md:min-h-[30rem] lg:aspect-video lg:max-h-[40rem] lg:min-h-[40rem]"
+			class="h-full w-full object-cover"
 			@load="imageLoaded = true"
 		/>
+		<NuxtLink
+			:to="`/artist/${id}`"
+			class="absolute inset-0 z-50 flex flex-col items-start justify-end bg-secondary/30 p-5 sm:items-center sm:justify-center"
+		>
+			<p class="text-3xl font-bold lg:text-5xl xl:text-7xl 2xl:text-9xl">
+				{{ name }}
+			</p>
+		</NuxtLink>
 	</div>
-	<NuxtLink
-		:to="`/artist/${id}`"
-		class="absolute inset-0 z-50 flex flex-col items-start justify-end bg-secondary/30 p-5 sm:items-center sm:justify-center"
-	>
-		<p class="text-3xl font-bold lg:text-5xl xl:text-7xl 2xl:text-9xl">
-			{{ name }}
-		</p>
-	</NuxtLink>
 </template>
 
-<script lang="ts" setup>
-	const { image, name, id } = defineProps({
-		image: {
-			type: String,
-			required: true,
-		},
-		name: {
-			type: String,
-			required: true,
-		},
-		id: {
-			type: String,
-			required: true,
-		},
+<script setup lang="ts">
+	import { ref } from 'vue'
+
+	defineOptions({
+		inheritAttrs: false,
 	})
+
+	const props = defineProps<{
+		image: string
+		name: string
+		id: string
+	}>()
+
 	const imageLoaded = ref(false)
 </script>

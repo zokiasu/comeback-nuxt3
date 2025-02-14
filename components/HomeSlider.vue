@@ -11,26 +11,35 @@
 						Comeback Today
 					</p>
 				</div>
-				<swiper-container ref="containerRef">
-					<swiper-slide
-						v-for="comeback in newsToday"
-						:key="comeback.id"
-						class="swiper-slide relative"
+				<ClientOnly>
+					<Swiper
+						:modules="[Autoplay, EffectFade, Parallax]"
+						:slides-per-view="1"
+						:loop="true"
+						:parallax="true"
+						:effect="'fade'"
+						:autoplay="{
+							delay: 3500,
+							disableOnInteraction: false,
+						}"
+						class="h-full"
 					>
-						<ComebackSlider
-							v-if="comeback.artist"
-							:id="comeback.artist.id"
-							:image="comeback.artist.image"
-							:name="comeback.artist.name"
-						/>
-						<ComebackSlider
-							v-else
-							:id="comeback.artists[0].id"
-							:image="comeback.artists[0].picture"
-							:name="comeback.artists[0].name"
-						/>
-					</swiper-slide>
-				</swiper-container>
+						<SwiperSlide v-for="comeback in newsToday" :key="comeback.id" class="h-full">
+							<ComebackSlider
+								v-if="comeback.artist"
+								:id="comeback.artist.id"
+								:image="comeback.artist.image"
+								:name="comeback.artist.name"
+							/>
+							<ComebackSlider
+								v-else-if="comeback.artists && comeback.artists.length > 0"
+								:id="comeback.artists[0].id"
+								:image="comeback.artists[0].picture"
+								:name="comeback.artists[0].name"
+							/>
+						</SwiperSlide>
+					</Swiper>
+				</ClientOnly>
 			</section>
 
 			<section
@@ -57,26 +66,32 @@
 </template>
 
 <script setup lang="ts">
-	// Référence pour le conteneur Swiper
-	const containerRef = ref(null)
+	import { Swiper, SwiperSlide } from 'swiper/vue'
+	import { Autoplay, EffectFade, Parallax } from 'swiper/modules'
 
-	// Initialiser Swiper avec des options
-	const swiper = useSwiper(containerRef, {
-		slidesPerView: 1,
-		loop: true,
-		parallax: true,
-		autoplay: {
-			delay: 3500,
-			disableOnInteraction: false,
-		},
-	})
+	// Import des styles Swiper
+	import 'swiper/css'
+	import 'swiper/css/autoplay'
+	import 'swiper/css/effect-fade'
+	import 'swiper/css/parallax'
 
-	const { newsToday } = defineProps({
-		newsToday: {
-			type: Array,
-			required: true,
-		},
-	})
+	interface Comeback {
+		id: string
+		artist?: {
+			id: string
+			image: string
+			name: string
+		}
+		artists?: Array<{
+			id: string
+			picture: string
+			name: string
+		}>
+	}
+
+	const props = defineProps<{
+		newsToday: Comeback[]
+	}>()
 </script>
 
 <style>
@@ -87,5 +102,22 @@
 	}
 	.fade-enter, .fade-leave-to /* .fade-leave-active dans <2.1.8 */ {
 		opacity: 0;
+	}
+
+	/* Styles Swiper */
+	.swiper {
+		width: 100%;
+		height: 100%;
+	}
+
+	.swiper-slide {
+		width: 100%;
+		height: 100%;
+		display: flex;
+	}
+
+	.swiper-slide > * {
+		flex: 1;
+		height: 100%;
 	}
 </style>
