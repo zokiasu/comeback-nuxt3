@@ -12,23 +12,25 @@
 					</p>
 				</div>
 				<ClientOnly>
-					<swiper-container ref="swiperEl" :init="false">
+					<swiper-container ref="swiperEl" :init="false" class="h-full">
 						<swiper-slide
 							v-for="comeback in newsToday"
 							:key="comeback.id"
-							class="swiper-slide relative"
+							class="relative h-full"
 						>
 							<ComebackSlider
 								v-if="comeback.artist"
 								:id="comeback.artist.id"
 								:image="comeback.artist.image"
 								:name="comeback.artist.name"
+								class="h-full"
 							/>
 							<ComebackSlider
 								v-else-if="comeback.artists && comeback.artists.length > 0"
 								:id="comeback.artists[0].id"
 								:image="comeback.artists[0].picture"
 								:name="comeback.artists[0].name"
+								class="h-full"
 							/>
 						</swiper-slide>
 					</swiper-container>
@@ -130,5 +132,23 @@
 	}
 	.fade-enter, .fade-leave-to /* .fade-leave-active dans <2.1.8 */ {
 		opacity: 0;
+	}
+
+	/* Styles Swiper */
+	swiper-container {
+		width: 100%;
+		height: 100%;
+		--swiper-theme-color: #fff;
+	}
+
+	swiper-slide {
+		width: 100%;
+		height: 100%;
+	}
+
+	:deep(swiper-slide img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 	}
 </style>
