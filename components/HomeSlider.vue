@@ -16,21 +16,19 @@
 						<swiper-slide
 							v-for="comeback in newsToday"
 							:key="comeback.id"
-							class="relative h-full"
+							class="!h-full"
 						>
 							<ComebackSlider
 								v-if="comeback.artist"
 								:id="comeback.artist.id"
 								:image="comeback.artist.image"
 								:name="comeback.artist.name"
-								class="h-full"
 							/>
 							<ComebackSlider
 								v-else-if="comeback.artists && comeback.artists.length > 0"
 								:id="comeback.artists[0].id"
 								:image="comeback.artists[0].picture"
 								:name="comeback.artists[0].name"
-								class="h-full"
 							/>
 						</swiper-slide>
 					</swiper-container>
