@@ -11,26 +11,28 @@
 						Comeback Today
 					</p>
 				</div>
-				<swiper-container ref="containerRef">
-					<swiper-slide
-						v-for="comeback in newsToday"
-						:key="comeback.id"
-						class="swiper-slide relative"
-					>
-						<ComebackSlider
-							v-if="comeback.artist"
-							:id="comeback.artist.id"
-							:image="comeback.artist.image"
-							:name="comeback.artist.name"
-						/>
-						<ComebackSlider
-							v-else
-							:id="comeback.artists[0].id"
-							:image="comeback.artists[0].picture"
-							:name="comeback.artists[0].name"
-						/>
-					</swiper-slide>
-				</swiper-container>
+				<ClientOnly>
+					<swiper-container ref="swiperEl" :init="false">
+						<swiper-slide
+							v-for="comeback in newsToday"
+							:key="comeback.id"
+							class="swiper-slide relative"
+						>
+							<ComebackSlider
+								v-if="comeback.artist"
+								:id="comeback.artist.id"
+								:image="comeback.artist.image"
+								:name="comeback.artist.name"
+							/>
+							<ComebackSlider
+								v-else-if="comeback.artists && comeback.artists.length > 0"
+								:id="comeback.artists[0].id"
+								:image="comeback.artists[0].picture"
+								:name="comeback.artists[0].name"
+							/>
+						</swiper-slide>
+					</swiper-container>
+				</ClientOnly>
 			</section>
 
 			<section
@@ -57,11 +59,43 @@
 </template>
 
 <script setup lang="ts">
-	// Référence pour le conteneur Swiper
-	const containerRef = ref(null)
+	import { register } from 'swiper/element/bundle'
+	import { onMounted, ref, nextTick } from 'vue'
 
-	// Initialiser Swiper avec des options
-	const swiper = useSwiper(containerRef, {
+	// Import des styles Swiper
+	import 'swiper/css'
+	import 'swiper/css/autoplay'
+	import 'swiper/css/parallax'
+
+	// Type pour l'élément Swiper
+	interface SwiperContainer extends HTMLElement {
+		initialize: () => void
+		swiper?: any
+	}
+
+	// Référence vers le conteneur Swiper
+	const swiperEl = ref<SwiperContainer | null>(null)
+
+	interface Comeback {
+		id: string
+		artist?: {
+			id: string
+			image: string
+			name: string
+		}
+		artists?: Array<{
+			id: string
+			picture: string
+			name: string
+		}>
+	}
+
+	const props = defineProps<{
+		newsToday: Comeback[]
+	}>()
+
+	// Configuration du Swiper
+	const swiperParams = {
 		slidesPerView: 1,
 		loop: true,
 		parallax: true,
@@ -69,13 +103,22 @@
 			delay: 3500,
 			disableOnInteraction: false,
 		},
-	})
+	}
 
-	const { newsToday } = defineProps({
-		newsToday: {
-			type: Array,
-			required: true,
-		},
+	// Enregistrer et initialiser Swiper uniquement côté client
+	onMounted(() => {
+		// Vérifier si window est défini (côté client)
+		if (typeof window !== 'undefined') {
+			register()
+
+			// Attendre le prochain tick pour s'assurer que le DOM est prêt
+			nextTick(() => {
+				if (swiperEl.value) {
+					Object.assign(swiperEl.value, swiperParams)
+					swiperEl.value.initialize()
+				}
+			})
+		}
 	})
 </script>
 

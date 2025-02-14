@@ -26,7 +26,6 @@ export default defineNuxtConfig({
 		'@nuxt/image',
 		'@pinia/nuxt',
 		'pinia-plugin-persistedstate/nuxt',
-		'nuxt-swiper',
 		'@nuxtjs/algolia',
 	],
 
@@ -44,7 +43,13 @@ export default defineNuxtConfig({
 
 	build: {
 		// vue-toastification - old commonjs module
-		transpile: ['vue-toastification', '@vuepic/vue-datepicker'],
+		transpile: ['vue-toastification', '@vuepic/vue-datepicker', 'swiper'],
+	},
+
+	vue: {
+		compilerOptions: {
+			isCustomElement: (tag) => ['swiper-container', 'swiper-slide'].includes(tag),
+		},
 	},
 
 	tailwindcss: {
