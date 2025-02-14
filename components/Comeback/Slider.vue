@@ -1,7 +1,7 @@
 <template>
-	<div class="relative h-full">
+	<div class="relative h-full w-full overflow-hidden">
 		<div
-			class="absolute inset-0 z-10 h-full w-full bg-quinary object-cover transition-all duration-500 ease-in-out"
+			class="absolute inset-0 z-10 bg-quinary transition-all duration-500 ease-in-out"
 			:class="imageLoaded ? 'opacity-0' : 'opacity-100'"
 		></div>
 		<NuxtImg

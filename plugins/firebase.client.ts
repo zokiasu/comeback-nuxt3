@@ -1,8 +1,9 @@
 import { getAuth } from 'firebase/auth'
 import { initializeApp } from 'firebase/app'
-import { getFirestore, enableMultiTabIndexedDbPersistence } from 'firebase/firestore'
+import { getFirestore, initializeFirestore } from 'firebase/firestore'
 import { getAnalytics } from 'firebase/analytics'
 import { getDatabase } from 'firebase/database'
+import { persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
 	const config = useRuntimeConfig()
@@ -38,23 +39,20 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 		}
 
 		try {
-			firestore = getFirestore(app)
-			// Enable offline persistence
-			if (firestore) {
-				try {
-					await enableMultiTabIndexedDbPersistence(firestore)
-				} catch (err: any) {
-					if (err.code === 'failed-precondition') {
-						console.warn(
-							'Multiple tabs open, persistence can only be enabled in one tab at a a time.',
-						)
-					} else if (err.code === 'unimplemented') {
-						console.warn('The current browser does not support persistence.')
-					}
-				}
-			}
+			// Initialiser Firestore avec la nouvelle configuration de cache
+			firestore = initializeFirestore(app, {
+				cache: persistentLocalCache({
+					tabManager: persistentMultipleTabManager(),
+				}),
+			})
 		} catch (error) {
 			console.error('Firestore initialization failed:', error)
+			// Fallback à l'initialisation standard si la configuration de cache échoue
+			try {
+				firestore = getFirestore(app)
+			} catch (fallbackError) {
+				console.error('Firestore fallback initialization failed:', fallbackError)
+			}
 		}
 
 		try {

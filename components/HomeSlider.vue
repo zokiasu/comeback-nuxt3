@@ -12,12 +12,19 @@
 					</p>
 				</div>
 				<ClientOnly>
-					<swiper-container ref="swiperEl" :init="false" class="h-full">
-						<swiper-slide
-							v-for="comeback in newsToday"
-							:key="comeback.id"
-							class="!h-full"
-						>
+					<Swiper
+						:modules="[Autoplay, EffectFade, Parallax]"
+						:slides-per-view="1"
+						:loop="true"
+						:parallax="true"
+						:effect="'fade'"
+						:autoplay="{
+							delay: 3500,
+							disableOnInteraction: false,
+						}"
+						class="h-full"
+					>
+						<SwiperSlide v-for="comeback in newsToday" :key="comeback.id" class="h-full">
 							<ComebackSlider
 								v-if="comeback.artist"
 								:id="comeback.artist.id"
@@ -30,8 +37,8 @@
 								:image="comeback.artists[0].picture"
 								:name="comeback.artists[0].name"
 							/>
-						</swiper-slide>
-					</swiper-container>
+						</SwiperSlide>
+					</Swiper>
 				</ClientOnly>
 			</section>
 
@@ -59,22 +66,14 @@
 </template>
 
 <script setup lang="ts">
-	import { register } from 'swiper/element/bundle'
-	import { onMounted, ref, nextTick } from 'vue'
+	import { Swiper, SwiperSlide } from 'swiper/vue'
+	import { Autoplay, EffectFade, Parallax } from 'swiper/modules'
 
 	// Import des styles Swiper
 	import 'swiper/css'
 	import 'swiper/css/autoplay'
+	import 'swiper/css/effect-fade'
 	import 'swiper/css/parallax'
-
-	// Type pour l'élément Swiper
-	interface SwiperContainer extends HTMLElement {
-		initialize: () => void
-		swiper?: any
-	}
-
-	// Référence vers le conteneur Swiper
-	const swiperEl = ref<SwiperContainer | null>(null)
 
 	interface Comeback {
 		id: string
@@ -93,33 +92,6 @@
 	const props = defineProps<{
 		newsToday: Comeback[]
 	}>()
-
-	// Configuration du Swiper
-	const swiperParams = {
-		slidesPerView: 1,
-		loop: true,
-		parallax: true,
-		autoplay: {
-			delay: 3500,
-			disableOnInteraction: false,
-		},
-	}
-
-	// Enregistrer et initialiser Swiper uniquement côté client
-	onMounted(() => {
-		// Vérifier si window est défini (côté client)
-		if (typeof window !== 'undefined') {
-			register()
-
-			// Attendre le prochain tick pour s'assurer que le DOM est prêt
-			nextTick(() => {
-				if (swiperEl.value) {
-					Object.assign(swiperEl.value, swiperParams)
-					swiperEl.value.initialize()
-				}
-			})
-		}
-	})
 </script>
 
 <style>
@@ -133,20 +105,19 @@
 	}
 
 	/* Styles Swiper */
-	swiper-container {
-		width: 100%;
-		height: 100%;
-		--swiper-theme-color: #fff;
-	}
-
-	swiper-slide {
+	.swiper {
 		width: 100%;
 		height: 100%;
 	}
 
-	:deep(swiper-slide img) {
+	.swiper-slide {
 		width: 100%;
 		height: 100%;
-		object-fit: cover;
+		display: flex;
+	}
+
+	.swiper-slide > * {
+		flex: 1;
+		height: 100%;
 	}
 </style>
