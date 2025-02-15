@@ -29,7 +29,9 @@ export default defineNuxtConfig({
 		'@nuxtjs/algolia',
 	],
 
-	ssr: false,
+	nitro: {
+		preset: 'netlify'
+	},
 
 	app: {
 		head: {
