@@ -99,13 +99,23 @@ export default defineNuxtConfig({
 					manualChunks: {
 						'firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
 						'pinia': ['pinia', 'pinia-plugin-persistedstate'],
-						'algolia': ['algoliasearch', '@algolia/recommend']
+						'algolia': ['algoliasearch', '@algolia/recommend'],
+						'ui': ['@vuepic/vue-datepicker', '@kouts/vue-modal', 'vue-toastification'],
+						'player': ['swiper', 'vuedraggable']
 					}
 				}
 			}
 		},
 		optimizeDeps: {
-			include: ['pinia']
+			include: [
+				'pinia',
+				'firebase/app',
+				'firebase/auth',
+				'firebase/firestore',
+				'firebase/storage',
+				'@vuepic/vue-datepicker',
+				'@kouts/vue-modal'
+			]
 		}
 	},
 
@@ -117,12 +127,25 @@ export default defineNuxtConfig({
 
 	optimization: {
 		splitChunks: {
-			maxSize: 300000
+			maxSize: 300000,
+			cacheGroups: {
+				styles: {
+					name: 'styles',
+					test: /\.(css|vue)$/,
+					chunks: 'all',
+					enforce: true
+				}
+			}
 		}
 	},
 
 	build: {
-		transpile: ['firebase']
+		transpile: [
+			'firebase',
+			'@vuepic/vue-datepicker',
+			'@kouts/vue-modal',
+			'vue-toastification'
+		]
 	},
 
 	compatibilityDate: '2025-02-09',
