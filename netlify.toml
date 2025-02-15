@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  publish = "netlify-functions"
+  publish = ".nuxt/dist/client"
 
 [images]
   remote_images = ["https://lh3.googleusercontent.com/.*","https://i.ibb.co/.*"]
