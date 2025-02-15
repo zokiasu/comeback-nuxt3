@@ -101,7 +101,7 @@ export default defineNuxtConfig({
 						'vue': ['vue', 'vue-router', '@vue/runtime-core', '@vue/runtime-dom'],
 						'pinia': ['pinia', 'pinia-plugin-persistedstate'],
 						'algolia': ['algoliasearch', '@algolia/recommend'],
-						'ui': ['@headlessui/vue', '@heroicons/vue'],
+						'ui': ['@heroicons/vue'],
 					}
 				}
 			}
