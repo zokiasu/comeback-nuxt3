@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+	ssr: false,
 	runtimeConfig: {
 		public: {
 			FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
@@ -23,22 +24,22 @@ export default defineNuxtConfig({
 
 	vite: {
 		build: {
-			chunkSizeWarningLimit: 1600
+			chunkSizeWarningLimit: 1600,
 		},
 	},
 
 	experimental: {
-		payloadExtraction: false
+		payloadExtraction: false,
 	},
 
 	nitro: {
 		preset: 'netlify',
-		serveStatic: true
+		serveStatic: true,
 	},
 
 	typescript: {
 		strict: true,
-		typeCheck: false
+		typeCheck: false,
 	},
 
 	build: {
@@ -49,15 +50,11 @@ export default defineNuxtConfig({
 			'vue-toastification',
 			'swiper',
 			'vuedraggable',
-			'tslib'
-		]
+			'tslib',
+		],
 	},
 
-	modules: [
-		'@pinia/nuxt',
-		'@nuxtjs/tailwindcss',
-		'@nuxt/image'
-	],
+	modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss', '@nuxt/image'],
 
 	app: {
 		head: {
@@ -97,7 +94,7 @@ export default defineNuxtConfig({
 	image: {
 		domains: ['lh3.googleusercontent.com', 'i.ibb.co'],
 		alias: {
-			google: 'lh3.googleusercontent.com',
+ 			google: 'lh3.googleusercontent.com',
 			ibb: 'i.ibb.co',
 		},
 	},

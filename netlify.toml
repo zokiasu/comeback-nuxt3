@@ -3,14 +3,14 @@
   publish = "dist"
 
 [build.environment]
-  NITRO_PRESET = "netlify_edge"
+  NITRO_PRESET = "static"
 
 [functions]
   node_bundler = "esbuild"
 
 [[redirects]]
   from = "/*"
-  to = "/.netlify/functions/server"
+  to = "/index.html"
   status = 200
 
 [images]
