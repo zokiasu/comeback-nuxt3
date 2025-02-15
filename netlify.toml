@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  publish = ".nuxt/dist/client"
+  publish = ".nuxt/dist"
 
 [images]
   remote_images = ["https://lh3.googleusercontent.com/.*","https://i.ibb.co/.*"]
