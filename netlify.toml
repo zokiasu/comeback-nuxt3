@@ -1,12 +1,13 @@
 [build]
   command = "npm run build"
-  publish = ".netlify/functions-internal"
-  functions = ".netlify/functions-internal"
+  publish = ".output/public"
+  functions = ".output/server"
 
 [build.environment]
   NITRO_PRESET = "netlify"
 
 [functions]
+  directory = ".output/server"
   node_bundler = "esbuild"
 
 [[redirects]]
@@ -14,5 +15,7 @@
   to = "/.netlify/functions/server"
   status = 200
 
-[images]
-  remote_images = ["https://lh3.googleusercontent.com/.*","https://i.ibb.co/.*"]
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
