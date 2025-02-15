@@ -1,6 +1,6 @@
 [build]
   command = "npm run generate"
-  publish = ".output/public"
+  publish = "dist"
 
 [build.environment]
   NITRO_PRESET = "static"
@@ -10,3 +10,6 @@
   to = "/index.html"
   status = 200
   force = true
+
+[images]
+  remote_images = ["https://lh3.googleusercontent.com/.*","https://i.ibb.co/.*"]
