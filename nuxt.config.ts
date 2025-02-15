@@ -32,7 +32,13 @@ export default defineNuxtConfig({
 	},
 
 	nitro: {
-		preset: 'netlify'
+		preset: 'netlify',
+		serveStatic: true
+	},
+
+	typescript: {
+		strict: true,
+		typeCheck: false
 	},
 
 	build: {
@@ -42,7 +48,8 @@ export default defineNuxtConfig({
 			'@kouts/vue-modal',
 			'vue-toastification',
 			'swiper',
-			'vuedraggable'
+			'vuedraggable',
+			'tslib'
 		]
 	},
 

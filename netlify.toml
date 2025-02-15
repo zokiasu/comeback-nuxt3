@@ -1,11 +1,19 @@
 [build]
   command = "npm run build"
-  publish = ".nuxt/dist"
+  publish = ".output/public"
+  edge_functions = true
+
+[dev]
+  framework = "nuxt"
+
+[functions]
+  directory = ".output/server"
+  node_bundler = "esbuild"
 
 [images]
   remote_images = ["https://lh3.googleusercontent.com/.*","https://i.ibb.co/.*"]
 
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/.netlify/functions/server"
   status = 200
