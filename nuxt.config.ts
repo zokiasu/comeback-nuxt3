@@ -100,8 +100,7 @@ export default defineNuxtConfig({
 						'firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
 						'vue': ['vue', 'vue-router', '@vue/runtime-core', '@vue/runtime-dom'],
 						'pinia': ['pinia', 'pinia-plugin-persistedstate'],
-						'algolia': ['algoliasearch', '@algolia/recommend'],
-						'ui': ['@heroicons/vue'],
+						'algolia': ['algoliasearch', '@algolia/recommend']
 					}
 				}
 			}
@@ -124,7 +123,7 @@ export default defineNuxtConfig({
 	},
 
 	build: {
-		transpile: ['firebase', '@heroicons/vue']
+		transpile: ['firebase']
 	},
 
 	compatibilityDate: '2025-02-09',
