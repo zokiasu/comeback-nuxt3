@@ -1,21 +1,14 @@
 [build]
-  command = "npm run build"
-  publish = ".output/public"
-  functions = ".output/server"
-
-[build.environment]
-  NITRO_PRESET = "netlify"
+  command = "npm run generate"
+  publish = "dist"
 
 [dev]
   framework = "nuxt"
 
-[functions]
-  node_bundler = "esbuild"
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 [images]
   remote_images = ["https://lh3.googleusercontent.com/.*","https://i.ibb.co/.*"]
-
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/server"
-  status = 200
