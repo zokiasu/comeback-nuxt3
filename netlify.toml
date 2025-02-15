@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  publish = "dist"
+  publish = ".output/public"
   functions = ".output/server"
 
 [build.environment]
@@ -17,5 +17,5 @@
 
 [[redirects]]
   from = "/*"
-  to = "/.netlify/functions/index"
+  to = "/.netlify/functions/server"
   status = 200
