@@ -30,7 +30,8 @@ export default defineNuxtConfig({
 	],
 
 	nitro: {
-		preset: 'netlify'
+		preset: 'netlify',
+		minify: true,
 	},
 
 	app: {
@@ -87,6 +88,43 @@ export default defineNuxtConfig({
 		configPath: 'tailwind.config.js',
 		cssPath: '~/assets/css/tailwind.css',
 		injectPosition: 'first',
+	},
+
+	vite: {
+		build: {
+			chunkSizeWarningLimit: 1600,
+			cssCodeSplit: true,
+			rollupOptions: {
+				output: {
+					manualChunks: {
+						'firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
+						'vue': ['vue', 'vue-router', '@vue/runtime-core', '@vue/runtime-dom'],
+						'pinia': ['pinia', 'pinia-plugin-persistedstate'],
+						'algolia': ['algoliasearch', '@algolia/recommend'],
+						'ui': ['@headlessui/vue', '@heroicons/vue'],
+					}
+				}
+			}
+		},
+		optimizeDeps: {
+			include: ['vue', 'pinia', '@vue/runtime-core']
+		}
+	},
+
+	experimental: {
+		payloadExtraction: false,
+		inlineSSRStyles: false,
+		renderJsonPayloads: false
+	},
+
+	optimization: {
+		splitChunks: {
+			maxSize: 300000
+		}
+	},
+
+	build: {
+		transpile: ['firebase', '@heroicons/vue']
 	},
 
 	compatibilityDate: '2025-02-09',
