@@ -21,18 +21,36 @@ export default defineNuxtConfig({
 		'~/plugins/vueModal.js',
 	],
 
-	modules: [
-		'@nuxtjs/tailwindcss',
-		'@nuxt/image',
-		'@pinia/nuxt',
-		'pinia-plugin-persistedstate/nuxt',
-		'@nuxtjs/algolia',
-	],
+	vite: {
+		build: {
+			chunkSizeWarningLimit: 1600
+		},
+	},
+
+	experimental: {
+		payloadExtraction: false
+	},
 
 	nitro: {
-		preset: 'netlify',
-		minify: true,
+		preset: 'netlify'
 	},
+
+	build: {
+		transpile: [
+			'firebase',
+			'@vuepic/vue-datepicker',
+			'@kouts/vue-modal',
+			'vue-toastification',
+			'swiper',
+			'vuedraggable'
+		]
+	},
+
+	modules: [
+		'@pinia/nuxt',
+		'@nuxtjs/tailwindcss',
+		'@nuxt/image'
+	],
 
 	app: {
 		head: {
@@ -75,77 +93,6 @@ export default defineNuxtConfig({
 			google: 'lh3.googleusercontent.com',
 			ibb: 'i.ibb.co',
 		},
-	},
-
-	algolia: {
-		apiKey: process.env.ALGOLIA_SEARCH_API_KEY,
-		applicationId: process.env.ALGOLIA_APPLICATION_ID,
-		lite: true,
-		recommend: true,
-	},
-
-	tailwindcss: {
-		configPath: 'tailwind.config.js',
-		cssPath: '~/assets/css/tailwind.css',
-		injectPosition: 'first',
-	},
-
-	vite: {
-		build: {
-			chunkSizeWarningLimit: 1600,
-			cssCodeSplit: true,
-			rollupOptions: {
-				output: {
-					manualChunks: {
-						'firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
-						'pinia': ['pinia', 'pinia-plugin-persistedstate'],
-						'algolia': ['algoliasearch', '@algolia/recommend'],
-						'ui': ['@vuepic/vue-datepicker', '@kouts/vue-modal', 'vue-toastification'],
-						'player': ['swiper', 'vuedraggable']
-					}
-				}
-			}
-		},
-		optimizeDeps: {
-			include: [
-				'pinia',
-				'firebase/app',
-				'firebase/auth',
-				'firebase/firestore',
-				'firebase/storage',
-				'@vuepic/vue-datepicker',
-				'@kouts/vue-modal'
-			]
-		}
-	},
-
-	experimental: {
-		payloadExtraction: false,
-		inlineSSRStyles: false,
-		renderJsonPayloads: false
-	},
-
-	optimization: {
-		splitChunks: {
-			maxSize: 300000,
-			cacheGroups: {
-				styles: {
-					name: 'styles',
-					test: /\.(css|vue)$/,
-					chunks: 'all',
-					enforce: true
-				}
-			}
-		}
-	},
-
-	build: {
-		transpile: [
-			'firebase',
-			'@vuepic/vue-datepicker',
-			'@kouts/vue-modal',
-			'vue-toastification'
-		]
 	},
 
 	compatibilityDate: '2025-02-09',
