@@ -1,7 +1,7 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  edge_functions = true
+  functions = ".output/server"
 
 [dev]
   framework = "nuxt"
@@ -13,11 +13,6 @@
   remote_images = ["https://lh3.googleusercontent.com/.*","https://i.ibb.co/.*"]
 
 [[redirects]]
-  from = "/_nuxt/*"
-  to = "/_nuxt/:splat"
-  status = 200
-
-[[redirects]]
   from = "/*"
-  to = "/.netlify/functions/server"
+  to = "/.netlify/functions/index"
   status = 200
