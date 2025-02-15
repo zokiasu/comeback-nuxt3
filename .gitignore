@@ -24,4 +24,7 @@ logs
 !.env.example
 .npmrc
 
+# Netlify
+.netlify
+
 service-account.json

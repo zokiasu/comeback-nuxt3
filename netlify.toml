@@ -1,5 +1,11 @@
 [build]
   command = "npm run build"
   functions = "netlify-functions"
+
 [images]
   remote_images = ["https://lh3.googleusercontent.com/.*","https://i.ibb.co/.*"]
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

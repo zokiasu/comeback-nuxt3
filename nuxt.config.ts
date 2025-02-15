@@ -29,21 +29,35 @@ export default defineNuxtConfig({
 		'@nuxtjs/algolia',
 	],
 
-	algolia: {
-		applicationId: process.env.ALGOLIA_APPLICATION_ID,
-		apiKey: process.env.ALGOLIA_API_KEY,
-		useFetch: true,
-		instantSearch: true,
-		recommend: true,
-	},
+	ssr: true,
 
-	devtools: {
-		enabled: true,
-	},
-
-	build: {
-		// vue-toastification - old commonjs module
-		transpile: ['vue-toastification', '@vuepic/vue-datepicker', 'swiper'],
+	app: {
+		head: {
+			htmlAttrs: {
+				lang: 'fr',
+			},
+			link: [
+				{
+					rel: 'icon',
+					type: 'image/x-icon',
+					href: '/favicon.ico',
+				},
+				{
+					rel: 'preconnect',
+					href: 'https://fonts.googleapis.com',
+				},
+				{
+					rel: 'preconnect',
+					href: 'https://fonts.gstatic.com',
+					crossorigin: true,
+				},
+				{
+					rel: 'stylesheet',
+					href: 'https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap',
+				},
+			],
+			meta: [{ name: 'theme-color', content: '#9E0102' }],
+		},
 	},
 
 	vue: {
@@ -52,53 +66,25 @@ export default defineNuxtConfig({
 		},
 	},
 
+	image: {
+		domains: ['lh3.googleusercontent.com', 'i.ibb.co'],
+		alias: {
+			google: 'lh3.googleusercontent.com',
+			ibb: 'i.ibb.co',
+		},
+	},
+
+	algolia: {
+		apiKey: process.env.ALGOLIA_SEARCH_API_KEY,
+		applicationId: process.env.ALGOLIA_APPLICATION_ID,
+		lite: true,
+		recommend: true,
+	},
+
 	tailwindcss: {
 		configPath: 'tailwind.config.js',
-		exposeConfig: false,
-		viewer: true,
-	},
-
-	image: {
-		provider: 'ipx',
-		domains: [],
-		presets: {
-			cover: {
-				modifiers: {
-					format: 'webp',
-					quality: '80',
-				},
-			},
-		},
-	},
-
-	app: {
-		head: {
-			link: [
-				{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-				{ rel: 'icon', type: 'image/png', sizes: '48x48', href: '/icons/icon-48x48.png' },
-				{ rel: 'icon', type: 'image/png', sizes: '72x72', href: '/icons/icon-72x72.png' },
-				{ rel: 'icon', type: 'image/png', sizes: '96x96', href: '/icons/icon-96x96.png' },
-				{
-					rel: 'icon',
-					type: 'image/png',
-					sizes: '144x144',
-					href: '/icons/icon-144x144.png',
-				},
-				{
-					rel: 'icon',
-					type: 'image/png',
-					sizes: '192x192',
-					href: '/icons/icon-192x192.png',
-				},
-				{
-					rel: 'icon',
-					type: 'image/png',
-					sizes: '512x512',
-					href: '/icons/icon-512x512.png',
-				},
-			],
-			meta: [{ name: 'theme-color', content: '#9E0102' }],
-		},
+		cssPath: '~/assets/css/tailwind.css',
+		injectPosition: 'first',
 	},
 
 	compatibilityDate: '2025-02-09',
