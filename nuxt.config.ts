@@ -98,7 +98,6 @@ export default defineNuxtConfig({
 				output: {
 					manualChunks: {
 						'firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
-						'vue': ['vue', 'vue-router', '@vue/runtime-core', '@vue/runtime-dom'],
 						'pinia': ['pinia', 'pinia-plugin-persistedstate'],
 						'algolia': ['algoliasearch', '@algolia/recommend']
 					}
@@ -106,7 +105,7 @@ export default defineNuxtConfig({
 			}
 		},
 		optimizeDeps: {
-			include: ['vue', 'pinia', '@vue/runtime-core']
+			include: ['pinia']
 		}
 	},
 
