@@ -3,6 +3,9 @@
   publish = "dist"
   functions = ".output/server"
 
+[build.environment]
+  NITRO_PRESET = "netlify"
+
 [dev]
   framework = "nuxt"
 
