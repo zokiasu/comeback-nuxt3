@@ -73,19 +73,23 @@
 	onMounted(async () => {
 		const route = useRoute()
 		release.value = (await getReleaseByIdWithMusics(route.params.id as string)) as Release
-		if (release.value) {
-			release.value.musics = release.value.musics.sort((a, b) => a?.index - b?.index)
-			artistRelease.value = (
-				await getReleaseByArtistIdYoutubeMusic(release.value.idYoutubeMusic)
-			)
-				.sort((a, b) => b.date - a.date)
-				.filter((rel) => rel.id !== release.value.id)
-				.slice(0, 8) as Release[]
-			dateToDateFormat.value = release.value.date ? release.value.date.toDate() : null
-
-			title.value = release.value.name + ' par ' + release.value.artistsName
-			description.value = release.value.name + ' par ' + release.value.artistsName
+		if (!release.value) {
+			throw createError({
+				statusCode: 404,
+				statusMessage: 'Release not found',
+			})
 		}
+		release.value.musics = release.value.musics.sort((a, b) => a?.index - b?.index)
+		artistRelease.value = (
+			await getReleaseByArtistIdYoutubeMusic(release.value.idYoutubeMusic)
+		)
+			.sort((a, b) => b.date - a.date)
+			.filter((rel) => rel.id !== release.value.id)
+			.slice(0, 8) as Release[]
+		dateToDateFormat.value = release.value.date ? release.value.date.toDate() : null
+
+		title.value = release.value.name + ' par ' + release.value.artistsName
+		description.value = release.value.name + ' par ' + release.value.artistsName
 	})
 
 	watch([dateToDateFormat], () => {
