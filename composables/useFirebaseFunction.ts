@@ -32,6 +32,16 @@ export function useFirebaseFunction() {
 	const userStore = useUserStore()
 	const toast = useToast()
 
+	const waitForFirestore = async () => {
+		if (!database) {
+			await new Promise((resolve) => setTimeout(resolve, 1000))
+			if (!database) {
+				throw new Error('Firebase not initialized')
+			}
+		}
+		return database
+	}
+
 	/// ////// GENERAL FUNCTION FOR FIREBASE FUNCTION \\\\\\\\\\
 
 	// Converts a Firestore snapshot into an array of documents.
@@ -326,11 +336,9 @@ export function useFirebaseFunction() {
 
 	// Fetches a release by its ID from the 'releases' collection in Firestore.
 	const getReleaseByIdWithMusics = async (id: string) => {
-		const colRef = query(
-			collection(database as any, 'releases'),
-			where('idYoutubeMusic', '==', id),
-		)
-		const colMusic = query(collection(database as any, 'releases', id, 'musics'))
+		const db = await waitForFirestore()
+		const colRef = query(collection(db, 'releases'), where('idYoutubeMusic', '==', id))
+		const colMusic = query(collection(db, 'releases', id, 'musics'))
 
 		const snapshot = await getDocs(colRef)
 		const snapshotMusic = await getDocs(colMusic)
@@ -338,7 +346,6 @@ export function useFirebaseFunction() {
 		const release = snapshotResultToArray(snapshot)
 		if (release.length > 0) {
 			release[0].musics = snapshotResultToArray(snapshotMusic)
-
 			return release[0]
 		}
 		return null

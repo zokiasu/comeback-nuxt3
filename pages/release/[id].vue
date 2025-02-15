@@ -12,6 +12,7 @@
 	const { isLoginStore } = useUserStore()
 	const toast = useToast()
 	const router = useRouter()
+	const { $firestore } = useNuxtApp()
 
 	const title = ref('Release Page')
 	const description = ref('Release')
@@ -76,6 +77,12 @@
 		try {
 			isLoading.value = true
 			const route = useRoute()
+
+			// Attendre que Firestore soit initialisé
+			if (!$firestore) {
+				await new Promise((resolve) => setTimeout(resolve, 1000))
+			}
+
 			const fetchedRelease = await getReleaseByIdWithMusics(route.params.id as string)
 
 			if (!fetchedRelease) {
