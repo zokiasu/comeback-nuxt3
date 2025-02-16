@@ -5,10 +5,17 @@
 	import { useToast } from 'vue-toastification'
 	import debounce from 'lodash.debounce'
 	import { useUserStore } from '@/stores/user'
+	import algoliasearch from 'algoliasearch/lite'
+
+	const config = useRuntimeConfig()
+	const client = algoliasearch(
+		config.public.ALGOLIA_APPLICATION_ID,
+		config.public.ALGOLIA_API_KEY
+	)
+	const index = client.initIndex('Artists')
 
 	const { userDataStore } = useUserStore()
 	const toast = useToast()
-	const { result, search } = useAlgoliaSearch('Artists')
 
 	const emit = defineEmits(['closeModal'])
 
@@ -33,15 +40,22 @@
 
 	// Définition d'une fonction de recherche débattue
 	const debouncedSearch = debounce(async (query) => {
-		await useAsyncData('ssr-search-results', () => search({ query }))
-
-		if (!result.value) return
-		artistListSearched.value = result.value.hits.slice(0, 10)
-	}, 500) // Attend 500ms après le dernier appel avant d'exécuter la fonction
+		console.log('Searching for:', query)
+		try {
+			const { hits } = await index.search(query)
+			console.log('Search results:', hits)
+			artistListSearched.value = hits.slice(0, 10)
+		} catch (error) {
+			console.error('Erreur lors de la recherche:', error)
+		}
+	}, 500)
 
 	watchEffect(() => {
 		if (searchArtist.value.length > 2) {
+			console.log('Triggering search for:', searchArtist.value)
 			debouncedSearch(searchArtist.value)
+		} else {
+			artistListSearched.value = []
 		}
 	})
 

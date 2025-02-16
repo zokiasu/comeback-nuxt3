@@ -23,6 +23,9 @@ export default defineNuxtConfig({
 			FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
 			FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL,
 			YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
+			ALGOLIA_API_KEY: process.env.ALGOLIA_API_KEY,
+			ALGOLIA_APPLICATION_ID: process.env.ALGOLIA_APPLICATION_ID,
+			ALGOLIA_INDEX_NAME: process.env.ALGOLIA_INDEX_NAME,
 		},
 	},
 
@@ -60,7 +63,7 @@ export default defineNuxtConfig({
 		],
 	},
 
-	modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss', '@nuxt/image'],
+	modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss', '@nuxt/image', '@nuxtjs/algolia'],
 
 	head: {
 		htmlAttrs: {
@@ -107,6 +110,18 @@ export default defineNuxtConfig({
 			xl: 1280,
 			xxl: 1536,
 		},
+	},
+
+	algolia: {
+		apiKey: process.env.ALGOLIA_API_KEY,
+		applicationId: process.env.ALGOLIA_APPLICATION_ID,
+		lite: true,
+		search: {
+			indexName: process.env.ALGOLIA_INDEX_NAME
+		},
+		instantSearch: {
+			theme: 'algolia'
+		}
 	},
 
 	compatibilityDate: '2025-02-09',
