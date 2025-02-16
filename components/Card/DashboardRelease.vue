@@ -6,6 +6,7 @@
 	import '@kouts/vue-modal/dist/vue-modal.css'
 	import { useToast } from 'vue-toastification'
 	import type { PropType } from 'vue'
+	import type { Timestamp } from 'firebase/firestore'
 
 	// Interface pour la structure d'une plateforme
 	interface Platform {
@@ -35,11 +36,12 @@
 			required: true,
 		},
 		createdAt: {
-			type: Object,
-			required: true,
+			type: Object as PropType<Timestamp | null>,
+			required: false,
+			default: null,
 		},
 		date: {
-			type: Object,
+			type: Object as PropType<Timestamp>,
 			required: true,
 		},
 		idYoutubeMusic: {
@@ -48,7 +50,8 @@
 		},
 		image: {
 			type: String,
-			required: true,
+			required: false,
+			default: '',
 		},
 		name: {
 			type: String,
@@ -73,11 +76,11 @@
 	})
 
 	const { Modal } = Mdl
-	const { deleteRelease } = useFirebaseFunction()
-	const emit = defineEmits(['deleteRelease', 'updateRelease'])
+	const emit = defineEmits(['deleteRelease', 'updateRelease', 'release-verified'])
 
 	const showModal = ref(false)
 	const imageLoaded = ref(false)
+	const isDeleting = ref(false)
 	const dateToTestYear = date ? new Date(date.seconds * 1000) : new Date()
 
 	// COMPUTED
@@ -102,21 +105,8 @@
 	}
 
 	const callDeleteRelease = () => {
-		deleteRelease(id)
-			.then((res) => {
-				if (res == 'success') {
-					const toast = useToast()
-					toast.success('Release deleted')
-					emit('deleteRelease', id)
-				} else {
-					const toast = useToast()
-					toast.error('Error when deleting release')
-				}
-			})
-			.catch((err) => {
-				const toast = useToast()
-				toast.error('Error when deleting release', err)
-			})
+		isDeleting.value = true
+		emit('deleteRelease', id)
 	}
 
 	const showUpdateVerifiedRelease = () => {
@@ -126,6 +116,7 @@
 	const onReleaseVerified = () => {
 		showModal.value = false
 		emit('updateRelease')
+		emit('release-verified')
 	}
 </script>
 
@@ -218,6 +209,15 @@
 			</div>
 		</div>
 
+		<div
+			v-if="isDeleting"
+			class="absolute inset-0 z-10 flex items-center justify-center bg-red-500/20"
+		>
+			<p class="rounded bg-red-700 px-4 py-2 font-bold text-white">
+				Deleting processing...
+			</p>
+		</div>
+
 		<Modal
 			v-model="showModal"
 			:title="`Fix Release : ${artistsName} - ${name}`"
@@ -232,6 +232,7 @@
 		>
 			<ModalEditRelease
 				:id="id"
+				v-model:show-modal="showModal"
 				:name="name"
 				:type="type"
 				:id-youtube-music="idYoutubeMusic"

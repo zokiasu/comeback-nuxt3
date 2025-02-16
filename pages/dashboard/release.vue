@@ -1,33 +1,39 @@
-<script setup>
+<script setup lang="ts">
 	import {
 		collection,
-		getDocs,
 		query,
 		where,
-		startAfter,
 		orderBy,
 		limit,
 		getCountFromServer,
 		onSnapshot,
+		or,
+		getDocs,
+		startAfter,
+		doc,
+		updateDoc,
 	} from 'firebase/firestore'
 	import { useToast } from 'vue-toastification'
+	import type { Release } from '~/types/release'
+	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
 
+	const { deleteRelease: deleteReleaseFunction } = useFirebaseFunction()
 	const toast = useToast()
 	const { $firestore: db } = useNuxtApp()
 
-	const releaseFetch = ref([])
-	const search = ref('')
-	const sort = ref('date')
-	const invertSort = ref(true)
-	const isLoading = ref(false)
-	const nextFetch = ref(null)
-	const maxRelease = ref(0)
-	const limitFetch = ref(24)
+	const releaseFetch = ref<Release[]>([])
+	const search = ref<string>('')
+	const sort = ref<string>('date')
+	const invertSort = ref<boolean>(true)
+	const isLoading = ref<boolean>(false)
+	const nextFetch = ref<any>(null)
+	const maxRelease = ref<number>(0)
+	const limitFetch = ref<number>(24)
 
-	const needToBeVerifiedFilter = ref(false)
-	const noNeedToBeVerifiedFilter = ref(false)
+	const needToBeVerifiedFilter = ref<boolean>(false)
+	const noNeedToBeVerifiedFilter = ref<boolean>(false)
 
-	const observerTarget = ref(null)
+	const observerTarget = ref<HTMLElement | null>(null)
 	const hasMore = computed(() => releaseFetch.value.length < maxRelease.value)
 
 	const getMaxReleaseNumber = async () => {
@@ -50,9 +56,12 @@
 			const searchTerm = search.value.toLowerCase()
 			colRef = query(
 				colRef,
-				orderBy('name'),
-				where('name', '>=', searchTerm),
-				where('name', '<=', searchTerm + '\uF8FF'),
+				or(
+					where('name', '>=', searchTerm),
+					where('name', '<=', searchTerm + '\uF8FF'),
+					where('artistsName', '>=', searchTerm),
+					where('artistsName', '<=', searchTerm + '\uF8FF'),
+				),
 			)
 		}
 
@@ -81,7 +90,7 @@
 			const releases = snapshot.docs.map((doc) => ({
 				id: doc.id,
 				...doc.data(),
-			}))
+			})) as Release[]
 
 			if (firstCall) {
 				releaseFetch.value = releases
@@ -106,33 +115,38 @@
 		}
 	}
 
-	const deleteRelease = async (id) => {
-		const release = releaseFetch.value.find((release) => release.idYoutubeMusic === id)
-		if (release) {
-			const index = releaseFetch.value.indexOf(release)
-			releaseFetch.value.splice(index, 1)
-		} else {
-			toast.error('Release Not Found')
+	const deleteRelease = async (id: string) => {
+		try {
+			const res = await deleteReleaseFunction(id)
+			if (res === 'success') {
+				toast.success('Release deleted')
+				releaseFetch.value = releaseFetch.value.filter(
+					(release) => release.idYoutubeMusic !== id,
+				)
+			} else {
+				console.log('Error deleting release')
+				toast.error('Error deleting release')
+			}
+		} catch (error) {
+			console.error('Error deleting release:', error)
+			toast.error('Error deleting release')
 		}
 	}
 
-	const verifiedRelease = async (id) => {
-		const release = releaseFetch.value.find((release) => release.idYoutubeMusic === id)
-		if (release) {
-			const index = releaseFetch.value.indexOf(release)
-			release.needToBeVerified = false
-			update('releases', id, release)
-				.then(() => {
-					releaseFetch.value.splice(index, 1, release)
-					toast.success('Release Verified')
-				})
-				.catch((error) => {
-					console.error('Error updating document: ', error)
-					toast.error('Error Updating Release')
-				})
-		} else {
-			toast.error('Release Not Found')
-		}
+	const verifiedRelease = async (release: Release) => {
+		release.needToBeVerified = false
+		const docRef = doc(db, 'releases', release.idYoutubeMusic)
+		await updateDoc(docRef, { needToBeVerified: false })
+			.then(() => {
+				releaseFetch.value = releaseFetch.value.filter(
+					(r) => r.idYoutubeMusic !== release.idYoutubeMusic,
+				)
+				toast.success('Release Verified')
+			})
+			.catch((error) => {
+				console.error('Error updating document: ', error)
+				toast.error('Error when updating release')
+			})
 	}
 
 	// Fonction pour écouter les changements en temps réel
@@ -141,7 +155,7 @@
 		const unsubscribe = onSnapshot(colRef, (snapshot) => {
 			snapshot.docChanges().forEach((change) => {
 				if (change.type === 'modified') {
-					const updatedRelease = { id: change.doc.id, ...change.doc.data() }
+					const updatedRelease = { id: change.doc.id, ...change.doc.data() } as Release
 					const index = releaseFetch.value.findIndex(
 						(release) => release.idYoutubeMusic === updatedRelease.idYoutubeMusic,
 					)
@@ -204,12 +218,23 @@
 
 		return releaseFetch.value.sort((a, b) => {
 			if (sort.value === 'createdAt') {
-				return invertSort.value ? b.createdAt - a.createdAt : a.createdAt - b.createdAt
+				// Si createdAt n'est pas défini, on met ces éléments à la fin
+				if (!a.createdAt && !b.createdAt) return 0
+				if (!a.createdAt) return invertSort.value ? -1 : 1
+				if (!b.createdAt) return invertSort.value ? 1 : -1
+
+				const aDate = new Date(a.createdAt.seconds * 1000)
+				const bDate = new Date(b.createdAt.seconds * 1000)
+				return invertSort.value
+					? bDate.getTime() - aDate.getTime()
+					: aDate.getTime() - bDate.getTime()
 			}
 			if (sort.value === 'date') {
 				const aDate = new Date(a.date.seconds * 1000)
 				const bDate = new Date(b.date.seconds * 1000)
-				return invertSort.value ? bDate - aDate : aDate - bDate
+				return invertSort.value
+					? bDate.getTime() - aDate.getTime()
+					: aDate.getTime() - bDate.getTime()
 			}
 			if (sort.value === 'type') {
 				return invertSort.value
@@ -291,14 +316,14 @@
 			class="grid grid-cols-1 items-center justify-center gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-2"
 		>
 			<div
-				v-for="release in filteredReleaseList"
+				v-for="(release, index) in filteredReleaseList"
 				:key="`key_` + release.idYoutubeMusic"
 				class="h-full w-full"
 			>
 				<CardDashboardRelease
 					:id="release.idYoutubeMusic"
 					:artists-name="release.artistsName"
-					:created-at="release.createdAt"
+					:created-at="release.createdAt || null"
 					:date="release.date"
 					:id-youtube-music="release.idYoutubeMusic"
 					:image="release.image"
@@ -308,7 +333,7 @@
 					:type="release.type"
 					:year-released="release.year"
 					@delete-release="deleteRelease"
-					@verified-release="verifiedRelease"
+					@verified-release="verifiedRelease(release, index)"
 				/>
 			</div>
 		</div>
