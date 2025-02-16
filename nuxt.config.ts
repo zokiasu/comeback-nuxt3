@@ -101,6 +101,10 @@ export default defineNuxtConfig({
  			google: 'lh3.googleusercontent.com',
 			ibb: 'i.ibb.co',
 		},
+		provider: 'netlify',
+		netlify: {
+			baseURL: process.env.URL || 'http://localhost:3000'
+		}
 	},
 
 	compatibilityDate: '2025-02-09',
