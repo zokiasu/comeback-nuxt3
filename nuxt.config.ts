@@ -101,9 +101,15 @@ export default defineNuxtConfig({
 			google: 'lh3.googleusercontent.com',
 			ibb: 'i.ibb.co',
 		},
-		provider: 'ipx',
-		ipx: {
-			domains: ['lh3.googleusercontent.com', 'i.ibb.co']
+		provider: 'proxy',
+		providers: {
+			proxy: {
+				provider: 'ipx',
+				options: {
+					domains: ['lh3.googleusercontent.com', 'i.ibb.co'],
+					preferRedirect: true
+				}
+			}
 		}
 	},
 
