@@ -5,12 +5,12 @@ export default defineNuxtConfig({
 		preset: 'netlify',
 		static: true,
 		output: {
-			dir: './dist'
-		}
+			dir: './dist',
+		},
 	},
 	app: {
 		baseURL: '/',
-		buildAssetsDir: '/_nuxt/'
+		buildAssetsDir: '/_nuxt/',
 	},
 	runtimeConfig: {
 		public: {
@@ -97,20 +97,16 @@ export default defineNuxtConfig({
 
 	image: {
 		domains: ['lh3.googleusercontent.com', 'i.ibb.co'],
-		alias: {
-			google: 'lh3.googleusercontent.com',
-			ibb: 'i.ibb.co',
+		format: ['webp', 'jpg', 'jpeg', 'png'],
+		provider: 'none',
+		screens: {
+			xs: 320,
+			sm: 640,
+			md: 768,
+			lg: 1024,
+			xl: 1280,
+			xxl: 1536,
 		},
-		provider: 'proxy',
-		providers: {
-			proxy: {
-				provider: 'ipx',
-				options: {
-					domains: ['lh3.googleusercontent.com', 'i.ibb.co'],
-					preferRedirect: true
-				}
-			}
-		}
 	},
 
 	compatibilityDate: '2025-02-09',
