@@ -3,7 +3,10 @@ export default defineNuxtConfig({
 	ssr: false,
 	nitro: {
 		preset: 'netlify',
-		static: true
+		static: true,
+		output: {
+			dir: './dist'
+		}
 	},
 	app: {
 		baseURL: '/',

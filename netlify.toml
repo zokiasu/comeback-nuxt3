@@ -1,6 +1,6 @@
 [build]
   command = "npm run generate"
-  publish = ".nuxt/dist"
+  publish = "dist"
 
 [build.environment]
   NITRO_PRESET = "static"
