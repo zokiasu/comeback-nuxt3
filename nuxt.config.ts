@@ -98,12 +98,12 @@ export default defineNuxtConfig({
 	image: {
 		domains: ['lh3.googleusercontent.com', 'i.ibb.co'],
 		alias: {
- 			google: 'lh3.googleusercontent.com',
+			google: 'lh3.googleusercontent.com',
 			ibb: 'i.ibb.co',
 		},
-		provider: 'netlify',
-		netlify: {
-			baseURL: process.env.URL || 'http://localhost:3000'
+		provider: 'ipx',
+		ipx: {
+			domains: ['lh3.googleusercontent.com', 'i.ibb.co']
 		}
 	},
 
