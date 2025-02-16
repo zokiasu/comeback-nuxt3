@@ -1,92 +1,161 @@
-<script setup>
-	import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
-	import { collection, onSnapshot } from 'firebase/firestore'
+<script setup lang="ts">
+	import {
+		collection,
+		query,
+		where,
+		orderBy,
+		limit,
+		getCountFromServer,
+		onSnapshot,
+		or,
+		getDocs,
+		startAfter,
+		doc,
+		updateDoc,
+	} from 'firebase/firestore'
 	import { useToast } from 'vue-toastification'
+	import type { Release } from '~/types/release'
 	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
 
+	const { deleteRelease: deleteReleaseFunction } = useFirebaseFunction()
 	const toast = useToast()
 	const { $firestore: db } = useNuxtApp()
-	const { getPaginatedReleases } = useFirebaseFunction()
 
-	const releaseFetch = ref([])
-	const cursors = ref([null]) // Initialisez avec null pour la première page
-	const pageSize = ref(24) // Nombre de releases par page
-	const unsubscribe = ref(null) // Pour stocker la fonction de désabonnement
+	const releaseFetch = ref<Release[]>([])
+	const search = ref<string>('')
+	const sort = ref<string>('date')
+	const invertSort = ref<boolean>(true)
+	const isLoading = ref<boolean>(false)
+	const nextFetch = ref<any>(null)
+	const maxRelease = ref<number>(0)
+	const limitFetch = ref<number>(24)
 
-	const search = ref('')
-	const sort = ref('date')
-	const invertSort = ref(true)
+	const needToBeVerifiedFilter = ref<boolean>(false)
+	const noNeedToBeVerifiedFilter = ref<boolean>(false)
 
-	const artistPerPage = ref(24)
-	const startAt = ref(0)
-	const endAt = ref(artistPerPage.value)
-	const page = ref(0) // Index de la page actuelle
+	const observerTarget = ref<HTMLElement | null>(null)
+	const hasMore = computed(() => releaseFetch.value.length < maxRelease.value)
 
-	const needToBeVerifiedFilter = ref(false)
-	const noNeedToBeVerifiedFilter = ref(false)
+	const getMaxReleaseNumber = async () => {
+		const coll = collection(db, 'releases')
+		const snapshot = await getCountFromServer(coll)
+		maxRelease.value = snapshot.data().count
+	}
 
-	const fetchPage = async (direction = 'next') => {
-		const cursor = cursors.value[page.value]
-		const { releases, newLastVisible } = await getPaginatedReleases(
-			cursor,
-			pageSize.value,
-			direction,
-		)
-		releaseFetch.value = releases
-		if (direction === 'next') {
-			page.value++
-			cursors.value[page.value] = newLastVisible
-		} else if (direction === 'prev' && page.value > 0) {
-			page.value--
+	const getRelease = async (firstCall = false) => {
+		if (isLoading.value) return
+		isLoading.value = true
+
+		if (maxRelease.value === 0) {
+			await getMaxReleaseNumber()
+		}
+
+		let colRef = query(collection(db, 'releases'), orderBy(sort.value, 'desc'))
+
+		if (search.value) {
+			const searchTerm = search.value.toLowerCase()
+			colRef = query(
+				colRef,
+				or(
+					where('name', '>=', searchTerm),
+					where('name', '<=', searchTerm + '\uF8FF'),
+					where('artistsName', '>=', searchTerm),
+					where('artistsName', '<=', searchTerm + '\uF8FF'),
+				),
+			)
+		}
+
+		if (needToBeVerifiedFilter.value) {
+			colRef = query(colRef, where('needToBeVerified', '==', true))
+		} else if (noNeedToBeVerifiedFilter.value) {
+			colRef = query(colRef, where('needToBeVerified', '==', false))
+		}
+
+		try {
+			if (!firstCall && nextFetch.value) {
+				colRef = query(colRef, startAfter(nextFetch.value))
+			}
+
+			colRef = query(colRef, limit(limitFetch.value))
+			const snapshot = await getDocs(colRef)
+
+			if (snapshot.empty) {
+				isLoading.value = false
+				return
+			}
+
+			const lastVisible = snapshot.docs[snapshot.docs.length - 1]
+			nextFetch.value = lastVisible
+
+			const releases = snapshot.docs.map((doc) => ({
+				id: doc.id,
+				...doc.data(),
+			})) as Release[]
+
+			if (firstCall) {
+				releaseFetch.value = releases
+				nextFetch.value = lastVisible
+			} else {
+				releaseFetch.value = [...releaseFetch.value, ...releases]
+			}
+
+			console.log(
+				'Fetched releases:',
+				releases.length,
+				'Total:',
+				releaseFetch.value.length,
+				'Max:',
+				maxRelease.value,
+			)
+		} catch (error) {
+			console.error('Error getting documents: ', error)
+			toast.error('Error Loading Releases')
+		} finally {
+			isLoading.value = false
 		}
 	}
 
-	const nextPage = async () => {
-		await fetchPage('next')
-	}
-
-	const previousPage = async () => {
-		if (page.value > 0) {
-			await fetchPage('prev')
+	const deleteRelease = async (id: string) => {
+		try {
+			const res = await deleteReleaseFunction(id)
+			if (res === 'success') {
+				toast.success('Release deleted')
+				releaseFetch.value = releaseFetch.value.filter(
+					(release) => release.idYoutubeMusic !== id,
+				)
+			} else {
+				console.log('Error deleting release')
+				toast.error('Error deleting release')
+			}
+		} catch (error) {
+			console.error('Error deleting release:', error)
+			toast.error('Error deleting release')
 		}
 	}
 
-	const deleteRelease = async (id) => {
-		const release = releaseFetch.value.find((release) => release.idYoutubeMusic === id)
-		if (release) {
-			const index = releaseFetch.value.indexOf(release)
-			releaseFetch.value.splice(index, 1)
-		} else {
-			toast.error('Release Not Found')
-		}
-	}
-
-	const verifiedRelease = async (id) => {
-		const release = releaseFetch.value.find((release) => release.idYoutubeMusic === id)
-		if (release) {
-			const index = releaseFetch.value.indexOf(release)
-			release.needToBeVerified = false
-			update('releases', id, release)
-				.then(() => {
-					releaseFetch.value.splice(index, 1, release)
-					toast.success('Release Verified')
-				})
-				.catch((error) => {
-					console.error('Error updating document: ', error)
-					toast.error('Error Updating Release')
-				})
-		} else {
-			toast.error('Release Not Found')
-		}
+	const verifiedRelease = async (release: Release) => {
+		release.needToBeVerified = false
+		const docRef = doc(db, 'releases', release.idYoutubeMusic)
+		await updateDoc(docRef, { needToBeVerified: false })
+			.then(() => {
+				releaseFetch.value = releaseFetch.value.filter(
+					(r) => r.idYoutubeMusic !== release.idYoutubeMusic,
+				)
+				toast.success('Release Verified')
+			})
+			.catch((error) => {
+				console.error('Error updating document: ', error)
+				toast.error('Error when updating release')
+			})
 	}
 
 	// Fonction pour écouter les changements en temps réel
 	const listenToReleaseChanges = () => {
 		const colRef = collection(db, 'releases')
-		unsubscribe.value = onSnapshot(colRef, (snapshot) => {
+		const unsubscribe = onSnapshot(colRef, (snapshot) => {
 			snapshot.docChanges().forEach((change) => {
 				if (change.type === 'modified') {
-					const updatedRelease = { id: change.doc.id, ...change.doc.data() }
+					const updatedRelease = { id: change.doc.id, ...change.doc.data() } as Release
 					const index = releaseFetch.value.findIndex(
 						(release) => release.idYoutubeMusic === updatedRelease.idYoutubeMusic,
 					)
@@ -96,111 +165,97 @@
 				}
 			})
 		})
+		return unsubscribe
 	}
 
-	onMounted(async () => {
-		await fetchPage()
-		listenToReleaseChanges()
+	onMounted(() => {
+		const observer = new IntersectionObserver(
+			async ([entry]) => {
+				if (entry.isIntersecting && hasMore.value && !isLoading.value) {
+					await getRelease()
+				}
+			},
+			{
+				rootMargin: '2000px',
+				threshold: 0.01,
+			},
+		)
+
+		if (observerTarget.value) {
+			observer.observe(observerTarget.value)
+		}
+
+		watch(observerTarget, (el) => {
+			if (el) {
+				observer.observe(el)
+			}
+		})
+
+		onBeforeUnmount(() => {
+			if (observerTarget.value) {
+				observer.unobserve(observerTarget.value)
+			}
+			observer.disconnect()
+		})
+
+		getRelease(true)
+		const unsubscribe = listenToReleaseChanges()
+		onBeforeUnmount(() => {
+			unsubscribe()
+		})
 	})
 
-	onUnmounted(() => {
-		if (unsubscribe.value) {
-			unsubscribe.value()
-		}
-	})
+	watch(
+		[limitFetch, needToBeVerifiedFilter, noNeedToBeVerifiedFilter, sort, search],
+		async () => {
+			nextFetch.value = null
+			await getRelease(true)
+		},
+	)
 
 	const filteredReleaseList = computed(() => {
-		if (page.value != 1) page.value = 1
+		if (!releaseFetch.value) return []
 
-		const releases = releaseFetch.value ? [...releaseFetch.value] : []
+		return releaseFetch.value.sort((a, b) => {
+			if (sort.value === 'createdAt') {
+				// Si createdAt n'est pas défini, on met ces éléments à la fin
+				if (!a.createdAt && !b.createdAt) return 0
+				if (!a.createdAt) return invertSort.value ? -1 : 1
+				if (!b.createdAt) return invertSort.value ? 1 : -1
 
-		if (!search.value) {
-			return releases
-				.sort((a, b) => {
-					if (sort.value === 'createdAt') {
-						if (!invertSort.value) return a.createdAt - b.createdAt
-						return b.createdAt - a.createdAt
-					}
-					if (sort.value === 'date') {
-						const aDate = new Date(a.date.seconds * 1000)
-						const bDate = new Date(b.date.seconds * 1000)
-						if (!invertSort.value) return aDate - bDate
-						return bDate - aDate
-					}
-					if (sort.value === 'type') {
-						if (!invertSort.value) return a.type.localeCompare(b.type)
-						return b.type.localeCompare(a.type)
-					}
-					if (sort.value === 'name') {
-						if (!invertSort.value) return a.name.localeCompare(b.name)
-						return b.name.localeCompare(a.name)
-					}
-					if (sort.value === 'year') {
-						if (!invertSort.value) return a.year - b.year
-						return b.year - a.year
-					}
-					if (sort.value === 'artistsId') {
-						if (!invertSort.value) return a.artistsId.localeCompare(b.artistsId)
-						return b.artistsId.localeCompare(a.artistsId)
-					}
-				})
-				.filter((release) => {
-					if (needToBeVerifiedFilter.value) return release.needToBeVerified
-					return true
-				})
-		} else {
-			return releases
-				.sort((a, b) => {
-					if (sort.value === 'createdAt') {
-						if (!invertSort.value) return a.createdAt - b.createdAt
-						return b.createdAt - a.createdAt
-					}
-					if (sort.value === 'date') {
-						const aDate = new Date(a.date.seconds * 1000)
-						const bDate = new Date(b.date.seconds * 1000)
-						if (!invertSort.value) return aDate - bDate
-						return bDate - aDate
-					}
-					if (sort.value === 'type') {
-						if (!invertSort.value) return a.type.localeCompare(b.type)
-						return b.type.localeCompare(a.type)
-					}
-					if (sort.value === 'name') {
-						if (!invertSort.value) return a.name.localeCompare(b.name)
-						return b.name.localeCompare(a.name)
-					}
-					if (sort.value === 'year') {
-						if (!invertSort.value) return a.year - b.year
-						return b.year - a.year
-					}
-					if (sort.value === 'artistsId') {
-						if (!invertSort.value) return a.artistsId.localeCompare(b.artistsId)
-						return b.artistsId.localeCompare(a.artistsId)
-					}
-				})
-				.filter((release) => {
-					if (needToBeVerifiedFilter.value) return release.needToBeVerified
-					if (noNeedToBeVerifiedFilter.value) return !release.needToBeVerified
-					return (
-						release.name.toLowerCase().includes(search.value.toLowerCase()) ||
-						release.artistsName.toLowerCase().includes(search.value.toLowerCase()) ||
-						release.idYoutubeMusic.includes(search.value)
-					)
-				})
-		}
-	})
-
-	// nombre de page pour afficher artistPerPage.value artist parmis le nombre d'artist total
-	const nbPage = computed(() => {
-		if (!filteredReleaseList.value) return 0
-		return Math.ceil(filteredReleaseList.value.length / artistPerPage.value)
-	})
-
-	watch([page], () => {
-		if (page.value > nbPage.value) page.value = nbPage.value
-		if (page.value < 1) page.value = 1
-		startAt.value = (page.value - 1) * artistPerPage.value
-		endAt.value = page.value * artistPerPage.value
+				const aDate = new Date(a.createdAt.seconds * 1000)
+				const bDate = new Date(b.createdAt.seconds * 1000)
+				return invertSort.value
+					? bDate.getTime() - aDate.getTime()
+					: aDate.getTime() - bDate.getTime()
+			}
+			if (sort.value === 'date') {
+				const aDate = new Date(a.date.seconds * 1000)
+				const bDate = new Date(b.date.seconds * 1000)
+				return invertSort.value
+					? bDate.getTime() - aDate.getTime()
+					: aDate.getTime() - bDate.getTime()
+			}
+			if (sort.value === 'type') {
+				return invertSort.value
+					? b.type.localeCompare(a.type)
+					: a.type.localeCompare(b.type)
+			}
+			if (sort.value === 'name') {
+				return invertSort.value
+					? b.name.localeCompare(a.name)
+					: a.name.localeCompare(b.name)
+			}
+			if (sort.value === 'year') {
+				return invertSort.value ? b.year - a.year : a.year - b.year
+			}
+			if (sort.value === 'artistsId') {
+				return invertSort.value
+					? b.artistsId.localeCompare(a.artistsId)
+					: a.artistsId.localeCompare(a.artistsId)
+			}
+			return 0
+		})
 	})
 </script>
 
@@ -252,41 +307,6 @@
 						Only NNTBV
 					</button>
 				</div>
-
-				<div class="flex w-full justify-between space-x-2 sm:justify-end">
-					<!-- <button
-            @click="page = 1"
-            :disabled="startAt == 0"
-            class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
-          >
-            First
-          </button> -->
-					<button
-						:disabled="page == 0"
-						class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
-						@click="previousPage"
-					>
-						Prev
-					</button>
-					<input
-						v-model.number="page"
-						type="text"
-						class="w-10 rounded border-none bg-quinary p-2 text-center placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
-					/>
-					<button
-						class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
-						@click="nextPage"
-					>
-						Next
-					</button>
-					<!-- <button
-            @click="page = nbPage"
-            :disabled="page == nbPage"
-            class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
-          >
-            Last
-          </button> -->
-				</div>
 			</section>
 		</section>
 
@@ -296,14 +316,14 @@
 			class="grid grid-cols-1 items-center justify-center gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-2"
 		>
 			<div
-				v-for="release in filteredReleaseList.slice(startAt, endAt)"
+				v-for="(release, index) in filteredReleaseList"
 				:key="`key_` + release.idYoutubeMusic"
 				class="h-full w-full"
 			>
 				<CardDashboardRelease
 					:id="release.idYoutubeMusic"
 					:artists-name="release.artistsName"
-					:created-at="release.createdAt"
+					:created-at="release.createdAt || null"
 					:date="release.date"
 					:id-youtube-music="release.idYoutubeMusic"
 					:image="release.image"
@@ -313,11 +333,41 @@
 					:type="release.type"
 					:year-released="release.year"
 					@delete-release="deleteRelease"
+					@verified-release="verifiedRelease(release, index)"
 				/>
 			</div>
 		</div>
+
 		<p v-else class="w-full bg-quaternary p-5 text-center font-semibold uppercase">
 			No Release founded
 		</p>
+
+		<div ref="observerTarget" class="mb-4 h-4 w-full"></div>
+
+		<div
+			v-if="filteredReleaseList.length > 0 && releaseFetch.length != maxRelease"
+			class="flex flex-col items-center space-y-2 text-xs"
+		>
+			<p>({{ releaseFetch.length }} / {{ maxRelease }})</p>
+			<div v-if="!isLoading" class="flex gap-2">
+				<button
+					class="mx-auto flex w-full gap-1 rounded bg-quinary px-2 py-1 uppercase hover:bg-zinc-500 md:w-fit"
+					@click="
+						($event) => {
+							limitFetch = maxRelease
+							getRelease(true)
+						}
+					"
+				>
+					<p>Load All</p>
+				</button>
+			</div>
+			<p
+				v-else
+				class="mx-auto flex w-full gap-1 rounded bg-quinary px-2 py-1 uppercase hover:bg-zinc-500 md:w-fit"
+			>
+				Loading...
+			</p>
+		</div>
 	</div>
 </template>

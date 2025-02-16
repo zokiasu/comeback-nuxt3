@@ -1,5 +1,17 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+	ssr: false,
+	nitro: {
+		preset: 'netlify',
+		static: true,
+		output: {
+			dir: './dist',
+		},
+	},
+	app: {
+		baseURL: '/',
+		buildAssetsDir: '/_nuxt/',
+	},
 	runtimeConfig: {
 		public: {
 			FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
@@ -21,29 +33,60 @@ export default defineNuxtConfig({
 		'~/plugins/vueModal.js',
 	],
 
-	modules: [
-		'@nuxtjs/tailwindcss',
-		'@nuxt/image',
-		'@pinia/nuxt',
-		'pinia-plugin-persistedstate/nuxt',
-		'@nuxtjs/algolia',
-	],
-
-	algolia: {
-		applicationId: process.env.ALGOLIA_APPLICATION_ID,
-		apiKey: process.env.ALGOLIA_API_KEY,
-		useFetch: true,
-		instantSearch: true,
-		recommend: true,
+	vite: {
+		build: {
+			chunkSizeWarningLimit: 1600,
+		},
 	},
 
-	devtools: {
-		enabled: true,
+	experimental: {
+		payloadExtraction: false,
+	},
+
+	typescript: {
+		strict: true,
+		typeCheck: false,
 	},
 
 	build: {
-		// vue-toastification - old commonjs module
-		transpile: ['vue-toastification', '@vuepic/vue-datepicker', 'swiper'],
+		transpile: [
+			'firebase',
+			'@vuepic/vue-datepicker',
+			'@kouts/vue-modal',
+			'vue-toastification',
+			'swiper',
+			'vuedraggable',
+			'tslib',
+		],
+	},
+
+	modules: ['@pinia/nuxt', '@nuxtjs/tailwindcss', '@nuxt/image'],
+
+	head: {
+		htmlAttrs: {
+			lang: 'fr',
+		},
+		link: [
+			{
+				rel: 'icon',
+				type: 'image/x-icon',
+				href: '/favicon.ico',
+			},
+			{
+				rel: 'preconnect',
+				href: 'https://fonts.googleapis.com',
+			},
+			{
+				rel: 'preconnect',
+				href: 'https://fonts.gstatic.com',
+				crossorigin: true,
+			},
+			{
+				rel: 'stylesheet',
+				href: 'https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap',
+			},
+		],
+		meta: [{ name: 'theme-color', content: '#9E0102' }],
 	},
 
 	vue: {
@@ -52,69 +95,19 @@ export default defineNuxtConfig({
 		},
 	},
 
-	tailwindcss: {
-		configPath: 'tailwind.config.js',
-		exposeConfig: false,
-		viewer: true,
-	},
-
 	image: {
-		provider: 'ipx',
-		domains: [],
-		presets: {
-			cover: {
-				modifiers: {
-					format: 'webp',
-					quality: '80',
-				},
-			},
-		},
-	},
-
-	app: {
-		head: {
-			link: [
-				{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-				{ rel: 'icon', type: 'image/png', sizes: '48x48', href: '/icons/icon-48x48.png' },
-				{ rel: 'icon', type: 'image/png', sizes: '72x72', href: '/icons/icon-72x72.png' },
-				{ rel: 'icon', type: 'image/png', sizes: '96x96', href: '/icons/icon-96x96.png' },
-				{
-					rel: 'icon',
-					type: 'image/png',
-					sizes: '144x144',
-					href: '/icons/icon-144x144.png',
-				},
-				{
-					rel: 'icon',
-					type: 'image/png',
-					sizes: '192x192',
-					href: '/icons/icon-192x192.png',
-				},
-				{
-					rel: 'icon',
-					type: 'image/png',
-					sizes: '512x512',
-					href: '/icons/icon-512x512.png',
-				},
-			],
-			meta: [{ name: 'theme-color', content: '#9E0102' }],
+		domains: ['lh3.googleusercontent.com', 'i.ibb.co'],
+		format: ['webp', 'jpg', 'jpeg', 'png'],
+		provider: 'none',
+		screens: {
+			xs: 320,
+			sm: 640,
+			md: 768,
+			lg: 1024,
+			xl: 1280,
+			xxl: 1536,
 		},
 	},
 
 	compatibilityDate: '2025-02-09',
-
-	nitro: {
-		prerender: {
-			crawlLinks: false,
-			routes: ['/'],
-		},
-		errorHandler: '~/error.handler.ts',
-	},
-
-	routeRules: {
-		'/': { prerender: true },
-		'/artist/**': { ssr: true },
-		'/ranking/**': { ssr: true },
-		'/calendar': { ssr: true },
-	},
 })

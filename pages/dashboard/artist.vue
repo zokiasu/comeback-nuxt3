@@ -21,7 +21,7 @@
 
 	const scrollContainer = ref(null)
 	const sort = ref('createdAt')
-	const limitFetch = ref(50)
+	const limitFetch = ref(48)
 	const typeFilter = ref('')
 	const onlyWithoutDesc = ref(false)
 	const onlyWithoutSocials = ref(false)
@@ -30,6 +30,9 @@
 	const isLoading = ref(false)
 	const nextFetch = ref(null)
 	const maxArtist = ref(0)
+
+	const observerTarget = ref(null)
+	const hasMore = computed(() => artistFetch.value.length < maxArtist.value)
 
 	const deleteArtist = async (id) => {
 		const artist = artistFetch.value.find((artist) => artist.id === id)
@@ -45,23 +48,7 @@
 					toast.error('Error Removing Artist')
 				})
 		} else {
-			toast.error('Release Not Found', {
-				position: 'top-right',
-				timeout: 5000,
-				closeOnClick: true,
-				pauseOnFocusLoss: false,
-				pauseOnHover: true,
-				draggable: true,
-				draggablePercent: 0.6,
-				showCloseButtonOnHover: false,
-				hideProgressBar: false,
-				closeButton: 'button',
-				icon: true,
-				rtl: false,
-				transition: 'Vue-Toastification__bounce',
-				maxToasts: 5,
-				newestOnTop: true,
-			})
+			toast.error('Artist Not Found')
 		}
 	}
 
@@ -105,13 +92,12 @@
 			colRef = query(colRef, where('type', '==', typeFilter.value))
 		}
 
-		colRef = query(colRef, limit(limitFetch.value))
-
 		try {
-			if (nextFetch.value != null && !firstCall) {
-				colRef = nextFetch.value
+			if (!firstCall && nextFetch.value) {
+				colRef = query(colRef, startAfter(nextFetch.value))
 			}
 
+			colRef = query(colRef, limit(limitFetch.value))
 			const snapshot = await getDocs(colRef)
 
 			if (snapshot.empty) {
@@ -120,31 +106,31 @@
 			}
 
 			const lastVisible = snapshot.docs[snapshot.docs.length - 1]
+			nextFetch.value = lastVisible
 
-			if (lastVisible) {
-				nextFetch.value = query(
-					collection(db, 'artists'),
-					orderBy(sort.value, 'desc'),
-					startAfter(lastVisible),
-					limit(limitFetch.value),
-				)
+			const artists = snapshot.docs.map((doc) => ({
+				id: doc.id,
+				...doc.data(),
+			}))
+
+			if (firstCall) {
+				artistFetch.value = artists
+				nextFetch.value = lastVisible
 			} else {
-				nextFetch.value = null
+				artistFetch.value = [...artistFetch.value, ...artists]
 			}
 
-			if (nextFetch.value != null && !firstCall) {
-				const newArtists = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-
-				const filteredNewArtists = newArtists.filter(
-					(newArtist) => !artistFetch.value.some((artist) => artist.id === newArtist.id),
-				)
-
-				artistFetch.value = [...artistFetch.value, ...filteredNewArtists]
-			} else {
-				artistFetch.value = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-			}
+			console.log(
+				'Fetched artists:',
+				artists.length,
+				'Total:',
+				artistFetch.value.length,
+				'Max:',
+				maxArtist.value,
+			)
 		} catch (error) {
-			console.error('Erreur lors du chargement des artistes :', error)
+			console.error('Error getting documents: ', error)
+			toast.error('Error Loading Artists')
 		} finally {
 			isLoading.value = false
 		}
@@ -199,8 +185,37 @@
 		})
 	})
 
-	onMounted(async () => {
-		await getArtist()
+	onMounted(() => {
+		const observer = new IntersectionObserver(
+			async ([entry]) => {
+				if (entry.isIntersecting && hasMore.value && !isLoading.value) {
+					await getArtist()
+				}
+			},
+			{
+				rootMargin: '2000px',
+				threshold: 0.01,
+			},
+		)
+
+		if (observerTarget.value) {
+			observer.observe(observerTarget.value)
+		}
+
+		watch(observerTarget, (el) => {
+			if (el) {
+				observer.observe(el)
+			}
+		})
+
+		onBeforeUnmount(() => {
+			if (observerTarget.value) {
+				observer.unobserve(observerTarget.value)
+			}
+			observer.disconnect()
+		})
+
+		getArtist(true)
 	})
 
 	watch(
@@ -336,6 +351,8 @@
 			No artist found
 		</p>
 
+		<div ref="observerTarget" class="mb-4 h-4 w-full"></div>
+
 		<div
 			v-if="
 				filteredArtistList.length > 0 &&
@@ -347,15 +364,13 @@
 			<p>({{ artistFetch.length }} / {{ maxArtist }})</p>
 			<div v-if="!isLoading" class="flex gap-2">
 				<button
-					v-if="!onlyWithoutDesc && !onlyWithoutPlatforms && !onlyWithoutSocials"
 					class="mx-auto flex w-full gap-1 rounded bg-quinary px-2 py-1 uppercase hover:bg-zinc-500 md:w-fit"
-					@click="getArtist()"
-				>
-					<p>Load More</p>
-				</button>
-				<button
-					class="mx-auto flex w-full gap-1 rounded bg-quinary px-2 py-1 uppercase hover:bg-zinc-500 md:w-fit"
-					@click="limitFetch = maxArtist"
+					@click="
+						($event) => {
+							limitFetch = maxArtist
+							getArtist(true)
+						}
+					"
 				>
 					<p>Load All</p>
 				</button>
