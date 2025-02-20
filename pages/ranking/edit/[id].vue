@@ -193,9 +193,10 @@
 
 <script lang="ts" setup>
 	import draggable from 'vuedraggable'
-	import { collection, getDocs, orderBy, query, where } from 'firebase/firestore'
+	import { collection, getDocs, query, where } from 'firebase/firestore'
 	import { useToast } from 'vue-toastification'
-	import { useFirebaseRealtimeDatabase } from '~/composables/useFirebaseRealtimeDatabase'
+	import { useFirebaseRealtimeDatabase } from '@/composables/useFirebaseRealtimeDatabase'
+	import { useFirebaseUtils } from '@/composables/useFirebaseUtils'
 	import { useUserStore } from '@/stores/user'
 
 	const toast = useToast()
@@ -203,7 +204,7 @@
 	const router = useRouter()
 	const { userDataStore, isLoginStore } = useUserStore()
 	const { $firestore: database } = useNuxtApp()
-	const { snapshotResultToArray } = useFirebaseFunction()
+	const { snapshotResultToArray } = useFirebaseUtils()
 	const { writeData, readData } = useFirebaseRealtimeDatabase()
 
 	const yearFilter = ref(2024)

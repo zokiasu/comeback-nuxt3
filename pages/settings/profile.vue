@@ -4,7 +4,7 @@
 
 	const userStore = useUserStore()
 	const toast = useToast()
-	const { getAllArtists, updateUserData, getUserData } = useFirebaseFunction()
+	const { getAllArtists, updateUserData, getUserData } = useFirebaseArtist()
 
 	const userData = computed(() => userStore.userDataStore)
 	const userDetails = ref(null)

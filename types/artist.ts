@@ -5,16 +5,22 @@ export interface Artist {
 	id: string
 	idYoutubeMusic?: string
 	name: string
-	image?: string
+	image: string
 	description?: string
 	birthDate?: Timestamp
 	debutDate?: Timestamp
-	gender?: string
-	type?: string
+	gender?: 'UNKNOWN' | 'MALE' | 'FEMALE' | 'MIXTE'
+	type?: 'SOLO' | 'GROUP'
 	verified?: boolean
 	activeCareer?: boolean
-	styles?: any[]
-	generalTags?: any[]
+	styles?: {
+		name: string
+		created: Timestamp
+	}[]
+	generalTags?: {
+		name: string
+		created: Timestamp
+	}[]
 	socialList?: {
 		name: string
 		link: string

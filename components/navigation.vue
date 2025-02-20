@@ -1,17 +1,29 @@
-<script setup>
+<script setup lang="ts">
 	import * as Mdl from '@kouts/vue-modal'
+	import type { PropType } from 'vue'
 	import { useUserStore } from '@/stores/user'
+	import type { Artist } from '~/types/artist'
+
 	const { Modal } = Mdl
 
 	const userStore = useUserStore()
 	const userDataStore = computed(() => userStore.userDataStore)
 	const isLoginStore = computed(() => userStore.isLoginStore)
 
-	const { artistFetch, isAdmin, isLogin } = defineProps([
-		'artistFetch',
-		'isAdmin',
-		'isLogin',
-	])
+	const props = defineProps({
+		artistFetch: {
+			type: Array as PropType<Artist[]>,
+			required: true,
+		},
+		isAdmin: {
+			type: Boolean,
+			required: true,
+		},
+		isLogin: {
+			type: Boolean,
+			required: true,
+		},
+	})
 
 	const route = useRoute()
 
@@ -40,12 +52,6 @@
 				'shadow-zinc-700',
 			)
 		}
-	}
-
-	const signOut = async () => {
-		await signOutApp()
-		const router = useRouter()
-		router.push('/')
 	}
 
 	const profilePath = computed(() => {
@@ -104,7 +110,7 @@
 						</span>
 					</NuxtLink>
 					<NuxtLink
-						v-if="isAdmin === true"
+						v-if="props.isAdmin === true"
 						:to="`/dashboard/artist`"
 						:class="
 							route.name.startsWith('dashboard-')
@@ -125,7 +131,7 @@
 						<IconSearch class="h-3.5 w-3.5" />
 					</button>
 					<button
-						v-if="isLoginStore && artistFetch"
+						v-if="isLoginStore && props.artistFetch"
 						title="Add new comeback"
 						class="rounded bg-primary px-3 py-1 font-semibold transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50"
 						@click="showModal = true"
@@ -169,7 +175,10 @@
 			:bg-in-class="`animate__fadeInUp`"
 			:bg-out-class="`animate__fadeOutDown`"
 		>
-			<ModalNewsCreation :artist-list="artistFetch" @close-modal="showModal = false" />
+			<ModalNewsCreation
+				:artist-list="props.artistFetch"
+				@close-modal="showModal = false"
+			/>
 		</Modal>
 		<Modal
 			v-model="showModalAlgolia"

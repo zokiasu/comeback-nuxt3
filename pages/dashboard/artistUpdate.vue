@@ -1,89 +1,93 @@
-<script setup>
+<script setup lang="ts">
 	import { useToast } from 'vue-toastification'
-	const { updateArtist } = useFirebaseFunction()
+	import type { Artist } from '~/types/artist'
+	import { useFirebaseArtist } from '@/composables/useFirebaseArtist'
+	import { useFirebaseArtistPending } from '@/composables/useFirebaseArtistPending'
+
+	const { updateArtist } = useFirebaseArtist()
+	const { getAllPendingArtists, deletePendingArtist } = useFirebaseArtistPending()
 	const toast = useToast()
 
-	const artistUpdateList = ref([])
+	const artistUpdateList = ref<Artist[]>([])
 
 	onMounted(async () => {
-		artistUpdateList.value = await queryByCollection('updateArtistPending')
+		artistUpdateList.value = await getAllPendingArtists()
 	})
 
-	const deleteEdition = async (id, index) => {
-		await deletebyDoc('updateArtistPending', id)
+	const deleteEdition = async (id: string, index: number) => {
+		await deletePendingArtist(id)
 		artistUpdateList.value.splice(index, 1)
-		toast.success('Artist Pending Deleted', {
-			position: 'top-right',
-			timeout: 5000,
-			closeOnClick: true,
-			pauseOnFocusLoss: false,
-			pauseOnHover: true,
-			draggable: true,
-			draggablePercent: 0.6,
-			showCloseButtonOnHover: false,
-			hideProgressBar: false,
-			closeButton: 'button',
-			icon: true,
-			rtl: false,
-			transition: 'Vue-Toastification__bounce',
-			maxToasts: 5,
-			newestOnTop: true,
-		})
+		toast.success('Artist Pending Deleted')
 	}
 
-	const confirmEdition = async (id, artist, index) => {
+	const confirmEdition = async (id: string, artist: Artist, index: number) => {
 		updateArtist(artist).then(async () => {
-			await deletebyDoc('updateArtistPending', id)
+			await deletePendingArtist(id)
 			artistUpdateList.value.splice(index, 1)
 			toast.success('Artist Updated')
 		})
 	}
+
+	const rejectAll = async () => {
+		if (artistUpdateList.value.length === 0) return
+
+		try {
+			await Promise.all(
+				artistUpdateList.value.map(async (artist) => {
+					await deletePendingArtist(artist.id)
+				}),
+			)
+			toast.success('All pending artists rejected')
+		} catch (error) {
+			toast.error('Error rejecting all artists')
+		}
+	}
 </script>
 
 <template>
-	<div>
+	<div
+		class="scrollBarLight relative h-full space-y-3 overflow-hidden overflow-y-scroll pr-2"
+	>
+		<div v-if="artistUpdateList.length" class="mb-4 flex justify-end">
+			<button
+				class="rounded bg-red-700 px-4 py-2 font-semibold uppercase text-white transition-all duration-300 ease-in-out hover:bg-red-500"
+				@click="rejectAll"
+			>
+				Reject All
+			</button>
+		</div>
 		<transition-group
 			v-if="artistUpdateList.length"
 			name="list-complete"
 			tag="div"
-			class="grid grid-cols-1 items-center justify-center gap-4 transition-all duration-300 ease-in-out"
+			class="grid grid-cols-2 gap-5"
 		>
 			<div
 				v-for="(artist, index) in artistUpdateList"
 				:key="artist.id"
-				class="list-complete-item h-full w-full space-y-2 bg-zinc-500 p-2"
+				class="list-complete-item flex h-full flex-col space-y-2 rounded bg-quaternary p-2"
 			>
-				<CardDashboardArtistUpdate
-					:id="artist.id"
-					:task-id="artist.taskId"
-					:name="artist.name"
-					:image="artist.image"
-					:description="artist.description"
-					:type="artist.type"
-					:id-youtube-music="artist.idYoutubeMusic"
-					:styles="artist.styles"
-					:socials="artist.socials"
-					:platforms="artist.platforms"
-					:groups="artist.groups"
-					:members="artist.members"
-				/>
+				<CardDashboardArtistUpdate :artist-pending="artist" />
 				<div class="grid grid-cols-2 gap-2">
 					<button
-						class="rounded bg-green-700 font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-green-500"
-						@click="confirmEdition(artist.taskId, artist, index)"
+						class="rounded bg-green-700 py-3 font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-green-500"
+						@click="confirmEdition(artist.id, artist, index)"
 					>
 						Confirm
 					</button>
 					<button
-						class="rounded bg-red-700 font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-red-500"
-						@click="deleteEdition(artist.taskId, index)"
+						class="rounded bg-red-700 py-3 font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-red-500"
+						@click="deleteEdition(artist.id, index)"
 					>
 						Reject
 					</button>
 				</div>
 			</div>
 		</transition-group>
-		<p v-else class="w-full bg-quaternary p-5 text-center font-semibold uppercase">
+		<p
+			v-else
+			class="col-span-2 w-full bg-quaternary p-5 text-center font-semibold uppercase"
+		>
 			No pending artist updates
 		</p>
 	</div>

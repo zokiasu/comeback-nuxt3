@@ -1,6 +1,4 @@
 import { Timestamp } from 'firebase/firestore'
-import { type Artist } from './artist'
-import { type Release } from './release'
 
 export interface Music {
 	id: string
@@ -9,16 +7,46 @@ export interface Music {
 	name: string
 	duration: number
 	hasMv: boolean
-	type: 'SONG' | 'MV' | 'LIVE' | 'COVER'
-	date?: Timestamp
-	year?: number
+	type: 'SONG'
+	date: Timestamp
+	year: number
 	album?: {
 		albumId: string
 		name: string
 		type?: string
 	}
-	mvThumbnails?: any[]
-	thumbnails?: any[]
+	mvThumbnails?: {
+		default: {
+			url: string
+			height: number
+			width: number
+		}
+		high: {
+			url: string
+			height: number
+			width: number
+		}
+		maxres: {
+			url: string
+			height: number
+			width: number
+		}
+		medium: {
+			url: string
+			height: number
+			width: number
+		}
+		standard: {
+			url: string
+			height: number
+			width: number
+		}
+	}
+	thumbnails?: {
+		url: string
+		height: number
+		width: number
+	}[]
 	images?: string[]
 	artists?: {
 		artistId: string
@@ -26,5 +54,4 @@ export interface Music {
 	}[]
 	createdAt?: Timestamp
 	updatedAt?: Timestamp
-	releases?: Release[]
 }

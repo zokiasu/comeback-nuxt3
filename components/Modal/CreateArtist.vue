@@ -2,9 +2,10 @@
 	import VueMultiselect from 'vue-multiselect'
 	import { useToast } from 'vue-toastification'
 	import { Timestamp } from 'firebase/firestore'
+	import { useFirebaseArtist } from '@/composables/useFirebaseArtist'
 
 	const toast = useToast()
-	const { createArtist } = useFirebaseFunction()
+	const { createArtist } = useFirebaseArtist()
 
 	const { stylesList, tagsList, groupList, membersList } = defineProps({
 		stylesList: {
@@ -51,7 +52,7 @@
 	const sendCreateArtist = async () => {
 		isUploadingEdit.value = true
 
-		if (artist.value.name == '') {
+		if (artist.value.name === '') {
 			toast.error('Please fill the required fields')
 			isUploadingEdit.value = false
 			return

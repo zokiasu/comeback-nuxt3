@@ -1,5 +1,5 @@
 <script setup>
-	const { id, message, artist, artists, date, user, verified } = defineProps({
+	const { id, message, artist, artists, date } = defineProps({
 		id: {
 			type: String,
 			required: true,

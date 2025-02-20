@@ -1,7 +1,6 @@
-import { doc, getDoc, getFirestore, Timestamp, setDoc } from 'firebase/firestore'
 import { useUserStore } from '@/stores/user'
 
-export default defineNuxtRouteMiddleware(async (to, from) => {
+export default defineNuxtRouteMiddleware(async (to) => {
 	const { userDataStore } = useUserStore()
 
 	try {

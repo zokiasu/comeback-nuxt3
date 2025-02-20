@@ -1,11 +1,12 @@
-import type { Comeback } from './comeback'
+import type { Timestamp } from 'firebase/firestore'
 
 export interface User {
 	id: string
-	idFirebase: string
-	username: string
-	country: string
-	picture: string
-	role: string[]
-	comebacks: Comeback[]
+	name: string
+	country?: string
+	email: string
+	photoURL: string
+	role: 'ADMIN' | 'USER' | 'MODERATOR'
+	createdAt: Timestamp
+	updatedAt: Timestamp
 }

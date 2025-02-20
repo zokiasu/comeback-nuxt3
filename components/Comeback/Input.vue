@@ -1,5 +1,5 @@
 <script setup>
-	const { name, placeholder, modelValue } = defineProps({
+	const { placeholder, modelValue } = defineProps({
 		label: {
 			type: String,
 			required: false,

@@ -15,9 +15,9 @@
 	} from 'firebase/firestore'
 	import { useToast } from 'vue-toastification'
 	import type { Release } from '~/types/release'
-	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
+	import { useFirebaseRelease } from '@/composables/useFirebaseRelease'
 
-	const { deleteRelease: deleteReleaseFunction } = useFirebaseFunction()
+	const { deleteRelease: deleteReleaseFunction } = useFirebaseRelease()
 	const toast = useToast()
 	const { $firestore: db } = useNuxtApp()
 

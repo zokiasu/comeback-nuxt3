@@ -1,16 +1,27 @@
-<script setup>
+<script setup lang="ts">
 	import * as Mdl from '@kouts/vue-modal'
+	import type { PropType } from 'vue'
+	import type { Artist } from '~/types/artist'
 
 	const { Modal } = Mdl
 	const showModal = ref(false)
 	const showModalAlgolia = ref(false)
 	const isPlayingVideo = useIsPlayingVideo()
 
-	const { artistFetch, isAdmin, isLogin } = defineProps([
-		'artistFetch',
-		'isAdmin',
-		'isLogin',
-	])
+	const props = defineProps({
+		artistFetch: {
+			type: Array as PropType<Artist[]>,
+			required: true,
+		},
+		isAdmin: {
+			type: Boolean,
+			required: true,
+		},
+		isLogin: {
+			type: Boolean,
+			required: true,
+		},
+	})
 
 	const userStore = useUserStore()
 	const userDataStore = computed(() => userStore.userDataStore)
@@ -50,21 +61,21 @@
 				<IconSearch class="mx-auto h-5 w-5" />
 			</button>
 			<NuxtLink
-				v-if="isLogin && userDataStore"
+				v-if="props.isLogin && userDataStore"
 				:to="profilePath"
 				class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50"
 			>
 				<IconArtist class="mx-auto h-5 w-5" />
 			</NuxtLink>
 			<NuxtLink
-				v-if="isAdmin"
+				v-if="props.isAdmin"
 				:to="`/dashboard/artist`"
 				class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50"
 			>
 				<IconEdit class="mx-auto h-5 w-5" />
 			</NuxtLink>
 			<NuxtLink
-				v-if="!isLogin"
+				v-if="!props.isLogin"
 				:to="`/authentification`"
 				class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50"
 			>
@@ -89,7 +100,10 @@
 			:bg-in-class="`animate__fadeInUp`"
 			:bg-out-class="`animate__fadeOutDown`"
 		>
-			<ModalNewsCreation :artist-list="artistFetch" @close-modal="showModal = false" />
+			<ModalNewsCreation
+				:artist-list="props.artistFetch"
+				@close-modal="showModal = false"
+			/>
 		</Modal>
 		<Modal
 			v-model="showModalAlgolia"

@@ -6,6 +6,7 @@
 	import { useToast } from 'vue-toastification'
 	import * as Mdl from '@kouts/vue-modal'
 	import _ from 'lodash'
+	import { useFirebaseArtist } from '@/composables/useFirebaseArtist'
 
 	definePageMeta({
 		middleware: 'auth',
@@ -17,7 +18,7 @@
 	const toast = useToast()
 	const { $firestore: db } = useNuxtApp()
 	const { isAdminStore } = useUserStore()
-	const { getArtistByIdWithGroupsAndMembers, updateArtist } = useFirebaseFunction()
+	const { getArtistByIdWithGroupsAndMembers, updateArtist } = useFirebaseArtist()
 
 	const title = ref('Edit Artist Page')
 	const description = ref('Edit Artist Page')
@@ -70,7 +71,7 @@
 		})
 
 		// if artistToEdit doesn't have any field to update then return
-		if (Object.keys(updatedFields).length == 0) {
+		if (Object.keys(updatedFields).length === 0) {
 			toast.error('No field to update')
 			return
 		}
@@ -159,7 +160,7 @@
 		description.value = artist.value.description
 
 		artistList.value = await queryByCollection('artists')
-		groupList.value = artistList.value.filter((artist) => artist.type == 'GROUP')
+		groupList.value = artistList.value.filter((artist) => artist.type === 'GROUP')
 		membersList.value = artistList.value
 
 		onSnapshot(doc(db, 'general', 'data'), (doc) => {

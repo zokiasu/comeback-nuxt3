@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	const { userName, userPicture, userRoomGrade } = defineProps<{
+	const { userName, userRoomGrade } = defineProps<{
 		userName: string
 		userPicture: string
 		userRoomGrade: string

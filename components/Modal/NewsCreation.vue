@@ -4,13 +4,13 @@
 	import { Timestamp } from 'firebase/firestore'
 	import { useToast } from 'vue-toastification'
 	import debounce from 'lodash.debounce'
-	import { useUserStore } from '@/stores/user'
 	import algoliasearch from 'algoliasearch/lite'
+	import { useUserStore } from '@/stores/user'
 
 	const config = useRuntimeConfig()
 	const client = algoliasearch(
 		config.public.ALGOLIA_APPLICATION_ID,
-		config.public.ALGOLIA_API_KEY
+		config.public.ALGOLIA_API_KEY,
 	)
 	const index = client.initIndex('Artists')
 

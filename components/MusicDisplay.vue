@@ -11,7 +11,6 @@
 		albumName,
 		albumId,
 		musicImage,
-		musicDate,
 		hasMv,
 		horizontalMode,
 	} = defineProps({

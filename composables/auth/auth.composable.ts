@@ -7,10 +7,9 @@ export const useAuth = () => {
 	const isLoading = ref(false)
 	const error = ref(null)
 	const router = useRouter()
-	const route = useRoute()
 
 	const { $auth: auth } = useNuxtApp()
-	const { setUserData, setIsAdmin, userDataStore } = useUserStore()
+	const { setUserData, setIsAdmin } = useUserStore()
 
 	const loginWithGoogle = async () => {
 		isLoading.value = true

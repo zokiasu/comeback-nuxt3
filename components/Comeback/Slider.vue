@@ -29,7 +29,7 @@
 		inheritAttrs: false,
 	})
 
-	const props = defineProps<{
+	defineProps<{
 		image: string
 		name: string
 		id: string

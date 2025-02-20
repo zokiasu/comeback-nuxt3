@@ -1,6 +1,5 @@
 <script setup>
 	import { ref, defineProps } from 'vue'
-	import { Timestamp } from 'firebase/firestore'
 
 	// récupérer les props message (string), date(any) et artist(string)
 	const { message, date, artist, artists } = defineProps({

@@ -1,11 +1,6 @@
 <script setup>
 	const routeN = useRoute()
-	const collapseMenu = ref(true)
 	const menuCollapsable = ref(null)
-
-	const collapseMenuToggle = () => {
-		collapseMenu.value = !collapseMenu.value
-	}
 
 	const signOut = async () => {
 		await signOutApp()

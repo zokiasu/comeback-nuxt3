@@ -74,27 +74,14 @@
 	import 'swiper/css/autoplay'
 	import 'swiper/css/effect-fade'
 	import 'swiper/css/parallax'
+	import type { Comeback } from '~/types/comeback'
 
-	interface Comeback {
-		id: string
-		artist?: {
-			id: string
-			image: string
-			name: string
-		}
-		artists?: Array<{
-			id: string
-			picture: string
-			name: string
-		}>
-	}
-
-	const props = defineProps<{
+	defineProps<{
 		newsToday: Comeback[]
 	}>()
 </script>
 
-<style>
+<style scoped>
 	/* Définir les animations */
 	.fade-enter-active,
 	.fade-leave-active {
