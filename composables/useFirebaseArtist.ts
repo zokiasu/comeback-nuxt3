@@ -17,6 +17,7 @@ import {
 import { useToast } from 'vue-toastification'
 import { useFirebaseRelease } from '@/composables/useFirebaseRelease'
 import { useFirebaseUtils } from '@/composables/useFirebaseUtils'
+import type { Artist } from '~/types/artist'
 
 export function useFirebaseArtist() {
 	const { $firestore: database } = useNuxtApp()
@@ -25,7 +26,7 @@ export function useFirebaseArtist() {
 	const toast = useToast()
 
 	// Verify if an artist exist in the 'artists' collection in Firestore with idYoutubeMusic field.
-	const artistExistInFirebase = async (idYoutubeMusic: string) => {
+	const artistExistInFirebase = async (idYoutubeMusic: string): Promise<boolean> => {
 		const colRef = query(
 			collection(database as any, 'artists'),
 			where('idYoutubeMusic', '==', idYoutubeMusic),
@@ -35,7 +36,7 @@ export function useFirebaseArtist() {
 	}
 
 	// Create a new artist in the 'artists' collection in Firestore
-	const createArtist = async (data: any) => {
+	const createArtist = async (data: Artist) => {
 		if (await artistExistInFirebase(data.idYoutubeMusic)) {
 			toast.error('This artist already exists in the database.')
 			return null
