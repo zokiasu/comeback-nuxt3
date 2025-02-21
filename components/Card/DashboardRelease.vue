@@ -4,7 +4,6 @@
 
 	import * as Mdl from '@kouts/vue-modal'
 	import '@kouts/vue-modal/dist/vue-modal.css'
-	import { useToast } from 'vue-toastification'
 	import type { PropType } from 'vue'
 	import type { Timestamp } from 'firebase/firestore'
 
@@ -17,7 +16,6 @@
 	const {
 		id,
 		artistsName,
-		createdAt,
 		date,
 		idYoutubeMusic,
 		image,

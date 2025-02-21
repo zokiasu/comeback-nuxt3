@@ -7,12 +7,6 @@ import {
 	doc,
 	setDoc,
 	updateDoc,
-	Timestamp,
-	query,
-	where,
-	orderBy,
-	limit,
-	getCountFromServer,
 } from 'firebase/firestore'
 
 /** GENERAL FUNCTION **/

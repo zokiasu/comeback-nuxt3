@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { useFirebaseRealtimeDatabase } from '~/composables/useFirebaseRealtimeDatabase'
+	import { useFirebaseRealtimeDatabase } from '@/composables/useFirebaseRealtimeDatabase'
 	const { idRoom, idActualUser, nameActualUser, isModerator } = defineProps<{
 		idRoom: string
 		idActualUser: string
@@ -7,8 +7,7 @@
 		isModerator: boolean
 	}>()
 
-	const { queryData, writeData, readData, updateData, deleteData, listenForUpdates } =
-		useFirebaseRealtimeDatabase()
+	const { writeData, readData, listenForUpdates } = useFirebaseRealtimeDatabase()
 
 	const message = ref('')
 	const messageList = ref<any[]>([])

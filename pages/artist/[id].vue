@@ -4,7 +4,8 @@
 	import type { Music } from '~/types/music'
 
 	const { isLoginStore } = useUserStore()
-	const { getRandomMusicFromArtistId, getFullArtistById } = useFirebaseFunction()
+	const { getRandomMusicFromArtistId } = useFirebaseFunction()
+	const { getFullArtistById } = useFirebaseArtist()
 
 	const title = ref('Artist Page')
 	const description = ref('Artist')

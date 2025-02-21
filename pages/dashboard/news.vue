@@ -36,7 +36,7 @@
 	}
 
 	const filteredNewsList = computed(() => {
-		if (page != 1) page.value = 1
+		if (page.value !== 1) page.value = 1
 		if (!newsFetch.value) return newsFetch.value
 		if (!search.value) {
 			return newsFetch.value.sort((a, b) => {

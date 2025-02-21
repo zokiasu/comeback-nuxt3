@@ -3,6 +3,9 @@
 	import { Timestamp } from 'firebase/firestore'
 	import { useFirebaseFunction } from '@/composables/useFirebaseFunction'
 	import DiscoverMusic from '~/components/DiscoverMusic.vue'
+	import type { Artist } from '~/types/artist'
+	import type { Comeback } from '~/types/comeback'
+	import type { Release } from '~/types/release'
 
 	const {
 		getRealtimeNextComebacks,
@@ -10,17 +13,17 @@
 		getRealtimeLastestArtistsAdded,
 	} = useFirebaseFunction()
 
-	const comebacks = ref<any[]>([])
-	const artists = ref<any[]>([])
-	const releases = ref<any[]>([])
+	const comebacks = ref<Comeback[]>([])
+	const artists = ref<Artist[]>([])
+	const releases = ref<Release[]>([])
 
 	const discoverOne = ref<InstanceType<typeof DiscoverMusic> | null>(null)
 	const discoverTwo = ref<InstanceType<typeof DiscoverMusic> | null>(null)
 	const discoverThree = ref<InstanceType<typeof DiscoverMusic> | null>(null)
 	const discoverFour = ref<InstanceType<typeof DiscoverMusic> | null>(null)
 
-	const comebacksToday = computed(() => {
-		return comebacks.value.filter((comeback: any) => {
+	const comebacksToday = computed<Comeback[]>(() => {
+		return comebacks.value.filter((comeback) => {
 			const comebacksDate = new Date(comeback.date.seconds * 1000)
 			const today = new Date()
 			return (

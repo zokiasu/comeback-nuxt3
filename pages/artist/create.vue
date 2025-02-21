@@ -5,7 +5,7 @@
 	import { Timestamp, doc, onSnapshot } from 'firebase/firestore'
 	import { useToast } from 'vue-toastification'
 	import * as Mdl from '@kouts/vue-modal'
-	import _ from 'lodash'
+	import { useFirebaseArtist } from '@/composables/useFirebaseArtist'
 
 	definePageMeta({
 		middleware: 'auth',
@@ -15,7 +15,7 @@
 	const toast = useToast()
 	const { $firestore: db } = useNuxtApp()
 	const { isAdminStore } = useUserStore()
-	const { createArtist } = useFirebaseFunction()
+	const { createArtist } = useFirebaseArtist()
 
 	const title = ref('Create Artist Page')
 	const description = ref('Create Artist Page')
@@ -63,7 +63,7 @@
 	const sendUpdateArtist = async () => {
 		isUploadingEdit.value = true
 
-		if (artistToEdit.value.name == '') {
+		if (artistToEdit.value.name === '') {
 			toast.error('Please fill the required fields')
 			isUploadingEdit.value = false
 			return
@@ -103,7 +103,7 @@
 
 	const closeModalCreateArtist = async () => {
 		artistList.value = await queryByCollection('artists')
-		groupList.value = artistList.value.filter((artist) => artist.type == 'GROUP')
+		groupList.value = artistList.value.filter((artist) => artist.type === 'GROUP')
 		membersList.value = artistList.value
 		showModalCreateArtist.value = false
 	}

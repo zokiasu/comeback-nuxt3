@@ -117,11 +117,11 @@ export default defineNuxtConfig({
 		applicationId: process.env.ALGOLIA_APPLICATION_ID,
 		lite: true,
 		search: {
-			indexName: process.env.ALGOLIA_INDEX_NAME
+			indexName: process.env.ALGOLIA_INDEX_NAME,
 		},
 		instantSearch: {
-			theme: 'algolia'
-		}
+			theme: 'algolia',
+		},
 	},
 
 	compatibilityDate: '2025-02-09',

@@ -28,7 +28,7 @@
 			if (userSnap.exists()) {
 				const user = userSnap.data()
 				setUserData(user)
-				setIsAdmin(user.role == 'ADMIN')
+				setIsAdmin(user.role === 'ADMIN')
 			} else {
 				console.log('No such document!')
 				createDatabaseUser(user)

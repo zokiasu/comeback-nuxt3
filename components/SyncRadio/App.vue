@@ -1,8 +1,8 @@
 <script setup>
 	import { useToast } from 'vue-toastification'
 	import debounce from 'lodash.debounce'
-	import { useFirebaseRealtimeDatabase } from '~/composables/useFirebaseRealtimeDatabase'
-	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
+	import { useFirebaseRealtimeDatabase } from '@/composables/useFirebaseRealtimeDatabase'
+	import { useFirebaseUtils } from '@/composables/useFirebaseUtils'
 	import { useUserStore } from '~/stores/user'
 
 	// Initialisation des réactifs
@@ -33,7 +33,7 @@
 
 	const { writeData, readData, updateData, deleteData, listenForUpdates } =
 		useFirebaseRealtimeDatabase()
-	const { getVideoFullDetails, getAllVideosFromPlaylist } = useFirebaseFunction()
+	const { getVideoFullDetails, getAllVideosFromPlaylist } = useFirebaseUtils()
 
 	const { roomId } = defineProps({
 		roomId: {
@@ -44,7 +44,6 @@
 
 	const userStore = useUserStore()
 	const config = useRuntimeConfig()
-	const route = useRoute()
 	const router = useRouter()
 	const toast = useToast()
 	const lastRoomYouTryToJoined = useLastRoomYouTryToJoined()
@@ -371,10 +370,6 @@
 		recommandationCard1.value.reloadRandomMusic()
 		recommandationCard2.value.reloadRandomMusic()
 		recommandationCard3.value.reloadRandomMusic()
-	}
-
-	const lastUpdateTime = () => {
-		updateData('/syncradio/' + roomId, { lastUpdate: new Date().toISOString() })
 	}
 
 	const resetPlayer = () => {

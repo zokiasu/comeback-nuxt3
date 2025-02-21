@@ -1,5 +1,5 @@
 <script setup>
-	const { name, placeholder } = defineProps({
+	const { label, disabled } = defineProps({
 		label: {
 			type: String,
 			required: false,

@@ -46,13 +46,24 @@
 				playsinline: 1,
 				rel: 0,
 				showinfo: 0,
-				host: 'https://come-back.netlify.app' || 'https://localhost:3000',
+				origin: window.location.origin,
+				widget_referrer: window.location.origin,
+				allow: 'autoplay; encrypted-media',
+				sandbox: 'allow-same-origin allow-scripts allow-presentation',
 			},
 			events: {
 				onReady: onPlayerReady,
 				onStateChange: onPlayerStateChange,
 				onError: onPlayerError,
 			},
+		})
+
+		// Ajouter un gestionnaire de messages pour la communication cross-origin
+		window.addEventListener('message', (event) => {
+			if (event.origin !== 'https://www.youtube.com') {
+				return
+			}
+			// Traiter les messages de l'iframe YouTube ici si nécessaire
 		})
 	}
 
@@ -199,6 +210,8 @@
 			id="globalPlayerContainer"
 			ref="globalPlayerContainer"
 			class="hidden aspect-video w-1/4 min-w-[20rem] overflow-hidden rounded-lg px-2 lg:absolute lg:-top-72 lg:right-0 lg:z-50 lg:h-72"
+			:allow="'autoplay; encrypted-media'"
+			:sandbox="'allow-same-origin allow-scripts allow-presentation'"
 		></div>
 		<div class="relative flex w-full items-center justify-between bg-secondary px-5 py-3">
 			<div class="flex w-full items-center space-x-2 sm:w-fit">
