@@ -44,8 +44,8 @@ export function useFirebaseArtist() {
 
 		// Suppression des clés de groupes et de membres pour la création initiale de l'artiste
 		const artistData = { ...data }
-		delete artistData.groups
-		delete artistData.members
+		if(artistData.groups) delete artistData?.groups
+		if (artistData.members) delete artistData?.members
 
 		const docRef = await addDoc(collection(database as any, 'artists'), artistData)
 		const artistId = docRef.id

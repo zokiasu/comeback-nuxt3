@@ -7,7 +7,7 @@
 	const { getAllArtists, updateUserData, getUserData } = useFirebaseArtist()
 
 	const userData = computed(() => userStore.userDataStore)
-	const userDetails = ref(null)
+	const userDetails = ref<User | null>(null)
 	const artistList = ref([])
 	const searchInput = ref('')
 

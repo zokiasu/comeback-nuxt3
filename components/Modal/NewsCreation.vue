@@ -29,7 +29,7 @@
 		user: {
 			id: userDataStore.id,
 			name: userDataStore.name,
-			picture: userDataStore.picture,
+			photoURL: userDataStore.photoURL,
 		},
 		date: null,
 		message: null,
@@ -40,10 +40,8 @@
 
 	// Définition d'une fonction de recherche débattue
 	const debouncedSearch = debounce(async (query) => {
-		console.log('Searching for:', query)
 		try {
 			const { hits } = await index.search(query)
-			console.log('Search results:', hits)
 			artistListSearched.value = hits.slice(0, 10)
 		} catch (error) {
 			console.error('Erreur lors de la recherche:', error)
@@ -52,7 +50,6 @@
 
 	watchEffect(() => {
 		if (searchArtist.value.length > 2) {
-			console.log('Triggering search for:', searchArtist.value)
 			debouncedSearch(searchArtist.value)
 		} else {
 			artistListSearched.value = []
@@ -74,14 +71,8 @@
 	}
 
 	const createNews = async () => {
-		// if (await getComebackExist(news.value.date, news.value.artist.name)) {
-		//   toast.error('Comeback already exist')
-		//   closeModal()
-		//   return
-		// }
-
 		sendNews.value = true
-
+		
 		add('news', news.value)
 			.then(() => {
 				news.value = {
@@ -89,7 +80,7 @@
 					user: {
 						id: userDataStore.id,
 						name: userDataStore.name,
-						image: userDataStore.picture,
+						photoURL: userDataStore?.photoURL,
 					},
 					date: null,
 					message: null,

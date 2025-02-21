@@ -2,14 +2,15 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { doc, getDoc, getFirestore } from 'firebase/firestore'
+import type { User } from '~/types/user'
 
 export const useUserStore = defineStore(
 	'userStore',
 	() => {
 		const firebaseUserStore = ref(null)
-		const isLoginStore = ref(false)
-		const isAdminStore = ref(false)
-		const userDataStore = ref(null)
+		const isLoginStore = ref<Boolean>(false)
+		const isAdminStore = ref<Boolean>(false)
+		const userDataStore = ref<User | null>(null)
 
 		const setUserData = (user: any) => {
 			userDataStore.value = user
