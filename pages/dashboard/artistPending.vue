@@ -12,6 +12,7 @@
 
 	onMounted(async () => {
 		artistUpdateList.value = await getAllPendingArtists()
+		console.log(artistUpdateList.value)
 	})
 
 	const deleteEdition = async (id: string, index: number) => {
@@ -71,13 +72,13 @@
 				<div class="grid grid-cols-2 gap-2">
 					<button
 						class="rounded bg-green-700 py-3 font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-green-500"
-						@click="confirmEdition(artist.id, artist, index)"
+						@click="confirmEdition(artist.taskId, artist, index)"
 					>
 						Confirm
 					</button>
 					<button
 						class="rounded bg-red-700 py-3 font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-red-500"
-						@click="deleteEdition(artist.id, index)"
+						@click="deleteEdition(artist.taskId, index)"
 					>
 						Reject
 					</button>

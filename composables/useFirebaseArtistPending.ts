@@ -11,7 +11,7 @@ import { useToast } from 'vue-toastification'
 import { useFirebaseUtils } from '@/composables/useFirebaseUtils'
 
 export function useFirebaseArtistPending() {
-	const { $database: database } = useNuxtApp()
+	const { $firestore: database } = useNuxtApp()
 	const toast = useToast()
 	const { snapshotResultToArray, documentSnapshotToObject } = useFirebaseUtils()
 
@@ -29,6 +29,7 @@ export function useFirebaseArtistPending() {
 
 				return {
 					...artist,
+					taskId: snapshot.docs[artists.indexOf(artist)].id,
 					groups: snapshotResultToArray(groupsSnapshot),
 					members: snapshotResultToArray(membersSnapshot),
 				}
@@ -52,6 +53,7 @@ export function useFirebaseArtistPending() {
 
 			return {
 				...artist,
+				taskId: snapshot.id,
 				groups: snapshotResultToArray(groupsSnapshot),
 				members: snapshotResultToArray(membersSnapshot),
 			}

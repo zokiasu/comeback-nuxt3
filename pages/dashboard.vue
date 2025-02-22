@@ -41,11 +41,11 @@
 				<p v-if="!collapseMenu">Artist</p>
 			</NuxtLink>
 			<NuxtLink
-				to="/dashboard/artistUpdate"
+				to="/dashboard/artistPending"
 				class="flex items-center gap-2 rounded py-3 transition-all duration-300 ease-in-out"
 				:class="{
-					'bg-quinary font-semibold text-white': routeN.name === 'dashboard-artistUpdate',
-					'text-zinc-500 hover:bg-quinary': routeN.name !== 'dashboard-artistUpdate',
+					'bg-quinary font-semibold text-white': routeN.name === 'dashboard-artistPending',
+					'text-zinc-500 hover:bg-quinary': routeN.name !== 'dashboard-artistPending',
 					'px-5': !collapseMenu,
 					'flex-col': collapseMenu,
 				}"

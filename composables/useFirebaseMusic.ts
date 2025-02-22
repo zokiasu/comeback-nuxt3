@@ -64,10 +64,8 @@ export const useFirebaseMusic = () => {
 			const constraints = [
 				where('artists', 'array-contains', {
 					artistId,
-					name: artistName, // On remet le name car il fait partie de la structure
 				}),
 			] as QueryConstraint[]
-
 			const colRef = query(collection(database as any, 'musics'), ...constraints)
 			const snapshot = await getDocs(colRef)
 
