@@ -145,13 +145,16 @@
 				colRef = query(colRef, startAfter(nextFetch.value))
 			} else if (firstCall) {
 				console.log('Premier appel, réinitialisation de la liste')
-				// Réinitialiser la liste pour le premier appel
+				// Réinitialiser la liste et le curseur pour le premier appel
 				releaseFetch.value = []
+				nextFetch.value = null
 			}
 
 			// Limiter le nombre de résultats par requête
-			colRef = query(colRef, limit(limitFetch.value))
-			console.log(`Limite de fetch: ${limitFetch.value}`)
+			// Utiliser une valeur plus petite pour le chargement progressif
+			const fetchLimit = firstCall ? limitFetch.value : Math.min(limitFetch.value, 12)
+			colRef = query(colRef, limit(fetchLimit))
+			console.log(`Limite de fetch: ${fetchLimit}`)
 			
 			const snapshot = await getDocs(colRef)
 
@@ -267,8 +270,9 @@
 				}
 			},
 			{
-				rootMargin: '500px', // Réduire la marge pour déclencher le chargement plus tôt
-				threshold: 0.1, // Augmenter le seuil pour une détection plus sensible
+				// Utiliser null comme root pour observer par rapport au viewport
+				rootMargin: '200px', // Réduire encore la marge pour un déclenchement plus précis
+				threshold: 0.1, // Maintenir le seuil pour une détection sensible
 			},
 		)
 
@@ -478,14 +482,23 @@
 			Aucun release trouvé
 		</p>
 
-		<div 
-			ref="observerTarget" 
-			class="mb-4 h-10 w-full"
-			:class="{'bg-gray-200 bg-opacity-20': hasMore && !isLoading && !useAlgoliaForSearch}"
-		></div>
-
 		<div v-if="isLoading && !firstLoad" class="flex justify-center py-4">
 			<p class="rounded bg-quinary px-4 py-2 text-center">Chargement des releases...</p>
+		</div>
+
+		<div 
+			v-if="hasMore && !useAlgoliaForSearch"
+			ref="observerTarget" 
+			class="my-8 h-20 w-full rounded bg-gray-200 bg-opacity-10 flex items-center justify-center"
+		>
+			<div v-if="!isLoading" class="text-xs text-gray-400">
+				Faites défiler pour charger plus de releases
+			</div>
+			<div v-else class="loading-indicator">
+				<div class="loading-dot"></div>
+				<div class="loading-dot"></div>
+				<div class="loading-dot"></div>
+			</div>
 		</div>
 
 		<div
@@ -514,3 +527,46 @@
 		</div>
 	</div>
 </template>
+
+<style scoped>
+.loading-indicator {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+.loading-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background-color: #666;
+	animation: pulse 1.5s infinite ease-in-out;
+}
+
+.loading-dot:nth-child(2) {
+	animation-delay: 0.3s;
+}
+
+.loading-dot:nth-child(3) {
+	animation-delay: 0.6s;
+}
+
+@keyframes pulse {
+	0%, 100% {
+		transform: scale(0.8);
+		opacity: 0.5;
+	}
+	50% {
+		transform: scale(1.2);
+		opacity: 1;
+	}
+}
+
+.fade-enter-active, .fade-leave-active {
+	transition: opacity 0.3s;
+}
+.fade-enter-from, .fade-leave-to {
+	opacity: 0;
+}
+</style>

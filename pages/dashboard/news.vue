@@ -1,8 +1,21 @@
-<script setup>
+<script setup lang="ts">
 	import { useToast } from 'vue-toastification'
+	import { queryByCollection, deletebyDoc } from '~/composables/useFirestore'
+
+	interface News {
+		taskId: string
+		message: string
+		date?: { seconds: number; nanoseconds: number }
+		createdAt?: number
+		user?: { id: string; name: string }
+		artist?: { id: string; name: string }
+		artists?: any[]
+		verified?: boolean
+	}
 
 	const toast = useToast()
-	const newsFetch = ref([])
+	const newsFetch = ref<News[]>([])
+	const isLoading = ref(false)
 
 	const search = ref('')
 	const sort = ref('date')
@@ -12,82 +25,111 @@
 	const endAt = ref(12)
 	const page = ref(1)
 
+	const fetchNews = async () => {
+		isLoading.value = true
+		try {
+			const result = await queryByCollection('news')
+			if (Array.isArray(result)) {
+				newsFetch.value = result as News[]
+				console.log(`${result.length} news récupérées`)
+			} else {
+				console.error('Résultat inattendu:', result)
+				toast.error('Erreur lors du chargement des news')
+			}
+		} catch (error) {
+			console.error('Erreur lors de la récupération des news:', error)
+			toast.error('Erreur lors du chargement des news')
+		} finally {
+			isLoading.value = false
+		}
+	}
+
 	onMounted(async () => {
-		newsFetch.value = await queryByCollection('news')
+		await fetchNews()
 	})
 
-	const deleteNews = async (id) => {
+	const deleteNews = async (id: string) => {
 		const newsToDelete = newsFetch.value.find((news) => news.taskId === id)
 
 		if (newsToDelete) {
 			const index = newsFetch.value.indexOf(newsToDelete)
-			await deletebyDoc('news', id)
-				.then(async () => {
-					newsFetch.value.splice(index, 1)
-					toast.success('News deleted')
-				})
-				.catch((error) => {
-					console.error('Error removing document: ', error)
-					toast.error('Error Removing News')
-				})
+			try {
+				await deletebyDoc('news', id)
+				newsFetch.value.splice(index, 1)
+				toast.success('News supprimée')
+			} catch (error) {
+				console.error('Erreur lors de la suppression du document:', error)
+				toast.error('Erreur lors de la suppression de la news')
+			}
 		} else {
-			toast.error('News Not Found')
+			toast.error('News non trouvée')
 		}
+	}
+
+	const sortNews = (a: News, b: News) => {
+		if (sort.value === 'createdAt') {
+			if (!a.createdAt && !b.createdAt) return 0
+			if (!a.createdAt) return invertSort.value ? -1 : 1
+			if (!b.createdAt) return invertSort.value ? 1 : -1
+			return invertSort.value ? b.createdAt - a.createdAt : a.createdAt - b.createdAt
+		}
+		
+		if (sort.value === 'date') {
+			if (!a.date?.seconds && !b.date?.seconds) return 0
+			if (!a.date?.seconds) return invertSort.value ? -1 : 1
+			if (!b.date?.seconds) return invertSort.value ? 1 : -1
+			
+			const aDate = new Date(a.date.seconds * 1000)
+			const bDate = new Date(b.date.seconds * 1000)
+			return invertSort.value ? bDate.getTime() - aDate.getTime() : aDate.getTime() - bDate.getTime()
+		}
+		
+		if (sort.value === 'user') {
+			if (!a.user?.id && !b.user?.id) return 0
+			if (!a.user?.id) return invertSort.value ? -1 : 1
+			if (!b.user?.id) return invertSort.value ? 1 : -1
+			
+			return invertSort.value 
+				? b.user.id.localeCompare(a.user.id) 
+				: a.user.id.localeCompare(b.user.id)
+		}
+		
+		if (sort.value === 'artist') {
+			if (!a.artist?.id && !b.artist?.id) return 0
+			if (!a.artist?.id) return invertSort.value ? -1 : 1
+			if (!b.artist?.id) return invertSort.value ? 1 : -1
+			
+			return invertSort.value 
+				? b.artist.id.localeCompare(a.artist.id) 
+				: a.artist.id.localeCompare(b.artist.id)
+		}
+		
+		return 0
 	}
 
 	const filteredNewsList = computed(() => {
 		if (page.value !== 1) page.value = 1
-		if (!newsFetch.value) return newsFetch.value
+		if (!newsFetch.value || newsFetch.value.length === 0) return []
+		
+		// Appliquer d'abord le tri
+		const sortedNews = [...newsFetch.value].sort(sortNews)
+		
+		// Ensuite appliquer le filtre de recherche si nécessaire
 		if (!search.value) {
-			return newsFetch.value.sort((a, b) => {
-				if (sort.value === 'createdAt') {
-					if (!invertSort.value) return a.createdAt - b.createdAt
-					return b.createdAt - a.createdAt
-				}
-				if (sort.value === 'date') {
-					const aDate = new Date(a?.date?.seconds * 1000)
-					const bDate = new Date(b?.date?.seconds * 1000)
-					if (!invertSort.value) return aDate - bDate
-					return bDate - aDate
-				}
-				if (sort.value === 'user') {
-					if (!invertSort.value) return a.user.id.localeCompare(b.user.id)
-					return b.user.id.localeCompare(a.user.id)
-				}
-				if (sort.value === 'artist') {
-					if (!invertSort.value) return a.artist.id.localeCompare(b.artist.id)
-					return b.artist.id.localeCompare(a.artist.id)
-				}
-			})
-		} else {
-			return newsFetch.value
-				.sort((a, b) => {
-					if (sort.value === 'createdAt') {
-						if (!invertSort.value) return a.createdAt - b.createdAt
-						return b.createdAt - a.createdAt
-					}
-					if (sort.value === 'date') {
-						const aDate = new Date(a?.date?.seconds * 1000)
-						const bDate = new Date(b?.date?.seconds * 1000)
-						if (!invertSort.value) return aDate - bDate
-						return bDate - aDate
-					}
-					if (sort.value === 'user') {
-						if (!invertSort.value) return a.user.id.localeCompare(b.user.id)
-						return b.user.id.localeCompare(a.user.id)
-					}
-					if (sort.value === 'artist') {
-						if (!invertSort.value) return a.artist.id.localeCompare(b.artist.id)
-						return b.artist.id.localeCompare(a.artist.id)
-					}
-				})
-				.filter((news) => {
-					return (
-						news.user.name.toLowerCase().includes(search.value.toLowerCase()) ||
-						news.artist.name.toLowerCase().includes(search.value.toLowerCase())
-					)
-				})
+			return sortedNews
 		}
+		
+		const searchTerm = search.value.toLowerCase()
+		return sortedNews.filter((news) => {
+			// Vérifier que les propriétés existent avant d'appeler toLowerCase()
+			const userName = news.user?.name?.toLowerCase() || ''
+			const artistName = news.artist?.name?.toLowerCase() || ''
+			const message = news.message?.toLowerCase() || ''
+			
+			return userName.includes(searchTerm) || 
+				   artistName.includes(searchTerm) || 
+				   message.includes(searchTerm)
+		})
 	})
 
 	const nbPage = computed(() => {
@@ -95,10 +137,15 @@
 	})
 
 	watch([page], () => {
-		if (page.value > nbPage.value) page.value = nbPage.value
+		if (page.value > nbPage.value && nbPage.value > 0) page.value = nbPage.value
 		if (page.value < 1) page.value = 1
 		startAt.value = (page.value - 1) * 12
 		endAt.value = page.value * 12
+	})
+
+	// Ajouter un watcher pour la recherche pour faciliter le débogage
+	watch(search, (newValue) => {
+		console.log(`Recherche: "${newValue}" - Résultats: ${filteredNewsList.value.length}`)
 	})
 </script>
 
@@ -112,7 +159,7 @@
 				id="search-input"
 				v-model="search"
 				type="text"
-				placeholder="Search"
+				placeholder="Rechercher par artiste, utilisateur ou message"
 				class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
 			/>
 			<section class="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
@@ -172,6 +219,11 @@
 				</div>
 			</section>
 		</section>
+
+		<div v-if="isLoading" class="flex justify-center py-4">
+			<p class="rounded bg-quinary px-4 py-2 text-center">Chargement des news...</p>
+		</div>
+
 		<transition-group
 			v-if="filteredNewsList.length > 0"
 			id="news-list"
@@ -192,5 +244,25 @@
 				@delete-news="deleteNews(news.taskId)"
 			/>
 		</transition-group>
+
+		<p v-else-if="!isLoading" class="w-full bg-quaternary p-5 text-center font-semibold uppercase">
+			Aucune news trouvée
+		</p>
+
+		<div v-if="filteredNewsList.length > 0" class="mt-4 text-center text-xs">
+			<p>{{ filteredNewsList.length }} news au total - Page {{ page }}/{{ nbPage }}</p>
+		</div>
 	</div>
 </template>
+
+<style scoped>
+.list-complete-enter-active,
+.list-complete-leave-active {
+	transition: all 0.3s ease;
+}
+.list-complete-enter-from,
+.list-complete-leave-to {
+	opacity: 0;
+	transform: translateY(30px);
+}
+</style>
