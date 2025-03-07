@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 	import {
 		collection,
 		getDocs,
@@ -8,67 +8,140 @@
 		orderBy,
 		limit,
 		getCountFromServer,
+		QueryDocumentSnapshot,
+		type DocumentData,
 	} from 'firebase/firestore'
 	import { useToast } from 'vue-toastification'
+	import { deletebyDoc } from '~/composables/useFirestore'
+	import type { Artist } from '~/types/artist'
+	import type { AlgoliaHit } from '~/types/algolia'
+	import debounce from 'lodash.debounce'
 
+	// Types
+	interface FilterState {
+		onlyWithoutDesc: boolean
+		onlyWithoutSocials: boolean
+		onlyWithoutPlatforms: boolean
+		onlyWithoutStyles: boolean
+	}
+
+	// État
 	const toast = useToast()
 	const { $firestore: db } = useNuxtApp()
 
-	const artistFetch = ref([])
+	const artistFetch = ref<Artist[]>([])
 	const search = ref('')
 	const invertSort = ref(true)
 	const page = ref(1)
 
-	const scrollContainer = ref(null)
-	const sort = ref('createdAt')
+	const scrollContainer = ref<HTMLElement | null>(null)
+	const sort = ref<keyof Artist | 'name'>('createdAt')
 	const limitFetch = ref(48)
-	const typeFilter = ref('')
-	const onlyWithoutDesc = ref(false)
-	const onlyWithoutSocials = ref(false)
-	const onlyWithoutPlatforms = ref(false)
-	const onlyWithoutStyles = ref(false)
+	const typeFilter = ref<Artist['type'] | ''>('')
 	const isLoading = ref(false)
-	const nextFetch = ref(null)
+	const nextFetch = ref<QueryDocumentSnapshot<DocumentData> | null>(null)
 	const maxArtist = ref(0)
+	const useAlgoliaForSearch = ref(true)
 
-	const observerTarget = ref(null)
+	// Algolia Search
+	const { result, search: algoliaSearch } = useAlgoliaSearch('Artists')
+	const algoliaResults = ref<Artist[]>([])
+	const isSearching = ref(false)
+
+	// Filtres
+	const filterState = reactive<FilterState>({
+		onlyWithoutDesc: false,
+		onlyWithoutSocials: false,
+		onlyWithoutPlatforms: false,
+		onlyWithoutStyles: false,
+	})
+
+	// Computed
+	const observerTarget = ref<HTMLElement | null>(null)
 	const hasMore = computed(() => artistFetch.value.length < maxArtist.value)
 
-	const deleteArtist = async (id) => {
+	// Fonctions
+	/**
+	 * Supprime un artiste de la base de données et de la liste locale
+	 */
+	const deleteArtist = async (id: string): Promise<void> => {
 		const artist = artistFetch.value.find((artist) => artist.id === id)
 		if (artist) {
 			const index = artistFetch.value.indexOf(artist)
-			await deletebyDoc('artists', id)
-				.then(() => {
-					artistFetch.value.splice(index, 1)
-					toast.success('Artist Deleted')
-				})
-				.catch((error) => {
-					console.error('Error removing document: ', error)
-					toast.error('Error Removing Artist')
-				})
+			try {
+				await deletebyDoc('artists', id)
+				artistFetch.value.splice(index, 1)
+				toast.success('Artiste supprimé')
+			} catch (error) {
+				console.error('Erreur lors de la suppression du document: ', error)
+				toast.error('Erreur lors de la suppression de l\'artiste')
+			}
 		} else {
-			toast.error('Artist Not Found')
+			toast.error('Artiste non trouvé')
 		}
 	}
 
-	const getMaxArtistNumber = async () => {
-		const coll = collection(db, 'artists')
-		const snapshot = await getCountFromServer(coll)
-		maxArtist.value = snapshot.data().count
+	/**
+	 * Récupère le nombre total d'artistes dans la base de données
+	 */
+	const getMaxArtistNumber = async (): Promise<void> => {
+		try {
+			const coll = collection(db, 'artists')
+			const snapshot = await getCountFromServer(coll)
+			maxArtist.value = snapshot.data().count
+		} catch (error) {
+			console.error('Erreur lors de la récupération du nombre d\'artistes: ', error)
+			toast.error('Erreur lors du chargement des données')
+		}
 	}
 
-	const getArtist = async (firstCall = false) => {
-		if (isLoading.value) return
-		isLoading.value = true
-
-		if (maxArtist.value === 0) {
-			await getMaxArtistNumber()
+	/**
+	 * Effectue une recherche avec Algolia
+	 */
+	const performAlgoliaSearch = debounce(async () => {
+		if (search.value.length < 2) {
+			algoliaResults.value = []
+			return
 		}
+		
+		isSearching.value = true
+		try {
+			await useAsyncData(`search-${search.value}`, () => 
+				algoliaSearch({ query: search.value })
+			)
+			
+			if (result.value && result.value.hits) {
+				// Convertir les résultats Algolia en format Artist
+				algoliaResults.value = result.value.hits.map((hit: AlgoliaHit) => ({
+					id: hit.objectID,
+					name: hit.name || '',
+					image: hit.image || '',
+					description: hit.description || '',
+					type: hit.type as Artist['type'] || 'SOLO',
+					idYoutubeMusic: hit.idYoutubeMusic || '',
+					styles: hit.styles || [],
+					socialList: hit.socialList || [],
+					platformList: hit.platformList || [],
+					createdAt: hit.createdAt,
+					updatedAt: hit.updatedAt,
+				} as Artist))
+			}
+		} catch (error) {
+			console.error('Erreur lors de la recherche Algolia:', error)
+			toast.error('Erreur lors de la recherche')
+		} finally {
+			isSearching.value = false
+		}
+	}, 300)
 
+	/**
+	 * Construit la requête Firestore en fonction des filtres
+	 */
+	const buildArtistQuery = () => {
 		let colRef = query(collection(db, 'artists'), orderBy(sort.value, 'desc'))
 
-		if (search.value) {
+		// Filtre de recherche (si Algolia n'est pas utilisé)
+		if (!useAlgoliaForSearch.value && search.value) {
 			const searchTerm = search.value
 			colRef = query(
 				colRef,
@@ -78,25 +151,47 @@
 			)
 		}
 
-		if (onlyWithoutDesc.value) {
+		// Filtres d'attributs manquants
+		if (filterState.onlyWithoutDesc) {
 			colRef = query(colRef, where('description', '==', ''))
-		} else if (onlyWithoutSocials.value) {
+		} else if (filterState.onlyWithoutSocials) {
 			colRef = query(colRef, where('socialList', '==', []))
-		} else if (onlyWithoutPlatforms.value) {
+		} else if (filterState.onlyWithoutPlatforms) {
 			colRef = query(colRef, where('platformList', '==', []))
-		} else if (onlyWithoutStyles.value) {
+		} else if (filterState.onlyWithoutStyles) {
 			colRef = query(colRef, where('styles', '==', []))
 		}
 
+		// Filtre par type
 		if (typeFilter.value !== '') {
 			colRef = query(colRef, where('type', '==', typeFilter.value))
 		}
 
+		return colRef
+	}
+
+	/**
+	 * Récupère les artistes depuis Firestore
+	 */
+	const getArtist = async (firstCall = false): Promise<void> => {
+		if (isLoading.value) return
+		isLoading.value = true
+
 		try {
+			// Récupère le nombre total d'artistes si nécessaire
+			if (maxArtist.value === 0) {
+				await getMaxArtistNumber()
+			}
+
+			// Construction de la requête
+			let colRef = buildArtistQuery()
+
+			// Pagination
 			if (!firstCall && nextFetch.value) {
 				colRef = query(colRef, startAfter(nextFetch.value))
 			}
 
+			// Limite de résultats
 			colRef = query(colRef, limit(limitFetch.value))
 			const snapshot = await getDocs(colRef)
 
@@ -105,14 +200,17 @@
 				return
 			}
 
+			// Mise à jour du curseur de pagination
 			const lastVisible = snapshot.docs[snapshot.docs.length - 1]
 			nextFetch.value = lastVisible
 
+			// Transformation des données
 			const artists = snapshot.docs.map((doc) => ({
 				id: doc.id,
 				...doc.data(),
-			}))
+			})) as Artist[]
 
+			// Mise à jour de la liste
 			if (firstCall) {
 				artistFetch.value = artists
 				nextFetch.value = lastVisible
@@ -121,7 +219,7 @@
 			}
 
 			console.log(
-				'Fetched artists:',
+				'Artistes récupérés:',
 				artists.length,
 				'Total:',
 				artistFetch.value.length,
@@ -129,63 +227,84 @@
 				maxArtist.value,
 			)
 		} catch (error) {
-			console.error('Error getting documents: ', error)
-			toast.error('Error Loading Artists')
+			console.error('Erreur lors de la récupération des documents: ', error)
+			toast.error('Erreur lors du chargement des artistes')
 		} finally {
 			isLoading.value = false
 		}
 	}
 
-	const changeOnlyFilter = (filter) => {
-		if (filter === 'desc') {
-			onlyWithoutDesc.value = !onlyWithoutDesc.value
-			onlyWithoutSocials.value = false
-			onlyWithoutPlatforms.value = false
-			onlyWithoutStyles.value = false
-		}
-		if (filter === 'socials') {
-			onlyWithoutSocials.value = !onlyWithoutSocials.value
-			onlyWithoutDesc.value = false
-			onlyWithoutPlatforms.value = false
-			onlyWithoutStyles.value = false
-		}
-		if (filter === 'platforms') {
-			onlyWithoutPlatforms.value = !onlyWithoutPlatforms.value
-			onlyWithoutDesc.value = false
-			onlyWithoutSocials.value = false
-			onlyWithoutStyles.value = false
-		}
-		if (filter === 'styles') {
-			onlyWithoutStyles.value = !onlyWithoutStyles.value
-			onlyWithoutDesc.value = false
-			onlyWithoutSocials.value = false
-			onlyWithoutPlatforms.value = false
-		}
+	/**
+	 * Change l'état des filtres "only without"
+	 */
+	const changeOnlyFilter = (filter: keyof FilterState): void => {
+		// Réinitialise tous les filtres
+		Object.keys(filterState).forEach((key) => {
+			filterState[key as keyof FilterState] = false
+		})
+		
+		// Active uniquement le filtre sélectionné
+		filterState[filter] = !filterState[filter]
 	}
 
+	/**
+	 * Trie la liste des artistes en fonction des critères
+	 */
 	const filteredArtistList = computed(() => {
-		if (page !== 1) page.value = 1
+		if (page.value !== 1) page.value = 1
+		
+		// Si une recherche est active et Algolia est utilisé, retourner les résultats d'Algolia
+		if (useAlgoliaForSearch.value && search.value.length >= 2) {
+			return algoliaResults.value
+		}
+		
 		if (!artistFetch.value) return artistFetch.value
 
-		return artistFetch.value.sort((a, b) => {
+		return [...artistFetch.value].sort((a, b) => {
 			if (sort.value === 'createdAt') {
-				return invertSort.value ? b.createdAt - a.createdAt : a.createdAt - b.createdAt
+				return invertSort.value 
+					? (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0) 
+					: (a.createdAt?.toMillis() || 0) - (b.createdAt?.toMillis() || 0)
 			}
 			if (sort.value === 'updatedAt') {
-				return invertSort.value ? b.updatedAt - a.updatedAt : a.updatedAt - b.updatedAt
+				return invertSort.value 
+					? (b.updatedAt?.toMillis() || 0) - (a.updatedAt?.toMillis() || 0) 
+					: (a.updatedAt?.toMillis() || 0) - (b.updatedAt?.toMillis() || 0)
 			}
 			if (sort.value === 'type') {
 				return invertSort.value
-					? b.type.localeCompare(a.type)
-					: a.type.localeCompare(b.type)
+					? (b.type || '').localeCompare(a.type || '')
+					: (a.type || '').localeCompare(b.type || '')
 			}
 			return invertSort.value
-				? b.name.localeCompare(a.name)
-				: a.name.localeCompare(b.name)
+				? (b.name || '').localeCompare(a.name || '')
+				: (a.name || '').localeCompare(b.name || '')
 		})
 	})
 
+	/**
+	 * Charge tous les artistes
+	 */
+	const loadAllArtists = () => {
+		limitFetch.value = maxArtist.value
+		getArtist(true)
+	}
+
+	/**
+	 * Bascule entre la recherche Algolia et Firebase
+	 */
+	const toggleSearchMethod = () => {
+		useAlgoliaForSearch.value = !useAlgoliaForSearch.value
+		if (!useAlgoliaForSearch.value && search.value) {
+			getArtist(true)
+		} else if (useAlgoliaForSearch.value && search.value) {
+			performAlgoliaSearch()
+		}
+	}
+
+	// Hooks
 	onMounted(() => {
+		// Configuration de l'observateur d'intersection pour le chargement infini
 		const observer = new IntersectionObserver(
 			async ([entry]) => {
 				if (entry.isIntersecting && hasMore.value && !isLoading.value) {
@@ -202,12 +321,14 @@
 			observer.observe(observerTarget.value)
 		}
 
+		// Observe l'élément cible quand il est disponible
 		watch(observerTarget, (el) => {
 			if (el) {
 				observer.observe(el)
 			}
 		})
 
+		// Nettoyage de l'observateur
 		onBeforeUnmount(() => {
 			if (observerTarget.value) {
 				observer.unobserve(observerTarget.value)
@@ -215,28 +336,38 @@
 			observer.disconnect()
 		})
 
+		// Chargement initial des artistes
 		getArtist(true)
 	})
 
+	// Watchers pour les filtres
 	watch(
 		[
 			limitFetch,
 			typeFilter,
-			onlyWithoutDesc,
-			onlyWithoutSocials,
-			onlyWithoutPlatforms,
-			onlyWithoutStyles,
+			() => filterState.onlyWithoutDesc,
+			() => filterState.onlyWithoutSocials,
+			() => filterState.onlyWithoutPlatforms,
+			() => filterState.onlyWithoutStyles,
 			sort,
-			search,
 		],
 		async () => {
 			try {
 				await getArtist(true)
 			} catch (error) {
-				console.error('Error in watcher:', error)
+				console.error('Erreur dans le watcher:', error)
 			}
 		},
 	)
+
+	// Watcher pour la recherche
+	watch(search, () => {
+		if (useAlgoliaForSearch.value) {
+			performAlgoliaSearch()
+		} else {
+			getArtist(true)
+		}
+	})
 </script>
 
 <template>
@@ -245,13 +376,22 @@
 		class="scrollBarLight relative h-full space-y-3 overflow-hidden overflow-y-scroll pr-2"
 	>
 		<section id="searchbar" class="sticky top-0 z-20 w-full space-y-2 bg-secondary pb-2">
-			<input
-				id="search-input"
-				v-model="search"
-				type="text"
-				placeholder="Search"
-				class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
-			/>
+			<div class="relative">
+				<input
+					id="search-input"
+					v-model="search"
+					type="text"
+					placeholder="Search"
+					class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+				/>
+				<button 
+					class="absolute right-2 top-1/2 -translate-y-1/2 rounded bg-tertiary px-2 py-1 text-xs text-quinary"
+					@click="toggleSearchMethod"
+					:title="useAlgoliaForSearch ? 'Utiliser Firebase (recherche basique)' : 'Utiliser Algolia (recherche avancée)'"
+				>
+					{{ useAlgoliaForSearch ? 'Algolia' : 'Firebase' }}
+				</button>
+			</div>
 			<div class="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
 				<div class="flex w-fit flex-wrap justify-between gap-2 sm:flex-nowrap">
 					<div
@@ -274,29 +414,29 @@
 					</div>
 					<button
 						class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 lg:text-nowrap"
-						:class="onlyWithoutDesc ? 'bg-primary' : 'bg-quinary'"
-						@click="changeOnlyFilter('desc')"
+						:class="filterState.onlyWithoutDesc ? 'bg-primary' : 'bg-quinary'"
+						@click="changeOnlyFilter('onlyWithoutDesc')"
 					>
 						No description
 					</button>
 					<button
 						class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 lg:text-nowrap"
-						:class="onlyWithoutSocials ? 'bg-primary' : 'bg-quinary'"
-						@click="changeOnlyFilter('socials')"
+						:class="filterState.onlyWithoutSocials ? 'bg-primary' : 'bg-quinary'"
+						@click="changeOnlyFilter('onlyWithoutSocials')"
 					>
 						No Socials
 					</button>
 					<button
 						class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 lg:text-nowrap"
-						:class="onlyWithoutPlatforms ? 'bg-primary' : 'bg-quinary'"
-						@click="changeOnlyFilter('platforms')"
+						:class="filterState.onlyWithoutPlatforms ? 'bg-primary' : 'bg-quinary'"
+						@click="changeOnlyFilter('onlyWithoutPlatforms')"
 					>
 						No Platforms
 					</button>
 					<button
 						class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 lg:text-nowrap"
-						:class="onlyWithoutStyles ? 'bg-primary' : 'bg-quinary'"
-						@click="changeOnlyFilter('styles')"
+						:class="filterState.onlyWithoutStyles ? 'bg-primary' : 'bg-quinary'"
+						@click="changeOnlyFilter('onlyWithoutStyles')"
 					>
 						No Styles
 					</button>
@@ -321,6 +461,10 @@
 				</div>
 			</div>
 		</section>
+
+		<div v-if="isSearching" class="flex justify-center">
+			<p class="rounded bg-quinary px-4 py-2 text-center">Recherche en cours...</p>
+		</div>
 
 		<transition-group
 			v-if="filteredArtistList.length > 0"
@@ -347,7 +491,7 @@
 			/>
 		</transition-group>
 
-		<p v-else class="w-full bg-quaternary p-5 text-center font-semibold uppercase">
+		<p v-else-if="!isSearching" class="w-full bg-quaternary p-5 text-center font-semibold uppercase">
 			No artist found
 		</p>
 
@@ -355,6 +499,7 @@
 
 		<div
 			v-if="
+				!useAlgoliaForSearch &&
 				filteredArtistList.length > 0 &&
 				artistFetch.length != 0 &&
 				artistFetch.length != maxArtist
@@ -365,12 +510,7 @@
 			<div v-if="!isLoading" class="flex gap-2">
 				<button
 					class="mx-auto flex w-full gap-1 rounded bg-quinary px-2 py-1 uppercase hover:bg-zinc-500 md:w-fit"
-					@click="
-						($event) => {
-							limitFetch = maxArtist
-							getArtist(true)
-						}
-					"
+					@click="loadAllArtists"
 				>
 					<p>Load All</p>
 				</button>
