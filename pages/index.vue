@@ -1,7 +1,9 @@
 <script setup lang="ts">
-	import { ref, computed, onMounted } from 'vue'
+	import { ref, computed, onMounted, onUnmounted } from 'vue'
 	import { Timestamp } from 'firebase/firestore'
 	import { useFirebaseFunction } from '@/composables/useFirebaseFunction'
+	import { useSupabaseNews } from '@/composables/useSupabaseNews'
+	import type { News } from '~/types'
 	import DiscoverMusic from '~/components/DiscoverMusic.vue'
 	import type { Artist } from '~/types/artist'
 	import type { Comeback } from '~/types/comeback'
@@ -13,18 +15,21 @@
 		getRealtimeLastestArtistsAdded,
 	} = useFirebaseFunction()
 
-	const comebacks = ref<Comeback[]>([])
+	const { getRealtimeLastestNewsAdded } = useSupabaseNews()
+
+	const comebacks = ref<News[]>([])
 	const artists = ref<Artist[]>([])
 	const releases = ref<Release[]>([])
+	const news = ref<News[]>([])
 
 	const discoverOne = ref<InstanceType<typeof DiscoverMusic> | null>(null)
 	const discoverTwo = ref<InstanceType<typeof DiscoverMusic> | null>(null)
 	const discoverThree = ref<InstanceType<typeof DiscoverMusic> | null>(null)
 	const discoverFour = ref<InstanceType<typeof DiscoverMusic> | null>(null)
 
-	const comebacksToday = computed<Comeback[]>(() => {
+	const comebacksToday = computed<News[]>(() => {
 		return comebacks.value.filter((comeback) => {
-			const comebacksDate = new Date(comeback.date.seconds * 1000)
+			const comebacksDate = new Date(comeback.date)
 			const today = new Date()
 			return (
 				comebacksDate.getDate() === today.getDate() &&
@@ -34,20 +39,24 @@
 		})
 	})
 
-	onMounted(() => {
-		const comebacksDate = new Date()
-		comebacksDate.setDate(comebacksDate.getDate() - 1)
+	onMounted(async () => {
+		try {
+			const cleanup = await getRealtimeLastestNewsAdded((newsData) => {
+				comebacks.value = newsData
+				console.log('News mises à jour:', newsData)
+			})
+
+			onUnmounted(() => {
+				if (cleanup) cleanup()
+			})
+		} catch (error) {
+			console.error('Erreur lors de la récupération des news:', error)
+		}
 
 		const releaseDate = new Date()
 		releaseDate.setDate(releaseDate.getDate() - 8)
 
 		Promise.all([
-			new Promise<void>((resolve) =>
-				getRealtimeNextComebacks(Timestamp.fromDate(comebacksDate), (cb: any) => {
-					comebacks.value = cb
-					resolve()
-				}),
-			),
 			new Promise<void>((resolve) =>
 				getRealtimeLastestReleases(Timestamp.fromDate(releaseDate), 8, (rel: any) => {
 					releases.value = rel

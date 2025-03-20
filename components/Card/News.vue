@@ -1,49 +1,44 @@
-<script setup>
-	import { ref, defineProps } from 'vue'
+<script setup lang="ts">
+	import type { Artist } from '~/types'
 
-	// récupérer les props message (string), date(any) et artist(string)
-	const { message, date, artist, artists } = defineProps({
+	const { message, date, artists } = defineProps({
 		message: {
 			type: String,
 			required: true,
 		},
 		date: {
-			type: Object,
+			type: String,
 			required: true,
 		},
-		artist: {
-			type: Object,
-			required: false,
-		},
 		artists: {
-			type: Array,
-			required: false,
+			type: Array as PropType<Artist[]>,
+			required: true,
 		},
 	})
 
-	const skeleton = ref(null)
+	const dateObj = computed(() => new Date(date))
 
-	function daysUntil(futureDate) {
+	function daysUntil(futureDate: Date) {
 		const today = new Date()
-		const future = new Date(futureDate.seconds * 1000)
+		const future = new Date(futureDate)
 		const differenceInTime = future.getTime() - today.getTime()
 		const differenceInDays = differenceInTime / (1000 * 3600 * 24)
 		return Math.ceil(differenceInDays)
 	}
 
-	function isDatePassed(date) {
+	function isDatePassed(date: Date) {
 		const today = new Date().getTime()
-		const inputDate = new Date(date.seconds * 1000)
-		if (isNaN(inputDate)) {
+		const inputDate = new Date(date)
+		if (isNaN(inputDate.getTime())) {
 			throw new TypeError('Invalid date format')
 		}
-		return inputDate < today
+		return inputDate.getTime() < today
 	}
 
-	function isSameDate(date) {
+	function isSameDate(date: Date) {
 		const today = new Date()
-		const inputDate = new Date(date.seconds * 1000)
-		if (isNaN(inputDate)) {
+		const inputDate = new Date(date)
+		if (isNaN(inputDate.getTime())) {
 			throw new TypeError('Invalid date format')
 		}
 		return (
@@ -53,15 +48,7 @@
 		)
 	}
 
-	const loadingDone = () => {
-		if (skeleton.value[0]) {
-			skeleton.value[0].classList.add('opacity-0')
-		} else {
-			skeleton.value.classList.add('opacity-0')
-		}
-	}
-
-	const handleError = (artistName) => {
+	const handleError = (artistName: string) => {
 		console.error('Failed to load image', artistName)
 	}
 </script>
@@ -73,48 +60,17 @@
 		<section class="h-full w-full shrink space-y-1 overflow-hidden bg-quinary p-2">
 			<div class="flex flex-wrap gap-1">
 				<NuxtLink
-					v-if="artist"
-					:to="`/artist/${artist.id}`"
-					class="group flex items-center gap-2"
-				>
-					<div class="relative hidden lg:block">
-						<div
-							ref="skeleton"
-							class="absolute inset-0 z-10 mx-auto aspect-square h-4 w-4 rounded-lg bg-primary object-cover transition-all duration-1000 ease-in-out"
-						></div>
-						<NuxtImg
-							:src="artist.image"
-							:alt="artist.name + '\'s picture'"
-							format="webp"
-							class="h-4 w-4 rounded-full object-cover"
-							@load="loadingDone"
-							@error="handleError"
-						/>
-					</div>
-					<h2
-						class="truncate text-xs font-semibold transition-all duration-300 ease-in-out group-hover:text-primary lg:text-sm"
-					>
-						{{ artist.name }}
-					</h2>
-				</NuxtLink>
-				<NuxtLink
 					v-for="(artistObject, index) in artists"
-					v-else
 					:key="artistObject.id"
 					:to="`/artist/${artistObject.id}`"
 					class="group flex items-center gap-2"
 				>
 					<div class="relative hidden lg:block">
-						<div
-							ref="skeleton"
-							class="absolute inset-0 z-10 mx-auto aspect-square h-4 w-4 rounded-lg bg-primary object-cover transition-all duration-1000 ease-in-out"
-						></div>
 						<NuxtImg
-							:src="artistObject.picture"
+							:src="artistObject.image"
 							:alt="artistObject.name + 's picture'"
 							format="webp"
 							class="h-4 w-4 rounded-full object-cover"
-							@load="loadingDone"
 							@error="handleError(artistObject.name)"
 						/>
 					</div>
@@ -123,7 +79,7 @@
 					>
 						{{ artistObject.name }}
 						<span
-							v-if="artists.length > 1 && index != artists.length - 1"
+							v-if="artists && artists.length > 1 && index != artists.length - 1"
 							class="group-hover:text-tertiary"
 						>
 							,
@@ -138,19 +94,19 @@
 			class="-mt-0.5 flex min-w-[18%] items-center justify-center bg-quaternary px-3 py-1 text-center md:mt-0 md:py-0"
 		>
 			<p
-				v-if="!isDatePassed(date) && !isSameDate(date)"
+				v-if="!isDatePassed(dateObj) && !isSameDate(dateObj)"
 				class="my-auto whitespace-nowrap text-lg font-bold lg:text-xl"
 			>
-				D-{{ daysUntil(date) }}
+				D-{{ daysUntil(dateObj) }}
 			</p>
 			<p
-				v-if="isSameDate(date)"
+				v-if="isSameDate(dateObj)"
 				class="my-auto whitespace-nowrap font-medium text-primary"
 			>
 				Today
 			</p>
 			<p
-				v-if="!isSameDate(date) && isDatePassed(date)"
+				v-if="!isSameDate(dateObj) && isDatePassed(dateObj)"
 				class="my-auto whitespace-nowrap font-medium text-primary"
 			>
 				Outed

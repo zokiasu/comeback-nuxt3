@@ -68,6 +68,7 @@
 <script setup lang="ts">
 	import { Swiper, SwiperSlide } from 'swiper/vue'
 	import { Autoplay, EffectFade, Parallax } from 'swiper/modules'
+	import type { News } from '~/types'
 
 	// Import des styles Swiper
 	import 'swiper/css'
