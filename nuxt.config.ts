@@ -26,6 +26,8 @@ export default defineNuxtConfig({
 			ALGOLIA_API_KEY: process.env.ALGOLIA_API_KEY,
 			ALGOLIA_APPLICATION_ID: process.env.ALGOLIA_APPLICATION_ID,
 			ALGOLIA_INDEX_NAME: process.env.ALGOLIA_INDEX_NAME,
+			supabaseUrl: process.env.SUPABASE_URL,
+			supabaseKey: process.env.SUPABASE_KEY,
 		},
 	},
 

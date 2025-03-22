@@ -35,6 +35,7 @@
 		"@kouts/vue-modal": "^5.0.1",
 		"@nuxtjs/algolia": "^1.10.2",
 		"@pinia/nuxt": "^0.9.0",
+		"@supabase/supabase-js": "^2.49.1",
 		"@vuepic/vue-datepicker": "^10.0.0",
 		"animate.css": "^4.1.1",
 		"body-scroll-freezer": "^1.0.5",
