@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { ref, computed, onMounted, onUnmounted } from 'vue'
 	import { Timestamp } from 'firebase/firestore'
-	import { useFirebaseFunction } from '@/composables/useFirebaseFunction'
+	import { useFirebaseFunction } from '~/composables/Firebase/useFirebaseFunction'
 	import { useSupabaseNews } from '@/composables/useSupabaseNews'
 	import type { News } from '~/types'
 	import DiscoverMusic from '~/components/DiscoverMusic.vue'

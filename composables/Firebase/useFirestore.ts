@@ -39,13 +39,13 @@ export const queryByDoc = async (col: string, id: string) => {
 	return docs
 }
 
-export const set = async (col: string, document: Object) => {
+export const set = async (col: string, document: object) => {
 	const { $firestore } = useNuxtApp()
 
 	await setDoc(doc($firestore as any, col), document, { merge: true })
 }
 
-export const add = async (col: string, document: Object) => {
+export const add = async (col: string, document: object) => {
 	const { $firestore } = useNuxtApp()
 
 	const colRef = collection($firestore as any, col)

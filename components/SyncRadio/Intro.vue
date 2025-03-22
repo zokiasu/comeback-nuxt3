@@ -1,6 +1,6 @@
 <script setup>
 	import { useToast } from 'vue-toastification'
-	import { useFirebaseRealtimeDatabase } from '@/composables/useFirebaseRealtimeDatabase'
+	import { useFirebaseRealtimeDatabase } from '~/composables/Firebase/useFirebaseRealtimeDatabase'
 	import { useUserStore } from '~/stores/user'
 
 	const { queryData, writeDataWithRandomId } = useFirebaseRealtimeDatabase()

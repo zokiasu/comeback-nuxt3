@@ -14,10 +14,10 @@
 		updateDoc,
 	} from 'firebase/firestore'
 	import { useToast } from 'vue-toastification'
-	import type { Release } from '~/types/release'
-	import { useFirebaseRelease } from '@/composables/useFirebaseRelease'
-	import type { AlgoliaHit } from '~/types/algolia'
 	import debounce from 'lodash.debounce'
+	import type { Release } from '~/types/release'
+	import { useFirebaseRelease } from '~/composables/Firebase/useFirebaseRelease'
+	import type { AlgoliaHit } from '~/types/algolia'
 
 	const { deleteRelease: deleteReleaseFunction } = useFirebaseRelease()
 	const toast = useToast()
@@ -53,29 +53,32 @@
 			algoliaResults.value = []
 			return
 		}
-		
+
 		isSearching.value = true
 		try {
-			await useAsyncData(`release-search-${search.value}`, () => 
-				algoliaSearch({ query: search.value })
+			await useAsyncData(`release-search-${search.value}`, () =>
+				algoliaSearch({ query: search.value }),
 			)
-			
+
 			if (result.value && result.value.hits) {
 				// Convertir les résultats Algolia en format Release
-				algoliaResults.value = result.value.hits.map((hit: AlgoliaHit) => ({
-					id: hit.objectID,
-					idYoutubeMusic: hit.idYoutubeMusic || hit.objectID,
-					name: hit.name || '',
-					image: hit.image || '',
-					type: hit.type || '',
-					artistsName: hit.artistsName || '',
-					artistsId: hit.artistsId || '',
-					date: hit.date,
-					year: hit.year || 0,
-					needToBeVerified: hit.needToBeVerified || false,
-					platformList: hit.platformList || [],
-					createdAt: hit.createdAt,
-				} as Release))
+				algoliaResults.value = result.value.hits.map(
+					(hit: AlgoliaHit) =>
+						({
+							id: hit.objectID,
+							idYoutubeMusic: hit.idYoutubeMusic || hit.objectID,
+							name: hit.name || '',
+							image: hit.image || '',
+							type: hit.type || '',
+							artistsName: hit.artistsName || '',
+							artistsId: hit.artistsId || '',
+							date: hit.date,
+							year: hit.year || 0,
+							needToBeVerified: hit.needToBeVerified || false,
+							platformList: hit.platformList || [],
+							createdAt: hit.createdAt,
+						}) as Release,
+				)
 			}
 		} catch (error) {
 			console.error('Erreur lors de la recherche Algolia:', error)
@@ -108,7 +111,7 @@
 			console.log('Déjà en cours de chargement, ignoré')
 			return
 		}
-		
+
 		isLoading.value = true
 		console.log('Début du chargement des releases, firstCall:', firstCall)
 
@@ -155,7 +158,7 @@
 			const fetchLimit = firstCall ? limitFetch.value : Math.min(limitFetch.value, 12)
 			colRef = query(colRef, limit(fetchLimit))
 			console.log(`Limite de fetch: ${fetchLimit}`)
-			
+
 			const snapshot = await getDocs(colRef)
 
 			if (snapshot.empty) {
@@ -192,9 +195,9 @@
 				'Max:',
 				maxRelease.value,
 				'Reste à charger:',
-				maxRelease.value - releaseFetch.value.length
+				maxRelease.value - releaseFetch.value.length,
 			)
-			
+
 			// Marquer que le premier chargement est terminé
 			if (firstCall) {
 				firstLoad.value = false
@@ -264,7 +267,12 @@
 		// Configuration de l'observateur d'intersection pour le chargement infini
 		const observer = new IntersectionObserver(
 			async ([entry]) => {
-				if (entry.isIntersecting && hasMore.value && !isLoading.value && !useAlgoliaForSearch.value) {
+				if (
+					entry.isIntersecting &&
+					hasMore.value &&
+					!isLoading.value &&
+					!useAlgoliaForSearch.value
+				) {
 					console.log('Intersection détectée, chargement de plus de releases...')
 					await getRelease(false) // Utiliser false pour indiquer que ce n'est pas le premier appel
 				}
@@ -297,7 +305,7 @@
 
 		// Chargement initial des releases
 		getRelease(true)
-		
+
 		// Écouter les changements en temps réel
 		const unsubscribe = listenToReleaseChanges()
 		onBeforeUnmount(() => {
@@ -329,7 +337,7 @@
 		if (useAlgoliaForSearch.value && search.value.length >= 2) {
 			return algoliaResults.value
 		}
-		
+
 		if (!releaseFetch.value) return []
 
 		return [...releaseFetch.value].sort((a, b) => {
@@ -364,8 +372,8 @@
 					: (a.name || '').localeCompare(b.name || '')
 			}
 			if (sort.value === 'year') {
-				return invertSort.value 
-					? (b.year || 0) - (a.year || 0) 
+				return invertSort.value
+					? (b.year || 0) - (a.year || 0)
 					: (a.year || 0) - (b.year || 0)
 			}
 			if (sort.value === 'artistsId') {
@@ -400,10 +408,14 @@
 					placeholder="Search"
 					class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
 				/>
-				<button 
+				<button
 					class="absolute right-2 top-1/2 -translate-y-1/2 rounded bg-tertiary px-2 py-1 text-xs text-quinary"
 					@click="toggleSearchMethod"
-					:title="useAlgoliaForSearch ? 'Utiliser Firebase (recherche basique)' : 'Utiliser Algolia (recherche avancée)'"
+					:title="
+						useAlgoliaForSearch
+							? 'Utiliser Firebase (recherche basique)'
+							: 'Utiliser Algolia (recherche avancée)'
+					"
 				>
 					{{ useAlgoliaForSearch ? 'Algolia' : 'Firebase' }}
 				</button>
@@ -478,7 +490,10 @@
 			</div>
 		</div>
 
-		<p v-else-if="!isSearching" class="w-full bg-quaternary p-5 text-center font-semibold uppercase">
+		<p
+			v-else-if="!isSearching"
+			class="w-full bg-quaternary p-5 text-center font-semibold uppercase"
+		>
 			Aucun release trouvé
 		</p>
 
@@ -486,10 +501,10 @@
 			<p class="rounded bg-quinary px-4 py-2 text-center">Chargement des releases...</p>
 		</div>
 
-		<div 
+		<div
 			v-if="hasMore && !useAlgoliaForSearch"
-			ref="observerTarget" 
-			class="my-8 h-20 w-full rounded bg-gray-200 bg-opacity-10 flex items-center justify-center"
+			ref="observerTarget"
+			class="my-8 flex h-20 w-full items-center justify-center rounded bg-gray-200 bg-opacity-10"
 		>
 			<div v-if="!isLoading" class="text-xs text-gray-400">
 				Faites défiler pour charger plus de releases
@@ -504,7 +519,7 @@
 		<div
 			v-if="
 				!useAlgoliaForSearch &&
-				filteredReleaseList.length > 0 && 
+				filteredReleaseList.length > 0 &&
 				releaseFetch.length != maxRelease
 			"
 			class="flex flex-col items-center space-y-2 text-xs"
@@ -529,44 +544,47 @@
 </template>
 
 <style scoped>
-.loading-indicator {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 8px;
-}
-
-.loading-dot {
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	background-color: #666;
-	animation: pulse 1.5s infinite ease-in-out;
-}
-
-.loading-dot:nth-child(2) {
-	animation-delay: 0.3s;
-}
-
-.loading-dot:nth-child(3) {
-	animation-delay: 0.6s;
-}
-
-@keyframes pulse {
-	0%, 100% {
-		transform: scale(0.8);
-		opacity: 0.5;
+	.loading-indicator {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
 	}
-	50% {
-		transform: scale(1.2);
-		opacity: 1;
-	}
-}
 
-.fade-enter-active, .fade-leave-active {
-	transition: opacity 0.3s;
-}
-.fade-enter-from, .fade-leave-to {
-	opacity: 0;
-}
+	.loading-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background-color: #666;
+		animation: pulse 1.5s infinite ease-in-out;
+	}
+
+	.loading-dot:nth-child(2) {
+		animation-delay: 0.3s;
+	}
+
+	.loading-dot:nth-child(3) {
+		animation-delay: 0.6s;
+	}
+
+	@keyframes pulse {
+		0%,
+		100% {
+			transform: scale(0.8);
+			opacity: 0.5;
+		}
+		50% {
+			transform: scale(1.2);
+			opacity: 1;
+		}
+	}
+
+	.fade-enter-active,
+	.fade-leave-active {
+		transition: opacity 0.3s;
+	}
+	.fade-enter-from,
+	.fade-leave-to {
+		opacity: 0;
+	}
 </style>

@@ -10,8 +10,8 @@ import {
 	where,
 	getDoc,
 } from 'firebase/firestore'
-import { useFirebaseUtils } from '@/composables/useFirebaseUtils'
-import { useFirebaseMusic } from '@/composables/useFirebaseMusic'
+import { useFirebaseUtils } from '~/composables/Firebase/useFirebaseUtils'
+import { useFirebaseMusic } from '~/composables/Firebase/useFirebaseMusic'
 
 export function useFirebaseRelease() {
 	const { $firestore: database } = useNuxtApp()

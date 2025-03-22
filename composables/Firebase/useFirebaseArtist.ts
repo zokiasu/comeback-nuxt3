@@ -15,8 +15,8 @@ import {
 	Timestamp,
 } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
-import { useFirebaseRelease } from '@/composables/useFirebaseRelease'
-import { useFirebaseUtils } from '@/composables/useFirebaseUtils'
+import { useFirebaseRelease } from '~/composables/Firebase/useFirebaseRelease'
+import { useFirebaseUtils } from '~/composables/Firebase/useFirebaseUtils'
 import type { Artist } from '~/types/artist'
 
 export function useFirebaseArtist() {
@@ -44,7 +44,7 @@ export function useFirebaseArtist() {
 
 		// Suppression des clés de groupes et de membres pour la création initiale de l'artiste
 		const artistData = { ...data }
-		if(artistData.groups) delete artistData?.groups
+		if (artistData.groups) delete artistData?.groups
 		if (artistData.members) delete artistData?.members
 
 		const docRef = await addDoc(collection(database as any, 'artists'), artistData)
@@ -255,7 +255,7 @@ export function useFirebaseArtist() {
 	// Listens for real-time updates to the 'artists' collection in Firestore.
 	const getRealtimeLastestArtistsAdded = async (
 		limitNumber: number,
-		callback: Function,
+		callback: (data: any[]) => void,
 	) => {
 		const colRef = query(
 			collection(database as any, 'artists'),

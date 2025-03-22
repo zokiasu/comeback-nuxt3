@@ -1,14 +1,18 @@
-<script setup>
+<script setup lang="ts">
 	import { useToast } from 'vue-toastification'
+	import { useFirebaseFunction } from '~/composables/Firebase/useFirebaseFunction'
+	import { useFirebaseArtist } from '~/composables/Firebase/useFirebaseArtist'
 	import { useUserStore } from '~/stores/user'
+	import type { User } from '~/types/user'
+	import type { Artist } from '~/types/artist'
 
 	const userStore = useUserStore()
 	const toast = useToast()
-	const { getAllArtists, updateUserData, getUserData } = useFirebaseArtist()
+	const { getAllArtists } = useFirebaseArtist()
+	const { updateUserData, getUserData } = useFirebaseFunction()
 
-	const userData = computed(() => userStore.userDataStore)
-	const userDetails = ref<User | null>(null)
-	const artistList = ref([])
+	const userDetails = ref<User>({} as User)
+	const artistList = ref<Artist[]>([])
 	const searchInput = ref('')
 
 	const artistFiltered = computed(() => {
@@ -19,13 +23,15 @@
 
 	const updateUserDetails = async () => {
 		await updateUserData(userDetails.value)
-		userDetails.value = await getUserData(userDetails.value.id)
+		userDetails.value = (await getUserData(userDetails.value.id)) as User
 		toast.success('User details updated')
 	}
 
 	onMounted(async () => {
 		artistList.value = await getAllArtists()
-		userDetails.value = await getUserData(userStore.userDataStore.id)
+		if (userStore.userDataStore?.id) {
+			userDetails.value = (await getUserData(userStore.userDataStore.id)) as User
+		}
 	})
 </script>
 

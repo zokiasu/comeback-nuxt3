@@ -69,7 +69,7 @@ export function useFirebaseRealtimeDatabase() {
 	}
 
 	// Listen for real-time updates at a specific path in Realtime Database
-	const listenForUpdates = (path: string, callback: Function) => {
+	const listenForUpdates = (path: string, callback: (data: any[]) => void) => {
 		const dataRef = ref(database as any, path)
 		onValue(dataRef, (snapshot) => {
 			const data = snapshot.val()

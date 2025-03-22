@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+	import { useFirebaseFunction } from '~/composables/Firebase/useFirebaseFunction'
+
 	const { getRandomMusic } = useFirebaseFunction()
 	const music = ref({} as any)
 

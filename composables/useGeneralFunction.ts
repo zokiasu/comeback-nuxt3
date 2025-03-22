@@ -81,7 +81,7 @@ export function useGeneralFunction() {
 		return musicTmp
 	}
 	// TODO: Add comment
-	const formatArray = async (array: any[], formatter: Function) => {
+	const formatArray = async (array: any[], formatter: (data: any) => Promise<any>) => {
 		return await Promise.all(array.map(async (item) => await formatter(item)))
 	}
 	// TODO: Add comment

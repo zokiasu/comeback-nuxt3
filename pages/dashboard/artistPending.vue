@@ -1,8 +1,8 @@
 <script setup lang="ts">
 	import { useToast } from 'vue-toastification'
 	import type { Artist } from '~/types/artist'
-	import { useFirebaseArtist } from '@/composables/useFirebaseArtist'
-	import { useFirebaseArtistPending } from '@/composables/useFirebaseArtistPending'
+	import { useFirebaseArtist } from '~/composables/Firebase/useFirebaseArtist'
+	import { useFirebaseArtistPending } from '~/composables/Firebase/useFirebaseArtistPending'
 
 	const { updateArtist } = useFirebaseArtist()
 	const { getAllPendingArtists, deletePendingArtist } = useFirebaseArtistPending()

@@ -1,8 +1,8 @@
 <script setup>
 	import { useToast } from 'vue-toastification'
 	import debounce from 'lodash.debounce'
-	import { useFirebaseRealtimeDatabase } from '@/composables/useFirebaseRealtimeDatabase'
-	import { useFirebaseUtils } from '@/composables/useFirebaseUtils'
+	import { useFirebaseRealtimeDatabase } from '~/composables/Firebase/useFirebaseRealtimeDatabase'
+	import { useFirebaseUtils } from '~/composables/Firebase/useFirebaseUtils'
 	import { useUserStore } from '~/stores/user'
 
 	// Initialisation des réactifs

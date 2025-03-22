@@ -15,7 +15,7 @@ import _ from 'lodash'
 import { useToast } from 'vue-toastification'
 import { useNuxtApp } from '#app'
 import type { Music } from '~/types/music'
-import { useFirebaseUtils } from '@/composables/useFirebaseUtils'
+import { useFirebaseUtils } from '~/composables/Firebase/useFirebaseUtils'
 import { useUserStore } from '@/stores/user'
 import { useGeneralFunction } from '@/composables/useGeneralFunction'
 
@@ -27,7 +27,10 @@ export function useFirebaseFunction() {
 	const toast = useToast()
 
 	// Listens for real-time updates to the 'news' collection in Firestore where the date is greater than or equal to the provided start date.
-	const getRealtimeNextComebacks = async (startDate: Timestamp, callback: Function) => {
+	const getRealtimeNextComebacks = async (
+		startDate: Timestamp,
+		callback: (data: any[]) => void,
+	) => {
 		const colRef = query(
 			collection(database as any, 'news'),
 			where('date', '>=', startDate),
@@ -48,7 +51,7 @@ export function useFirebaseFunction() {
 	const getRealtimeLastestReleases = async (
 		_startDate: Timestamp,
 		limitNumber: number,
-		callback: Function,
+		callback: (data: any[]) => void,
 	) => {
 		const colRef = query(
 			collection(database as any, 'releases'),
@@ -71,7 +74,7 @@ export function useFirebaseFunction() {
 	// Listens for real-time updates to the 'artists' collection in Firestore.
 	const getRealtimeLastestArtistsAdded = async (
 		limitNumber: number,
-		callback: Function,
+		callback: (data: any[]) => void,
 	) => {
 		const colRef = query(
 			collection(database as any, 'artists'),

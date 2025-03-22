@@ -6,7 +6,7 @@
 	import { useToast } from 'vue-toastification'
 	import * as Mdl from '@kouts/vue-modal'
 	import _ from 'lodash'
-	import { useFirebaseArtist } from '@/composables/useFirebaseArtist'
+	import { useFirebaseArtist } from '~/composables/Firebase/useFirebaseArtist'
 
 	definePageMeta({
 		middleware: 'auth',

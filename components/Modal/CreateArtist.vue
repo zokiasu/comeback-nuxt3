@@ -2,7 +2,7 @@
 	import VueMultiselect from 'vue-multiselect'
 	import { useToast } from 'vue-toastification'
 	import { Timestamp } from 'firebase/firestore'
-	import { useFirebaseArtist } from '@/composables/useFirebaseArtist'
+	import { useFirebaseArtist } from '~/composables/Firebase/useFirebaseArtist'
 
 	const toast = useToast()
 	const { createArtist } = useFirebaseArtist()
