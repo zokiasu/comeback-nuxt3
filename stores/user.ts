@@ -8,8 +8,8 @@ export const useUserStore = defineStore(
 	'userStore',
 	() => {
 		const firebaseUserStore = ref(null)
-		const isLoginStore = ref<Boolean>(false)
-		const isAdminStore = ref<Boolean>(false)
+		const isLoginStore = ref<boolean>(false)
+		const isAdminStore = ref<boolean>(false)
 		const userDataStore = ref<User | null>(null)
 
 		const setUserData = (user: any) => {

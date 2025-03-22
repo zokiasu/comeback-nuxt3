@@ -5,7 +5,7 @@
 	import { useToast } from 'vue-toastification'
 	import { useUserStore } from '@/stores/user'
 	import { type Release } from '@/types/release'
-	import { useFirebaseRelease } from '@/composables/useFirebaseRelease'
+	import { useFirebaseRelease } from '~/composables/Firebase/useFirebaseRelease'
 
 	const { Modal } = Mdl
 	const { getReleaseByArtistIdYoutubeMusic, updateRelease, getReleaseByIdWithMusics } =

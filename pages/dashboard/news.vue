@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { useToast } from 'vue-toastification'
-	import { queryByCollection, deletebyDoc } from '~/composables/useFirestore'
+	import { queryByCollection, deletebyDoc } from '~/composables/Firebase/useFirestore'
 
 	interface News {
 		taskId: string
@@ -73,62 +73,66 @@
 			if (!b.createdAt) return invertSort.value ? 1 : -1
 			return invertSort.value ? b.createdAt - a.createdAt : a.createdAt - b.createdAt
 		}
-		
+
 		if (sort.value === 'date') {
 			if (!a.date?.seconds && !b.date?.seconds) return 0
 			if (!a.date?.seconds) return invertSort.value ? -1 : 1
 			if (!b.date?.seconds) return invertSort.value ? 1 : -1
-			
+
 			const aDate = new Date(a.date.seconds * 1000)
 			const bDate = new Date(b.date.seconds * 1000)
-			return invertSort.value ? bDate.getTime() - aDate.getTime() : aDate.getTime() - bDate.getTime()
+			return invertSort.value
+				? bDate.getTime() - aDate.getTime()
+				: aDate.getTime() - bDate.getTime()
 		}
-		
+
 		if (sort.value === 'user') {
 			if (!a.user?.id && !b.user?.id) return 0
 			if (!a.user?.id) return invertSort.value ? -1 : 1
 			if (!b.user?.id) return invertSort.value ? 1 : -1
-			
-			return invertSort.value 
-				? b.user.id.localeCompare(a.user.id) 
+
+			return invertSort.value
+				? b.user.id.localeCompare(a.user.id)
 				: a.user.id.localeCompare(b.user.id)
 		}
-		
+
 		if (sort.value === 'artist') {
 			if (!a.artist?.id && !b.artist?.id) return 0
 			if (!a.artist?.id) return invertSort.value ? -1 : 1
 			if (!b.artist?.id) return invertSort.value ? 1 : -1
-			
-			return invertSort.value 
-				? b.artist.id.localeCompare(a.artist.id) 
+
+			return invertSort.value
+				? b.artist.id.localeCompare(a.artist.id)
 				: a.artist.id.localeCompare(b.artist.id)
 		}
-		
+
 		return 0
 	}
 
 	const filteredNewsList = computed(() => {
 		if (page.value !== 1) page.value = 1
 		if (!newsFetch.value || newsFetch.value.length === 0) return []
-		
+
 		// Appliquer d'abord le tri
 		const sortedNews = [...newsFetch.value].sort(sortNews)
-		
+
 		// Ensuite appliquer le filtre de recherche si nécessaire
 		if (!search.value) {
 			return sortedNews
 		}
-		
+
 		const searchTerm = search.value.toLowerCase()
 		return sortedNews.filter((news) => {
 			// Vérifier que les propriétés existent avant d'appeler toLowerCase()
 			const userName = news.user?.name?.toLowerCase() || ''
 			const artistName = news.artist?.name?.toLowerCase() || ''
 			const message = news.message?.toLowerCase() || ''
-			
-			return userName.includes(searchTerm) || 
-				   artistName.includes(searchTerm) || 
-				   message.includes(searchTerm)
+
+			return (
+				userName.includes(searchTerm) ||
+				artistName.includes(searchTerm) ||
+				message.includes(searchTerm)
+			)
 		})
 	})
 
@@ -245,7 +249,10 @@
 			/>
 		</transition-group>
 
-		<p v-else-if="!isLoading" class="w-full bg-quaternary p-5 text-center font-semibold uppercase">
+		<p
+			v-else-if="!isLoading"
+			class="w-full bg-quaternary p-5 text-center font-semibold uppercase"
+		>
 			Aucune news trouvée
 		</p>
 
@@ -256,13 +263,13 @@
 </template>
 
 <style scoped>
-.list-complete-enter-active,
-.list-complete-leave-active {
-	transition: all 0.3s ease;
-}
-.list-complete-enter-from,
-.list-complete-leave-to {
-	opacity: 0;
-	transform: translateY(30px);
-}
+	.list-complete-enter-active,
+	.list-complete-leave-active {
+		transition: all 0.3s ease;
+	}
+	.list-complete-enter-from,
+	.list-complete-leave-to {
+		opacity: 0;
+		transform: translateY(30px);
+	}
 </style>

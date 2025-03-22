@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import type { Artist } from '~/types/artist'
-	import { useFirebaseArtist } from '@/composables/useFirebaseArtist'
+	import { useFirebaseArtist } from '~/composables/Firebase/useFirebaseArtist'
 
 	const { getFullArtistById } = useFirebaseArtist()
 

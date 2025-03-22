@@ -12,10 +12,10 @@
 		type DocumentData,
 	} from 'firebase/firestore'
 	import { useToast } from 'vue-toastification'
-	import { deletebyDoc } from '~/composables/useFirestore'
+	import debounce from 'lodash.debounce'
+	import { deletebyDoc } from '~/composables/Firebase/useFirestore'
 	import type { Artist } from '~/types/artist'
 	import type { AlgoliaHit } from '~/types/algolia'
-	import debounce from 'lodash.debounce'
 
 	// Types
 	interface FilterState {
@@ -74,7 +74,7 @@
 				toast.success('Artiste supprimé')
 			} catch (error) {
 				console.error('Erreur lors de la suppression du document: ', error)
-				toast.error('Erreur lors de la suppression de l\'artiste')
+				toast.error("Erreur lors de la suppression de l'artiste")
 			}
 		} else {
 			toast.error('Artiste non trouvé')
@@ -90,7 +90,7 @@
 			const snapshot = await getCountFromServer(coll)
 			maxArtist.value = snapshot.data().count
 		} catch (error) {
-			console.error('Erreur lors de la récupération du nombre d\'artistes: ', error)
+			console.error("Erreur lors de la récupération du nombre d'artistes: ", error)
 			toast.error('Erreur lors du chargement des données')
 		}
 	}
@@ -103,28 +103,31 @@
 			algoliaResults.value = []
 			return
 		}
-		
+
 		isSearching.value = true
 		try {
-			await useAsyncData(`search-${search.value}`, () => 
-				algoliaSearch({ query: search.value })
+			await useAsyncData(`search-${search.value}`, () =>
+				algoliaSearch({ query: search.value }),
 			)
-			
+
 			if (result.value && result.value.hits) {
 				// Convertir les résultats Algolia en format Artist
-				algoliaResults.value = result.value.hits.map((hit: AlgoliaHit) => ({
-					id: hit.objectID,
-					name: hit.name || '',
-					image: hit.image || '',
-					description: hit.description || '',
-					type: hit.type as Artist['type'] || 'SOLO',
-					idYoutubeMusic: hit.idYoutubeMusic || '',
-					styles: hit.styles || [],
-					socialList: hit.socialList || [],
-					platformList: hit.platformList || [],
-					createdAt: hit.createdAt,
-					updatedAt: hit.updatedAt,
-				} as Artist))
+				algoliaResults.value = result.value.hits.map(
+					(hit: AlgoliaHit) =>
+						({
+							id: hit.objectID,
+							name: hit.name || '',
+							image: hit.image || '',
+							description: hit.description || '',
+							type: (hit.type as Artist['type']) || 'SOLO',
+							idYoutubeMusic: hit.idYoutubeMusic || '',
+							styles: hit.styles || [],
+							socialList: hit.socialList || [],
+							platformList: hit.platformList || [],
+							createdAt: hit.createdAt,
+							updatedAt: hit.updatedAt,
+						}) as Artist,
+				)
 			}
 		} catch (error) {
 			console.error('Erreur lors de la recherche Algolia:', error)
@@ -242,7 +245,7 @@
 		Object.keys(filterState).forEach((key) => {
 			filterState[key as keyof FilterState] = false
 		})
-		
+
 		// Active uniquement le filtre sélectionné
 		filterState[filter] = !filterState[filter]
 	}
@@ -252,23 +255,23 @@
 	 */
 	const filteredArtistList = computed(() => {
 		if (page.value !== 1) page.value = 1
-		
+
 		// Si une recherche est active et Algolia est utilisé, retourner les résultats d'Algolia
 		if (useAlgoliaForSearch.value && search.value.length >= 2) {
 			return algoliaResults.value
 		}
-		
+
 		if (!artistFetch.value) return artistFetch.value
 
 		return [...artistFetch.value].sort((a, b) => {
 			if (sort.value === 'createdAt') {
-				return invertSort.value 
-					? (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0) 
+				return invertSort.value
+					? (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)
 					: (a.createdAt?.toMillis() || 0) - (b.createdAt?.toMillis() || 0)
 			}
 			if (sort.value === 'updatedAt') {
-				return invertSort.value 
-					? (b.updatedAt?.toMillis() || 0) - (a.updatedAt?.toMillis() || 0) 
+				return invertSort.value
+					? (b.updatedAt?.toMillis() || 0) - (a.updatedAt?.toMillis() || 0)
 					: (a.updatedAt?.toMillis() || 0) - (b.updatedAt?.toMillis() || 0)
 			}
 			if (sort.value === 'type') {
@@ -384,10 +387,14 @@
 					placeholder="Search"
 					class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
 				/>
-				<button 
+				<button
 					class="absolute right-2 top-1/2 -translate-y-1/2 rounded bg-tertiary px-2 py-1 text-xs text-quinary"
 					@click="toggleSearchMethod"
-					:title="useAlgoliaForSearch ? 'Utiliser Firebase (recherche basique)' : 'Utiliser Algolia (recherche avancée)'"
+					:title="
+						useAlgoliaForSearch
+							? 'Utiliser Firebase (recherche basique)'
+							: 'Utiliser Algolia (recherche avancée)'
+					"
 				>
 					{{ useAlgoliaForSearch ? 'Algolia' : 'Firebase' }}
 				</button>
@@ -491,7 +498,10 @@
 			/>
 		</transition-group>
 
-		<p v-else-if="!isSearching" class="w-full bg-quaternary p-5 text-center font-semibold uppercase">
+		<p
+			v-else-if="!isSearching"
+			class="w-full bg-quaternary p-5 text-center font-semibold uppercase"
+		>
 			No artist found
 		</p>
 
