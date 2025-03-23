@@ -16,7 +16,7 @@
 	import { useToast } from 'vue-toastification'
 	import debounce from 'lodash.debounce'
 	import type { Release } from '~/types/release'
-	import { useFirebaseRelease } from '~/composables/Firebase/useFirebaseRelease'
+	import { useFirebaseRelease } from '~/composables/useFirebaseRelease'
 	import type { AlgoliaHit } from '~/types/algolia'
 
 	const { deleteRelease: deleteReleaseFunction } = useFirebaseRelease()

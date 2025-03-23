@@ -13,7 +13,7 @@
 	} from 'firebase/firestore'
 	import { useToast } from 'vue-toastification'
 	import debounce from 'lodash.debounce'
-	import { deletebyDoc } from '~/composables/Firebase/useFirestore'
+	import { deletebyDoc } from '~/composables/useFirestore'
 	import type { Artist } from '~/types/artist'
 	import type { AlgoliaHit } from '~/types/algolia'
 

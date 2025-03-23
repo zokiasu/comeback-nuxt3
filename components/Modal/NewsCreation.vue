@@ -6,6 +6,7 @@
 	import debounce from 'lodash.debounce'
 	import algoliasearch from 'algoliasearch/lite'
 	import { useUserStore } from '@/stores/user'
+	import { add } from '~/composables/useFirestore'
 
 	const emit = defineEmits(['closeModal'])
 

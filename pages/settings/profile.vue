@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { useToast } from 'vue-toastification'
-	import { useFirebaseFunction } from '~/composables/Firebase/useFirebaseFunction'
-	import { useFirebaseArtist } from '~/composables/Firebase/useFirebaseArtist'
+	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
+	import { useFirebaseArtist } from '~/composables/useFirebaseArtist'
 	import { useUserStore } from '~/stores/user'
 	import type { User } from '~/types/user'
 	import type { Artist } from '~/types/artist'

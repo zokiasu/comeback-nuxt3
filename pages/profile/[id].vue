@@ -63,8 +63,8 @@
 <script setup>
 	import { Timestamp } from 'firebase/firestore'
 	import { useUserStore } from '@/stores/user'
-	import { useFirebaseRealtimeDatabase } from '~/composables/Firebase/useFirebaseRealtimeDatabase'
-	import { useFirebaseFunction } from '~/composables/Firebase/useFirebaseFunction'
+	import { useFirebaseRealtimeDatabase } from '~/composables/useFirebaseRealtimeDatabase'
+	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
 
 	const route = useRoute()
 	const { userDataStore } = useUserStore()

@@ -30,6 +30,7 @@
 </template>
 
 <script lang="ts" setup>
+	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
 	const { createStyle } = useFirebaseFunction()
 
 	defineProps({

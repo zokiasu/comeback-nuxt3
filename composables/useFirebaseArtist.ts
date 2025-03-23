@@ -15,8 +15,8 @@ import {
 	Timestamp,
 } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
-import { useFirebaseRelease } from '~/composables/Firebase/useFirebaseRelease'
-import { useFirebaseUtils } from '~/composables/Firebase/useFirebaseUtils'
+import { useFirebaseRelease } from '~/composables/useFirebaseRelease'
+import { useFirebaseUtils } from '~/composables/useFirebaseUtils'
 import type { Artist } from '~/types/artist'
 
 export function useFirebaseArtist() {

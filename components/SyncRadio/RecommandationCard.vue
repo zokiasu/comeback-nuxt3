@@ -1,4 +1,5 @@
 <script setup lang="ts">
+	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
 	const { getRandomMusic } = useFirebaseFunction()
 
 	const { isAdminRoom } = defineProps<{
