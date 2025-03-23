@@ -7,17 +7,17 @@
 	import algoliasearch from 'algoliasearch/lite'
 	import { useUserStore } from '@/stores/user'
 
+	const emit = defineEmits(['closeModal'])
+
 	const config = useRuntimeConfig()
+	const { userDataStore } = useUserStore()
 	const client = algoliasearch(
 		config.public.ALGOLIA_APPLICATION_ID,
 		config.public.ALGOLIA_API_KEY,
 	)
 	const index = client.initIndex('Artists')
 
-	const { userDataStore } = useUserStore()
 	const toast = useToast()
-
-	const emit = defineEmits(['closeModal'])
 
 	const dateToDateFormat = ref(null)
 	const sendNews = ref(false)
@@ -38,16 +38,6 @@
 		updatedAt: Timestamp.fromDate(new Date()),
 	})
 
-	// Définition d'une fonction de recherche débattue
-	const debouncedSearch = debounce(async (query) => {
-		try {
-			const { hits } = await index.search(query)
-			artistListSearched.value = hits.slice(0, 10)
-		} catch (error) {
-			console.error('Erreur lors de la recherche:', error)
-		}
-	}, 500)
-
 	watchEffect(() => {
 		if (searchArtist.value.length > 2) {
 			debouncedSearch(searchArtist.value)
@@ -65,6 +55,16 @@
 			dateToDateFormat.value,
 		).toLocaleDateString()}`
 	})
+
+	// Définition d'une fonction de recherche débattue
+	const debouncedSearch = debounce(async (query) => {
+		try {
+			const { hits } = await index.search(query)
+			artistListSearched.value = hits.slice(0, 10)
+		} catch (error) {
+			console.error('Erreur lors de la recherche:', error)
+		}
+	}, 500)
 
 	const closeModal = () => {
 		emit('closeModal')

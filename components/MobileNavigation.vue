@@ -3,28 +3,16 @@
 	import type { PropType } from 'vue'
 	import type { Artist } from '~/types/artist'
 
+	const isPlayingVideo = useIsPlayingVideo()
+	const userStore = useUserStore()
 	const { Modal } = Mdl
+
 	const showModal = ref(false)
 	const showModalAlgolia = ref(false)
-	const isPlayingVideo = useIsPlayingVideo()
 
-	const props = defineProps({
-		artistFetch: {
-			type: Array as PropType<Artist[]>,
-			required: true,
-		},
-		isAdmin: {
-			type: Boolean,
-			required: true,
-		},
-		isLogin: {
-			type: Boolean,
-			required: true,
-		},
-	})
-
-	const userStore = useUserStore()
 	const userDataStore = computed(() => userStore.userDataStore)
+	const isLoginStore = computed(() => userStore.isLoginStore)
+	const isAdminStore = computed(() => userStore.isAdminStore)
 
 	const profilePath = computed(() => {
 		if (!userDataStore.value || !userDataStore.value.id) {
@@ -61,21 +49,21 @@
 				<IconSearch class="mx-auto h-5 w-5" />
 			</button>
 			<NuxtLink
-				v-if="props.isLogin && userDataStore"
+				v-if="isLoginStore && userDataStore"
 				:to="profilePath"
 				class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50"
 			>
 				<IconArtist class="mx-auto h-5 w-5" />
 			</NuxtLink>
 			<NuxtLink
-				v-if="props.isAdmin"
+				v-if="isAdminStore"
 				:to="`/dashboard/artist`"
 				class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50"
 			>
 				<IconEdit class="mx-auto h-5 w-5" />
 			</NuxtLink>
 			<NuxtLink
-				v-if="!props.isLogin"
+				v-if="!isLoginStore"
 				:to="`/authentification`"
 				class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50"
 			>
@@ -100,10 +88,7 @@
 			:bg-in-class="`animate__fadeInUp`"
 			:bg-out-class="`animate__fadeOutDown`"
 		>
-			<ModalNewsCreation
-				:artist-list="props.artistFetch"
-				@close-modal="showModal = false"
-			/>
+			<ModalNewsCreation @close-modal="showModal = false" />
 		</Modal>
 		<Modal
 			v-model="showModalAlgolia"
