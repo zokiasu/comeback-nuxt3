@@ -1,5 +1,6 @@
 <script setup>
 	import { Timestamp } from 'firebase/firestore'
+	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
 
 	const releases = ref([])
 	const backTop = ref(null)

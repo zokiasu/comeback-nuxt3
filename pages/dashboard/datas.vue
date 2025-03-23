@@ -1,6 +1,7 @@
 <script setup lang="ts">
 	import { Timestamp, doc, onSnapshot, updateDoc } from 'firebase/firestore'
 	import { useToast } from 'vue-toastification'
+	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
 
 	const { $firestore: db } = useNuxtApp()
 	const toast = useToast()

@@ -3,7 +3,7 @@
 	import VueDatePicker from '@vuepic/vue-datepicker'
 	import { useToast } from 'vue-toastification'
 	import { type Release } from '@/types/release'
-	import { useFirebaseRelease } from '~/composables/Firebase/useFirebaseRelease'
+	import { useFirebaseRelease } from '~/composables/useFirebaseRelease'
 
 	const props = defineProps<{
 		id: string

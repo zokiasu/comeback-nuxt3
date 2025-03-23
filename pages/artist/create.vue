@@ -5,7 +5,7 @@
 	import { Timestamp, doc, onSnapshot } from 'firebase/firestore'
 	import { useToast } from 'vue-toastification'
 	import * as Mdl from '@kouts/vue-modal'
-	import { useFirebaseArtist } from '~/composables/Firebase/useFirebaseArtist'
+	import { useFirebaseArtist } from '~/composables/useFirebaseArtist'
 
 	definePageMeta({
 		middleware: 'auth',

@@ -15,7 +15,7 @@ import _ from 'lodash'
 import { useToast } from 'vue-toastification'
 import { useNuxtApp } from '#app'
 import type { Music } from '~/types/music'
-import { useFirebaseUtils } from '~/composables/Firebase/useFirebaseUtils'
+import { useFirebaseUtils } from '~/composables/useFirebaseUtils'
 import { useUserStore } from '@/stores/user'
 import { useGeneralFunction } from '@/composables/useGeneralFunction'
 

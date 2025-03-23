@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-	import { useFirebaseFunction } from '~/composables/Firebase/useFirebaseFunction'
+	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
 
 	const { getRandomMusic } = useFirebaseFunction()
 	const music = ref({} as any)

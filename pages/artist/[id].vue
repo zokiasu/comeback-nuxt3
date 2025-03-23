@@ -2,6 +2,7 @@
 	import { useUserStore } from '@/stores/user'
 	import { type Artist } from '@/types/artist'
 	import type { Music } from '~/types/music'
+	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
 
 	const { isLoginStore } = useUserStore()
 	const { getRandomMusicFromArtistId } = useFirebaseFunction()

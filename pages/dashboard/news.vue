@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { useToast } from 'vue-toastification'
-	import { queryByCollection, deletebyDoc } from '~/composables/Firebase/useFirestore'
+	import { queryByCollection, deletebyDoc } from '~/composables/useFirestore'
 
 	interface News {
 		taskId: string

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { useFirebaseRealtimeDatabase } from '~/composables/Firebase/useFirebaseRealtimeDatabase'
+	import { useFirebaseRealtimeDatabase } from '~/composables/useFirebaseRealtimeDatabase'
 	const { idRoom, idActualUser, nameActualUser, isModerator } = defineProps<{
 		idRoom: string
 		idActualUser: string

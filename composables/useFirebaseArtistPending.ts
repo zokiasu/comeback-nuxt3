@@ -8,7 +8,7 @@ import {
 	getDoc,
 } from 'firebase/firestore'
 import { useToast } from 'vue-toastification'
-import { useFirebaseUtils } from '~/composables/Firebase/useFirebaseUtils'
+import { useFirebaseUtils } from '~/composables/useFirebaseUtils'
 
 export function useFirebaseArtistPending() {
 	const { $firestore: database } = useNuxtApp()
