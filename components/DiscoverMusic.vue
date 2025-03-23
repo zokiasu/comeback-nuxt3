@@ -1,18 +1,11 @@
-<script lang="ts" setup>
-	import { useFirebaseFunction } from '~/composables/Firebase/useFirebaseFunction'
-
-	const { getRandomMusic } = useFirebaseFunction()
-	const music = ref({} as any)
+<script setup lang="ts">
+	import type { Music } from '~/types/supabase/music'
 
 	const props = defineProps({
-		year: {
-			type: Number,
-			default: new Date().getFullYear(),
+		music: {
+			type: Object as PropType<Music>,
+			default: {},
 		},
-	})
-
-	onMounted(async () => {
-		music.value = await getRandomMusic(props.year)
 	})
 
 	const idYoutubeVideo = useIdYoutubeVideo()
@@ -21,23 +14,12 @@
 	const authorNamePlaying = useAuthorNamePlaying()
 	const imageLoaded = ref(false)
 
-	const playVideo = (videoId: any) => {
+	const playVideo = (videoId: string) => {
 		idYoutubeVideo.value = videoId
 		isPlayingVideo.value = true
-		musicNamePlaying.value = music.value.name
-		authorNamePlaying.value = music.value.artists[0].name
+		musicNamePlaying.value = props.music.name
+		authorNamePlaying.value = props.music?.artists?.[0]?.name || ''
 	}
-
-	const reloadRandomMusic = async () => {
-		music.value = {}
-		music.value = await getRandomMusic(props.year)
-		imageLoaded.value = false
-	}
-
-	defineExpose({
-		reloadRandomMusic,
-		music,
-	})
 </script>
 
 <template>
@@ -45,16 +27,16 @@
 		<div v-if="music && music?.artists">
 			<button
 				class="group relative aspect-square max-h-96 w-full overflow-hidden rounded-lg bg-quinary drop-shadow-lg"
-				@click="playVideo(music.videoId)"
+				@click="playVideo(music.id_youtube_music)"
 			>
-				<div v-if="music.thumbnails.length" class="relative h-full w-full">
+				<div v-if="music.thumbnails?.length" class="relative h-full w-full">
 					<div
 						class="absolute inset-0 h-full w-full bg-quinary transition-all duration-500 ease-in-out"
 						:class="imageLoaded ? 'opacity-0' : 'opacity-100'"
 					/>
 					<NuxtImg
 						:alt="music.name"
-						:src="music.thumbnails[2].url"
+						:src="music.thumbnails?.[2]?.url"
 						class="h-full w-full rounded object-cover"
 						@load="imageLoaded = true"
 					/>
@@ -76,7 +58,7 @@
 					</div>
 					<div class="flex justify-end">
 						<IconPause
-							v-if="isPlayingVideo && idYoutubeVideo === music.videoId"
+							v-if="isPlayingVideo && idYoutubeVideo === music.id_youtube_music"
 							class="h-8 w-8 transition-all duration-500 ease-in-out group-hover:text-primary md:h-10 md:w-10"
 						/>
 						<IconPlay

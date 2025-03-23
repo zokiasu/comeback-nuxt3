@@ -71,7 +71,7 @@ export interface Database {
 					id_youtube_music: string | null
 					name: string
 					description: string | null
-					release_date: string | null
+					date: string | null
 					year: number | null
 					type: ReleaseType | null
 					verified: boolean
@@ -85,7 +85,7 @@ export interface Database {
 					id_youtube_music?: string | null
 					name: string
 					description?: string | null
-					release_date?: string | null
+					date?: string | null
 					year?: number | null
 					type?: ReleaseType | null
 					verified?: boolean
@@ -99,7 +99,7 @@ export interface Database {
 					id_youtube_music?: string | null
 					name?: string
 					description?: string | null
-					release_date?: string | null
+					date?: string | null
 					year?: number | null
 					type?: ReleaseType | null
 					verified?: boolean

@@ -7,7 +7,7 @@ export interface Release extends BaseEntity {
 	id_youtube_music: string
 	name: string
 	description: string | null
-	release_date: string
+	date: string
 	year: number
 	type: ReleaseType
 	verified: boolean

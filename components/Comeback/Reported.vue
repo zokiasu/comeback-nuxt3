@@ -1,7 +1,9 @@
-<script setup>
+<script setup lang="ts">
+	import type { News } from '~/types/supabase/news'
+
 	const props = defineProps({
 		comebackList: {
-			type: Array,
+			type: Array as PropType<News[]>,
 			required: true,
 		},
 	})
@@ -31,7 +33,6 @@
 				:key="comeback.id"
 				:message="comeback.message"
 				:date="comeback.date"
-				:artist="comeback.artist"
 				:artists="comeback.artists"
 			/>
 		</div>

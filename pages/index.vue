@@ -1,30 +1,26 @@
 <script setup lang="ts">
-	import { ref, computed, onMounted } from 'vue'
-	import { Timestamp } from 'firebase/firestore'
-	import { useFirebaseFunction } from '~/composables/Firebase/useFirebaseFunction'
-	import DiscoverMusic from '~/components/DiscoverMusic.vue'
-	import type { Artist } from '~/types/artist'
-	import type { Comeback } from '~/types/comeback'
-	import type { Release } from '~/types/release'
+	import type { Music } from '~/types/supabase/music'
+	import type { Artist } from '~/types/supabase/artist'
+	import type { Release } from '~/types/supabase/release'
+	import type { News } from '~/types/supabase/news'
+	import { useSupabaseNews } from '~/composables/Supabase/useSupabaseNews'
+	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
+	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
+	import { useSupabaseMusic } from '~/composables/Supabase/useSupabaseMusic'
 
-	const {
-		getRealtimeNextComebacks,
-		getRealtimeLastestReleases,
-		getRealtimeLastestArtistsAdded,
-	} = useFirebaseFunction()
+	const { getRealtimeLastestNewsAdded } = useSupabaseNews()
+	const { getRealtimeLastestReleasesAdded } = useSupabaseRelease()
+	const { getRealtimeLastestArtistsAdded } = useSupabaseArtist()
+	const { getRandomMusics } = useSupabaseMusic()
 
-	const comebacks = ref<Comeback[]>([])
+	const comebacks = ref<News[]>([])
 	const artists = ref<Artist[]>([])
 	const releases = ref<Release[]>([])
+	const musics = ref<Music[]>([])
 
-	const discoverOne = ref<InstanceType<typeof DiscoverMusic> | null>(null)
-	const discoverTwo = ref<InstanceType<typeof DiscoverMusic> | null>(null)
-	const discoverThree = ref<InstanceType<typeof DiscoverMusic> | null>(null)
-	const discoverFour = ref<InstanceType<typeof DiscoverMusic> | null>(null)
-
-	const comebacksToday = computed<Comeback[]>(() => {
+	const comebacksToday = computed<News[]>(() => {
 		return comebacks.value.filter((comeback) => {
-			const comebacksDate = new Date(comeback.date.seconds * 1000)
+			const comebacksDate = new Date(comeback.date)
 			const today = new Date()
 			return (
 				comebacksDate.getDate() === today.getDate() &&
@@ -34,28 +30,25 @@
 		})
 	})
 
-	onMounted(() => {
-		const comebacksDate = new Date()
-		comebacksDate.setDate(comebacksDate.getDate() - 1)
-
-		const releaseDate = new Date()
-		releaseDate.setDate(releaseDate.getDate() - 8)
+	onMounted(async () => {
+		musics.value = await getRandomMusics(4)
+		console.log(musics.value)
 
 		Promise.all([
 			new Promise<void>((resolve) =>
-				getRealtimeNextComebacks(Timestamp.fromDate(comebacksDate), (cb: any) => {
-					comebacks.value = cb
+				getRealtimeLastestNewsAdded((news: News[]) => {
+					comebacks.value = news
 					resolve()
 				}),
 			),
 			new Promise<void>((resolve) =>
-				getRealtimeLastestReleases(Timestamp.fromDate(releaseDate), 8, (rel: any) => {
+				getRealtimeLastestReleasesAdded(8, (rel: Release[]) => {
 					releases.value = rel
 					resolve()
 				}),
 			),
 			new Promise<void>((resolve) =>
-				getRealtimeLastestArtistsAdded(8, (art: any) => {
+				getRealtimeLastestArtistsAdded(8, (art: Artist[]) => {
 					artists.value = art
 					resolve()
 				}),
@@ -64,73 +57,8 @@
 	})
 
 	const reloadDiscoverMusic = async () => {
-		discoverOne.value?.reloadRandomMusic()
-		discoverTwo.value?.reloadRandomMusic()
-		discoverThree.value?.reloadRandomMusic()
-		discoverFour.value?.reloadRandomMusic()
+		musics.value = await getRandomMusics(4)
 	}
-
-	useHead({
-		title: 'Comeback',
-		htmlAttrs: {
-			lang: 'en',
-		},
-		meta: [
-			{ charset: 'utf-8' },
-			{
-				name: 'robots',
-				content: 'noindex,nofollow',
-			},
-			{
-				name: 'viewport',
-				content: 'width=device-width, initial-scale=1',
-			},
-			{
-				hid: 'description',
-				name: 'description',
-				content:
-					"Don't miss any Comeback. Track every next release by your favorite artists.",
-			},
-			{
-				hid: 'og:site_name',
-				property: 'og:site_name',
-				content: 'Comeback - Track every next release by your favorite artists.',
-			},
-			{
-				hid: 'og:type',
-				property: 'og:type',
-				content: 'website',
-			},
-			{
-				hid: 'og:title',
-				property: 'og:title',
-				content: 'Comeback - Track every next release by your favorite artists.',
-			},
-			{
-				hid: 'og:description',
-				property: 'og:description',
-				content:
-					"Don't miss any Comeback. Track every next release by your favorite artists.",
-			},
-			{
-				hid: 'og:url',
-				property: 'og:url',
-				content: 'https://come-back.netlify.app/',
-			},
-			{
-				hid: 'og:image',
-				property: 'og:image',
-				content: 'https://nuxt-firebase-auth.vercel.app/ogp.png',
-			},
-		],
-		link: [
-			{
-				rel: 'icon',
-				type: 'image/x-icon',
-				href: '/favicon.ico',
-			},
-		],
-	})
 </script>
 
 <template>
@@ -146,10 +74,7 @@
 				<p class="text-xl font-bold lg:text-4xl">Discover Music</p>
 				<div class="space-y-5">
 					<div class="grid grid-cols-2 gap-5 xl:grid-cols-4">
-						<LazyDiscoverMusic ref="discoverOne" :year="new Date().getFullYear()" />
-						<LazyDiscoverMusic ref="discoverTwo" :year="new Date().getFullYear() - 1" />
-						<LazyDiscoverMusic ref="discoverThree" :year="new Date().getFullYear() - 2" />
-						<LazyDiscoverMusic ref="discoverFour" :year="new Date().getFullYear() - 3" />
+						<LazyDiscoverMusic v-for="music in musics" :key="music.id" :music="music" />
 					</div>
 					<button class="rounded bg-quaternary px-3 py-1" @click="reloadDiscoverMusic">
 						Reload

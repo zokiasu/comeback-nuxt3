@@ -248,7 +248,7 @@ export function useSupabaseNews() {
 		// Transformer les données pour avoir directement les artistes
 		const transformedData = data?.map((news) => ({
 			...news,
-			artists: news.artists?.map((artistJunction: any) => artistJunction.artists),
+			artists: news.artists?.map((artistJunction: any) => artistJunction.artists) || [],
 		}))
 
 		// Appeler le callback avec les données transformées
@@ -283,7 +283,7 @@ export function useSupabaseNews() {
 						// Transformer les données mises à jour
 						const transformedUpdatedData = updatedData?.map((news) => ({
 							...news,
-							artists: news.artists?.map((artistJunction: any) => artistJunction.artists),
+							artists: news.artists?.map((artistJunction: any) => artistJunction.artists) || [],
 						}))
 						callback(transformedUpdatedData as News[])
 					}

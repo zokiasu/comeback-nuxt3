@@ -1,9 +1,12 @@
-<script setup>
-	import { Timestamp } from 'firebase/firestore'
+<script setup lang="ts">
+	import { type Release } from '~/types/supabase/release'
+	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
 
-	const releases = ref([])
-	const backTop = ref(null)
-	const yearList = ref([])
+	const { getReleasesByMonthAndYear } = useSupabaseRelease()
+
+	const releases = ref<Release[]>([])
+	const backTop = ref<HTMLElement | null>(null)
+	const yearList = ref<number[]>([])
 	const monthList = [
 		{ minify: 'Jan', original: 'January' },
 		{ minify: 'Feb', original: 'February' },
@@ -18,14 +21,11 @@
 		{ minify: 'Nov', original: 'November' },
 		{ minify: 'Dec', original: 'December' },
 	]
-	const currentYear = ref(new Date().getFullYear())
-	const currentMonth = ref(new Date().getMonth())
-	const startDate = ref(new Date(currentYear.value, currentMonth.value, 1))
-	const endDate = ref(new Date(currentYear.value, currentMonth.value + 1, 0))
-	const { getReleasesBetweenDates } = useFirebaseFunction()
-	const onlyAlbums = ref(false)
-	const onlyEps = ref(false)
-	const onlySingles = ref(false)
+	const currentYear = ref<number>(new Date().getFullYear())
+	const currentMonth = ref<number>(new Date().getMonth())
+	const onlyAlbums = ref<boolean>(false)
+	const onlyEps = ref<boolean>(false)
+	const onlySingles = ref<boolean>(false)
 
 	function handleScrollCalendar() {
 		if (backTop.value) {
@@ -37,7 +37,7 @@
 		}
 	}
 
-	const switchTypeFilter = async (type) => {
+	const switchTypeFilter = async (type: string) => {
 		if (type === 'ALBUM') {
 			onlyAlbums.value = true
 			onlyEps.value = false
@@ -71,7 +71,10 @@
 
 	// function backtotop to id calendarPage
 	const backToTop = () => {
-		document.getElementById('__nuxt').scrollIntoView({ behavior: 'smooth' })
+		const nuxtElement = document.getElementById('__nuxt')
+		if (nuxtElement) {
+			nuxtElement.scrollIntoView({ behavior: 'smooth' })
+		}
 	}
 
 	onMounted(async () => {
@@ -79,29 +82,27 @@
 			yearList.value.push(year)
 		}
 
-		releases.value = await getReleasesBetweenDates(
-			Timestamp.fromDate(startDate.value),
-			Timestamp.fromDate(endDate.value),
+		releases.value = await getReleasesByMonthAndYear(
+			currentMonth.value,
+			currentYear.value,
 		)
 
 		window.addEventListener('scroll', handleScrollCalendar)
 	})
 
 	watch([currentYear, currentMonth], async () => {
-		startDate.value = new Date(currentYear.value, currentMonth.value, 1)
-		endDate.value = new Date(currentYear.value, currentMonth.value + 1, 0)
-		releases.value = await getReleasesBetweenDates(
-			Timestamp.fromDate(startDate.value),
-			Timestamp.fromDate(endDate.value),
+		releases.value = await getReleasesByMonthAndYear(
+			currentMonth.value,
+			currentYear.value,
 		)
 	})
 
 	useHead({
-		title: 'Releases Calendar',
+		title: 'Calendar Releases',
 		meta: [
 			{
 				name: 'description',
-				content: 'Releases Calendar',
+				content: 'Calendar Releases',
 			},
 		],
 	})
@@ -120,7 +121,7 @@
 			>
 				<button
 					v-for="year in yearList"
-					:id="year"
+					:id="String(year)"
 					:key="year"
 					class="h-full w-full snap-start rounded px-4 py-2.5"
 					:class="currentYear == year ? 'bg-primary' : 'bg-quaternary'"
@@ -205,14 +206,14 @@
 		>
 			<CardObject
 				v-for="release in releasesDisplayed"
-				:key="release.idYoutubeMusic"
-				:artist-id="release.artistsId"
+				:key="release.id_youtube_music"
+				:artist-id="release.artists?.[0]?.id"
 				:main-title="release.name"
-				:sub-title="release.artistsName"
+				:sub-title="release.artists?.[0]?.name"
 				:image="release.image"
 				:release-date="release.date"
 				:release-type="release.type"
-				:object-link="`/release/${release.idYoutubeMusic}`"
+				:object-link="`/release/${release.id_youtube_music}`"
 				date-always-display
 				class="!min-w-full"
 			/>

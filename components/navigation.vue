@@ -95,7 +95,7 @@
 					>
 						Calendar
 					</NuxtLink>
-					<NuxtLink
+					<!-- <NuxtLink
 						:to="`/syncradio`"
 						class="relative"
 						:class="
@@ -108,7 +108,7 @@
 						<span class="absolute -bottom-2 -right-4 px-2 text-xs font-bold text-primary">
 							Beta
 						</span>
-					</NuxtLink>
+					</NuxtLink> -->
 					<NuxtLink
 						v-if="props.isAdmin === true"
 						:to="`/dashboard/artist`"

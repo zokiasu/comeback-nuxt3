@@ -1,46 +1,39 @@
-<script setup>
-	const { isArtist, artistId, mainTitle, subTitle, image, objectLink } = defineProps({
-		isArtist: {
-			type: Boolean,
-			default: false,
-		},
-		artistId: {
-			type: String,
-		},
-		mainTitle: {
-			type: String,
-		},
-		subTitle: {
-			type: String,
-		},
-		image: {
-			type: String,
-			default: 'https://picsum.photos/200/200',
-		},
-		objectLink: {
-			type: String,
-		},
-		releaseDate: {
-			type: Object,
-		},
-		releaseType: {
-			type: String,
-			default: 'album',
-		},
-		isReleaseDisplay: {
-			type: Boolean,
-			default: false,
-		},
-		dateAlwaysDisplay: {
-			type: Boolean,
-			default: false,
-		},
-	})
+<script setup lang="ts">
+	const {
+		isArtist = false,
+		artistId = '',
+		mainTitle,
+		subTitle = '',
+		image,
+		objectLink,
+		releaseDate = '',
+		releaseType = '',
+		isReleaseDisplay = false,
+		dateAlwaysDisplay = false,
+	} = defineProps<{
+		isArtist?: boolean
+		artistId?: string
+		mainTitle: string
+		subTitle?: string
+		image: string
+		objectLink: string
+		releaseDate?: string
+		releaseType?: string
+		isReleaseDisplay?: boolean
+		dateAlwaysDisplay?: boolean
+	}>()
+
+	console.log('subTitle', subTitle)
+
 	const imageLoaded = ref(false)
 
-	const formatDate = (date) => {
-		const options = { day: '2-digit', month: '2-digit', year: '2-digit' }
-		return new Date(date.seconds * 1000).toLocaleDateString('fr-FR', options)
+	const formatDate = (date: string) => {
+		const options: Intl.DateTimeFormatOptions = {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric',
+		}
+		return new Date(date).toLocaleDateString('fr-FR', options)
 	}
 </script>
 

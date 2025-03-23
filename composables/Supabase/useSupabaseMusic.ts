@@ -1,10 +1,6 @@
 import { useToast } from 'vue-toastification'
 import { useSupabase } from './useSupabase'
-import type {
-	QueryOptions,
-	FilterOptions,
-	MusicType,
-} from '~/types/supabase'
+import type { QueryOptions, FilterOptions, MusicType } from '~/types/supabase'
 import type { Music } from '~/types/supabase/music'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
@@ -39,7 +35,10 @@ export function useSupabaseMusic() {
 				.eq('music_id', id)
 
 			if (deleteError) {
-				console.error('Erreur lors de la suppression des anciennes relations:', deleteError)
+				console.error(
+					'Erreur lors de la suppression des anciennes relations:',
+					deleteError,
+				)
 				toast.error('Erreur lors de la mise à jour des artistes')
 				throw deleteError
 			}
@@ -77,7 +76,10 @@ export function useSupabaseMusic() {
 				.eq('music_id', id)
 
 			if (deleteError) {
-				console.error('Erreur lors de la suppression des anciennes relations:', deleteError)
+				console.error(
+					'Erreur lors de la suppression des anciennes relations:',
+					deleteError,
+				)
 				toast.error('Erreur lors de la mise à jour des releases')
 				throw deleteError
 			}
@@ -92,7 +94,10 @@ export function useSupabaseMusic() {
 				)
 
 				if (insertError) {
-					console.error('Erreur lors de la création des nouvelles relations:', insertError)
+					console.error(
+						'Erreur lors de la création des nouvelles relations:',
+						insertError,
+					)
 					toast.error('Erreur lors de la mise à jour des releases')
 					throw insertError
 				}
@@ -249,6 +254,60 @@ export function useSupabaseMusic() {
 		callback(data as Music[])
 	}
 
+	// Récupère un nombre aléatoire de musiques
+	const getRandomMusics = async (count: number) => {
+		try {
+			// 1. Récupérer des IDs aléatoires avec une requête SQL brute
+			const { data: randomMusics, error: randomError } = await supabase.rpc(
+				'get_random_music_ids',
+				{ count_param: count },
+			)
+
+			if (randomError) {
+				console.error(
+					'Erreur lors de la récupération des musiques aléatoires:',
+					randomError,
+				)
+				return []
+			}
+
+			const randomIds = randomMusics.map((m: any) => m.id)
+
+			// 2. Récupérer les détails complets pour ces IDs spécifiques
+			const { data: detailedMusics, error: detailsError } = await supabase
+				.from('musics')
+				.select(
+					`
+					*,
+					artists:music_artists(
+						artist:artists(*)
+					),
+					releases:music_releases(
+						release:releases(*)
+					)
+				`,
+				)
+				.in('id', randomIds)
+
+			if (detailsError) {
+				console.error('Erreur lors de la récupération des détails:', detailsError)
+				return []
+			}
+
+			// Transformer les données
+			const formattedData = detailedMusics.map((music: any) => ({
+				...music,
+				artists: music.artists?.map((a: any) => a.artist) || [],
+				releases: music.releases?.map((r: any) => r.release) || [],
+			}))
+
+			return formattedData
+		} catch (error) {
+			console.error('Erreur lors de la sélection aléatoire des musiques:', error)
+			return []
+		}
+	}
+
 	return {
 		updateMusic,
 		updateMusicArtists,
@@ -258,5 +317,6 @@ export function useSupabaseMusic() {
 		getMusicById,
 		getMusicByIdLight,
 		getRealtimeLastestMusicsAdded,
+		getRandomMusics,
 	}
 }

@@ -102,11 +102,11 @@ export function useSupabaseRelease() {
 		}
 
 		if (options?.startDate) {
-			query = query.gte('release_date', options.startDate)
+			query = query.gte('date', options.startDate)
 		}
 
 		if (options?.endDate) {
-			query = query.lte('release_date', options.endDate)
+			query = query.lte('date', options.endDate)
 		}
 
 		if (options?.verified !== undefined) {
@@ -118,7 +118,7 @@ export function useSupabaseRelease() {
 				ascending: options.orderDirection === 'asc',
 			})
 		} else {
-			query = query.order('release_date', { ascending: false })
+			query = query.order('date', { ascending: false })
 		}
 
 		if (options?.limit) {
@@ -212,7 +212,7 @@ export function useSupabaseRelease() {
 		const { data, error } = await supabase
 			.from('releases')
 			.select('*')
-			.order('release_date', { ascending: false })
+			.order('date', { ascending: false })
 			.limit(limitNumber)
 
 		if (error) {
@@ -223,6 +223,46 @@ export function useSupabaseRelease() {
 		callback(data as Release[])
 	}
 
+	// Récupère les releases d'un mois et d'une année spécifiques
+	const getReleasesByMonthAndYear = async (month: number, year: number) => {
+		try {
+			// Créer les dates de début et de fin du mois
+			const startDate = new Date(year, month, 1)
+			const endDate = new Date(year, month + 1, 0)
+
+			const { data, error } = await supabase
+				.from('releases')
+				.select(
+					`
+					*,
+					artists:artist_releases(
+						artist:artists(*)
+					)
+				`,
+				)
+				.gte('date', startDate.toISOString())
+				.lte('date', endDate.toISOString())
+				.order('date', { ascending: true })
+
+			if (error) {
+				console.error('Erreur lors de la récupération des releases du mois:', error)
+				toast.error('Erreur lors de la récupération des releases du mois')
+				throw error
+			}
+
+			// Transformer les données pour avoir un format plus simple
+			const formattedData = data.map((release) => ({
+				...release,
+				artists: release.artists?.map((ar: any) => ar.artist) || [],
+			}))
+
+			return formattedData as Release[]
+		} catch (error) {
+			console.error('Erreur lors de la récupération des releases du mois:', error)
+			throw error
+		}
+	}
+
 	return {
 		updateRelease,
 		updateReleaseArtists,
@@ -231,5 +271,6 @@ export function useSupabaseRelease() {
 		getReleaseById,
 		getReleaseByIdLight,
 		getRealtimeLastestReleasesAdded,
+		getReleasesByMonthAndYear,
 	}
 }
