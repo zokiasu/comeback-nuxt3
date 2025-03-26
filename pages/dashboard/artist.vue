@@ -44,7 +44,7 @@
 	const useAlgoliaForSearch = ref(true)
 
 	// Algolia Search
-	const { result, search: algoliaSearch } = useAlgoliaSearch('Artists')
+	const { result, search: algoliaSearch } = useAlgoliaSearch('ARTISTS')
 	const algoliaResults = ref<Artist[]>([])
 	const isSearching = ref(false)
 

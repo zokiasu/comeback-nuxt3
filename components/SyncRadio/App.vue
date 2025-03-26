@@ -11,7 +11,7 @@
 	const maxResults = ref(10)
 
 	// Utilisation de Algolia Search de manière optimisée
-	const { result, search } = useAlgoliaSearch('Musics')
+	const { result, search } = useAlgoliaSearch('MUSICS')
 
 	// Définition d'une fonction de recherche débattue
 	const debouncedSearch = debounce(async (query) => {

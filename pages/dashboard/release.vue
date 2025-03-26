@@ -35,7 +35,7 @@
 	const firstLoad = ref(true)
 
 	// Algolia Search
-	const { result, search: algoliaSearch } = useAlgoliaSearch('Releases')
+	const { result, search: algoliaSearch } = useAlgoliaSearch('RELEASES')
 	const algoliaResults = ref<Release[]>([])
 	const isSearching = ref(false)
 

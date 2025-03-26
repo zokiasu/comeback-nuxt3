@@ -17,7 +17,7 @@
 </script>
 
 <template>
-	<div class="min-h-screen bg-secondary text-tertiary">
+	<div class="min-h-screen flex flex-col w-full bg-secondary text-tertiary">
 		<Navigation class="hidden md:block" />
 		<div class="inset-x-0 z-50 py-3 md:hidden">
 			<img
@@ -28,7 +28,9 @@
 				class="mx-auto block h-8 w-auto"
 			/>
 		</div>
-		<slot />
+		<main class="flex-1 flex flex-col">
+			<slot />
+		</main>
 		<LazyFooter v-if="displayingFooter" />
 		<LazyMobileNavigation class="md:hidden" />
 		<LazyYoutubePlayer

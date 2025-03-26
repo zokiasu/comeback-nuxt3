@@ -7,7 +7,7 @@
 	const datas = ref([])
 
 	// Utilisation de Algolia Search de manière optimisée
-	const { result, search } = useAlgoliaSearch('Artists')
+	const { result, search } = useAlgoliaSearch('ARTISTS')
 
 	// Définition d'une fonction de recherche débattue
 	const debouncedSearch = debounce(async (query: any) => {

@@ -32,7 +32,6 @@
 
 	onMounted(async () => {
 		musics.value = await getRandomMusics(4)
-		console.log(musics.value)
 
 		Promise.all([
 			new Promise<void>((resolve) =>
@@ -62,15 +61,15 @@
 </script>
 
 <template>
-	<div>
+	<div class="flex-1">
 		<!-- Home Header -->
 		<HomeSlider :news-today="comebacksToday" />
 		<!-- Home Body -->
 		<section class="container mx-auto space-y-16 p-5 py-10 2xl:space-y-20">
 			<!-- Comeback Reported List -->
-			<ComebackReported :comeback-list="comebacks" />
+			<ComebackReported v-if="comebacks.length > 0" :comeback-list="comebacks" />
 			<!-- Discover Music -->
-			<div class="space-y-8 text-center xl:space-y-10">
+			<div v-if="musics.length > 0" class="space-y-8 text-center xl:space-y-10">
 				<p class="text-xl font-bold lg:text-4xl">Discover Music</p>
 				<div class="space-y-5">
 					<div class="grid grid-cols-2 gap-5 xl:grid-cols-4">
@@ -82,9 +81,9 @@
 				</div>
 			</div>
 			<!-- Recent Release -->
-			<LazyRecentReleases :releases="releases" />
+			<LazyRecentReleases v-if="releases.length > 0" :releases="releases" />
 			<!-- Last Artist Added -->
-			<LazyArtistAdded :artists="artists" />
+			<LazyArtistAdded v-if="artists.length > 0" :artists="artists" />
 		</section>
 	</div>
 </template>
