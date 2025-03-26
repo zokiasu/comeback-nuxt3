@@ -84,11 +84,13 @@
 					<p class="font-semibold uppercase">Created Date</p>
 					<p class="opacity-50">
 						{{
-							new Date(userDetails.createdAt.toDate()).toLocaleDateString('fr-FR', {
-								day: '2-digit',
-								month: '2-digit',
-								year: 'numeric',
-							})
+							userDetails.createdAt
+								? new Date(userDetails.createdAt.toDate()).toLocaleDateString('fr-FR', {
+										day: '2-digit',
+										month: '2-digit',
+										year: 'numeric',
+									})
+								: 'N/A'
 						}}
 					</p>
 				</div>
@@ -96,21 +98,23 @@
 					<p class="font-semibold uppercase">Last Update</p>
 					<p class="opacity-50">
 						{{
-							new Date(userDetails.updatedAt.toDate()).toLocaleDateString('fr-FR', {
-								day: '2-digit',
-								month: '2-digit',
-								year: 'numeric',
-							})
+							userDetails.updatedAt
+								? new Date(userDetails.updatedAt.toDate()).toLocaleDateString('fr-FR', {
+										day: '2-digit',
+										month: '2-digit',
+										year: 'numeric',
+									})
+								: 'N/A'
 						}}
 					</p>
 				</div>
 			</div>
 
 			<div class="space-y-1">
-				<p class="font-semibold uppercase">Picture</p>
+				<p class="font-semibold uppercase">Photo</p>
 				<div class="flex flex-col gap-5">
 					<NuxtImg
-						:src="userDetails.picture"
+						:src="userDetails.photoURL"
 						:alt="userDetails.name"
 						class="aspect-video h-80 rounded object-cover"
 					/>
@@ -129,7 +133,7 @@
 								v-for="artist in artistFiltered"
 								:key="artist.id"
 								class="group h-fit space-y-1 rounded bg-quinary p-1 text-center"
-								@click="userDetails.picture = artist.image"
+								@click="userDetails.photoURL = artist.image"
 							>
 								<div class="relative">
 									<NuxtImg
