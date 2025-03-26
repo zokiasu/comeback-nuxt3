@@ -1,12 +1,11 @@
-export const useUseSupabaseArtist = () => {
-  return ref()
-}
 import { useToast } from 'vue-toastification'
 import { useSupabase } from './useSupabase'
 import type {
 	QueryOptions,
 	FilterOptions,
 	ArtistType,
+	ArtistSocialLink,
+	ArtistPlatformLink,
 } from '~/types/supabase'
 import type { Artist } from '~/types/supabase/artist'
 import type { SupabaseClient } from '@supabase/supabase-js'
@@ -25,7 +24,7 @@ export function useSupabaseArtist() {
 			.from('artists')
 			.select('id')
 			.eq('id_youtube_music', idYoutubeMusic)
-			.single()
+			.maybeSingle()
 
 		if (error) {
 			console.error("Erreur lors de la vérification de l'artiste:", error)
@@ -36,9 +35,16 @@ export function useSupabaseArtist() {
 	}
 
 	// Crée un nouvel artiste
-	const createArtist = async (data: Omit<Artist, 'id' | 'created_at' | 'updated_at'>) => {
+	const createArtist = async (
+		data: Omit<Artist, 'id' | 'created_at' | 'updated_at'>,
+		socialLinks?: Omit<ArtistSocialLink, 'id' | 'created_at' | 'artist_id'>[],
+		platformLinks?: Omit<ArtistPlatformLink, 'id' | 'created_at' | 'artist_id'>[],
+		artistGroups?: Artist[],
+		artistMembers?: Artist[],
+	): Promise<Artist> => {
 		if (data.id_youtube_music && (await artistExistInSupabase(data.id_youtube_music))) {
 			toast.error('Cet artiste existe déjà dans la base de données.')
+			console.error('Cet artiste existe déjà dans la base de données.')
 			throw new Error('Cet artiste existe déjà dans la base de données.')
 		}
 
@@ -49,16 +55,90 @@ export function useSupabaseArtist() {
 			.single()
 
 		if (error) {
+			toast.error("Erreur lors de la création de l'artiste")
 			console.error("Erreur lors de la création de l'artiste:", error)
 			throw new Error("Erreur lors de la création de l'artiste")
+		}
+
+		// Ajout des liens sociaux
+		if (socialLinks?.length) {
+			const socialLinksWithArtistId = socialLinks.map((link) => ({
+				...link,
+				artist_id: artist.id,
+			}))
+
+			const { error: socialError } = await supabase
+				.from('artist_social_links')
+				.insert(socialLinksWithArtistId)
+
+			if (socialError) {
+				console.error("Erreur lors de l'ajout des liens sociaux:", socialError)
+			}
+		}
+
+		// Ajout des liens de plateformes
+		if (platformLinks?.length) {
+			const platformLinksWithArtistId = platformLinks.map((link) => ({
+				...link,
+				artist_id: artist.id,
+			}))
+
+			const { error: platformError } = await supabase
+				.from('artist_platform_links')
+				.insert(platformLinksWithArtistId)
+
+			if (platformError) {
+				console.error("Erreur lors de l'ajout des liens de plateformes:", platformError)
+			}
+		}
+
+		// Ajout des relations avec les groupes (artiste comme membre)
+		if (artistGroups?.length) {
+			const groupRelations = artistGroups.map((group) => ({
+				group_id: group.id,
+				member_id: artist.id,
+				relation_type: 'MEMBER',
+			}))
+
+			const { error: groupError } = await supabase
+				.from('artist_relations')
+				.insert(groupRelations)
+
+			if (groupError) {
+				console.error("Erreur lors de l'ajout des relations de groupe:", groupError)
+			}
+		}
+
+		// Ajout des relations avec les membres (artiste comme groupe)
+		if (artistMembers?.length) {
+			const memberRelations = artistMembers.map((member) => ({
+				group_id: artist.id,
+				member_id: member.id,
+				relation_type: 'GROUP',
+			}))
+
+			const { error: memberError } = await supabase
+				.from('artist_relations')
+				.insert(memberRelations)
+
+			if (memberError) {
+				console.error("Erreur lors de l'ajout des relations de membres:", memberError)
+			}
 		}
 
 		return artist as Artist
 	}
 
 	// Met à jour un artiste
-	const updateArtist = async (idYoutubeMusic: string, updates: Partial<Artist>) => {
-		const { data, error } = await supabase
+	const updateArtist = async (
+		idYoutubeMusic: string,
+		updates: Partial<Artist>,
+		socialLinks?: Omit<ArtistSocialLink, 'id' | 'created_at' | 'artist_id'>[],
+		platformLinks?: Omit<ArtistPlatformLink, 'id' | 'created_at' | 'artist_id'>[],
+		artistGroups?: Artist[],
+		artistMembers?: Artist[],
+	) => {
+		const { data: artist, error } = await supabase
 			.from('artists')
 			.update(updates)
 			.eq('id_youtube_music', idYoutubeMusic)
@@ -70,42 +150,169 @@ export function useSupabaseArtist() {
 			throw new Error("Erreur lors de la mise à jour de l'artiste")
 		}
 
-		return data as Artist
-	}
+		// Supprimer les anciens liens sociaux
+		await supabase.from('artist_social_links').delete().eq('artist_id', artist.id)
 
-	// Supprime un artiste
-	const deleteArtist = async (id: string) => {
-		// Supprimer d'abord les relations
+		// Ajouter les nouveaux liens sociaux
+		if (socialLinks?.length) {
+			const socialLinksWithArtistId = socialLinks.map((link) => ({
+				...link,
+				artist_id: artist.id,
+			}))
+
+			const { error: socialError } = await supabase
+				.from('artist_social_links')
+				.insert(socialLinksWithArtistId)
+
+			if (socialError) {
+				console.error("Erreur lors de l'ajout des liens sociaux:", socialError)
+			}
+		}
+
+		// Supprimer les anciens liens de plateformes
+		await supabase.from('artist_platform_links').delete().eq('artist_id', artist.id)
+
+		// Ajouter les nouveaux liens de plateformes
+		if (platformLinks?.length) {
+			const platformLinksWithArtistId = platformLinks.map((link) => ({
+				...link,
+				artist_id: artist.id,
+			}))
+
+			const { error: platformError } = await supabase
+				.from('artist_platform_links')
+				.insert(platformLinksWithArtistId)
+
+			if (platformError) {
+				console.error("Erreur lors de l'ajout des liens de plateformes:", platformError)
+			}
+		}
+
+		// Supprimer les anciennes relations
 		await supabase
 			.from('artist_relations')
 			.delete()
-			.or(`group_id.eq.${id},member_id.eq.${id}`)
+			.or(`group_id.eq.${artist.id},member_id.eq.${artist.id}`)
 
-		// Supprimer les releases associées
-		const { data: releases } = await supabase
-			.from('artist_releases')
-			.select('release_id')
-			.eq('artist_id', id)
+		// Ajouter les nouvelles relations avec les groupes
+		if (artistGroups?.length) {
+			const groupRelations = artistGroups.map((group) => ({
+				group_id: group.id,
+				member_id: artist.id,
+				relation_type: 'MEMBER',
+			}))
 
-		if (releases) {
+			const { error: groupError } = await supabase
+				.from('artist_relations')
+				.insert(groupRelations)
+
+			if (groupError) {
+				console.error("Erreur lors de l'ajout des relations de groupe:", groupError)
+			}
+		}
+
+		// Ajouter les nouvelles relations avec les membres
+		if (artistMembers?.length) {
+			const memberRelations = artistMembers.map((member) => ({
+				group_id: artist.id,
+				member_id: member.id,
+				relation_type: 'GROUP',
+			}))
+
+			const { error: memberError } = await supabase
+				.from('artist_relations')
+				.insert(memberRelations)
+
+			if (memberError) {
+				console.error("Erreur lors de l'ajout des relations de membres:", memberError)
+			}
+		}
+
+		return artist as Artist
+	}
+
+	// Supprime un artiste et toutes ses relations
+	const deleteArtist = async (id: string) => {
+		try {
+			// 1. Récupérer toutes les releases associées à l'artiste
+			const { data: artistReleases } = await supabase
+				.from('artist_releases')
+				.select('release_id')
+				.eq('artist_id', id)
+
+			// 2. Récupérer toutes les musiques associées à l'artiste
+			const { data: artistMusics } = await supabase
+				.from('music_artists')
+				.select('music_id')
+				.eq('artist_id', id)
+
+			// 3. Récupérer toutes les news associées à l'artiste
+			const { data: artistNews } = await supabase
+				.from('news_artists_junction')
+				.select('news_id')
+				.eq('artist_id', id)
+
+			// 4. Supprimer les liens sociaux
+			await supabase.from('artist_social_links').delete().eq('artist_id', id)
+
+			// 5. Supprimer les liens de plateformes
+			await supabase.from('artist_platform_links').delete().eq('artist_id', id)
+
+			// 6. Supprimer les relations entre artistes
 			await supabase
-				.from('releases')
+				.from('artist_relations')
 				.delete()
-				.in(
-					'id',
-					releases.map((r) => r.release_id),
-				)
+				.or(`group_id.eq.${id},member_id.eq.${id}`)
+
+			if (artistMusics?.length) {
+				const musicIds = artistMusics.map((m) => m.music_id)
+
+				// 7. Supprimer les relations musiques-releases pour ces musiques
+				await supabase.from('music_releases').delete().in('music_id', musicIds)
+
+				// 8. Supprimer les relations musiques-artistes pour ces musiques
+				await supabase.from('music_artists').delete().in('music_id', musicIds)
+
+				// 9. Supprimer les musiques
+				await supabase.from('musics').delete().in('id', musicIds)
+			}
+
+			if (artistReleases?.length) {
+				const releaseIds = artistReleases.map((r) => r.release_id)
+
+				// 10. Supprimer les relations artistes-releases pour ces releases
+				await supabase.from('artist_releases').delete().in('release_id', releaseIds)
+
+				// 11. Supprimer les relations musiques-releases pour ces releases
+				await supabase.from('music_releases').delete().in('release_id', releaseIds)
+
+				// 12. Supprimer les releases
+				await supabase.from('releases').delete().in('id', releaseIds)
+			}
+
+			if (artistNews?.length) {
+				const newsIds = artistNews.map((n) => n.news_id)
+
+				// 13. Supprimer les relations news-artistes pour ces news
+				await supabase.from('news_artists_junction').delete().in('news_id', newsIds)
+
+				// 14. Supprimer les news
+				await supabase.from('news').delete().in('id', newsIds)
+			}
+
+			// 15. Finalement, supprimer l'artiste
+			const { error } = await supabase.from('artists').delete().eq('id', id)
+
+			if (error) {
+				console.error("Erreur lors de la suppression de l'artiste:", error)
+				throw new Error("Erreur lors de la suppression de l'artiste")
+			}
+
+			return true
+		} catch (error) {
+			console.error("Erreur lors de la suppression de l'artiste et ses données:", error)
+			throw error
 		}
-
-		// Supprimer l'artiste
-		const { error } = await supabase.from('artists').delete().eq('id', id)
-
-		if (error) {
-			console.error("Erreur lors de la suppression de l'artiste:", error)
-			throw new Error("Erreur lors de la suppression de l'artiste")
-		}
-
-		return true
 	}
 
 	// Récupère tous les artistes

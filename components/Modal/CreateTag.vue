@@ -8,9 +8,7 @@
 			class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
 			@keyup.enter="
 				async () => {
-					await createTag(newGeneralTag, generalTags)
-					newGeneralTag = ''
-					emit('close-modal')
+					await createTag(newGeneralTag)
 				}
 			"
 		/>
@@ -18,9 +16,7 @@
 			class="w-full rounded bg-primary p-2 font-semibold hover:bg-red-900"
 			@click="
 				async () => {
-					await createTag(newGeneralTag, generalTags)
-					newGeneralTag = ''
-					emit('close-modal')
+					await createTag(newGeneralTag)
 				}
 			"
 		>
@@ -29,18 +25,36 @@
 	</section>
 </template>
 
-<script lang="ts" setup>
-	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
-	const { createTag } = useFirebaseFunction()
+<script setup lang="ts">
+	import type { GeneralTag } from '~/types/supabase/general_tag'
+	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'
+	import { useToast } from 'vue-toastification'
 
-	defineProps({
+	const props = defineProps({
 		generalTags: {
-			type: Array,
+			type: Array as PropType<Omit<GeneralTag, 'id' | 'created_at' | 'updated_at'>[]>,
 			required: true,
 		},
 	})
 
 	const emit = defineEmits(['close-modal'])
 
-	const newGeneralTag = ref('')
+	const { createGeneralTag } = useSupabaseGeneralTags()
+	const toast = useToast()
+
+	const newGeneralTag = ref<string>('')
+
+	const createTag = async (newGeneralTag: string) => {
+		if (newGeneralTag.trim() === '') {
+			return
+		}
+
+		if (props.generalTags.find((tag) => tag.name === newGeneralTag)) {
+			toast.error('Tag already exists')
+			return
+		}
+
+		await createGeneralTag({ name: newGeneralTag })
+		toast.success('Tag created successfully')
+	}
 </script>

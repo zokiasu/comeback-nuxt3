@@ -14,6 +14,8 @@ export interface Artist extends BaseEntity {
 	type: ArtistType
 	verified: boolean
 	active_career: boolean
+	general_tags: string[] | null
+	styles: string[] | null
 	groups?: Artist[]
 	members?: Artist[]
 	releases?: Release[]

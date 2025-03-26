@@ -3,6 +3,8 @@ import type { Music } from './music'
 import type { News } from './news'
 import type { Release } from './release'
 import type { User } from './user'
+import type { GeneralTag } from './general_tag'
+import type { MusicStyle } from './music_style'
 
 export type ArtistType = 'GROUP' | 'SOLO'
 export type ArtistGender = 'MALE' | 'FEMALE' | 'MIXTE' | 'UNKNOWN'
@@ -28,6 +30,8 @@ export interface Database {
 					type: ArtistType | null
 					verified: boolean
 					active_career: boolean
+					general_tags: string[] | null
+					styles: string[] | null
 					created_at: string
 					updated_at: string
 				}
@@ -44,6 +48,8 @@ export interface Database {
 					type?: ArtistType | null
 					verified?: boolean
 					active_career?: boolean
+					general_tags?: string[] | null
+					styles?: string[] | null
 					created_at?: string
 					updated_at?: string
 				}
@@ -60,6 +66,8 @@ export interface Database {
 					type?: ArtistType | null
 					verified?: boolean
 					active_career?: boolean
+					general_tags?: string[] | null
+					styles?: string[] | null
 					created_at?: string
 					updated_at?: string
 				}
@@ -215,6 +223,52 @@ export interface Database {
 					created_at?: string
 				}
 			}
+      artist_social_links: {
+        Row: {
+          id: string
+          artist_id: string
+          link: string
+          name: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          artist_id: string
+          link: string
+          name: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          artist_id?: string
+          link?: string
+          name?: string
+          created_at?: string
+        }
+      }
+      artist_platform_links: {
+        Row: {
+          id: string
+          artist_id: string
+          link: string
+          name: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          artist_id: string
+          link: string
+          name: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          artist_id?: string
+          link?: string
+          name?: string
+          created_at?: string
+        }
+      }
 			music_artists: {
 				Row: {
 					music_id: string
@@ -305,6 +359,16 @@ export interface Database {
 					contribution_type?: string
 				}
 			}
+			general_tags: {
+				Row: GeneralTag
+				Insert: Omit<GeneralTag, 'id' | 'created_at' | 'updated_at'>
+				Update: Partial<GeneralTag>
+			}
+			music_styles: {
+				Row: MusicStyle
+				Insert: Omit<MusicStyle, 'id' | 'created_at' | 'updated_at'>
+				Update: Partial<MusicStyle>
+			}
 		}
 	}
 }
@@ -333,6 +397,22 @@ export interface ArtistRelease {
 	created_at: string
 	artist?: Artist
 	release?: Release
+}
+
+export interface ArtistPlatformLink {
+	id: string
+	artist_id: string
+	link: string
+	name: string
+	created_at: string
+}
+
+export interface ArtistSocialLink {
+	id: string
+	artist_id: string
+	link: string
+	name: string
+	created_at: string
 }
 
 export interface MusicArtist {
