@@ -362,9 +362,7 @@ export function useSupabaseArtist() {
 	}
 
 	// Récupère un artiste avec tous ses détails
-	const getFullArtistById = async (id: string) => {
-		if (!id) return null
-
+	const getFullArtistById = async (id: string): Promise<Artist> => {
 		try {
 			// Récupérer l'artiste
 			const { data: artist, error: artistError } = await supabase
@@ -423,6 +421,27 @@ export function useSupabaseArtist() {
 		}
 	}
 
+	const getSocialAndPlatformLinksByArtistId = async (id: string) => {
+		const { data: socialLinks, error: socialLinksError } = await supabase
+			.from('artist_social_links')
+			.select('*')
+			.eq('artist_id', id)
+
+		if (socialLinksError) throw socialLinksError
+
+		const { data: platformLinks, error: platformLinksError } = await supabase
+			.from('artist_platform_links')
+			.select('*')
+			.eq('artist_id', id)
+
+		if (platformLinksError) throw platformLinksError
+
+		return {
+			socialLinks: socialLinks || [],
+			platformLinks: platformLinks || [],
+		}
+	}
+
 	// Récupère un artiste par son ID (version légère)
 	const getArtistByIdLight = async (id: string) => {
 		const { data, error } = await supabase
@@ -467,5 +486,6 @@ export function useSupabaseArtist() {
 		getFullArtistById,
 		getArtistByIdLight,
 		getRealtimeLastestArtistsAdded,
+		getSocialAndPlatformLinksByArtistId,
 	}
 }

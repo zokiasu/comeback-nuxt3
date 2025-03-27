@@ -7,7 +7,7 @@ import type { GeneralTag } from './general_tag'
 import type { MusicStyle } from './music_style'
 
 export type ArtistType = 'GROUP' | 'SOLO'
-export type ArtistGender = 'MALE' | 'FEMALE' | 'MIXTE' | 'UNKNOWN'
+export type ArtistGender = 'MALE' | 'FEMALE' | 'MIXTE' | 'UNKNOWN' | 'OTHER'
 export type ReleaseType = 'ALBUM' | 'SINGLE' | 'EP'
 export type MusicType = 'SONG'
 export type RelationType = 'GROUP' | 'MEMBER'

@@ -109,7 +109,6 @@
 			artistGroups.value,
 			artistMembers.value,
 		).then((newArtist) => {
-			console.log(newArtist)
 			isUploadingEdit.value = false
 			toast.success('Artist created successfully')
 		})

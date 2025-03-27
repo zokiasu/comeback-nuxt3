@@ -23,8 +23,6 @@
 		dateAlwaysDisplay?: boolean
 	}>()
 
-	console.log('subTitle', subTitle)
-
 	const imageLoaded = ref(false)
 
 	const formatDate = (date: string) => {

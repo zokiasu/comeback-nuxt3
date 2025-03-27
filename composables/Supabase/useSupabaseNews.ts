@@ -40,8 +40,6 @@ export function useSupabaseNews() {
 			throw new Error('Erreur lors de la création de la news')
 		}
 
-		console.log('News créée:', news)
-
 		const { data: junctionData, error: junctionError } = await supabase
 			.from('news_artists_junction')
 			.insert(
@@ -57,8 +55,6 @@ export function useSupabaseNews() {
 			toast.error('Erreur lors de la création des relations artistes')
 			throw new Error('Erreur lors de la création des relations artistes')
 		}
-
-		console.log('Relations artistes créées:', junctionData)
 
 		return news as News
 	}

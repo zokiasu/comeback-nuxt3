@@ -49,7 +49,6 @@
 		
 		createNews(news, artistIds).then((res) => {
 			toast.success('News created')
-			console.log(res)
 			sendNews.value = false
 			closeModal()
 		}).catch((error) => {
@@ -59,7 +58,6 @@
 	}
 
 	const addArtistToNews = (artist: any) => {
-		console.log(artist)
 		artistListSelected.value.push({
 			id: artist.objectID,
 			name: artist.name,

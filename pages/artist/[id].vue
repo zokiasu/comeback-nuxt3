@@ -1,35 +1,42 @@
 <script setup lang="ts">
 	import { useUserStore } from '@/stores/user'
-	import { type Artist } from '@/types/artist'
-	import type { Music } from '~/types/music'
-	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
+	import type { Artist } from '~/types/supabase/artist'
+	import type { Music } from '~/types/supabase/music'
+	import type { ArtistSocialLink, ArtistPlatformLink } from '~/types/supabase'
+	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
+	import { useSupabaseMusic } from '~/composables/Supabase/useSupabaseMusic'
 
 	const { isLoginStore } = useUserStore()
-	const { getRandomMusicFromArtistId } = useFirebaseFunction()
-	const { getFullArtistById } = useFirebaseArtist()
+	const { getFullArtistById, getSocialAndPlatformLinksByArtistId } = useSupabaseArtist()
+	const { getRandomMusicsByArtistId } = useSupabaseMusic()
 
-	const title = ref('Artist Page')
-	const description = ref('Artist')
+	const title = ref<string>('Artist Page')
+	const description = ref<string>('Artist')
 	const route = useRoute()
-	const artist = ref<Artist>({} as Artist)
-	const imageBackground = ref('')
-	const imageBackLoaded = ref(false)
-	const isFetchingArtist = ref(true)
-	const musicDiscover = ref([] as Music[])
+	const artist = ref<Artist>()
+	const socialLinksList = ref<ArtistSocialLink[]>([])
+	const platformLinksList = ref<ArtistPlatformLink[]>([])
+	const imageBackground = ref<string | null>(null)
+	const imageBackLoaded = ref<boolean>(false)
+	const isFetchingArtist = ref<boolean>(true)
+	const musicDiscover = ref<Music[]>([])
 
 	onMounted(async () => {
 		try {
-			const fetchedArtist = await getFullArtistById(route.params.id as any)
-			artist.value = fetchedArtist
-			imageBackground.value = fetchedArtist.image
-			title.value = fetchedArtist.name
-			description.value = fetchedArtist.description
-			if (artist.value.idYoutubeMusic) {
-				const fetchedMusicDiscover = await getRandomMusicFromArtistId(
+			artist.value = await getFullArtistById(route.params.id as string)
+			if (artist.value) {
+				const { socialLinks, platformLinks } = await getSocialAndPlatformLinksByArtistId(
 					artist.value.id,
-					artist.value.name,
 				)
-				musicDiscover.value = fetchedMusicDiscover as Music[]
+				socialLinksList.value = socialLinks
+				platformLinksList.value = platformLinks
+				imageBackground.value = artist.value.image
+				title.value = artist.value.name
+				description.value = artist.value.description || ''
+				musicDiscover.value = await getRandomMusicsByArtistId(
+					artist.value.id,
+					12,
+				)
 			}
 		} catch (error) {
 			console.error(error)
@@ -46,15 +53,13 @@
 		() => artist.value?.members?.filter((member) => member.type === 'GROUP') || [],
 	)
 	const singleRelease = computed(() => {
-		const singles =
-			artist.value?.releases?.filter((release) => release.type === 'SINGLE') || []
-		return singles.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0))
+		const singles = artist.value?.releases?.filter((release) => release.type === 'SINGLE') || []
+		return singles
 	})
 
 	const albumEpRelease = computed(() => {
-		const albums =
-			artist.value?.releases?.filter((release) => release.type !== 'SINGLE') || []
-		return albums.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0))
+		const albums = artist.value?.releases?.filter((release) => release.type !== 'SINGLE') || []
+		return albums
 	})
 
 	const editLink = computed(() => {
@@ -75,15 +80,17 @@
 	})
 </script>
 
+
+
 <template>
-	<div>
+	<div v-if="artist">
 		<section
 			class="background-top relative h-[30vh] overflow-hidden bg-cover bg-no-repeat lg:h-[40vh] xl:h-[50vh] 2xl:h-[70vh]"
 		>
 			<NuxtImg
 				v-if="imageBackground"
 				:src="imageBackground"
-				:alt="artist.name + '_back'"
+				:alt="artist?.name + '_background'"
 				format="webp"
 				loading="lazy"
 				class="absolute inset-0 h-full w-full object-cover"
@@ -102,17 +109,17 @@
 						{{ artist.name }}
 					</h1>
 					<div
-						v-if="artist.birthDate || artist.debutDate"
+						v-if="artist.birth_date || artist.debut_date"
 						class="flex flex-wrap gap-2 font-semibold"
 					>
 						<p
-							v-if="artist.birthDate"
+							v-if="artist.birth_date"
 							class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase"
 						>
 							Birthday :
 							{{
-								artist.birthDate
-									? artist.birthDate.toDate().toLocaleDateString('en-US', {
+								artist.birth_date
+									? new Date(artist.birth_date).toLocaleDateString('en-US', {
 											day: 'numeric',
 											month: 'long',
 											year: 'numeric',
@@ -121,13 +128,13 @@
 							}}
 						</p>
 						<p
-							v-if="artist.debutDate"
+							v-if="artist.debut_date"
 							class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase"
 						>
 							Debut Date :
 							{{
-								artist.debutDate
-									? artist.debutDate.toDate().toLocaleDateString('en-US', {
+								artist.debut_date
+									? new Date(artist.debut_date).toLocaleDateString('en-US', {
 											day: 'numeric',
 											month: 'long',
 											year: 'numeric',
@@ -139,26 +146,20 @@
 					<div v-if="!isFetchingArtist" class="flex flex-wrap gap-2">
 						<p
 							v-for="style in artist.styles"
-							:key="style.name"
+							:key="style"
 							class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase"
 						>
-							{{ style.name }}
+							{{ style }}
 						</p>
 						<p
-							v-for="tag in artist.generalTags"
-							:key="tag.name"
+							v-for="tag in artist.general_tags"
+							:key="tag"
 							class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase"
 						>
-							{{ tag.name }}
+							{{ tag }}
 						</p>
 					</div>
 					<div v-if="!isFetchingArtist" class="flex flex-wrap gap-2">
-						<p
-							v-if="!artist.activeCareer"
-							class="w-fit bg-quaternary px-2 py-1 text-xs font-semibold uppercase"
-						>
-							Inactive (Withdrawn/Disband/Not Debuted)
-						</p>
 						<NuxtLink
 							:to="editLink"
 							class="bg-secondary px-2 py-1 text-xs font-semibold uppercase"
@@ -181,14 +182,14 @@
 			</div>
 
 			<div v-else class="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-10">
-				<div class="space-y-5" :class="artist.releases ? 'col-span-2' : 'col-span-full'">
+				<div class="space-y-5" :class="musicDiscover.length ? 'col-span-2' : 'col-span-full'">
 					<CardDefault
-						v-if="artist.platformList?.length && !isFetchingArtist"
+						v-if="platformLinksList?.length && !isFetchingArtist"
 						name="Streaming Platforms"
 					>
 						<div class="flex flex-wrap gap-2">
 							<LazyComebackExternalLink
-								v-for="platform in artist.platformList"
+								v-for="platform in platformLinksList"
 								:key="platform.link"
 								:name="platform.name"
 								:link="platform.link"
@@ -203,13 +204,14 @@
 							class="h-6 w-20 rounded"
 						/>
 					</div>
+
 					<CardDefault
-						v-if="artist.socialList?.length && !isFetchingArtist"
+						v-if="socialLinksList?.length && !isFetchingArtist"
 						name="Socials Media"
 					>
 						<div class="flex flex-wrap gap-2">
 							<LazyComebackExternalLink
-								v-for="social in artist.socialList"
+								v-for="social in socialLinksList"
 								:key="social.link"
 								:name="social.name"
 								:link="social.link"
@@ -224,6 +226,7 @@
 							class="h-6 w-20 rounded"
 						/>
 					</div>
+
 					<CardDefault name="Description">
 						<p
 							v-if="artist.description"
@@ -248,29 +251,22 @@
 						</div>
 					</CardDefault>
 				</div>
-				<div v-if="artist.idYoutubeMusic && musicDiscover">
+				<div v-if="artist.id_youtube_music && musicDiscover.length > 0">
 					<CardDefault name="Discover Music">
-						<div v-if="musicDiscover.length < 1" class="space-y-2">
-							<SkeletonDefault class="h-14 w-full rounded" />
-							<SkeletonDefault class="h-14 w-full rounded" />
-							<SkeletonDefault class="h-14 w-full rounded" />
-							<SkeletonDefault class="h-14 w-full rounded" />
-							<SkeletonDefault class="h-14 w-full rounded" />
-						</div>
 						<transition-group
-							v-else-if="musicDiscover.length > 0"
+							v-if="musicDiscover.length > 0"
 							name="list-complete"
 							tag="div"
 							class="space-y-2"
 						>
 							<MusicDisplay
 								v-for="song in musicDiscover"
-								:key="song.videoId"
+								:key="song.id_youtube_music"
 								:artist-id="''"
 								:artist-name="artist.name"
-								:music-id="song.videoId"
+								:music-id="song.id_youtube_music"
 								:music-name="song.name"
-								:music-image="song.thumbnails[2].url"
+								:music-image="song?.thumbnails[0]?.url"
 								:duration="song?.duration?.toString() || '0'"
 								class="w-full bg-quinary"
 							/>
@@ -308,13 +304,13 @@
 					>
 						<CardObject
 							v-for="release in albumEpRelease"
-							:key="release.idYoutubeMusic"
-							:artist-id="release.artistsId"
+							:key="release.id_youtube_music"
+							:artist-id="release?.artists[0]?.id"
 							:main-title="release.name"
 							:image="release.image"
 							:release-date="release.date"
 							:release-type="release.type"
-							:object-link="`/release/${release.idYoutubeMusic}`"
+							:object-link="`/release/${release.id_youtube_music}`"
 							is-release-display
 							date-always-display
 						/>
@@ -331,13 +327,13 @@
 					>
 						<CardObject
 							v-for="release in singleRelease"
-							:key="release.idYoutubeMusic"
-							:artist-id="release.artistsId"
+							:key="release.id_youtube_music"
+							:artist-id="release?.artists[0]?.id"
 							:main-title="release.name"
 							:image="release.image"
 							:release-date="release.date"
 							:release-type="release.type"
-							:object-link="`/release/${release.idYoutubeMusic}`"
+							:object-link="`/release/${release.id_youtube_music}`"
 							is-release-display
 							date-always-display
 						/>

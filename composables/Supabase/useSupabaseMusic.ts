@@ -308,6 +308,66 @@ export function useSupabaseMusic() {
 		}
 	}
 
+	// Récupère un nombre aléatoire de musiques liées à un artiste
+	const getRandomMusicsByArtistId = async (artistId: string, count: number): Promise<Music[]> => {
+		try {
+			// 1. Récupérer des IDs aléatoires de musiques liées à l'artiste
+			const { data: randomMusics, error: randomError } = await supabase.rpc(
+				'get_random_music_ids_by_artist',
+				{
+					artist_id_param: artistId,
+					count_param: count,
+				},
+			)
+
+			if (randomError) {
+				console.error(
+					"Erreur lors de la récupération des musiques aléatoires de l'artiste:",
+					randomError,
+				)
+				return []
+			}
+
+			const randomIds = randomMusics.map((m: any) => m.id)
+
+			// 2. Récupérer les détails complets pour ces IDs spécifiques
+			const { data: detailedMusics, error: detailsError } = await supabase
+				.from('musics')
+				.select(
+					`
+					*,
+					artists:music_artists(
+						artist:artists(*)
+					),
+					releases:music_releases(
+						release:releases(*)
+					)
+				`,
+				)
+				.in('id', randomIds)
+
+			if (detailsError) {
+				console.error('Erreur lors de la récupération des détails:', detailsError)
+				return []
+			}
+
+			// Transformer les données
+			const formattedData = detailedMusics.map((music: any) => ({
+				...music,
+				artists: music.artists?.map((a: any) => a.artist) || [],
+				releases: music.releases?.map((r: any) => r.release) || [],
+			}))
+
+			return formattedData
+		} catch (error) {
+			console.error(
+				"Erreur lors de la sélection aléatoire des musiques de l'artiste:",
+				error,
+			)
+			return []
+		}
+	}
+
 	return {
 		updateMusic,
 		updateMusicArtists,
@@ -318,5 +378,6 @@ export function useSupabaseMusic() {
 		getMusicByIdLight,
 		getRealtimeLastestMusicsAdded,
 		getRandomMusics,
+		getRandomMusicsByArtistId,
 	}
 }

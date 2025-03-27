@@ -1,12 +1,23 @@
-<script setup>
+<script setup lang="ts">
+	import type { Artist } from '~/types/supabase/artist'
+	import type { MusicStyle } from '~/types/supabase/music_style'
+	import type { GeneralTag } from '~/types/supabase/general_tag'
+	import type {
+		ArtistGender,
+		ArtistType,
+		ArtistPlatformLink,
+		ArtistSocialLink,
+	} from '~/types/supabase'
+	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
+	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
+	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'
+
 	import VueMultiselect from 'vue-multiselect'
 	import '@vuepic/vue-datepicker/dist/main.css'
 	import VueDatePicker from '@vuepic/vue-datepicker'
-	import { Timestamp, doc, onSnapshot } from 'firebase/firestore'
 	import { useToast } from 'vue-toastification'
 	import * as Mdl from '@kouts/vue-modal'
 	import _ from 'lodash'
-	import { useFirebaseArtist } from '~/composables/useFirebaseArtist'
 
 	definePageMeta({
 		middleware: 'auth',
@@ -16,173 +27,152 @@
 	const route = useRoute()
 	const router = useRouter()
 	const toast = useToast()
-	const { $firestore: db } = useNuxtApp()
 	const { isAdminStore } = useUserStore()
-	const { getArtistByIdWithGroupsAndMembers, updateArtist } = useFirebaseArtist()
+
+	const {
+		getAllArtists,
+		getFullArtistById,
+		updateArtist,
+		getSocialAndPlatformLinksByArtistId,
+	} = useSupabaseArtist()
+	const { getAllMusicStyles } = useSupabaseMusicStyles()
+	const { getAllGeneralTags } = useSupabaseGeneralTags()
 
 	const title = ref('Edit Artist Page')
 	const description = ref('Edit Artist Page')
 
-	const isUploadingEdit = ref(false)
-	const showModalCreateArtist = ref(false)
-	const artist = ref(null)
-	const groupList = ref(null)
-	const membersList = ref(null)
-	const artistList = ref(null)
-	const stylesList = ref(null)
-	const tagsList = ref(null)
-	const birthdayToDateFormat = ref(null)
-	const debutDateToDateFormat = ref(null)
-	const artistToEdit = ref({
-		id: '',
-		idYoutubeMusic: '',
-		name: '',
-		type: '',
-		description: '',
-		image: '',
-		gender: 'UNKNOWN',
-		verified: true,
-		activeCareer: true,
-		birthDate: null,
-		debutDate: null,
-		platformList: [],
-		socialList: [],
-		styles: [],
-		generalTags: [],
-		groups: [],
-		members: [],
-	})
+	const isUploadingEdit = ref<boolean>(false)
+	const showModalCreateArtist = ref<boolean>(false)
+
+	const artist = ref<Artist | null>(null)
+	const groupList = ref<Artist[]>([])
+	const membersList = ref<Artist[]>([])
+	const artistsList = ref<Artist[]>([])
+	const stylesList = ref<MusicStyle[]>([])
+	const tagsList = ref<GeneralTag[]>([])
+
+	const validGenders = ['MALE', 'FEMALE', 'MIXTE', 'UNKNOWN', 'OTHER'] as const
+	const artistTypes = ['SOLO', 'GROUP'] as const
+
+	const birthdayToDateFormat = ref<Date | null>(null)
+	const debutDateToDateFormat = ref<Date | null>(null)
+
+	const artistToEdit = ref<Partial<Artist>>()
+
+	const artistPlatformList = ref<
+		Omit<ArtistPlatformLink, 'id' | 'created_at' | 'artist_id'>[]
+	>([])
+	const artistSocialList = ref<
+		Omit<ArtistSocialLink, 'id' | 'created_at' | 'artist_id'>[]
+	>([])
+	const artistGroups = ref<Artist[]>([])
+	const artistMembers = ref<Artist[]>([])
 
 	const showModalCreateStyle = ref(false)
 	const showModalCreateTag = ref(false)
 
-	const compareFields = (field1, field2) => {
-		return _.isEqual(field1, field2)
-	}
-
 	const sendUpdateArtist = async () => {
-		// isUploadingEdit.value = true
-		const updatedFields = {}
+		isUploadingEdit.value = true
 
-		Object.keys(artistToEdit.value).forEach((key) => {
-			if (!compareFields(artistToEdit.value[key], artist.value[key])) {
-				updatedFields[key] = artistToEdit.value[key]
+		try {
+			const updates: Partial<Artist> = {
+				name: artistToEdit.value?.name,
+				image: artistToEdit.value?.image,
+				description: artistToEdit.value?.description,
+				id_youtube_music: artistToEdit.value?.id_youtube_music,
+				type: artistToEdit.value?.type,
+				gender: artistToEdit.value?.gender,
+				active_career: artistToEdit.value?.active_career,
+				birth_date: artistToEdit.value?.birth_date,
+				debut_date: artistToEdit.value?.debut_date,
+				styles: artistToEdit.value?.styles,
+				general_tags: artistToEdit.value?.general_tags,
 			}
-		})
 
-		// if artistToEdit doesn't have any field to update then return
-		if (Object.keys(updatedFields).length === 0) {
-			toast.error('No field to update')
-			return
-		}
-
-		const today = new Date()
-		today.setDate(today.getDate())
-		today.setHours(0, 0, 0, 0)
-		const todayTimestamp = Timestamp.fromDate(today)
-		updatedFields.updatedAt = todayTimestamp
-
-		if (isAdminStore) {
-			// update artist without verifying
-			updatedFields.id = artist.value.id
-			updateArtist(updatedFields).then(async () => {
-				toast.success('Artist Updated')
+			await updateArtist(
+				artist.value?.id_youtube_music || '',
+				updates,
+				artistSocialList.value,
+				artistPlatformList.value,
+				artistGroups.value,
+				artistMembers.value,
+			).then(() => {
+				toast.success('Artiste mis à jour avec succès')
+				isUploadingEdit.value = false
 				router.push(`/artist/${route.params.id}`)
 			})
-		} else {
-			// addd pending artist
-			add('updateArtistPending', updatedFields)
-				.then(() => {
-					isUploadingEdit.value = false
-					toast.success('Artist Update')
-					router.push(`/artist/${route.params.id}`)
-				})
-				.catch((error) => {
-					console.error('Error writing document: ', error)
-					toast.warning('Artist Update Failed')
-				})
+		} catch (error) {
+			console.error("Erreur lors de la mise à jour de l'artiste:", error)
+			toast.error("Erreur lors de la mise à jour de l'artiste")
+		} finally {
+			isUploadingEdit.value = false
 		}
+	}
+
+	const adjustTextarea = (textarea: HTMLTextAreaElement) => {
+		textarea.style.height = 'auto'
+		textarea.style.height = `${textarea.scrollHeight}px`
 	}
 
 	const closeModalCreateArtist = async () => {
-		artistList.value = await queryByCollection('artists')
-		groupList.value = artistList.value.filter((artist) => artist.type == 'GROUP')
-		membersList.value = artistList.value
+		artistsList.value = await getAllArtists()
+		groupList.value = artistsList.value.filter((artist) => artist.type === 'GROUP')
+		membersList.value = artistsList.value
 		showModalCreateArtist.value = false
 	}
 
-	const adjustTextarea = (event) => {
-		const textarea = event.target || event // Cibler le textarea via `ref` ou l'événement d'entrée
-		textarea.style.height = 'auto' // Réinitialise la hauteur pour recalculer correctement
-		textarea.style.height = `${textarea.scrollHeight}px` // Ajuste la hauteur à la hauteur de contenu
-	}
-
-	watch(birthdayToDateFormat, () => {
-		if (birthdayToDateFormat.value) {
-			const tmpDate = new Date(birthdayToDateFormat.value)
-			tmpDate.setHours(0, 0, 0, 0)
-			artistToEdit.value.birthDate = Timestamp.fromDate(tmpDate)
-		} else {
-			artistToEdit.value.birthDate = null
-		}
-	})
-
-	watch(debutDateToDateFormat, () => {
-		if (debutDateToDateFormat.value) {
-			const tmpDate = new Date(debutDateToDateFormat.value)
-			tmpDate.setHours(0, 0, 0, 0)
-			artistToEdit.value.debutDate = Timestamp.fromDate(tmpDate)
-		} else {
-			artistToEdit.value.debutDate = null
-		}
-	})
-
-	const closeModalCreateStyle = () => {
+	const closeModalCreateStyle = async () => {
 		showModalCreateStyle.value = false
+		stylesList.value = await getAllMusicStyles()
 	}
 
-	const closeModalCreateTag = () => {
+	const closeModalCreateTag = async () => {
 		showModalCreateTag.value = false
+		tagsList.value = await getAllGeneralTags()
 	}
 
 	onMounted(async () => {
-		artist.value = await getArtistByIdWithGroupsAndMembers(route.params.id)
-		artistToEdit.value = await getArtistByIdWithGroupsAndMembers(route.params.id)
+		try {
+			artist.value = await getFullArtistById(route.params.id as string)
+			if (artist.value) {
+				artistToEdit.value = { ...artist.value }
 
-		birthdayToDateFormat.value = artist.value.birthDate
-			? artist.value.birthDate.toDate()
-			: null
-		debutDateToDateFormat.value = artist.value.debutDate
-			? artist.value.debutDate.toDate()
-			: null
+				const { socialLinks, platformLinks } = await getSocialAndPlatformLinksByArtistId(
+					artist.value.id,
+				)
+				artistPlatformList.value = platformLinks || []
+				artistSocialList.value = socialLinks || []
+				artistGroups.value = artist.value.groups || []
+				artistMembers.value = artist.value.members || []
 
-		title.value = 'EDIT ARTIST : ' + artist.value.name
-		description.value = artist.value.description
+				artistsList.value = await getAllArtists()
+				groupList.value = artistsList.value.filter((artist) => artist.type === 'GROUP')
+				membersList.value = artistsList.value
 
-		artistList.value = await queryByCollection('artists')
-		groupList.value = artistList.value.filter((artist) => artist.type === 'GROUP')
-		membersList.value = artistList.value
+				stylesList.value = await getAllMusicStyles()
+				tagsList.value = await getAllGeneralTags()
 
-		onSnapshot(doc(db, 'general', 'data'), (doc) => {
-			if (!doc.exists()) return
+				const textarea = document.querySelector('textarea')
+				if (textarea) {
+					adjustTextarea(textarea)
+				}
 
-			stylesList.value = doc?.data().styles
-			tagsList.value = doc?.data().generalTags
-
-			stylesList.value.sort((a, b) => {
-				return a.name.localeCompare(b.name)
-			})
-
-			tagsList.value.sort((a, b) => {
-				return a.name.localeCompare(b.name)
-			})
-		})
-
-		const textarea = document.querySelector('textarea') // Vous pouvez aussi utiliser this.$refs si applicable
-		if (textarea) {
-			adjustTextarea(textarea)
+				title.value = 'EDIT ARTIST : ' + artist.value.name
+				description.value = artist.value.description || ''
+			}
+		} catch (error) {
+			console.error("Erreur lors du chargement de l'artiste:", error)
+			toast.error("Erreur lors du chargement de l'artiste")
 		}
 	})
+
+	watch(
+		artistToEdit,
+		() => {
+			console.log('artistToEdit', artistToEdit.value)
+		},
+		{ deep: true },
+	)
 
 	useHead({
 		title,
@@ -197,7 +187,7 @@
 
 <template>
 	<div
-		v-if="artist"
+		v-if="artist && artistToEdit"
 		class="container mx-auto min-h-[calc(100vh-60px)] space-y-5 p-5 lg:px-10"
 	>
 		<div
@@ -245,16 +235,16 @@
 					:placeholder="artist.name"
 				/>
 				<ComebackInput
-					v-model="artistToEdit.idYoutubeMusic"
+					v-model="artistToEdit.id_youtube_music"
 					label="Id Youtube Music"
-					:placeholder="artist.idYoutubeMusic"
+					:placeholder="artist.id_youtube_music"
 				/>
 				<!-- Birthday & Debut Date -->
 				<div
 					class="grid grid-cols-1 gap-5"
-					:class="{ 'md:grid-cols-2': artistToEdit.type == 'SOLO' }"
+					:class="{ 'md:grid-cols-2': artistToEdit.type === 'SOLO' }"
 				>
-					<div class="space-y-1" :class="{ hidden: artistToEdit.type == 'GROUP' }">
+					<div class="space-y-1" :class="{ hidden: artistToEdit.type === 'GROUP' }">
 						<ComebackLabel label="Birthday" />
 						<VueDatePicker
 							v-model="birthdayToDateFormat"
@@ -286,7 +276,7 @@
 					<ComebackLabel label="Gender" />
 					<div class="flex gap-2">
 						<div
-							v-for="gender in ['UNKNOWN', 'MALE', 'FEMALE', 'MIXTE']"
+							v-for="gender in validGenders"
 							:key="gender"
 							class="flex w-full items-center gap-2"
 						>
@@ -316,7 +306,7 @@
 					<ComebackLabel label="Type" />
 					<div class="flex gap-2">
 						<div
-							v-for="type in ['SOLO', 'GROUP']"
+							v-for="type in artistTypes"
 							:key="type"
 							class="flex w-full items-center gap-2"
 						>
@@ -348,12 +338,12 @@
 								{ value: true, label: 'Active' },
 								{ value: false, label: 'Inactive' },
 							]"
-							:key="status.value"
+							:key="status.label"
 							class="flex w-full items-center gap-2"
 						>
 							<input
 								:id="status.label"
-								v-model="artistToEdit.activeCareer"
+								v-model="artistToEdit.active_career"
 								type="radio"
 								:value="status.value"
 								class="hidden"
@@ -361,11 +351,11 @@
 							<button
 								class="w-full rounded px-3 py-1 text-sm"
 								:class="
-									artistToEdit.activeCareer === status.value
+									artistToEdit.active_career === status.value
 										? 'bg-primary text-white'
 										: 'bg-quaternary'
 								"
-								@click="artistToEdit.activeCareer = status.value"
+								@click="artistToEdit.active_career = status.value"
 							>
 								{{ status.label }}
 							</button>
@@ -410,7 +400,7 @@
 						</button>
 					</div>
 					<VueMultiselect
-						v-model="artistToEdit.generalTags"
+						v-model="artistToEdit.general_tags"
 						label="name"
 						track-by="name"
 						placeholder="Add a tag"
@@ -429,6 +419,7 @@
 					v-model="artistToEdit.description"
 					:placeholder="artistToEdit.description || 'Description'"
 					class="min-h-full w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:bg-tertiary focus:p-1.5 focus:text-secondary focus:outline-none"
+					@input="adjustTextarea"
 				/>
 			</div>
 			<!-- Group -->
@@ -444,7 +435,7 @@
 					</button>
 				</div>
 				<VueMultiselect
-					v-model="artistToEdit.groups"
+					v-model="artistGroups"
 					label="name"
 					track-by="name"
 					:options="groupList"
@@ -456,7 +447,7 @@
 				/>
 			</div>
 			<!-- Members -->
-			<div v-if="membersList && artistToEdit.type != 'SOLO'" class="flex flex-col gap-1">
+			<div v-if="membersList && artistToEdit.type !== 'SOLO'" class="flex flex-col gap-1">
 				<div class="flex justify-between gap-3">
 					<ComebackLabel label="Members" />
 					<button
@@ -468,7 +459,7 @@
 					</button>
 				</div>
 				<VueMultiselect
-					v-model="artistToEdit.members"
+					v-model="artistMembers"
 					label="name"
 					track-by="name"
 					:options="membersList"
@@ -485,8 +476,8 @@
 				<div class="w-full space-y-2">
 					<ComebackLabel label="Platforms" />
 					<div
-						v-for="(platform, index) in artistToEdit.platformList"
-						:key="platform"
+						v-for="(platform, index) in artistPlatformList"
+						:key="index + '_platform'"
 						class="flex w-full gap-1"
 					>
 						<div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
@@ -495,31 +486,36 @@
 								:value="platform.name"
 								placeholder="Platform's Name"
 								class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
-								@input="artistToEdit.platformList[index].name = $event.target.value"
+								@input="
+									(e: Event) =>
+										(artistPlatformList[index].name = (
+											e.target as HTMLInputElement
+										).value)
+								"
 							/>
 							<input
 								type="text"
 								:value="platform.link"
 								placeholder="Platform's Link"
 								class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
-								@input="artistToEdit.platformList[index].link = $event.target.value"
+								@input="
+									(e: Event) =>
+										(artistPlatformList[index].link = (
+											e.target as HTMLInputElement
+										).value)
+								"
 							/>
 						</div>
 						<button
 							class="rounded bg-primary p-5 text-xs hover:bg-red-900"
-							@click="
-								artistToEdit.platformList.splice(
-									artistToEdit.platformList.indexOf(platform),
-									1,
-								)
-							"
+							@click="artistPlatformList.splice(index, 1)"
 						>
 							Delete
 						</button>
 					</div>
 					<button
 						class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
-						@click="artistToEdit.platformList.push({ name: '', link: '' })"
+						@click="artistPlatformList.push({ name: '', link: '' })"
 					>
 						Add Platforms
 					</button>
@@ -528,8 +524,8 @@
 				<div class="w-full space-y-2">
 					<ComebackLabel label="Socials" />
 					<div
-						v-for="(social, index) in artistToEdit.socialList"
-						:key="social"
+						v-for="(social, index) in artistSocialList"
+						:key="index + '_social'"
 						class="flex w-full gap-2"
 					>
 						<div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
@@ -538,31 +534,34 @@
 								:value="social.name"
 								placeholder="Social's Name"
 								class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
-								@input="artistToEdit.socialList[index].name = $event.target.value"
+								@input="
+									(e: Event) =>
+										(artistSocialList[index].name =
+											(e.target as HTMLInputElement).value || '')
+								"
 							/>
 							<input
 								type="text"
 								:value="social.link"
 								placeholder="Social's Link"
 								class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
-								@input="artistToEdit.socialList[index].link = $event.target.value"
+								@input="
+									(e: Event) =>
+										(artistSocialList[index].link =
+											(e.target as HTMLInputElement).value || '')
+								"
 							/>
 						</div>
 						<button
 							class="rounded bg-primary p-5 text-xs hover:bg-red-900"
-							@click="
-								artistToEdit.socialList.splice(
-									artistToEdit.socialList.indexOf(platform),
-									1,
-								)
-							"
+							@click="artistSocialList.splice(index, 1)"
 						>
 							Delete
 						</button>
 					</div>
 					<button
 						class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
-						@click="artistToEdit.socialList.push({ name: '', link: '' })"
+						@click="artistSocialList.push({ name: '', link: '' })"
 					>
 						Add Socials
 					</button>
@@ -633,5 +632,8 @@
 		>
 			<ModalCreateTag :general-tags="tagsList" @close-modal="closeModalCreateTag" />
 		</Modal>
+	</div>
+	<div v-else>
+		<SkeletonDefault class="h-14 w-full rounded" />
 	</div>
 </template>

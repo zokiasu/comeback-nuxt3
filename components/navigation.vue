@@ -129,14 +129,14 @@
 					>
 						Login
 					</NuxtLink>
-					<NuxtLink
+					<!-- <NuxtLink
 						v-if="isLoginStore && userDataStore"
 						:to="profilePath"
 						title="Profile"
 						class="flex h-full items-center gap-2 rounded bg-quaternary px-3 py-1 hover:bg-tertiary/20"
 					>
 						<p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>
-					</NuxtLink>
+					</NuxtLink> -->
 					<NuxtLink
 						v-if="isLoginStore"
 						:to="`/settings/profile`"
