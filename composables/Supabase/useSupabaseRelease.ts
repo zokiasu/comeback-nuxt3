@@ -3,6 +3,7 @@ import { useSupabase } from './useSupabase'
 import type { Release } from '~/types/supabase/release'
 import type { QueryOptions, FilterOptions, ReleaseType } from '~/types/supabase'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Artist } from '~/types/supabase/artist'
 
 export function useSupabaseRelease() {
 	const { supabase } = useSupabase() as { supabase: SupabaseClient }
@@ -211,7 +212,19 @@ export function useSupabaseRelease() {
 	) => {
 		const { data, error } = await supabase
 			.from('releases')
-			.select('*')
+			.select(
+				`
+				*,
+				artist_releases!inner (
+					artist:artists (
+						id,
+						name,
+						image,
+						type
+					)
+				)
+			`,
+			)
 			.order('date', { ascending: false })
 			.limit(limitNumber)
 
@@ -220,7 +233,13 @@ export function useSupabaseRelease() {
 			return
 		}
 
-		callback(data as Release[])
+		// Transformer les données pour avoir un format plus simple à utiliser
+		const transformedData = data.map((release) => ({
+			...release,
+			artists: release.artist_releases.map((ar: { artist: Artist }) => ar.artist),
+		})) as Release[]
+
+		callback(transformedData)
 	}
 
 	// Récupère les releases d'un mois et d'une année spécifiques

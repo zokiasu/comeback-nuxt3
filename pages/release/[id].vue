@@ -6,12 +6,15 @@
 	import { useUserStore } from '@/stores/user'
 	import { type Release } from '@/types/release'
 	import { useFirebaseRelease } from '~/composables/useFirebaseRelease'
+	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
 
 	const { Modal } = Mdl
 	const { getReleaseByArtistIdYoutubeMusic, updateRelease, getReleaseByIdWithMusics } =
 		useFirebaseRelease()
+	const { getReleaseById } = useSupabaseRelease()
 	const { isLoginStore } = useUserStore()
 	const toast = useToast()
+	const route = useRoute()
 	const router = useRouter()
 	const { $firestore } = useNuxtApp()
 
@@ -77,37 +80,11 @@
 	onMounted(async () => {
 		try {
 			isLoading.value = true
-			const route = useRoute()
 
-			// Attendre que Firestore soit initialisé
-			if (!$firestore) {
-				await new Promise((resolve) => setTimeout(resolve, 1000))
-			}
-
-			const fetchedRelease = await getReleaseByIdWithMusics(route.params.id as string)
-
-			if (!fetchedRelease) {
-				throw createError({
-					statusCode: 404,
-					statusMessage: 'Release not found',
-				})
-			}
-
-			release.value = fetchedRelease as Release
-			if (release.value.musics) {
-				release.value.musics = release.value.musics.sort((a, b) => a?.index - b?.index)
-			}
-
-			artistRelease.value = (
-				await getReleaseByArtistIdYoutubeMusic(release.value.idYoutubeMusic)
-			)
-				.sort((a, b) => b.date - a.date)
-				.filter((rel) => rel.id !== release.value.id)
-				.slice(0, 8) as Release[]
-
-			dateToDateFormat.value = release.value.date ? release.value.date.toDate() : null
-			title.value = release.value.name + ' par ' + release.value.artistsName
-			description.value = release.value.name + ' par ' + release.value.artistsName
+			release.value = await getReleaseById(route.params.id as string)
+			
+			title.value = release.value.name + ' par ' + release.value.artists[0].name
+			description.value = release.value.description
 		} catch (error: any) {
 			if (error.statusCode === 404) {
 				throw error
@@ -120,14 +97,6 @@
 		} finally {
 			isLoading.value = false
 		}
-	})
-
-	watch([dateToDateFormat], () => {
-		if (!dateToDateFormat.value) return
-		const tmpDate = new Date(dateToDateFormat.value)
-		tmpDate.setHours(0, 0, 0, 0)
-		release.value.date = Timestamp.fromDate(tmpDate)
-		release.value.year = tmpDate.getFullYear()
 	})
 
 	useHead({
@@ -143,13 +112,13 @@
 
 <template>
 	<div>
-		<div v-if="isLoading" class="container mx-auto space-y-12 p-5">
+		<div v-if="isLoading" class="container p-5 mx-auto space-y-12">
 			<section class="space-y-2">
-				<SkeletonDefault class="h-3 w-3/4 rounded-full" />
-				<SkeletonDefault class="h-3 w-full rounded-full" />
-				<SkeletonDefault class="h-3 w-full rounded-full" />
-				<SkeletonDefault class="h-3 w-3/4 rounded-full" />
-				<SkeletonDefault class="h-3 w-2/4 rounded-full" />
+				<SkeletonDefault class="w-3/4 h-3 rounded-full" />
+				<SkeletonDefault class="w-full h-3 rounded-full" />
+				<SkeletonDefault class="w-full h-3 rounded-full" />
+				<SkeletonDefault class="w-3/4 h-3 rounded-full" />
+				<SkeletonDefault class="w-2/4 h-3 rounded-full" />
 			</section>
 		</div>
 
@@ -174,7 +143,7 @@
 				</div>
 				<!-- Header Data-->
 				<div
-					class="z-10 flex flex-col justify-end space-y-3 p-5 transition-all duration-300 ease-in-out md:absolute md:inset-0 md:min-h-full md:justify-center md:bg-secondary/50"
+					class="z-10 flex flex-col justify-end p-5 space-y-3 transition-all duration-300 ease-in-out md:absolute md:inset-0 md:min-h-full md:justify-center md:bg-secondary/50"
 				>
 					<div class="container mx-auto flex items-center gap-5 space-y-2.5 lg:items-end">
 						<NuxtImg
@@ -196,11 +165,11 @@
 								</h1>
 								<div class="flex items-center gap-2">
 									<NuxtLink
-										:to="`/artist/${release.artistsId}`"
+										:to="`/artist/${release.artists[0].id}`"
 										class="flex items-center gap-2 rounded-full transition-all duration-300 ease-in-out hover:bg-secondary hover:px-3 hover:py-0.5"
 									>
 										<p class="text-sm font-semibold">
-											{{ release.artistsName }}
+											{{ release.artists[0].name }}
 										</p>
 									</NuxtLink>
 									<p>-</p>
@@ -209,7 +178,7 @@
 									<p>{{ release.year }}</p>
 								</div>
 								<button
-									class="rounded bg-quaternary px-2 py-1 text-sm hover:bg-tertiary/10"
+									class="px-2 py-1 text-sm rounded bg-quaternary hover:bg-tertiary/10"
 									@click="editRelease"
 								>
 									Edit
@@ -220,9 +189,9 @@
 				</div>
 			</section>
 
-			<section class="container mx-auto space-y-12 p-5 py-5 md:px-10 xl:px-0">
+			<section class="container p-5 py-5 mx-auto space-y-12 md:px-10 xl:px-0">
 				<!-- Platforms -->
-				<section v-if="release.platformList?.length" class="space-y-2">
+				<!-- <section v-if="release.platformList?.length" class="space-y-2">
 					<p class="font-black">Streaming Platforms</p>
 					<div class="flex gap-1.5">
 						<ComebackExternalLink
@@ -235,37 +204,37 @@
 							class="flex items-center gap-2 rounded bg-quaternary px-3.5 py-2.5 text-sm hover:bg-quinary"
 							@click="verifyShowModal()"
 						>
-							<IconPlus class="h-5 w-5" />
+							<IconPlus class="w-5 h-5" />
 							<p>Add Streaming Platform</p>
 						</button>
 					</div>
-				</section>
+				</section> -->
 				<!-- Musics -->
 				<section v-if="release.musics?.length" class="space-y-2">
 					<CardDefault :name="`Tracks (${release.musics?.length})`">
 						<transition-group name="list-complete" tag="div" class="space-y-2">
 							<MusicDisplay
 								v-for="song in release.musics"
-								:key="song.videoId"
-								:artist-id="release.artistsId"
-								:artist-name="release.artistsName"
-								:music-id="song.videoId"
+								:key="song.id"
+								:artist-id="release.artists[0].id"
+								:artist-name="release.artists[0].name"
+								:music-id="song.id_youtube_music"
 								:music-name="song.name"
-								:has-mv="song.hasMv"
+								:has-mv="false"
 								:music-image="song.thumbnails[2].url"
-								:duration="song?.duration?.toString() || '0'"
+								:duration="song.duration"
 								class="w-full bg-quinary"
 							/>
 						</transition-group>
 					</CardDefault>
 				</section>
 				<!-- Release -->
-				<section v-if="artistRelease.length" class="space-y-2">
+				<!-- <section v-if="artistRelease.length" class="space-y-2">
 					<CardDefault :name="`Other releases by ${release.artistsName}`">
 						<transition-group
 							name="list-complete"
 							tag="div"
-							class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto xl:flex-wrap"
+							class="flex gap-3 overflow-x-auto scrollBarLight snap-x snap-mandatory xl:flex-wrap"
 						>
 							<CardObject
 								v-for="otherRelease in artistRelease"
@@ -281,7 +250,7 @@
 							/>
 						</transition-group>
 					</CardDefault>
-				</section>
+				</section> -->
 			</section>
 
 			<Modal
@@ -304,7 +273,7 @@
 					<ComebackInput v-model="newStreamingPlatform.link" label="Link" />
 					<button
 						:disabled="sendNewStreamingPlatform"
-						class="w-full rounded bg-primary py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+						class="w-full py-2 font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary hover:scale-105 hover:bg-red-900"
 						@click="createNewPlatformStreaming"
 					>
 						<p v-if="sendNewStreamingPlatform">Sending...</p>
@@ -367,12 +336,12 @@
 							<div
 								v-for="music in release.musics"
 								:key="music.videoId"
-								class="space-y-1 rounded bg-quinary py-1 pl-2 pr-1"
+								class="py-1 pl-2 pr-1 space-y-1 rounded bg-quinary"
 							>
-								<div class="flex w-full items-center justify-between gap-2">
+								<div class="flex items-center justify-between w-full gap-2">
 									<p>{{ music.name }}</p>
 									<div
-										class="flex w-fit items-center gap-2 rounded bg-quaternary px-2 py-1 text-xs"
+										class="flex items-center gap-2 px-2 py-1 text-xs rounded w-fit bg-quaternary"
 									>
 										<label class="whitespace-nowrap">Has MV</label>
 										<input v-model="music.hasMv" type="checkbox" />
@@ -384,7 +353,7 @@
 					</div>
 
 					<button
-						class="w-full rounded bg-primary py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+						class="w-full py-2 font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary hover:scale-105 hover:bg-red-900"
 						@click="updateReleaseFunction(release.id, release)"
 					>
 						<p>Update Release</p>

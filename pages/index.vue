@@ -65,7 +65,7 @@
 		<!-- Home Header -->
 		<HomeSlider :news-today="comebacksToday" />
 		<!-- Home Body -->
-		<section class="container mx-auto space-y-16 p-5 py-10 2xl:space-y-20">
+		<section class="container p-5 py-10 mx-auto space-y-16 2xl:space-y-20">
 			<!-- Comeback Reported List -->
 			<ComebackReported v-if="comebacks.length > 0" :comeback-list="comebacks" />
 			<!-- Discover Music -->
@@ -75,7 +75,7 @@
 					<div class="grid grid-cols-2 gap-5 xl:grid-cols-4">
 						<LazyDiscoverMusic v-for="music in musics" :key="music.id" :music="music" />
 					</div>
-					<button class="rounded bg-quaternary px-3 py-1" @click="reloadDiscoverMusic">
+					<button class="px-3 py-1 rounded bg-quaternary" @click="reloadDiscoverMusic">
 						Reload
 					</button>
 				</div>

@@ -24,6 +24,7 @@
 	onMounted(async () => {
 		try {
 			artist.value = await getFullArtistById(route.params.id as string)
+			console.log('artist', artist.value)
 			if (artist.value) {
 				const { socialLinks, platformLinks } = await getSocialAndPlatformLinksByArtistId(
 					artist.value.id,
@@ -35,7 +36,7 @@
 				description.value = artist.value.description || ''
 				musicDiscover.value = await getRandomMusicsByArtistId(
 					artist.value.id,
-					12,
+					9,
 				)
 			}
 		} catch (error) {
@@ -93,7 +94,7 @@
 				:alt="artist?.name + '_background'"
 				format="webp"
 				loading="lazy"
-				class="absolute inset-0 h-full w-full object-cover"
+				class="absolute inset-0 object-cover w-full h-full"
 				@load="imageBackLoaded = true"
 			/>
 			<div
@@ -101,7 +102,7 @@
 				:class="imageBackLoaded ? 'bg-secondary/60' : 'bg-quinary'"
 			>
 				<div class="space-y-5 lg:container lg:mx-auto lg:px-5">
-					<SkeletonDefault v-if="isFetchingArtist" class="h-14 w-80 rounded" />
+					<SkeletonDefault v-if="isFetchingArtist" class="rounded h-14 w-80" />
 					<h1
 						v-if="artist.name && !isFetchingArtist"
 						class="text-3xl font-bold md:text-6xl xl:text-7xl"
@@ -114,7 +115,7 @@
 					>
 						<p
 							v-if="artist.birth_date"
-							class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase"
+							class="px-3 py-1 text-xs font-semibold uppercase rounded w-fit whitespace-nowrap bg-quaternary"
 						>
 							Birthday :
 							{{
@@ -129,7 +130,7 @@
 						</p>
 						<p
 							v-if="artist.debut_date"
-							class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase"
+							class="px-3 py-1 text-xs font-semibold uppercase rounded w-fit whitespace-nowrap bg-quaternary"
 						>
 							Debut Date :
 							{{
@@ -147,14 +148,14 @@
 						<p
 							v-for="style in artist.styles"
 							:key="style"
-							class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase"
+							class="px-3 py-1 text-xs font-semibold uppercase rounded w-fit whitespace-nowrap bg-quaternary"
 						>
 							{{ style }}
 						</p>
 						<p
 							v-for="tag in artist.general_tags"
 							:key="tag"
-							class="w-fit whitespace-nowrap rounded bg-quaternary px-3 py-1 text-xs font-semibold uppercase"
+							class="px-3 py-1 text-xs font-semibold uppercase rounded w-fit whitespace-nowrap bg-quaternary"
 						>
 							{{ tag }}
 						</p>
@@ -162,7 +163,7 @@
 					<div v-if="!isFetchingArtist" class="flex flex-wrap gap-2">
 						<NuxtLink
 							:to="editLink"
-							class="bg-secondary px-2 py-1 text-xs font-semibold uppercase"
+							class="px-2 py-1 text-xs font-semibold uppercase bg-secondary"
 						>
 							Edit Artist
 						</NuxtLink>
@@ -172,115 +173,112 @@
 		</section>
 
 		<section
-			class="mx-auto space-y-8 p-5 py-8 lg:container lg:space-y-14 lg:px-14 lg:py-10 xl:px-5"
+			class="p-5 py-8 mx-auto space-y-8 lg:container lg:space-y-14 lg:px-14 lg:py-10 xl:px-5"
 		>
 			<div v-if="isFetchingArtist" class="space-y-2">
-				<SkeletonDefault class="h-5 w-3/4 rounded" />
-				<SkeletonDefault class="h-5 w-2/4 rounded" />
-				<SkeletonDefault class="h-5 w-2/6 rounded" />
-				<SkeletonDefault class="h-5 w-2/5 rounded" />
+				<SkeletonDefault class="w-3/4 h-5 rounded" />
+				<SkeletonDefault class="w-2/4 h-5 rounded" />
+				<SkeletonDefault class="w-2/6 h-5 rounded" />
+				<SkeletonDefault class="w-2/5 h-5 rounded" />
 			</div>
 
-			<div v-else class="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-10">
-				<div class="space-y-5" :class="musicDiscover.length ? 'col-span-2' : 'col-span-full'">
-					<CardDefault
-						v-if="platformLinksList?.length && !isFetchingArtist"
-						name="Streaming Platforms"
-					>
-						<div class="flex flex-wrap gap-2">
-							<LazyComebackExternalLink
-								v-for="platform in platformLinksList"
-								:key="platform.link"
-								:name="platform.name"
-								:link="platform.link"
-								class="!px-2.5 !py-1"
-							/>
-						</div>
-					</CardDefault>
-					<div v-if="isFetchingArtist" class="flex gap-2">
-						<SkeletonDefault
-							v-for="i in 3"
-							:key="`skeleton_platforms_` + i"
-							class="h-6 w-20 rounded"
+			<div v-else class="space-y-5">
+				<CardDefault
+					v-if="platformLinksList?.length && !isFetchingArtist"
+					name="Streaming Platforms"
+				>
+					<div class="flex flex-wrap gap-2">
+						<LazyComebackExternalLink
+							v-for="platform in platformLinksList"
+							:key="platform.link"
+							:name="platform.name"
+							:link="platform.link"
+							class="!px-2.5 !py-1"
 						/>
 					</div>
+				</CardDefault>
+				<div v-if="isFetchingArtist" class="flex gap-2">
+					<SkeletonDefault
+						v-for="i in 3"
+						:key="`skeleton_platforms_` + i"
+						class="w-20 h-6 rounded"
+					/>
+				</div>
 
-					<CardDefault
-						v-if="socialLinksList?.length && !isFetchingArtist"
-						name="Socials Media"
-					>
-						<div class="flex flex-wrap gap-2">
-							<LazyComebackExternalLink
-								v-for="social in socialLinksList"
-								:key="social.link"
-								:name="social.name"
-								:link="social.link"
-								class="!px-2.5 !py-1"
-							/>
-						</div>
-					</CardDefault>
-					<div v-if="isFetchingArtist" class="flex gap-2">
-						<SkeletonDefault
-							v-for="i in 3"
-							:key="`skeleton_socials_` + i"
-							class="h-6 w-20 rounded"
+				<CardDefault
+					v-if="socialLinksList?.length && !isFetchingArtist"
+					name="Socials Media"
+				>
+					<div class="flex flex-wrap gap-2">
+						<LazyComebackExternalLink
+							v-for="social in socialLinksList"
+							:key="social.link"
+							:name="social.name"
+							:link="social.link"
+							class="!px-2.5 !py-1"
 						/>
 					</div>
+				</CardDefault>
+				<div v-if="isFetchingArtist" class="flex gap-2">
+					<SkeletonDefault
+						v-for="i in 3"
+						:key="`skeleton_socials_` + i"
+						class="w-20 h-6 rounded"
+					/>
+				</div>
 
-					<CardDefault name="Description">
-						<p
-							v-if="artist.description"
-							class="max-w-6xl whitespace-pre-line text-xs leading-6 md:text-base md:leading-8"
-						>
-							{{ artist.description }}
+				<CardDefault v-if="artist.id_youtube_music && musicDiscover.length > 0" name="Discover Music">
+					<transition-group
+						v-if="musicDiscover.length > 0"
+						name="list-complete"
+						tag="div"
+						class="grid grid-cols-3 gap-2"
+					>
+						<MusicDisplay
+							v-for="song in musicDiscover"
+							:key="song.id_youtube_music"
+							:artist-id="''"
+							:artist-name="artist.name"
+							:music-id="song.id_youtube_music"
+							:music-name="song.name"
+							:music-image="song?.thumbnails[0]?.url"
+							:duration="song?.duration?.toString() || '0'"
+							class="w-full bg-quinary"
+						/>
+					</transition-group>
+				</CardDefault>
+
+				<CardDefault name="Description" class="pt-5">
+					<p
+						v-if="artist.description"
+						class="max-w-6xl text-xs leading-6 whitespace-pre-line md:text-base md:leading-8"
+					>
+						{{ artist.description }}
+					</p>
+					<div v-else>
+						<p class="text-xs md:text-base">No description.</p>
+						<p class="text-xs md:text-base">
+							Write a description to share more information about this artist with our
+							community.
 						</p>
-						<div v-else>
-							<p class="text-xs md:text-base">No description.</p>
-							<p class="text-xs md:text-base">
-								Write a description to share more information about this artist with our
-								community.
-							</p>
-							<div class="pt-2">
-								<NuxtLink
-									:to="editLink"
-									class="mt-5 bg-quaternary px-2 py-1 text-xs font-semibold uppercase"
-								>
-									Add a description
-								</NuxtLink>
-							</div>
+						<div class="pt-2">
+							<NuxtLink
+								:to="editLink"
+								class="px-2 py-1 mt-5 text-xs font-semibold uppercase bg-quaternary"
+							>
+								Add a description
+							</NuxtLink>
 						</div>
-					</CardDefault>
-				</div>
-				<div v-if="artist.id_youtube_music && musicDiscover.length > 0">
-					<CardDefault name="Discover Music">
-						<transition-group
-							v-if="musicDiscover.length > 0"
-							name="list-complete"
-							tag="div"
-							class="space-y-2"
-						>
-							<MusicDisplay
-								v-for="song in musicDiscover"
-								:key="song.id_youtube_music"
-								:artist-id="''"
-								:artist-name="artist.name"
-								:music-id="song.id_youtube_music"
-								:music-name="song.name"
-								:music-image="song?.thumbnails[0]?.url"
-								:duration="song?.duration?.toString() || '0'"
-								class="w-full bg-quinary"
-							/>
-						</transition-group>
-					</CardDefault>
-				</div>
+					</div>
+				</CardDefault>
 			</div>
-
+			
 			<div v-if="members?.length && !isFetchingArtist">
 				<CardDefault name="Members">
 					<transition-group
 						name="list-complete"
 						tag="div"
-						class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 xl:flex-wrap"
+						class="flex gap-3 pb-3 overflow-x-auto scrollBarLight snap-x snap-mandatory xl:flex-wrap"
 					>
 						<CardObject
 							v-for="soloMember in members"
@@ -295,22 +293,22 @@
 				</CardDefault>
 			</div>
 
-			<div v-if="albumEpRelease?.length && !isFetchingArtist">
+			<div v-if="albumEpRelease.length && !isFetchingArtist">
 				<CardDefault name="Albums/Eps">
 					<transition-group
 						name="list-complete"
 						tag="div"
-						class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 xl:flex-wrap"
+						class="flex gap-3 pb-3 overflow-x-auto scrollBarLight snap-x snap-mandatory xl:flex-wrap"
 					>
 						<CardObject
 							v-for="release in albumEpRelease"
 							:key="release.id_youtube_music"
-							:artist-id="release?.artists[0]?.id"
+							:artist-id="artist.id"
 							:main-title="release.name"
 							:image="release.image"
 							:release-date="release.date"
 							:release-type="release.type"
-							:object-link="`/release/${release.id_youtube_music}`"
+							:object-link="`/release/${release.id}`"
 							is-release-display
 							date-always-display
 						/>
@@ -323,17 +321,17 @@
 					<transition-group
 						name="list-complete"
 						tag="div"
-						class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 xl:flex-wrap"
+						class="flex gap-3 pb-3 overflow-x-auto scrollBarLight snap-x snap-mandatory xl:flex-wrap"
 					>
 						<CardObject
 							v-for="release in singleRelease"
 							:key="release.id_youtube_music"
-							:artist-id="release?.artists[0]?.id"
+							:artist-id="artist.id"
 							:main-title="release.name"
 							:image="release.image"
 							:release-date="release.date"
 							:release-type="release.type"
-							:object-link="`/release/${release.id_youtube_music}`"
+							:object-link="`/release/${release.id}`"
 							is-release-display
 							date-always-display
 						/>
@@ -346,7 +344,7 @@
 					<transition-group
 						name="list-complete"
 						tag="div"
-						class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 xl:flex-wrap"
+						class="flex gap-3 pb-3 overflow-x-auto scrollBarLight snap-x snap-mandatory xl:flex-wrap"
 					>
 						<CardObject
 							v-for="groupMember in subUnitMembers"
@@ -366,7 +364,7 @@
 					<transition-group
 						name="list-complete"
 						tag="div"
-						class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 xl:flex-wrap"
+						class="flex gap-3 pb-3 overflow-x-auto scrollBarLight snap-x snap-mandatory xl:flex-wrap"
 					>
 						<CardObject
 							v-for="group in artist.groups"

@@ -32,7 +32,7 @@
 			type: String,
 		},
 		duration: {
-			type: String,
+			type: [String, Number],
 		},
 		artistImage: {
 			type: String,
@@ -70,9 +70,10 @@
 		authorNamePlaying.value = artistName || ''
 	}
 
-	const convertDuration = (duration: any) => {
-		const minutes = Math.floor(duration / 60)
-		const seconds = duration % 60
+	const convertDuration = (duration: string | number) => {
+		const durationNumber = typeof duration === 'string' ? parseInt(duration) : duration
+		const minutes = Math.floor(durationNumber / 60)
+		const seconds = durationNumber % 60
 		if (seconds < 10) return `${minutes}:0${seconds}`
 		return `${minutes}:${seconds}`
 	}

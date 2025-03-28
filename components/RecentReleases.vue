@@ -8,7 +8,7 @@
 <template>
 	<CardDefault name="Recent Releases">
 		<div
-			class="scrollBarLight relative flex w-full snap-x snap-mandatory justify-between gap-5 overflow-x-auto pb-5"
+			class="relative flex justify-between w-full gap-5 pb-5 overflow-x-auto scrollBarLight snap-x snap-mandatory"
 		>
 			<CardObject
 				v-for="release in releases"
