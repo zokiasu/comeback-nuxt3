@@ -6,6 +6,7 @@
 	import { type Release } from '@/types/supabase/release'
 	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
 	import { useSupabaseMusic } from '~/composables/Supabase/useSupabaseMusic'
+	import { type Music } from '@/types/supabase/music'
 
 	const { Modal } = Mdl
 	const { getReleaseById, getSuggestedReleases, updateRelease } = useSupabaseRelease()
@@ -15,45 +16,23 @@
 	const route = useRoute()
 	const router = useRouter()
 
-	const title = ref('Release Page')
-	const description = ref('Release')
+	const title = ref<string>('Release Page')
+	const description = ref<string>('Release')
 
-	const showModal = ref(false)
-	const showModalEdit = ref(false)
-	const sendNewStreamingPlatform = ref(false)
-	const newStreamingPlatform = ref({
-		name: '',
-		link: '',
-	})
-	const dateToDateFormat = ref(null)
+	const showModal = ref<boolean>(false)
+	const showModalEdit = ref<boolean>(false)
+	const dateToDateFormat = ref<Date | null>(null)
 
 	const release = ref<Release | null>(null)
 	const suggestedReleases = ref<Release[]>([])
-	const imageLoaded = ref(false)
-	const isLoading = ref(true)
-	const musicList = ref<Music[]>([])
+	const imageLoaded = ref<boolean>(false)
+	const isLoading = ref<boolean>(true)
+	const musicList = ref<Partial<Music>[]>([])
 
-	const createNewPlatformStreaming = async () => {
-		if (!release.value) return
-		sendNewStreamingPlatform.value = true
-
-		const tmp = [...(release.value.platformList || [])]
-		tmp.push(newStreamingPlatform.value)
-
-		await updateRelease(release.value.id, {
-			platformList: tmp,
-		})
-
-		sendNewStreamingPlatform.value = false
-		showModal.value = false
-
-		newStreamingPlatform.value = {
-			name: '',
-			link: '',
-		}
-	}
-
-	const updateReleaseFunction = async (releaseId: string, releaseParam: any) => {
+	const updateReleaseFunction = async (
+		releaseId: string,
+		releaseParam: Partial<Release>,
+	) => {
 		const releaseData: Partial<Release> = {
 			name: releaseParam.name,
 			type: releaseParam.type,
@@ -66,10 +45,10 @@
 
 			// On utilise les musiques directement depuis release.value qui est réactif
 			const updatePromises =
-				release.value?.musics.map(async (music: any) => {
+				release.value?.musics?.map(async (music: Music) => {
 					// Trouver la version originale de la musique
 					const originalMusic = musicList.value.find((m) => m.id === music.id)
-					
+
 					// Vérifier si des modifications ont été apportées
 					if (
 						originalMusic &&
@@ -119,21 +98,25 @@
 
 			release.value = await getReleaseById(route.params.id as string)
 
-			if (release.value) {
-				title.value = release.value.name + ' par ' + release.value.artists[0].name
-				description.value = release.value.description
+			if (release.value && release.value.artists) {
+				title.value =
+					release.value.name +
+					' par ' +
+					(release.value.artists?.[0]?.name || 'Artiste inconnu')
+				description.value = release.value.description || ''
 
 				// Copie profonde des musiques pour conserver l'état initial
-				musicList.value = release.value.musics.map((music) => ({
-					id: music.id,
-					name: music.name,
-					ismv: music.ismv,
-					id_youtube_music: music.id_youtube_music,
-				}))
-				
+				musicList.value =
+					release.value.musics?.map((music) => ({
+						id: music.id,
+						name: music.name,
+						ismv: music.ismv,
+						id_youtube_music: music.id_youtube_music,
+					})) || []
+
 				// Récupérer les suggestions
 				suggestedReleases.value = await getSuggestedReleases(
-					release.value.artists[0].id,
+					release.value.artists[0]?.id,
 					release.value.id,
 				)
 			}
@@ -215,7 +198,7 @@
 								<h1 class="text-2xl font-black lg:text-5xl 2xl:text-7xl">
 									{{ release.name }}
 								</h1>
-								<div class="flex items-center gap-2">
+								<div v-if="release.artists" class="flex items-center gap-2">
 									<NuxtLink
 										:to="`/artist/${release.artists[0].id}`"
 										class="flex items-center gap-2 rounded-full transition-all duration-300 ease-in-out hover:bg-secondary hover:px-3 hover:py-0.5"
@@ -242,39 +225,20 @@
 			</section>
 
 			<section class="container p-5 py-5 mx-auto space-y-12 md:px-10 xl:px-0">
-				<!-- Platforms -->
-				<!-- <section v-if="release.platformList?.length" class="space-y-2">
-					<p class="font-black">Streaming Platforms</p>
-					<div class="flex gap-1.5">
-						<ComebackExternalLink
-							v-for="social in release.platformList"
-							:key="social.name"
-							:name="social.name"
-							:link="social.link"
-						/>
-						<button
-							class="flex items-center gap-2 rounded bg-quaternary px-3.5 py-2.5 text-sm hover:bg-quinary"
-							@click="verifyShowModal()"
-						>
-							<IconPlus class="w-5 h-5" />
-							<p>Add Streaming Platform</p>
-						</button>
-					</div>
-				</section> -->
 				<!-- Musics -->
-				<section v-if="release.musics?.length" class="space-y-2">
+				<section v-if="release.musics?.length && release.artists" class="space-y-2">
 					<CardDefault :name="`Tracks (${release.musics?.length})`">
 						<transition-group name="list-complete" tag="div" class="space-y-2">
 							<MusicDisplay
 								v-for="song in release.musics"
 								:key="song.id"
-								:artist-id="release.artists[0].id"
-								:artist-name="release.artists[0].name"
+								:artist-id="release.artists?.[0]?.id"
+								:artist-name="release.artists?.[0]?.name"
 								:music-id="song.id_youtube_music"
 								:music-name="song.name"
 								:has-mv="song.ismv"
-								:music-image="song.thumbnails[2].url"
-								:duration="song.duration"
+								:music-image="song.thumbnails?.[2]?.url || ''"
+								:duration="song.duration || 0"
 								class="w-full bg-quinary"
 							/>
 						</transition-group>
@@ -282,15 +246,15 @@
 				</section>
 
 				<!-- Suggestions -->
-				<section v-if="suggestedReleases.length" class="space-y-2">
+				<section v-if="suggestedReleases.length && release.artists" class="space-y-2">
 					<CardDefault :name="`Autres releases de ${release.artists[0].name}`">
 						<div class="flex gap-4">
 							<CardObject
 								v-for="otherRelease in suggestedReleases"
 								:key="otherRelease.id"
-								:artist-id="otherRelease.artists[0].id"
+								:artist-id="otherRelease.artists?.[0]?.id"
 								:main-title="otherRelease.name"
-								:sub-title="otherRelease.artists[0].name"
+								:sub-title="otherRelease.artists?.[0]?.name"
 								:image="otherRelease.image"
 								:release-date="otherRelease.date"
 								:release-type="otherRelease.type"
@@ -301,35 +265,6 @@
 					</CardDefault>
 				</section>
 			</section>
-
-			<Modal
-				v-model="showModal"
-				title="Add a Streaming Platforms"
-				wrapper-class="animate__animated modal-wrapper"
-				:modal-style="{
-					background: '#1F1D1D',
-					'border-radius': '0.25rem',
-					color: 'white',
-				}"
-				:in-class="`animate__fadeInDown`"
-				:out-class="`animate__bounceOut`"
-				bg-class="animate__animated"
-				:bg-in-class="`animate__fadeInUp`"
-				:bg-out-class="`animate__fadeOutDown`"
-			>
-				<div class="space-y-3">
-					<ComebackInput v-model="newStreamingPlatform.name" label="Name" />
-					<ComebackInput v-model="newStreamingPlatform.link" label="Link" />
-					<button
-						:disabled="sendNewStreamingPlatform"
-						class="w-full py-2 font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary hover:scale-105 hover:bg-red-900"
-						@click="createNewPlatformStreaming"
-					>
-						<p v-if="sendNewStreamingPlatform">Sending...</p>
-						<p v-else>Send News</p>
-					</button>
-				</div>
-			</Modal>
 
 			<Modal
 				v-model="showModalEdit"
@@ -350,7 +285,11 @@
 					<ComebackInput v-model="release.name" label="Name" />
 
 					<div class="grid grid-cols-2 gap-3">
-						<ComebackInput v-model="release.artistsName" label="Artist Name" disabled />
+						<ComebackInput
+							:value="release.artists?.[0]?.name || ''"
+							label="Artist Name"
+							disabled
+						/>
 
 						<div class="grid grid-cols-1 gap-1">
 							<ComebackLabel label="Type" />
@@ -384,7 +323,7 @@
 						<div class="space-y-2">
 							<div
 								v-for="music in release.musics"
-								:key="music.videoId"
+								:key="music.id_youtube_music"
 								class="py-1 pl-2 pr-1 space-y-1 rounded bg-quinary"
 							>
 								<div class="flex items-center justify-between w-full gap-2">

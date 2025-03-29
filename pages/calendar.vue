@@ -111,13 +111,13 @@
 <template>
 	<div
 		id="calendarPage"
-		class="container mx-auto h-fit min-h-screen w-full space-y-3 p-3 md:p-5"
+		class="container w-full min-h-screen p-3 mx-auto space-y-3 h-fit md:p-5"
 	>
 		<!-- Period Selector -->
 		<div>
 			<!-- Year Selector -->
 			<div
-				class="remove-scrollbar scrollBarLight flex w-full snap-x snap-mandatory gap-1 overflow-x-auto pb-1 text-xs font-semibold"
+				class="flex w-full gap-1 pb-1 overflow-x-auto text-xs font-semibold remove-scrollbar scrollBarLight snap-x snap-mandatory"
 			>
 				<button
 					v-for="year in yearList"
@@ -133,7 +133,7 @@
 			<!-- Month Selector -->
 			<div
 				v-if="yearList.length"
-				class="remove-scrollbar scrollBarLight flex w-full snap-x snap-mandatory gap-1 overflow-x-auto pb-1 text-xs font-semibold"
+				class="flex w-full gap-1 pb-1 overflow-x-auto text-xs font-semibold remove-scrollbar scrollBarLight snap-x snap-mandatory"
 			>
 				<button
 					v-for="(month, index) in monthList"
@@ -149,13 +149,13 @@
 			</div>
 		</div>
 		<!-- Stats -->
-		<div class="space-y-2 border-y-2 border-quaternary py-3 text-xs">
-			<!-- <p class="font-semibold text-base text-center">
+		<div class="py-3 space-y-2 text-xs border-y-2 border-quaternary">
+			<!-- <p class="text-base font-semibold text-center">
         {{ monthList[currentMonth].original }} {{ currentYear }}'s stats
       </p> -->
-			<div class="grid grid-cols-4 items-center justify-center gap-1 lg:gap-5">
+			<div class="grid items-center justify-center grid-cols-4 gap-1 lg:gap-5">
 				<button
-					class="flex h-full w-full flex-col items-center justify-center rounded bg-primary px-2 py-1"
+					class="flex flex-col items-center justify-center w-full h-full px-2 py-1 rounded bg-primary"
 					:class="
 						!onlyAlbums && !onlyEps && !onlySingles ? 'bg-primary' : 'bg-quaternary'
 					"
@@ -165,7 +165,7 @@
 					<span class="text-base font-bold">{{ releases.length }}</span>
 				</button>
 				<button
-					class="flex h-full w-full flex-col items-center justify-center rounded bg-primary px-2 py-1"
+					class="flex flex-col items-center justify-center w-full h-full px-2 py-1 rounded bg-primary"
 					:class="onlyAlbums && !onlyEps && !onlySingles ? 'bg-primary' : 'bg-quaternary'"
 					@click="switchTypeFilter('ALBUM')"
 				>
@@ -175,7 +175,7 @@
 					</span>
 				</button>
 				<button
-					class="flex h-full w-full flex-col items-center justify-center rounded bg-primary px-2 py-1"
+					class="flex flex-col items-center justify-center w-full h-full px-2 py-1 rounded bg-primary"
 					:class="!onlyAlbums && onlyEps && !onlySingles ? 'bg-primary' : 'bg-quaternary'"
 					@click="switchTypeFilter('EP')"
 				>
@@ -185,7 +185,7 @@
 					</span>
 				</button>
 				<button
-					class="flex h-full w-full flex-col items-center justify-center rounded bg-primary px-2 py-1"
+					class="flex flex-col items-center justify-center w-full h-full px-2 py-1 rounded bg-primary"
 					:class="!onlyAlbums && !onlyEps && onlySingles ? 'bg-primary' : 'bg-quaternary'"
 					@click="switchTypeFilter('SINGLE')"
 				>
@@ -196,7 +196,7 @@
 				</button>
 			</div>
 		</div>
-		<!-- <p class="text-primary text-sm italic">Some troubles have been noticed with our release recovery API and are working to resolve them quickly. We apologize for the inconvenience.</p> -->
+		<!-- <p class="text-sm italic text-primary">Some troubles have been noticed with our release recovery API and are working to resolve them quickly. We apologize for the inconvenience.</p> -->
 		<!-- Releases -->
 		<transition-group
 			tag="div"
@@ -213,7 +213,7 @@
 				:image="release.image"
 				:release-date="release.date"
 				:release-type="release.type"
-				:object-link="`/release/${release.id_youtube_music}`"
+				:object-link="`/release/${release.id}`"
 				date-always-display
 				class="!min-w-full"
 			/>
@@ -221,7 +221,7 @@
 		<!-- Back to top -->
 		<div
 			ref="backTop"
-			class="sticky bottom-12 hidden w-full py-5 text-center lg:bottom-0"
+			class="sticky hidden w-full py-5 text-center bottom-12 lg:bottom-0"
 		>
 			<button
 				class="w-fit bg-quaternary px-4 py-2.5 text-xs font-semibold shadow shadow-zinc-700"
