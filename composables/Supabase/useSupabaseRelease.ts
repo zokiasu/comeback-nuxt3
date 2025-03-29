@@ -10,7 +10,7 @@ export function useSupabaseRelease() {
 	const toast = useToast()
 
 	// Met à jour une release
-	const updateRelease = async (id: string, updates: Partial<Release>) => {
+	const updateRelease = async (id: string, updates: Partial<Release>): Promise<Release | null> => {
 		const { data, error } = await supabase
 			.from('releases')
 			.update(updates)
@@ -282,6 +282,50 @@ export function useSupabaseRelease() {
 		}
 	}
 
+	// Récupère les suggestions de releases pour un artiste
+	const getSuggestedReleases = async (
+		artistId: string,
+		currentReleaseId: string,
+		limit: number = 5,
+	) => {
+		try {
+			const { data, error } = await supabase
+				.from('releases')
+				.select(
+					`
+					*,
+					artist_releases!inner (
+						artist:artists (
+							id,
+							name,
+							image
+						)
+					)
+				`,
+				)
+				.neq('id', currentReleaseId) // Exclure la release actuelle
+				.eq('artist_releases.artist_id', artistId)
+				.order('date', { ascending: false })
+				.limit(limit)
+
+			if (error) {
+				console.error('Erreur lors de la récupération des suggestions:', error)
+				return []
+			}
+
+			// Transformer les données pour avoir un format plus simple
+			const transformedData = data.map((release) => ({
+				...release,
+				artists: release.artist_releases.map((ar: { artist: Artist }) => ar.artist),
+			})) as Release[]
+
+			return transformedData
+		} catch (error) {
+			console.error('Erreur lors de la récupération des suggestions:', error)
+			return []
+		}
+	}
+
 	return {
 		updateRelease,
 		updateReleaseArtists,
@@ -291,5 +335,6 @@ export function useSupabaseRelease() {
 		getReleaseByIdLight,
 		getRealtimeLastestReleasesAdded,
 		getReleasesByMonthAndYear,
+		getSuggestedReleases,
 	}
 }

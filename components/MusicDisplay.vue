@@ -11,7 +11,7 @@
 		albumName,
 		albumId,
 		musicImage,
-		hasMv,
+		ismv,
 		horizontalMode,
 	} = defineProps({
 		musicName: {
@@ -48,7 +48,7 @@
 		musicDate: {
 			type: Timestamp,
 		},
-		hasMv: {
+		ismv: {
 			type: Boolean,
 		},
 		horizontalMode: {
@@ -82,7 +82,7 @@
 <template>
 	<div
 		class="grid w-full bg-transparent"
-		:class="hasMv && horizontalMode ? 'grid-cols-5 gap-2' : 'grid-cols-1 gap-0.5'"
+		:class="ismv && horizontalMode ? 'grid-cols-5 gap-2' : 'grid-cols-1 gap-0.5'"
 	>
 		<button
 			v-if="musicId"
@@ -90,7 +90,7 @@
 			class="col-span-1 flex w-full items-center gap-2 rounded bg-quaternary p-2 px-3"
 			:class="{
 				'group hover:bg-tertiary/10': idYoutubeVideo != musicId,
-				'col-span-4': hasMv && horizontalMode,
+				'col-span-4': ismv && horizontalMode,
 			}"
 			@click="playVideo(musicId)"
 		>
@@ -152,7 +152,7 @@
 			</div>
 		</button>
 		<button
-			v-if="hasMv"
+			v-if="ismv"
 			class="flex w-full items-center justify-center rounded bg-primary px-2 py-1 text-xs font-semibold uppercase tracking-widest hover:bg-primary/50"
 			:class="horizontalMode ? 'w-fit' : 'w-full'"
 			@click="displayVideo = true"
@@ -161,7 +161,7 @@
 			<p class="lg:hidden">M/V</p>
 		</button>
 		<div
-			v-if="displayVideo && hasMv"
+			v-if="displayVideo && ismv"
 			class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-black/80 lg:gap-10"
 			@click="displayVideo = false"
 		>

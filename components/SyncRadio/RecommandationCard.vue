@@ -12,7 +12,7 @@
 
 	const musicName = computed(() => music.value?.name)
 	const musicArtists = computed(() => music.value?.artists[0]?.name)
-	const hasMv = computed(() => music.value?.hasMv || false)
+	const hasMv = computed(() => music.value?.ismv || false)
 
 	onMounted(async () => {
 		music.value = await getRandomMusic(new Date().getFullYear())

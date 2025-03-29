@@ -59,13 +59,13 @@
 		})
 
 		// Ajouter un gestionnaire de messages pour la communication cross-origin
-		window.addEventListener('message', (event) => {
-			if (event.origin !== 'https://www.youtube.com') {
-				console.log('Message reçu de:', event.origin)
-				console.log('Données reçues:', event.data)
-			}
-			// Traiter les messages de l'iframe YouTube ici si nécessaire
-		})
+		// window.addEventListener('message', (event) => {
+		// 	if (event.origin !== 'https://www.youtube.com') {
+		// 		console.log('Message reçu de:', event.origin)
+		// 		console.log('Données reçues:', event.data)
+		// 	}
+		// 	// Traiter les messages de l'iframe YouTube ici si nécessaire
+		// })
 	}
 
 	const onPlayerReady = async (event) => {
@@ -214,8 +214,8 @@
 			:allow="'autoplay; encrypted-media'"
 			:sandbox="'allow-same-origin allow-scripts allow-presentation'"
 		></div>
-		<div class="relative flex w-full items-center justify-between bg-secondary px-5 py-3">
-			<div class="flex w-full items-center space-x-2 sm:w-fit">
+		<div class="relative flex items-center justify-between w-full px-5 py-3 bg-secondary">
+			<div class="flex items-center w-full space-x-2 sm:w-fit">
 				<button class="hover:text-primary" @click="seek(-10)">
 					<IconBackward10 class="h-7 w-7" />
 				</button>
@@ -228,7 +228,7 @@
 				<button class="hover:text-primary" @click="seek(10)">
 					<IconForward10 class="h-7 w-7" />
 				</button>
-				<div class="hidden items-center gap-1 pl-5 text-xs md:flex">
+				<div class="items-center hidden gap-1 pl-5 text-xs md:flex">
 					<p>{{ convertDuration(currentTime) }}</p>
 					<p>/</p>
 					<p>{{ convertDuration(duration) }}</p>
@@ -241,7 +241,7 @@
 			<div v-else class="w-full sm:w-fit">
 				<p class="font-bold text-primary">Video is restricted or unavailable.</p>
 			</div>
-			<div class="hidden items-center gap-2 sm:flex">
+			<div class="items-center hidden gap-2 sm:flex">
 				<!-- <button @click="displayVideo" class="p-1 bg-red-500 rounded aspect-square">
           D
         </button> -->
@@ -264,7 +264,7 @@
 				type="range"
 				min="0"
 				:max="duration"
-				class="absolute -top-1 left-0 h-1 w-full cursor-pointer overflow-hidden"
+				class="absolute left-0 w-full h-1 overflow-hidden cursor-pointer -top-1"
 				@input="seekToTime"
 			/>
 			<button

@@ -562,7 +562,7 @@
 									</p>
 									<div class="flex gap-1 text-xs">
 										<p class="truncate">{{ data.artists[0].name }}</p>
-										<p v-if="data.hasMv" class="rounded bg-primary px-1 font-semibold">
+										<p v-if="data.ismv" class="rounded bg-primary px-1 font-semibold">
 											MV
 										</p>
 									</div>

@@ -10,6 +10,7 @@ export interface Music extends BaseEntity {
 	duration: number | null
 	type: MusicType
 	verified: boolean
+	ismv: boolean
 	thumbnails: { url: string; width: number; height: number }[] | null
 	artists?: Artist[]
 	releases?: Release[]

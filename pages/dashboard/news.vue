@@ -31,7 +31,6 @@
 			const result = await queryByCollection('news')
 			if (Array.isArray(result)) {
 				newsFetch.value = result as News[]
-				console.log(`${result.length} news récupérées`)
 			} else {
 				console.error('Résultat inattendu:', result)
 				toast.error('Erreur lors du chargement des news')
@@ -146,31 +145,26 @@
 		startAt.value = (page.value - 1) * 12
 		endAt.value = page.value * 12
 	})
-
-	// Ajouter un watcher pour la recherche pour faciliter le débogage
-	watch(search, (newValue) => {
-		console.log(`Recherche: "${newValue}" - Résultats: ${filteredNewsList.value.length}`)
-	})
 </script>
 
 <template>
 	<div
 		ref="scrollContainer"
-		class="scrollBarLight relative h-full space-y-3 overflow-hidden overflow-y-scroll pr-2"
+		class="relative h-full pr-2 space-y-3 overflow-hidden overflow-y-scroll scrollBarLight"
 	>
-		<section id="searchbar" class="sticky top-0 z-50 w-full space-y-2 bg-secondary pb-2">
+		<section id="searchbar" class="sticky top-0 z-50 w-full pb-2 space-y-2 bg-secondary">
 			<input
 				id="search-input"
 				v-model="search"
 				type="text"
 				placeholder="Rechercher par artiste, utilisateur ou message"
-				class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+				class="w-full px-5 py-2 transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
 			/>
-			<section class="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
+			<section class="flex flex-col w-full gap-2 sm:flex-row sm:justify-between">
 				<div class="flex space-x-2">
 					<select
 						v-model="sort"
-						class="w-full rounded border-none bg-quinary p-2 text-xs uppercase placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none sm:w-fit"
+						class="w-full p-2 text-xs uppercase transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl hover:bg-tertiary hover:text-quinary focus:outline-none sm:w-fit"
 					>
 						<option value="date">Date</option>
 						<option value="user">User</option>
@@ -178,25 +172,25 @@
 						<option value="createdAt">Last Created</option>
 					</select>
 					<button
-						class="rounded border-none bg-quinary p-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+						class="p-2 transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl hover:bg-tertiary hover:text-quinary focus:outline-none"
 						@click="invertSort = !invertSort"
 					>
-						<icon-sort v-if="!invertSort" class="h-6 w-6 text-tertiary" />
-						<icon-sort-reverse v-else class="h-6 w-6 text-tertiary" />
+						<icon-sort v-if="!invertSort" class="w-6 h-6 text-tertiary" />
+						<icon-sort-reverse v-else class="w-6 h-6 text-tertiary" />
 					</button>
 				</div>
 
-				<div class="flex w-full justify-between space-x-2 sm:justify-end">
+				<div class="flex justify-between w-full space-x-2 sm:justify-end">
 					<button
 						:disabled="startAt == 0"
-						class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+						class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
 						@click="page = 1"
 					>
 						First
 					</button>
 					<button
 						:disabled="startAt == 0"
-						class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+						class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
 						@click="page--"
 					>
 						Prev
@@ -204,18 +198,18 @@
 					<input
 						v-model.number="page"
 						type="text"
-						class="w-10 rounded border-none bg-quinary p-2 text-center placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out hover:bg-tertiary hover:text-quinary focus:outline-none"
+						class="w-10 p-2 text-center transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl hover:bg-tertiary hover:text-quinary focus:outline-none"
 					/>
 					<button
 						:disabled="page == nbPage"
-						class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+						class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
 						@click="page++"
 					>
 						Next
 					</button>
 					<button
 						:disabled="page == nbPage"
-						class="w-full rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+						class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
 						@click="page = nbPage"
 					>
 						Last
@@ -225,7 +219,7 @@
 		</section>
 
 		<div v-if="isLoading" class="flex justify-center py-4">
-			<p class="rounded bg-quinary px-4 py-2 text-center">Chargement des news...</p>
+			<p class="px-4 py-2 text-center rounded bg-quinary">Chargement des news...</p>
 		</div>
 
 		<transition-group
@@ -233,7 +227,7 @@
 			id="news-list"
 			name="list-complete"
 			tag="div"
-			class="grid grid-cols-1 items-center justify-center gap-5 transition-all duration-300 ease-in-out md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
+			class="grid items-center justify-center grid-cols-1 gap-5 transition-all duration-300 ease-in-out md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
 		>
 			<LazyCardDashboardNews
 				v-for="news in filteredNewsList.slice(startAt, endAt)"
@@ -251,12 +245,12 @@
 
 		<p
 			v-else-if="!isLoading"
-			class="w-full bg-quaternary p-5 text-center font-semibold uppercase"
+			class="w-full p-5 font-semibold text-center uppercase bg-quaternary"
 		>
 			Aucune news trouvée
 		</p>
 
-		<div v-if="filteredNewsList.length > 0" class="mt-4 text-center text-xs">
+		<div v-if="filteredNewsList.length > 0" class="mt-4 text-xs text-center">
 			<p>{{ filteredNewsList.length }} news au total - Page {{ page }}/{{ nbPage }}</p>
 		</div>
 	</div>

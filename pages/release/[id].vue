@@ -1,22 +1,19 @@
 <script setup lang="ts">
 	import * as Mdl from '@kouts/vue-modal'
-	import { Timestamp } from 'firebase/firestore'
 	import VueDatePicker from '@vuepic/vue-datepicker'
 	import { useToast } from 'vue-toastification'
 	import { useUserStore } from '@/stores/user'
-	import { type Release } from '@/types/release'
-	import { useFirebaseRelease } from '~/composables/useFirebaseRelease'
+	import { type Release } from '@/types/supabase/release'
 	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
+	import { useSupabaseMusic } from '~/composables/Supabase/useSupabaseMusic'
 
 	const { Modal } = Mdl
-	const { getReleaseByArtistIdYoutubeMusic, updateRelease, getReleaseByIdWithMusics } =
-		useFirebaseRelease()
-	const { getReleaseById } = useSupabaseRelease()
+	const { getReleaseById, getSuggestedReleases, updateRelease } = useSupabaseRelease()
+	const { updateMusic } = useSupabaseMusic()
 	const { isLoginStore } = useUserStore()
 	const toast = useToast()
 	const route = useRoute()
 	const router = useRouter()
-	const { $firestore } = useNuxtApp()
 
 	const title = ref('Release Page')
 	const description = ref('Release')
@@ -31,9 +28,18 @@
 	const dateToDateFormat = ref(null)
 
 	const release = ref<Release | null>(null)
-	const artistRelease = ref<Release[]>([] as Release[])
+	const suggestedReleases = ref<Release[]>([])
 	const imageLoaded = ref(false)
 	const isLoading = ref(true)
+	const musicList = ref<Music[]>([])
+
+	watch(
+		() => release.value?.musics,
+		(newMusics) => {
+			console.log('Musics changed:', toRaw(newMusics))
+		},
+		{ deep: true },
+	)
 
 	const createNewPlatformStreaming = async () => {
 		if (!release.value) return
@@ -55,10 +61,48 @@
 		}
 	}
 
-	const updateReleaseFunction = (releaseId: string, release: any) => {
-		updateRelease(releaseId, release)
-		toast.info('Release updated')
-		showModalEdit.value = false
+	const updateReleaseFunction = async (releaseId: string, releaseParam: any) => {
+		const releaseData: Partial<Release> = {
+			name: releaseParam.name,
+			type: releaseParam.type,
+			year: releaseParam.year,
+			date: releaseParam.date,
+		}
+
+		try {
+			await updateRelease(releaseId, releaseData)
+
+			// On utilise les musiques directement depuis release.value qui est réactif
+			const updatePromises =
+				release.value?.musics.map(async (music: any) => {
+					// Trouver la version originale de la musique
+					const originalMusic = musicList.value.find((m) => m.id === music.id)
+					
+					// Vérifier si des modifications ont été apportées
+					if (
+						originalMusic &&
+						(music.name !== originalMusic.name ||
+							music.ismv !== originalMusic.ismv ||
+							music.id_youtube_music !== originalMusic.id_youtube_music)
+					) {
+						return updateMusic(music.id, {
+							name: music.name,
+							ismv: music.ismv,
+							id_youtube_music: music.id_youtube_music,
+						})
+					}
+					return Promise.resolve()
+				}) || []
+
+			// Attendre que toutes les mises à jour soient terminées
+			await Promise.all(updatePromises)
+
+			toast.info('Release updated')
+			showModalEdit.value = false
+		} catch (error) {
+			console.error('Error updating release:', error)
+			toast.error('Une erreur est survenue lors de la mise à jour')
+		}
 	}
 
 	const verifyShowModal = () => {
@@ -82,9 +126,25 @@
 			isLoading.value = true
 
 			release.value = await getReleaseById(route.params.id as string)
-			
-			title.value = release.value.name + ' par ' + release.value.artists[0].name
-			description.value = release.value.description
+
+			if (release.value) {
+				title.value = release.value.name + ' par ' + release.value.artists[0].name
+				description.value = release.value.description
+
+				// Copie profonde des musiques pour conserver l'état initial
+				musicList.value = release.value.musics.map((music) => ({
+					id: music.id,
+					name: music.name,
+					ismv: music.ismv,
+					id_youtube_music: music.id_youtube_music,
+				}))
+				
+				// Récupérer les suggestions
+				suggestedReleases.value = await getSuggestedReleases(
+					release.value.artists[0].id,
+					release.value.id,
+				)
+			}
 		} catch (error: any) {
 			if (error.statusCode === 404) {
 				throw error
@@ -220,7 +280,7 @@
 								:artist-name="release.artists[0].name"
 								:music-id="song.id_youtube_music"
 								:music-name="song.name"
-								:has-mv="false"
+								:has-mv="song.ismv"
 								:music-image="song.thumbnails[2].url"
 								:duration="song.duration"
 								class="w-full bg-quinary"
@@ -228,29 +288,26 @@
 						</transition-group>
 					</CardDefault>
 				</section>
-				<!-- Release -->
-				<!-- <section v-if="artistRelease.length" class="space-y-2">
-					<CardDefault :name="`Other releases by ${release.artistsName}`">
-						<transition-group
-							name="list-complete"
-							tag="div"
-							class="flex gap-3 overflow-x-auto scrollBarLight snap-x snap-mandatory xl:flex-wrap"
-						>
+
+				<!-- Suggestions -->
+				<section v-if="suggestedReleases.length" class="space-y-2">
+					<CardDefault :name="`Autres releases de ${release.artists[0].name}`">
+						<div class="flex gap-4">
 							<CardObject
-								v-for="otherRelease in artistRelease"
-								:key="otherRelease.idYoutubeMusic"
-								:artist-id="otherRelease.artistsId"
+								v-for="otherRelease in suggestedReleases"
+								:key="otherRelease.id"
+								:artist-id="otherRelease.artists[0].id"
 								:main-title="otherRelease.name"
-								:sub-title="otherRelease.artistsName"
+								:sub-title="otherRelease.artists[0].name"
 								:image="otherRelease.image"
 								:release-date="otherRelease.date"
 								:release-type="otherRelease.type"
-								:object-link="`/release/${otherRelease.idYoutubeMusic}`"
+								:object-link="`/release/${otherRelease.id}`"
 								is-release-display
 							/>
-						</transition-group>
+						</div>
 					</CardDefault>
-				</section> -->
+				</section>
 			</section>
 
 			<Modal
@@ -344,10 +401,10 @@
 										class="flex items-center gap-2 px-2 py-1 text-xs rounded w-fit bg-quaternary"
 									>
 										<label class="whitespace-nowrap">Has MV</label>
-										<input v-model="music.hasMv" type="checkbox" />
+										<input type="checkbox" v-model="music.ismv" />
 									</div>
 								</div>
-								<ComebackInput v-if="music.hasMv" v-model="music.videoId" />
+								<ComebackInput v-if="music.ismv" v-model="music.id_youtube_music" />
 							</div>
 						</div>
 					</div>
