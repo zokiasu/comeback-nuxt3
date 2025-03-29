@@ -166,14 +166,6 @@
 		}
 	})
 
-	watch(
-		artistToEdit,
-		() => {
-			console.log('artistToEdit', artistToEdit.value)
-		},
-		{ deep: true },
-	)
-
 	useHead({
 		title,
 		meta: [
@@ -191,12 +183,12 @@
 		class="container mx-auto min-h-[calc(100vh-60px)] space-y-5 p-5 lg:px-10"
 	>
 		<div
-			class="flex items-end justify-between border-b border-zinc-700 pb-1 text-lg font-semibold uppercase lg:text-xl"
+			class="flex items-end justify-between pb-1 text-lg font-semibold uppercase border-b border-zinc-700 lg:text-xl"
 		>
 			<p>Artist Edition : {{ artistToEdit.name }}</p>
 			<button
 				:disabled="isUploadingEdit"
-				class="w-fit rounded bg-primary px-3 py-1 text-base font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+				class="px-3 py-1 text-base font-semibold uppercase transition-all duration-300 ease-in-out rounded w-fit bg-primary hover:scale-105 hover:bg-red-900"
 				@click="sendUpdateArtist"
 			>
 				{{ isUploadingEdit ? 'Loading' : 'Saves' }}
@@ -218,7 +210,7 @@
 					:alt="artistToEdit.name"
 					format="webp"
 					loading="lazy"
-					class="w-full rounded object-cover"
+					class="object-cover w-full rounded"
 				/>
 			</div>
 			<!-- Name & Id YTM & Birthday & Debut Date -->
@@ -278,7 +270,7 @@
 						<div
 							v-for="gender in validGenders"
 							:key="gender"
-							class="flex w-full items-center gap-2"
+							class="flex items-center w-full gap-2"
 						>
 							<input
 								:id="gender"
@@ -288,7 +280,7 @@
 								class="hidden"
 							/>
 							<button
-								class="w-full rounded px-3 py-1 text-sm"
+								class="w-full px-3 py-1 text-sm rounded"
 								:class="
 									artistToEdit.gender === gender
 										? 'bg-primary text-white'
@@ -308,7 +300,7 @@
 						<div
 							v-for="type in artistTypes"
 							:key="type"
-							class="flex w-full items-center gap-2"
+							class="flex items-center w-full gap-2"
 						>
 							<input
 								:id="type"
@@ -318,7 +310,7 @@
 								class="hidden"
 							/>
 							<button
-								class="w-full rounded px-3 py-1 text-sm"
+								class="w-full px-3 py-1 text-sm rounded"
 								:class="
 									artistToEdit.type === type ? 'bg-primary text-white' : 'bg-quaternary'
 								"
@@ -339,7 +331,7 @@
 								{ value: false, label: 'Inactive' },
 							]"
 							:key="status.label"
-							class="flex w-full items-center gap-2"
+							class="flex items-center w-full gap-2"
 						>
 							<input
 								:id="status.label"
@@ -349,7 +341,7 @@
 								class="hidden"
 							/>
 							<button
-								class="w-full rounded px-3 py-1 text-sm"
+								class="w-full px-3 py-1 text-sm rounded"
 								:class="
 									artistToEdit.active_career === status.value
 										? 'bg-primary text-white'
@@ -370,7 +362,7 @@
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="Styles" />
 						<button
-							class="w-fit rounded bg-primary px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
+							class="px-2 py-1 text-xs font-semibold uppercase rounded w-fit bg-primary hover:bg-red-900"
 							@click="showModalCreateStyle = true"
 						>
 							Create New Style
@@ -393,7 +385,7 @@
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="General Tags" />
 						<button
-							class="w-fit rounded bg-primary px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
+							class="px-2 py-1 text-xs font-semibold uppercase rounded w-fit bg-primary hover:bg-red-900"
 							@click="showModalCreateTag = true"
 						>
 							Create New Tag
@@ -428,7 +420,7 @@
 					<ComebackLabel label="Group" />
 					<button
 						v-if="isAdminStore"
-						class="w-fit rounded bg-primary px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
+						class="px-2 py-1 text-xs font-semibold uppercase rounded w-fit bg-primary hover:bg-red-900"
 						@click="showModalCreateArtist = true"
 					>
 						Create New Artist
@@ -452,7 +444,7 @@
 					<ComebackLabel label="Members" />
 					<button
 						v-if="isAdminStore"
-						class="w-fit rounded bg-primary px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
+						class="px-2 py-1 text-xs font-semibold uppercase rounded w-fit bg-primary hover:bg-red-900"
 						@click="showModalCreateArtist = true"
 					>
 						Create New Artist
@@ -480,12 +472,12 @@
 						:key="index + '_platform'"
 						class="flex w-full gap-1"
 					>
-						<div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
+						<div class="w-full p-2 space-y-3 text-xs rounded bg-quinary">
 							<input
 								type="text"
 								:value="platform.name"
 								placeholder="Platform's Name"
-								class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
 								@input="
 									(e: Event) =>
 										(artistPlatformList[index].name = (
@@ -497,7 +489,7 @@
 								type="text"
 								:value="platform.link"
 								placeholder="Platform's Link"
-								class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
 								@input="
 									(e: Event) =>
 										(artistPlatformList[index].link = (
@@ -507,14 +499,14 @@
 							/>
 						</div>
 						<button
-							class="rounded bg-primary p-5 text-xs hover:bg-red-900"
+							class="p-5 text-xs rounded bg-primary hover:bg-red-900"
 							@click="artistPlatformList.splice(index, 1)"
 						>
 							Delete
 						</button>
 					</div>
 					<button
-						class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
+						class="w-full p-2 text-xs font-semibold uppercase rounded bg-primary hover:bg-red-900"
 						@click="artistPlatformList.push({ name: '', link: '' })"
 					>
 						Add Platforms
@@ -528,12 +520,12 @@
 						:key="index + '_social'"
 						class="flex w-full gap-2"
 					>
-						<div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
+						<div class="w-full p-2 space-y-3 text-xs rounded bg-quinary">
 							<input
 								type="text"
 								:value="social.name"
 								placeholder="Social's Name"
-								class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
 								@input="
 									(e: Event) =>
 										(artistSocialList[index].name =
@@ -544,7 +536,7 @@
 								type="text"
 								:value="social.link"
 								placeholder="Social's Link"
-								class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
 								@input="
 									(e: Event) =>
 										(artistSocialList[index].link =
@@ -553,14 +545,14 @@
 							/>
 						</div>
 						<button
-							class="rounded bg-primary p-5 text-xs hover:bg-red-900"
+							class="p-5 text-xs rounded bg-primary hover:bg-red-900"
 							@click="artistSocialList.splice(index, 1)"
 						>
 							Delete
 						</button>
 					</div>
 					<button
-						class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
+						class="w-full p-2 text-xs font-semibold uppercase rounded bg-primary hover:bg-red-900"
 						@click="artistSocialList.push({ name: '', link: '' })"
 					>
 						Add Socials
@@ -569,10 +561,10 @@
 			</div>
 		</div>
 
-		<div class="border-t border-zinc-700 pt-3">
+		<div class="pt-3 border-t border-zinc-700">
 			<button
 				:disabled="isUploadingEdit"
-				class="w-full rounded bg-primary py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+				class="w-full py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary hover:scale-105 hover:bg-red-900"
 				@click="sendUpdateArtist"
 			>
 				{{ isUploadingEdit ? 'Loading' : 'Saves' }}
@@ -634,6 +626,6 @@
 		</Modal>
 	</div>
 	<div v-else>
-		<SkeletonDefault class="h-14 w-full rounded" />
+		<SkeletonDefault class="w-full rounded h-14" />
 	</div>
 </template>

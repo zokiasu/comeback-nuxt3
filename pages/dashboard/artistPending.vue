@@ -12,7 +12,6 @@
 
 	onMounted(async () => {
 		artistUpdateList.value = await getAllPendingArtists()
-		console.log(artistUpdateList.value)
 	})
 
 	const deleteEdition = async (id: string, index: number) => {
@@ -47,11 +46,11 @@
 
 <template>
 	<div
-		class="scrollBarLight relative h-full space-y-3 overflow-hidden overflow-y-scroll pr-2"
+		class="relative h-full pr-2 space-y-3 overflow-hidden overflow-y-scroll scrollBarLight"
 	>
-		<div v-if="artistUpdateList.length" class="mb-4 flex justify-end">
+		<div v-if="artistUpdateList.length" class="flex justify-end mb-4">
 			<button
-				class="rounded bg-red-700 px-4 py-2 font-semibold uppercase text-white transition-all duration-300 ease-in-out hover:bg-red-500"
+				class="px-4 py-2 font-semibold text-white uppercase transition-all duration-300 ease-in-out bg-red-700 rounded hover:bg-red-500"
 				@click="rejectAll"
 			>
 				Reject All
@@ -66,18 +65,18 @@
 			<div
 				v-for="(artist, index) in artistUpdateList"
 				:key="artist.id"
-				class="list-complete-item flex h-full flex-col space-y-2 rounded bg-quaternary p-2"
+				class="flex flex-col h-full p-2 space-y-2 rounded list-complete-item bg-quaternary"
 			>
 				<CardDashboardArtistUpdate :artist-pending="artist" />
 				<div class="grid grid-cols-2 gap-2">
 					<button
-						class="rounded bg-green-700 py-3 font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-green-500"
+						class="py-3 font-semibold uppercase transition-all duration-300 ease-in-out bg-green-700 rounded hover:bg-green-500"
 						@click="confirmEdition(artist.taskId, artist, index)"
 					>
 						Confirm
 					</button>
 					<button
-						class="rounded bg-red-700 py-3 font-semibold uppercase transition-all duration-300 ease-in-out hover:bg-red-500"
+						class="py-3 font-semibold uppercase transition-all duration-300 ease-in-out bg-red-700 rounded hover:bg-red-500"
 						@click="deleteEdition(artist.taskId, index)"
 					>
 						Reject
@@ -87,7 +86,7 @@
 		</transition-group>
 		<p
 			v-else
-			class="col-span-2 w-full bg-quaternary p-5 text-center font-semibold uppercase"
+			class="w-full col-span-2 p-5 font-semibold text-center uppercase bg-quaternary"
 		>
 			No pending artist updates
 		</p>

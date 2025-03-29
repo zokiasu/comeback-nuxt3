@@ -57,15 +57,6 @@
 				onError: onPlayerError,
 			},
 		})
-
-		// Ajouter un gestionnaire de messages pour la communication cross-origin
-		// window.addEventListener('message', (event) => {
-		// 	if (event.origin !== 'https://www.youtube.com') {
-		// 		console.log('Message reçu de:', event.origin)
-		// 		console.log('Données reçues:', event.data)
-		// 	}
-		// 	// Traiter les messages de l'iframe YouTube ici si nécessaire
-		// })
 	}
 
 	const onPlayerReady = async (event) => {

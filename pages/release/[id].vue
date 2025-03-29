@@ -33,14 +33,6 @@
 	const isLoading = ref(true)
 	const musicList = ref<Music[]>([])
 
-	watch(
-		() => release.value?.musics,
-		(newMusics) => {
-			console.log('Musics changed:', toRaw(newMusics))
-		},
-		{ deep: true },
-	)
-
 	const createNewPlatformStreaming = async () => {
 		if (!release.value) return
 		sendNewStreamingPlatform.value = true
