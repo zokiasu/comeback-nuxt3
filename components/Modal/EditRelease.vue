@@ -46,7 +46,6 @@
 			if (dateToChange.value) {
 				const dateToTimestamp = new Timestamp(dateToChange.value / 1000, 0)
 				if (dateToTimestamp.toDate().getFullYear() !== releaseToUpdate.year) {
-					console.log('Date and Year Released are not the same')
 					isLoading.value = false
 					return
 				} else {

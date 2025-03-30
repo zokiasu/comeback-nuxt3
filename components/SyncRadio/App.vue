@@ -11,7 +11,7 @@
 	const maxResults = ref(10)
 
 	// Utilisation de Algolia Search de manière optimisée
-	const { result, search } = useAlgoliaSearch('Musics')
+	const { result, search } = useAlgoliaSearch('MUSICS')
 
 	// Définition d'une fonction de recherche débattue
 	const debouncedSearch = debounce(async (query) => {
@@ -562,7 +562,7 @@
 									</p>
 									<div class="flex gap-1 text-xs">
 										<p class="truncate">{{ data.artists[0].name }}</p>
-										<p v-if="data.hasMv" class="rounded bg-primary px-1 font-semibold">
+										<p v-if="data.ismv" class="rounded bg-primary px-1 font-semibold">
 											MV
 										</p>
 									</div>

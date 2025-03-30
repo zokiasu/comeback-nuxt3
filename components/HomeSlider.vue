@@ -1,3 +1,19 @@
+<script setup lang="ts">
+	import { Swiper, SwiperSlide } from 'swiper/vue'
+	import { Autoplay, EffectFade, Parallax } from 'swiper/modules'
+
+	// Import des styles Swiper
+	import 'swiper/css'
+	import 'swiper/css/autoplay'
+	import 'swiper/css/effect-fade'
+	import 'swiper/css/parallax'
+	import type { News } from '~/types/supabase/news'
+
+	defineProps<{
+		newsToday: News[]
+	}>()
+</script>
+
 <template>
 	<div
 		class="relative max-h-[20rem] min-h-[20rem] w-full md:max-h-[30rem] md:min-h-[30rem] lg:aspect-video lg:max-h-[40rem] lg:min-h-[40rem]"
@@ -26,15 +42,9 @@
 					>
 						<SwiperSlide v-for="comeback in newsToday" :key="comeback.id" class="h-full">
 							<ComebackSlider
-								v-if="comeback.artist"
-								:id="comeback.artist.id"
-								:image="comeback.artist.image"
-								:name="comeback.artist.name"
-							/>
-							<ComebackSlider
-								v-else-if="comeback.artists && comeback.artists.length > 0"
+								v-if="comeback.artists && comeback.artists.length > 0"
 								:id="comeback.artists[0].id"
-								:image="comeback.artists[0].picture"
+								:image="comeback.artists[0].image"
 								:name="comeback.artists[0].name"
 							/>
 						</SwiperSlide>
@@ -64,22 +74,6 @@
 		</transition>
 	</div>
 </template>
-
-<script setup lang="ts">
-	import { Swiper, SwiperSlide } from 'swiper/vue'
-	import { Autoplay, EffectFade, Parallax } from 'swiper/modules'
-
-	// Import des styles Swiper
-	import 'swiper/css'
-	import 'swiper/css/autoplay'
-	import 'swiper/css/effect-fade'
-	import 'swiper/css/parallax'
-	import type { Comeback } from '~/types/comeback'
-
-	defineProps<{
-		newsToday: Comeback[]
-	}>()
-</script>
 
 <style scoped>
 	/* Définir les animations */

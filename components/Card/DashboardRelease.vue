@@ -5,7 +5,6 @@
 	import * as Mdl from '@kouts/vue-modal'
 	import '@kouts/vue-modal/dist/vue-modal.css'
 	import type { PropType } from 'vue'
-	import type { Timestamp } from 'firebase/firestore'
 
 	// Interface pour la structure d'une plateforme
 	interface Platform {
@@ -34,12 +33,12 @@
 			required: true,
 		},
 		createdAt: {
-			type: Object as PropType<Timestamp | null>,
+			type: String,
 			required: false,
 			default: null,
 		},
 		date: {
-			type: Object as PropType<Timestamp>,
+			type: String,
 			required: true,
 		},
 		idYoutubeMusic: {
@@ -79,13 +78,13 @@
 	const showModal = ref(false)
 	const imageLoaded = ref(false)
 	const isDeleting = ref(false)
-	const dateToTestYear = date ? new Date(date.seconds * 1000) : new Date()
+	const dateToTestYear = date ? new Date(date) : new Date()
 
 	// COMPUTED
 	const releaseDate = computed(() => {
 		let dateComputed = new Date()
 		if (date) {
-			dateComputed = new Date(date.seconds * 1000)
+			dateComputed = new Date(date)
 			return `${dateComputed.getDate()}-${dateComputed.getMonth() + 1}-${dateComputed.getFullYear()}`
 		} else {
 			return 'No Date'

@@ -86,8 +86,6 @@ export function useFirebaseRelease() {
 	const updateRelease = async (id: string, data: any): Promise<string> => {
 		const docRef = doc(database as any, 'releases', id)
 		try {
-			// const musics = { ...data.musics }
-
 			const releaseData = { ...data }
 			delete releaseData.musics
 			releaseData.updatedAt = Timestamp.fromDate(new Date())

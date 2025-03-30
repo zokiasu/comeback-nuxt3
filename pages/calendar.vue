@@ -1,10 +1,12 @@
-<script setup>
-	import { Timestamp } from 'firebase/firestore'
-	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
+<script setup lang="ts">
+	import { type Release } from '~/types/supabase/release'
+	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
 
-	const releases = ref([])
-	const backTop = ref(null)
-	const yearList = ref([])
+	const { getReleasesByMonthAndYear } = useSupabaseRelease()
+
+	const releases = ref<Release[]>([])
+	const backTop = ref<HTMLElement | null>(null)
+	const yearList = ref<number[]>([])
 	const monthList = [
 		{ minify: 'Jan', original: 'January' },
 		{ minify: 'Feb', original: 'February' },
@@ -19,14 +21,12 @@
 		{ minify: 'Nov', original: 'November' },
 		{ minify: 'Dec', original: 'December' },
 	]
-	const currentYear = ref(new Date().getFullYear())
-	const currentMonth = ref(new Date().getMonth())
-	const startDate = ref(new Date(currentYear.value, currentMonth.value, 1))
-	const endDate = ref(new Date(currentYear.value, currentMonth.value + 1, 0))
-	const { getReleasesBetweenDates } = useFirebaseFunction()
-	const onlyAlbums = ref(false)
-	const onlyEps = ref(false)
-	const onlySingles = ref(false)
+	const currentYear = ref<number>(new Date().getFullYear())
+	const currentMonth = ref<number>(new Date().getMonth())
+	const onlyAlbums = ref<boolean>(false)
+	const onlyEps = ref<boolean>(false)
+	const onlySingles = ref<boolean>(false)
+	const loading = ref<boolean>(true)
 
 	function handleScrollCalendar() {
 		if (backTop.value) {
@@ -38,7 +38,7 @@
 		}
 	}
 
-	const switchTypeFilter = async (type) => {
+	const switchTypeFilter = async (type: string) => {
 		if (type === 'ALBUM') {
 			onlyAlbums.value = true
 			onlyEps.value = false
@@ -72,7 +72,10 @@
 
 	// function backtotop to id calendarPage
 	const backToTop = () => {
-		document.getElementById('__nuxt').scrollIntoView({ behavior: 'smooth' })
+		const nuxtElement = document.getElementById('__nuxt')
+		if (nuxtElement) {
+			nuxtElement.scrollIntoView({ behavior: 'smooth' })
+		}
 	}
 
 	onMounted(async () => {
@@ -80,29 +83,42 @@
 			yearList.value.push(year)
 		}
 
-		releases.value = await getReleasesBetweenDates(
-			Timestamp.fromDate(startDate.value),
-			Timestamp.fromDate(endDate.value),
-		)
-
+		await getReleasesByMonthAndYear(
+			currentMonth.value,
+			currentYear.value,
+		).then((res) => {
+			loading.value = false
+			releases.value = res.sort((a, b) => {
+				if (a.date === b.date) {
+					return a.name.localeCompare(b.name)
+				}
+				return new Date(a.date).getTime() - new Date(b.date).getTime()
+			})
+		})
+		
 		window.addEventListener('scroll', handleScrollCalendar)
 	})
 
 	watch([currentYear, currentMonth], async () => {
-		startDate.value = new Date(currentYear.value, currentMonth.value, 1)
-		endDate.value = new Date(currentYear.value, currentMonth.value + 1, 0)
-		releases.value = await getReleasesBetweenDates(
-			Timestamp.fromDate(startDate.value),
-			Timestamp.fromDate(endDate.value),
+		releases.value = await getReleasesByMonthAndYear(
+			currentMonth.value,
+			currentYear.value,
 		)
+
+		releases.value = releases.value.sort((a, b) => {
+			if (a.date === b.date) {
+				return a.name.localeCompare(b.name)
+			}
+			return new Date(a.date).getTime() - new Date(b.date).getTime()
+		})
 	})
 
 	useHead({
-		title: 'Releases Calendar',
+		title: 'Calendar Releases',
 		meta: [
 			{
 				name: 'description',
-				content: 'Releases Calendar',
+				content: 'Calendar Releases',
 			},
 		],
 	})
@@ -111,17 +127,17 @@
 <template>
 	<div
 		id="calendarPage"
-		class="container mx-auto h-fit min-h-screen w-full space-y-3 p-3 md:p-5"
+		class="container w-full min-h-screen p-3 mx-auto space-y-3 h-fit md:p-5"
 	>
 		<!-- Period Selector -->
 		<div>
 			<!-- Year Selector -->
 			<div
-				class="remove-scrollbar scrollBarLight flex w-full snap-x snap-mandatory gap-1 overflow-x-auto pb-1 text-xs font-semibold"
+				class="flex w-full gap-1 pb-1 overflow-x-auto text-xs font-semibold remove-scrollbar scrollBarLight snap-x snap-mandatory"
 			>
 				<button
 					v-for="year in yearList"
-					:id="year"
+					:id="String(year)"
 					:key="year"
 					class="h-full w-full snap-start rounded px-4 py-2.5"
 					:class="currentYear == year ? 'bg-primary' : 'bg-quaternary'"
@@ -133,7 +149,7 @@
 			<!-- Month Selector -->
 			<div
 				v-if="yearList.length"
-				class="remove-scrollbar scrollBarLight flex w-full snap-x snap-mandatory gap-1 overflow-x-auto pb-1 text-xs font-semibold"
+				class="flex w-full gap-1 pb-1 overflow-x-auto text-xs font-semibold remove-scrollbar scrollBarLight snap-x snap-mandatory"
 			>
 				<button
 					v-for="(month, index) in monthList"
@@ -149,13 +165,13 @@
 			</div>
 		</div>
 		<!-- Stats -->
-		<div class="space-y-2 border-y-2 border-quaternary py-3 text-xs">
-			<!-- <p class="font-semibold text-base text-center">
+		<div class="py-3 space-y-2 text-xs border-y-2 border-quaternary">
+			<!-- <p class="text-base font-semibold text-center">
         {{ monthList[currentMonth].original }} {{ currentYear }}'s stats
       </p> -->
-			<div class="grid grid-cols-4 items-center justify-center gap-1 lg:gap-5">
+			<div class="grid items-center justify-center grid-cols-4 gap-1 lg:gap-5">
 				<button
-					class="flex h-full w-full flex-col items-center justify-center rounded bg-primary px-2 py-1"
+					class="flex flex-col items-center justify-center w-full h-full px-2 py-1 rounded bg-primary"
 					:class="
 						!onlyAlbums && !onlyEps && !onlySingles ? 'bg-primary' : 'bg-quaternary'
 					"
@@ -165,7 +181,7 @@
 					<span class="text-base font-bold">{{ releases.length }}</span>
 				</button>
 				<button
-					class="flex h-full w-full flex-col items-center justify-center rounded bg-primary px-2 py-1"
+					class="flex flex-col items-center justify-center w-full h-full px-2 py-1 rounded bg-primary"
 					:class="onlyAlbums && !onlyEps && !onlySingles ? 'bg-primary' : 'bg-quaternary'"
 					@click="switchTypeFilter('ALBUM')"
 				>
@@ -175,7 +191,7 @@
 					</span>
 				</button>
 				<button
-					class="flex h-full w-full flex-col items-center justify-center rounded bg-primary px-2 py-1"
+					class="flex flex-col items-center justify-center w-full h-full px-2 py-1 rounded bg-primary"
 					:class="!onlyAlbums && onlyEps && !onlySingles ? 'bg-primary' : 'bg-quaternary'"
 					@click="switchTypeFilter('EP')"
 				>
@@ -185,7 +201,7 @@
 					</span>
 				</button>
 				<button
-					class="flex h-full w-full flex-col items-center justify-center rounded bg-primary px-2 py-1"
+					class="flex flex-col items-center justify-center w-full h-full px-2 py-1 rounded bg-primary"
 					:class="!onlyAlbums && !onlyEps && onlySingles ? 'bg-primary' : 'bg-quaternary'"
 					@click="switchTypeFilter('SINGLE')"
 				>
@@ -196,7 +212,7 @@
 				</button>
 			</div>
 		</div>
-		<!-- <p class="text-primary text-sm italic">Some troubles have been noticed with our release recovery API and are working to resolve them quickly. We apologize for the inconvenience.</p> -->
+		<!-- <p class="text-sm italic text-primary">Some troubles have been noticed with our release recovery API and are working to resolve them quickly. We apologize for the inconvenience.</p> -->
 		<!-- Releases -->
 		<transition-group
 			tag="div"
@@ -206,22 +222,23 @@
 		>
 			<CardObject
 				v-for="release in releasesDisplayed"
-				:key="release.idYoutubeMusic"
-				:artist-id="release.artistsId"
+				:key="release.id_youtube_music"
+				:artist-id="release.artists?.[0]?.id"
 				:main-title="release.name"
-				:sub-title="release.artistsName"
+				:sub-title="release.artists?.[0]?.name"
 				:image="release.image"
 				:release-date="release.date"
 				:release-type="release.type"
-				:object-link="`/release/${release.idYoutubeMusic}`"
+				:object-link="`/release/${release.id}`"
 				date-always-display
 				class="!min-w-full"
 			/>
 		</transition-group>
+		<SkeletonDefault v-if="loading" text="Loading..." class="w-full h-48 rounded-lg" />
 		<!-- Back to top -->
 		<div
 			ref="backTop"
-			class="sticky bottom-12 hidden w-full py-5 text-center lg:bottom-0"
+			class="sticky hidden w-full py-5 text-center bottom-12 lg:bottom-0"
 		>
 			<button
 				class="w-fit bg-quaternary px-4 py-2.5 text-xs font-semibold shadow shadow-zinc-700"

@@ -1,16 +1,14 @@
-<script setup>
-	const { artists } = defineProps({
-		artists: {
-			type: Array,
-			required: true,
-		},
-	})
+<script setup lang="ts">
+	import type { Artist } from '~/types/supabase/artist'
+
+	const { artists } = defineProps<{
+		artists: Artist[]
+	}>()
 </script>
 
 <template>
 	<CardDefault name="Artist added">
 		<div
-			v-if="artists.length"
 			class="scrollBarLight relative flex w-full snap-x snap-mandatory justify-between gap-5 overflow-x-auto pb-5"
 		>
 			<CardObject
@@ -23,16 +21,6 @@
 				:image="artist.image"
 				:object-link="`/artist/${artist.id}`"
 				class="snap-start"
-			/>
-		</div>
-		<div
-			v-else
-			class="scrollBarLight relative flex w-full snap-x snap-mandatory justify-between gap-5 overflow-x-auto pb-5"
-		>
-			<SkeletonArtist
-				v-for="i in 8"
-				:key="`skeleton_artist_` + i"
-				class="min-w-[10rem] max-w-[10rem] snap-start"
 			/>
 		</div>
 	</CardDefault>

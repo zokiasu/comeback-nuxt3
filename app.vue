@@ -66,10 +66,8 @@
 
 <template>
 	<NuxtLayout>
-		<div>
-			<NuxtLoadingIndicator color="#9E0102" />
-			<NuxtPage />
-		</div>
+		<NuxtLoadingIndicator color="#9E0102" />
+		<NuxtPage />
 	</NuxtLayout>
 </template>
 

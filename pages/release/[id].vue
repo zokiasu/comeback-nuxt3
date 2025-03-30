@@ -1,61 +1,82 @@
 <script setup lang="ts">
 	import * as Mdl from '@kouts/vue-modal'
-	import { Timestamp } from 'firebase/firestore'
 	import VueDatePicker from '@vuepic/vue-datepicker'
 	import { useToast } from 'vue-toastification'
 	import { useUserStore } from '@/stores/user'
-	import { type Release } from '@/types/release'
-	import { useFirebaseRelease } from '~/composables/useFirebaseRelease'
+	import { type Release } from '@/types/supabase/release'
+	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
+	import { useSupabaseMusic } from '~/composables/Supabase/useSupabaseMusic'
+	import { type Music } from '@/types/supabase/music'
 
 	const { Modal } = Mdl
-	const { getReleaseByArtistIdYoutubeMusic, updateRelease, getReleaseByIdWithMusics } =
-		useFirebaseRelease()
+	const { getReleaseById, getSuggestedReleases, updateRelease } = useSupabaseRelease()
+	const { updateMusic } = useSupabaseMusic()
 	const { isLoginStore } = useUserStore()
 	const toast = useToast()
+	const route = useRoute()
 	const router = useRouter()
-	const { $firestore } = useNuxtApp()
 
-	const title = ref('Release Page')
-	const description = ref('Release')
+	const title = ref<string>('Release Page')
+	const description = ref<string>('Release')
 
-	const showModal = ref(false)
-	const showModalEdit = ref(false)
-	const sendNewStreamingPlatform = ref(false)
-	const newStreamingPlatform = ref({
-		name: '',
-		link: '',
-	})
-	const dateToDateFormat = ref(null)
+	const showModal = ref<boolean>(false)
+	const showModalEdit = ref<boolean>(false)
+	const dateToDateFormat = ref<Date | null>(null)
 
 	const release = ref<Release | null>(null)
-	const artistRelease = ref<Release[]>([] as Release[])
-	const imageLoaded = ref(false)
-	const isLoading = ref(true)
+	const suggestedReleases = ref<Release[]>([])
+	const imageLoaded = ref<boolean>(false)
+	const isLoading = ref<boolean>(true)
+	const musicList = ref<Partial<Music>[]>([])
 
-	const createNewPlatformStreaming = async () => {
-		if (!release.value) return
-		sendNewStreamingPlatform.value = true
-
-		const tmp = [...(release.value.platformList || [])]
-		tmp.push(newStreamingPlatform.value)
-
-		await updateRelease(release.value.id, {
-			platformList: tmp,
-		})
-
-		sendNewStreamingPlatform.value = false
-		showModal.value = false
-
-		newStreamingPlatform.value = {
-			name: '',
-			link: '',
+	const updateReleaseFunction = async (
+		releaseId: string,
+		releaseParam: Partial<Release>,
+	) => {
+		const releaseData: Partial<Release> = {
+			name: releaseParam.name,
+			type: releaseParam.type,
+			year: releaseParam.year,
+			date: releaseParam.date,
 		}
-	}
 
-	const updateReleaseFunction = (releaseId: string, release: any) => {
-		updateRelease(releaseId, release)
-		toast.info('Release updated')
-		showModalEdit.value = false
+		try {
+			console.log('releaseData', releaseData)
+			await updateRelease(releaseId, releaseData)
+
+			// On utilise les musiques directement depuis release.value qui est réactif
+			const updatePromises =
+				release.value?.musics?.map(async (music: Music) => {
+					// Trouver la version originale de la musique
+					const originalMusic = musicList.value.find((m) => m.id === music.id)
+
+					// Vérifier si des modifications ont été apportées
+					if (
+						originalMusic &&
+						(music.name !== originalMusic.name ||
+							music.ismv !== originalMusic.ismv ||
+							music.id_youtube_music !== originalMusic.id_youtube_music)
+					) {
+						return updateMusic(music.id, {
+							name: music.name,
+							ismv: music.ismv,
+							id_youtube_music: music.id_youtube_music,
+						})
+					}
+					return Promise.resolve()
+				}) || []
+
+			// Attendre que toutes les mises à jour soient terminées
+			await Promise.all(updatePromises).then(() => {
+				toast.info('Release updated')
+				showModalEdit.value = false
+			}).catch(() => {
+				toast.error('Une erreur est survenue lors de la mise à jour')
+			})
+		} catch (error) {
+			console.error('Error updating release:', error)
+			toast.error('Une erreur est survenue lors de la mise à jour')
+		}
 	}
 
 	const verifyShowModal = () => {
@@ -67,47 +88,37 @@
 	}
 
 	const editRelease = async () => {
-		if (isLoginStore) {
-			showModalEdit.value = true
-		} else {
-			router.push('/authentification')
-		}
+		showModalEdit.value = true
 	}
 
 	onMounted(async () => {
 		try {
 			isLoading.value = true
-			const route = useRoute()
 
-			// Attendre que Firestore soit initialisé
-			if (!$firestore) {
-				await new Promise((resolve) => setTimeout(resolve, 1000))
+			release.value = await getReleaseById(route.params.id as string)
+
+			if (release.value && release.value.artists) {
+				title.value =
+					release.value.name +
+					' par ' +
+					(release.value.artists?.[0]?.name || 'Artiste inconnu')
+				description.value = release.value.description || ''
+
+				// Copie profonde des musiques pour conserver l'état initial
+				musicList.value =
+					release.value.musics?.map((music) => ({
+						id: music.id,
+						name: music.name,
+						ismv: music.ismv,
+						id_youtube_music: music.id_youtube_music,
+					})) || []
+
+				// Récupérer les suggestions
+				suggestedReleases.value = await getSuggestedReleases(
+					release.value.artists[0]?.id,
+					release.value.id,
+				)
 			}
-
-			const fetchedRelease = await getReleaseByIdWithMusics(route.params.id as string)
-
-			if (!fetchedRelease) {
-				throw createError({
-					statusCode: 404,
-					statusMessage: 'Release not found',
-				})
-			}
-
-			release.value = fetchedRelease as Release
-			if (release.value.musics) {
-				release.value.musics = release.value.musics.sort((a, b) => a?.index - b?.index)
-			}
-
-			artistRelease.value = (
-				await getReleaseByArtistIdYoutubeMusic(release.value.idYoutubeMusic)
-			)
-				.sort((a, b) => b.date - a.date)
-				.filter((rel) => rel.id !== release.value.id)
-				.slice(0, 8) as Release[]
-
-			dateToDateFormat.value = release.value.date ? release.value.date.toDate() : null
-			title.value = release.value.name + ' par ' + release.value.artistsName
-			description.value = release.value.name + ' par ' + release.value.artistsName
 		} catch (error: any) {
 			if (error.statusCode === 404) {
 				throw error
@@ -120,14 +131,6 @@
 		} finally {
 			isLoading.value = false
 		}
-	})
-
-	watch([dateToDateFormat], () => {
-		if (!dateToDateFormat.value) return
-		const tmpDate = new Date(dateToDateFormat.value)
-		tmpDate.setHours(0, 0, 0, 0)
-		release.value.date = Timestamp.fromDate(tmpDate)
-		release.value.year = tmpDate.getFullYear()
 	})
 
 	useHead({
@@ -143,13 +146,13 @@
 
 <template>
 	<div>
-		<div v-if="isLoading" class="container mx-auto space-y-12 p-5">
+		<div v-if="isLoading" class="mx-auto space-y-12">
 			<section class="space-y-2">
-				<SkeletonDefault class="h-3 w-3/4 rounded-full" />
-				<SkeletonDefault class="h-3 w-full rounded-full" />
-				<SkeletonDefault class="h-3 w-full rounded-full" />
-				<SkeletonDefault class="h-3 w-3/4 rounded-full" />
-				<SkeletonDefault class="h-3 w-2/4 rounded-full" />
+				<SkeletonDefault class="w-full min-h-[20rem] lg:max-h-[30rem] lg:min-h-[30rem]" />
+				<SkeletonDefault class="w-full h-3 rounded-full" />
+				<SkeletonDefault class="w-full h-3 rounded-full" />
+				<SkeletonDefault class="w-3/4 h-3 rounded-full" />
+				<SkeletonDefault class="w-2/4 h-3 rounded-full" />
 			</section>
 		</div>
 
@@ -174,7 +177,7 @@
 				</div>
 				<!-- Header Data-->
 				<div
-					class="z-10 flex flex-col justify-end space-y-3 p-5 transition-all duration-300 ease-in-out md:absolute md:inset-0 md:min-h-full md:justify-center md:bg-secondary/50"
+					class="z-10 flex flex-col justify-end p-5 space-y-3 transition-all duration-300 ease-in-out md:absolute md:inset-0 md:min-h-full md:justify-center md:bg-secondary/50"
 				>
 					<div class="container mx-auto flex items-center gap-5 space-y-2.5 lg:items-end">
 						<NuxtImg
@@ -194,22 +197,22 @@
 								<h1 class="text-2xl font-black lg:text-5xl 2xl:text-7xl">
 									{{ release.name }}
 								</h1>
-								<div class="flex items-center gap-2">
+								<div v-if="release.artists" class="flex items-center gap-2">
 									<NuxtLink
-										:to="`/artist/${release.artistsId}`"
+										:to="`/artist/${release.artists[0].id}`"
 										class="flex items-center gap-2 rounded-full transition-all duration-300 ease-in-out hover:bg-secondary hover:px-3 hover:py-0.5"
 									>
 										<p class="text-sm font-semibold">
-											{{ release.artistsName }}
+											{{ release.artists[0].name }}
 										</p>
 									</NuxtLink>
 									<p>-</p>
 									<p>{{ release.type }}</p>
 									<p>-</p>
-									<p>{{ release.year }}</p>
+									<p>{{ release.date }}</p>
 								</div>
 								<button
-									class="rounded bg-quaternary px-2 py-1 text-sm hover:bg-tertiary/10"
+									class="px-2 py-1 text-sm rounded bg-quaternary hover:bg-tertiary/10"
 									@click="editRelease"
 								>
 									Edit
@@ -220,98 +223,47 @@
 				</div>
 			</section>
 
-			<section class="container mx-auto space-y-12 p-5 py-5 md:px-10 xl:px-0">
-				<!-- Platforms -->
-				<section v-if="release.platformList?.length" class="space-y-2">
-					<p class="font-black">Streaming Platforms</p>
-					<div class="flex gap-1.5">
-						<ComebackExternalLink
-							v-for="social in release.platformList"
-							:key="social.name"
-							:name="social.name"
-							:link="social.link"
-						/>
-						<button
-							class="flex items-center gap-2 rounded bg-quaternary px-3.5 py-2.5 text-sm hover:bg-quinary"
-							@click="verifyShowModal()"
-						>
-							<IconPlus class="h-5 w-5" />
-							<p>Add Streaming Platform</p>
-						</button>
-					</div>
-				</section>
+			<section class="container p-5 py-5 mx-auto space-y-12 md:px-10 xl:px-0">
 				<!-- Musics -->
-				<section v-if="release.musics?.length" class="space-y-2">
+				<section v-if="release.musics?.length && release.artists" class="space-y-2">
 					<CardDefault :name="`Tracks (${release.musics?.length})`">
 						<transition-group name="list-complete" tag="div" class="space-y-2">
 							<MusicDisplay
 								v-for="song in release.musics"
-								:key="song.videoId"
-								:artist-id="release.artistsId"
-								:artist-name="release.artistsName"
-								:music-id="song.videoId"
+								:key="song.id"
+								:artist-id="release.artists?.[0]?.id"
+								:artist-name="release.artists?.[0]?.name"
+								:music-id="song.id_youtube_music"
 								:music-name="song.name"
-								:has-mv="song.hasMv"
-								:music-image="song.thumbnails[2].url"
-								:duration="song?.duration?.toString() || '0'"
+								:has-mv="song.ismv"
+								:music-image="song.thumbnails?.[2]?.url || ''"
+								:duration="song.duration || 0"
 								class="w-full bg-quinary"
 							/>
 						</transition-group>
 					</CardDefault>
 				</section>
-				<!-- Release -->
-				<section v-if="artistRelease.length" class="space-y-2">
-					<CardDefault :name="`Other releases by ${release.artistsName}`">
-						<transition-group
-							name="list-complete"
-							tag="div"
-							class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto xl:flex-wrap"
-						>
+
+				<!-- Suggestions -->
+				<section v-if="suggestedReleases.length && release.artists" class="space-y-2">
+					<CardDefault :name="`Autres releases de ${release.artists[0].name}`">
+						<div class="flex gap-4">
 							<CardObject
-								v-for="otherRelease in artistRelease"
-								:key="otherRelease.idYoutubeMusic"
-								:artist-id="otherRelease.artistsId"
+								v-for="otherRelease in suggestedReleases"
+								:key="otherRelease.id"
+								:artist-id="otherRelease.artists?.[0]?.id"
 								:main-title="otherRelease.name"
-								:sub-title="otherRelease.artistsName"
+								:sub-title="otherRelease.artists?.[0]?.name"
 								:image="otherRelease.image"
 								:release-date="otherRelease.date"
 								:release-type="otherRelease.type"
-								:object-link="`/release/${otherRelease.idYoutubeMusic}`"
+								:object-link="`/release/${otherRelease.id}`"
 								is-release-display
 							/>
-						</transition-group>
+						</div>
 					</CardDefault>
 				</section>
 			</section>
-
-			<Modal
-				v-model="showModal"
-				title="Add a Streaming Platforms"
-				wrapper-class="animate__animated modal-wrapper"
-				:modal-style="{
-					background: '#1F1D1D',
-					'border-radius': '0.25rem',
-					color: 'white',
-				}"
-				:in-class="`animate__fadeInDown`"
-				:out-class="`animate__bounceOut`"
-				bg-class="animate__animated"
-				:bg-in-class="`animate__fadeInUp`"
-				:bg-out-class="`animate__fadeOutDown`"
-			>
-				<div class="space-y-3">
-					<ComebackInput v-model="newStreamingPlatform.name" label="Name" />
-					<ComebackInput v-model="newStreamingPlatform.link" label="Link" />
-					<button
-						:disabled="sendNewStreamingPlatform"
-						class="w-full rounded bg-primary py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
-						@click="createNewPlatformStreaming"
-					>
-						<p v-if="sendNewStreamingPlatform">Sending...</p>
-						<p v-else>Send News</p>
-					</button>
-				</div>
-			</Modal>
 
 			<Modal
 				v-model="showModalEdit"
@@ -332,7 +284,11 @@
 					<ComebackInput v-model="release.name" label="Name" />
 
 					<div class="grid grid-cols-2 gap-3">
-						<ComebackInput v-model="release.artistsName" label="Artist Name" disabled />
+						<ComebackInput
+							:value="release.artists?.[0]?.name || ''"
+							label="Artist Name"
+							disabled
+						/>
 
 						<div class="grid grid-cols-1 gap-1">
 							<ComebackLabel label="Type" />
@@ -352,7 +308,7 @@
 						<div class="flex flex-col gap-1">
 							<ComebackLabel label="Date" />
 							<VueDatePicker
-								v-model="dateToDateFormat"
+								v-model="release.date"
 								placeholder="Select Date"
 								auto-apply
 								:enable-time-picker="false"
@@ -366,25 +322,25 @@
 						<div class="space-y-2">
 							<div
 								v-for="music in release.musics"
-								:key="music.videoId"
-								class="space-y-1 rounded bg-quinary py-1 pl-2 pr-1"
+								:key="music.id_youtube_music"
+								class="py-1 pl-2 pr-1 space-y-1 rounded bg-quinary"
 							>
-								<div class="flex w-full items-center justify-between gap-2">
+								<div class="flex items-center justify-between w-full gap-2">
 									<p>{{ music.name }}</p>
 									<div
-										class="flex w-fit items-center gap-2 rounded bg-quaternary px-2 py-1 text-xs"
+										class="flex items-center gap-2 px-2 py-1 text-xs rounded w-fit bg-quaternary"
 									>
 										<label class="whitespace-nowrap">Has MV</label>
-										<input v-model="music.hasMv" type="checkbox" />
+										<input type="checkbox" v-model="music.ismv" />
 									</div>
 								</div>
-								<ComebackInput v-if="music.hasMv" v-model="music.videoId" />
+								<ComebackInput v-if="music.ismv" v-model="music.id_youtube_music" />
 							</div>
 						</div>
 					</div>
 
 					<button
-						class="w-full rounded bg-primary py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+						class="w-full py-2 font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary hover:scale-105 hover:bg-red-900"
 						@click="updateReleaseFunction(release.id, release)"
 					>
 						<p>Update Release</p>

@@ -120,7 +120,7 @@
 							:music-name="song.name || ''"
 							:music-image="song.thumbnails[2].url || ''"
 							:duration="song?.duration?.toString() || '0'"
-							:has-mv="song.hasMv"
+							:has-mv="song.ismv"
 							horizontal-mode
 						/>
 					</div>
@@ -163,7 +163,7 @@
 									:music-name="element.name || ''"
 									:music-image="element.thumbnails[2].url || ''"
 									:duration="element?.duration?.toString() || '0'"
-									:has-mv="element.hasMv"
+									:has-mv="element.ismv"
 									horizontal-mode
 								/>
 								<button
@@ -266,7 +266,7 @@
 					music.artists[0]?.name.toLowerCase().includes(search.value.toLowerCase())
 
 				if (onlyMv.value) {
-					return matchesSearch && music.hasMv
+					return matchesSearch && music.ismv
 				}
 
 				return matchesSearch

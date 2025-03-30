@@ -5,32 +5,27 @@
 	import type { Artist } from '~/types/artist'
 
 	const { Modal } = Mdl
-
 	const userStore = useUserStore()
-	const userDataStore = computed(() => userStore.userDataStore)
-	const isLoginStore = computed(() => userStore.isLoginStore)
-
-	const props = defineProps({
-		artistFetch: {
-			type: Array as PropType<Artist[]>,
-			required: true,
-		},
-		isAdmin: {
-			type: Boolean,
-			required: true,
-		},
-		isLogin: {
-			type: Boolean,
-			required: true,
-		},
-	})
-
 	const route = useRoute()
 
-	const navbar = ref(null)
-	const algolia = ref(null)
-	const showModal = ref(false)
-	const showModalAlgolia = ref(false)
+	const navbar = ref<HTMLElement | null>(null)
+	const algolia = ref<HTMLElement | null>(null)
+	const showModal = ref<boolean>(false)
+	const showModalAlgolia = ref<boolean>(false)
+
+	const userDataStore = computed(() => userStore.userDataStore)
+	const isLoginStore = computed(() => userStore.isLoginStore)
+	const isAdminStore = computed(() => userStore.isAdminStore)
+	const profilePath = computed(() => {
+		if (!userDataStore.value || !userDataStore.value.id) {
+			return '/settings/profile'
+		}
+		return `/profile/${userDataStore.value.id}`
+	})
+
+	onMounted(async () => {
+		window.addEventListener('scroll', handleScroll)
+	})
 
 	function handleScroll() {
 		if (navbar.value === null) return
@@ -53,17 +48,6 @@
 			)
 		}
 	}
-
-	const profilePath = computed(() => {
-		if (!userDataStore.value || !userDataStore.value.id) {
-			return '/settings/profile'
-		}
-		return `/profile/${userDataStore.value.id}`
-	})
-
-	onMounted(async () => {
-		window.addEventListener('scroll', handleScroll)
-	})
 </script>
 
 <template>
@@ -95,7 +79,7 @@
 					>
 						Calendar
 					</NuxtLink>
-					<NuxtLink
+					<!-- <NuxtLink
 						:to="`/syncradio`"
 						class="relative"
 						:class="
@@ -108,12 +92,12 @@
 						<span class="absolute -bottom-2 -right-4 px-2 text-xs font-bold text-primary">
 							Beta
 						</span>
-					</NuxtLink>
+					</NuxtLink> -->
 					<NuxtLink
-						v-if="props.isAdmin === true"
+						v-if="isAdminStore"
 						:to="`/dashboard/artist`"
 						:class="
-							route.name.startsWith('dashboard-')
+							(route.name as string)?.startsWith('dashboard-')
 								? 'font-semibold text-white'
 								: 'text-zinc-500'
 						"
@@ -131,7 +115,7 @@
 						<IconSearch class="h-3.5 w-3.5" />
 					</button>
 					<button
-						v-if="isLoginStore && props.artistFetch"
+						v-if="isLoginStore"
 						title="Add new comeback"
 						class="rounded bg-primary px-3 py-1 font-semibold transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50"
 						@click="showModal = true"
@@ -145,14 +129,14 @@
 					>
 						Login
 					</NuxtLink>
-					<NuxtLink
+					<!-- <NuxtLink
 						v-if="isLoginStore && userDataStore"
 						:to="profilePath"
 						title="Profile"
 						class="flex h-full items-center gap-2 rounded bg-quaternary px-3 py-1 hover:bg-tertiary/20"
 					>
 						<p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>
-					</NuxtLink>
+					</NuxtLink> -->
 					<NuxtLink
 						v-if="isLoginStore"
 						:to="`/settings/profile`"
@@ -175,8 +159,7 @@
 			:bg-in-class="`animate__fadeInUp`"
 			:bg-out-class="`animate__fadeOutDown`"
 		>
-			<ModalNewsCreation
-				:artist-list="props.artistFetch"
+			<LazyModalNewsCreation
 				@close-modal="showModal = false"
 			/>
 		</Modal>
@@ -192,7 +175,7 @@
 			:bg-in-class="`animate__fadeInUp`"
 			:bg-out-class="`animate__fadeOutDown`"
 		>
-			<Algolia ref="algolia" @close-modal="showModalAlgolia = false" />
+			<LazyAlgolia ref="algolia" @close-modal="showModalAlgolia = false" />
 		</Modal>
 	</div>
 </template>

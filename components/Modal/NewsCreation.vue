@@ -1,43 +1,30 @@
-<script setup>
+<script setup lang="ts">
 	import VueDatePicker from '@vuepic/vue-datepicker'
 	import '@vuepic/vue-datepicker/dist/main.css'
-	import { Timestamp } from 'firebase/firestore'
 	import { useToast } from 'vue-toastification'
 	import debounce from 'lodash.debounce'
 	import algoliasearch from 'algoliasearch/lite'
-	import { useUserStore } from '@/stores/user'
-	import { add } from '~/composables/useFirestore'
+	import type { News } from '~/types/supabase/news'
+	import { useSupabaseNews } from '~/composables/Supabase/useSupabaseNews'
 
+	const emit = defineEmits(['closeModal'])
+
+	const toast = useToast()
 	const config = useRuntimeConfig()
+	const { createNews } = useSupabaseNews()
 	const client = algoliasearch(
 		config.public.ALGOLIA_APPLICATION_ID,
 		config.public.ALGOLIA_API_KEY,
 	)
-	const index = client.initIndex('Artists')
+	const index = client.initIndex('ARTISTS')
 
-	const { userDataStore } = useUserStore()
-	const toast = useToast()
+	const sendNews = ref<boolean>(false)
+	const searchArtist = ref<string>('')
+	const artistListSearched = ref<any[]>([])
 
-	const emit = defineEmits(['closeModal'])
-
-	const dateToDateFormat = ref(null)
-	const sendNews = ref(false)
-	const searchArtist = ref('')
-	const artistListSearched = ref([])
-
-	const news = ref({
-		artists: [],
-		user: {
-			id: userDataStore.id,
-			name: userDataStore.name,
-			photoURL: userDataStore.photoURL,
-		},
-		date: null,
-		message: null,
-		verified: false,
-		createdAt: Timestamp.fromDate(new Date()),
-		updatedAt: Timestamp.fromDate(new Date()),
-	})
+	const artistListSelected = ref<any[]>([])
+	const newsDate = ref<Date | null>(null)
+	const newsMessage = ref<string>('')
 
 	// Définition d'une fonction de recherche débattue
 	const debouncedSearch = debounce(async (query) => {
@@ -49,6 +36,49 @@
 		}
 	}, 500)
 
+	const creationNews = async () => {
+		const news: Omit<News, 'id' | 'artists' | 'created_at' | 'updated_at'> = {
+			date: newsDate.value?.toISOString() ?? new Date().toISOString(),
+			message: newsMessage.value,
+			verified: false,
+		}
+		sendNews.value = true
+    
+    // Extraire uniquement les IDs des artistes
+    const artistIds = artistListSelected.value.map(artist => artist.id)
+		
+		createNews(news, artistIds).then((res) => {
+			toast.success('News created')
+			sendNews.value = false
+			closeModal()
+		}).catch((error) => {
+			toast.error('Error creating news')
+			console.error('Error creating news', error)
+		})
+	}
+
+	const addArtistToNews = (artist: any) => {
+		artistListSelected.value.push({
+			id: artist.objectID,
+			name: artist.name,
+			picture: artist.image,
+		})
+		clearSearch()
+	}
+
+	const removeArtistFromNews = (artist: any) => {
+		artistListSelected.value = artistListSelected.value.filter((a) => a.id !== artist.id)
+	}
+
+	const clearSearch = () => {
+		searchArtist.value = ''
+		artistListSearched.value = []
+	}
+
+	const closeModal = () => {
+		emit('closeModal')
+	}
+
 	watchEffect(() => {
 		if (searchArtist.value.length > 2) {
 			debouncedSearch(searchArtist.value)
@@ -57,64 +87,11 @@
 		}
 	})
 
-	watch([dateToDateFormat], () => {
-		if (!dateToDateFormat.value) return
-		const tmpDate = new Date(dateToDateFormat.value)
-		tmpDate.setHours(0, 0, 0, 0)
-		news.value.date = Timestamp.fromDate(tmpDate)
-		news.value.message = `Next comeback on ${new Date(
-			dateToDateFormat.value,
-		).toLocaleDateString()}`
+	watch(newsDate, (newVal) => {
+		if (newVal) {
+			newsMessage.value = `Next comeback on ${newVal.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+		}
 	})
-
-	const closeModal = () => {
-		emit('closeModal')
-	}
-
-	const createNews = async () => {
-		sendNews.value = true
-
-		add('news', news.value)
-			.then(() => {
-				news.value = {
-					artists: [],
-					user: {
-						id: userDataStore.id,
-						name: userDataStore.name,
-						photoURL: userDataStore?.photoURL,
-					},
-					date: null,
-					message: null,
-					verified: false,
-					createdAt: Timestamp.fromDate(new Date()),
-					updatedAt: Timestamp.fromDate(new Date()),
-				}
-				dateToDateFormat.value = null
-				toast.success('News created')
-				sendNews.value = false
-				closeModal()
-			})
-			.catch((error) => {
-				sendNews.value = false
-				console.error('Error adding document: ', error)
-				toast.error('Error creating news')
-			})
-	}
-
-	const addArtistToNews = (artist) => {
-		news.value.artists.push({
-			id: artist.id,
-			name: artist.name,
-			picture: artist.image,
-		})
-		searchArtist.value = ''
-		artistListSearched.value = []
-	}
-
-	const clearSearch = () => {
-		searchArtist.value = ''
-		artistListSearched.value = []
-	}
 </script>
 
 <template>
@@ -140,41 +117,46 @@
 				</button>
 			</div>
 		</div>
-		<div v-if="news.artists.length" class="flex flex-col gap-1">
+
+		<div v-if="artistListSelected.length" class="flex flex-col gap-1">
 			<ComebackLabel label="Artist(s)" />
 			<div class="flex flex-wrap gap-5">
 				<div
-					v-for="artist in news.artists"
+					v-for="artist in artistListSelected"
 					:key="artist.id"
-					class="flex items-center gap-3"
+					@click="removeArtistFromNews(artist)"
+					class="flex flex-col justify-center items-center px-5 relative hover:bg-red-500/50 rounded py-1 cursor-pointer"
 				>
 					<img :src="artist.picture" class="h-8 w-8 rounded-full object-cover" />
 					<p>{{ artist.name }}</p>
 				</div>
 			</div>
 		</div>
+
 		<div class="flex flex-col gap-1">
 			<ComebackLabel label="Date" />
 			<VueDatePicker
-				v-model="dateToDateFormat"
+				v-model="newsDate"
 				placeholder="Select Date"
 				auto-apply
 				:enable-time-picker="false"
 				dark
 			/>
 		</div>
+
 		<div class="flex flex-col gap-1">
 			<ComebackInput
-				v-model="news.message"
+				v-model="newsMessage"
 				label="Your News"
 				placeholder="Your News"
-				@clear="news.message = ''"
+				@clear="newsMessage = ''"
 			/>
 		</div>
+
 		<button
 			:disabled="sendNews"
 			class="w-full rounded bg-primary py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
-			@click="createNews"
+			@click="creationNews"
 		>
 			<p v-if="sendNews">Sending...</p>
 			<p v-else>Send News</p>
