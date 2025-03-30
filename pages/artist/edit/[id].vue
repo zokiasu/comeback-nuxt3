@@ -50,6 +50,8 @@
 	const artistsList = ref<Artist[]>([])
 	const stylesList = ref<MusicStyle[]>([])
 	const tagsList = ref<GeneralTag[]>([])
+	const artistStyles = ref<MusicStyle[]>([])
+	const artistTags = ref<GeneralTag[]>([])
 
 	const validGenders = ['MALE', 'FEMALE', 'MIXTE', 'UNKNOWN', 'OTHER'] as const
 	const artistTypes = ['SOLO', 'GROUP'] as const
@@ -73,6 +75,8 @@
 
 	const sendUpdateArtist = async () => {
 		isUploadingEdit.value = true
+		console.log('artistToEdit.value?.general_tags', artistToEdit.value?.general_tags)
+		console.log('artistToEdit.value?.styles', artistToEdit.value?.styles)
 
 		try {
 			const updates: Partial<Artist> = {
@@ -85,8 +89,8 @@
 				active_career: artistToEdit.value?.active_career,
 				birth_date: artistToEdit.value?.birth_date,
 				debut_date: artistToEdit.value?.debut_date,
-				styles: artistToEdit.value?.styles,
-				general_tags: artistToEdit.value?.general_tags,
+				styles: artistStyles.value.map((style) => style.name),
+				general_tags: artistTags.value.map((tag) => tag.name),
 			}
 
 			await updateArtist(
@@ -96,11 +100,16 @@
 				artistPlatformList.value,
 				artistGroups.value,
 				artistMembers.value,
-			).then(() => {
-				toast.success('Artiste mis à jour avec succès')
-				isUploadingEdit.value = false
-				router.push(`/artist/${route.params.id}`)
-			})
+			)
+				.then(() => {
+					toast.success('Artiste mis à jour avec succès')
+					isUploadingEdit.value = false
+					router.push(`/artist/${route.params.id}`)
+				})
+				.catch((error) => {
+					console.error("Erreur lors de la mise à jour de l'artiste:", error)
+					toast.error("Erreur lors de la mise à jour de l'artiste")
+				})
 		} catch (error) {
 			console.error("Erreur lors de la mise à jour de l'artiste:", error)
 			toast.error("Erreur lors de la mise à jour de l'artiste")
@@ -134,12 +143,16 @@
 	onMounted(async () => {
 		try {
 			artist.value = await getFullArtistById(route.params.id as string)
+			stylesList.value = await getAllMusicStyles()
+			tagsList.value = await getAllGeneralTags()
+			
 			if (artist.value) {
 				artistToEdit.value = { ...artist.value }
 
 				const { socialLinks, platformLinks } = await getSocialAndPlatformLinksByArtistId(
 					artist.value.id,
 				)
+				
 				artistPlatformList.value = platformLinks || []
 				artistSocialList.value = socialLinks || []
 				artistGroups.value = artist.value.groups || []
@@ -149,8 +162,8 @@
 				groupList.value = artistsList.value.filter((artist) => artist.type === 'GROUP')
 				membersList.value = artistsList.value
 
-				stylesList.value = await getAllMusicStyles()
-				tagsList.value = await getAllGeneralTags()
+				artistStyles.value = stylesList.value.filter((style) => artist.value?.styles?.includes(style.name))
+				artistTags.value = tagsList.value.filter((tag) => artist.value?.general_tags?.includes(tag.name))
 
 				const textarea = document.querySelector('textarea')
 				if (textarea) {
@@ -369,7 +382,7 @@
 						</button>
 					</div>
 					<VueMultiselect
-						v-model="artistToEdit.styles"
+						v-model="artistStyles"
 						label="name"
 						track-by="name"
 						placeholder="Add a style"
@@ -392,7 +405,7 @@
 						</button>
 					</div>
 					<VueMultiselect
-						v-model="artistToEdit.general_tags"
+						v-model="artistTags"
 						label="name"
 						track-by="name"
 						placeholder="Add a tag"
@@ -411,7 +424,7 @@
 					v-model="artistToEdit.description"
 					:placeholder="artistToEdit.description || 'Description'"
 					class="min-h-full w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:bg-tertiary focus:p-1.5 focus:text-secondary focus:outline-none"
-					@input="adjustTextarea"
+					@input="(e: Event) => adjustTextarea(e.target as HTMLTextAreaElement)"
 				/>
 			</div>
 			<!-- Group -->

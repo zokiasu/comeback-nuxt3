@@ -235,7 +235,7 @@
 						v-if="musicDiscover.length > 0"
 						name="list-complete"
 						tag="div"
-						class="grid grid-cols-3 gap-2"
+						class="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3"
 					>
 						<MusicDisplay
 							v-for="song in musicDiscover"
