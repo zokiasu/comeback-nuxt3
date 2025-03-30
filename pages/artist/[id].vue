@@ -47,18 +47,22 @@
 	})
 
 	const members = computed(
-		() => artist.value?.members?.filter((member) => member.type === 'SOLO') || [],
+		() => artist.value?.members?.filter((member) => member.type === 'SOLO').sort((a, b) => a.name.localeCompare(b.name)) || [],
 	)
+	
 	const subUnitMembers = computed(
-		() => artist.value?.members?.filter((member) => member.type === 'GROUP') || [],
+		() => artist.value?.members?.filter((member) => member.type === 'GROUP').sort((a, b) => a.name.localeCompare(b.name)) || [],
 	)
+	
 	const singleRelease = computed(() => {
 		const singles = artist.value?.releases?.filter((release) => release.type === 'SINGLE') || []
+		singles.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 		return singles
 	})
 
 	const albumEpRelease = computed(() => {
 		const albums = artist.value?.releases?.filter((release) => release.type !== 'SINGLE') || []
+		albums.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 		return albums
 	})
 

@@ -53,7 +53,7 @@
 			),
 			new Promise<void>((resolve) =>
 				getRealtimeLastestArtistsAdded(8, (art: Artist[]) => {
-					artists.value = art.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+					artists.value = art.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 					artistsFetching.value = false
 					resolve()
 				}),
@@ -81,6 +81,14 @@
 		<section class="container p-5 py-10 mx-auto space-y-16 2xl:space-y-20">
 			<!-- Comeback Reported List -->
 			<ComebackReported v-if="comebacks.length > 0 && !newsFetching" :comeback-list="comebacks" />
+			<div v-else-if="newsFetching" class="grid grid-cols-2 gap-5 xl:grid-cols-3">
+				<SkeletonDefault class="w-full h-16 rounded-lg" />
+				<SkeletonDefault class="w-full h-16 rounded-lg" />
+				<SkeletonDefault class="w-full h-16 rounded-lg" />
+				<SkeletonDefault class="w-full h-16 rounded-lg" />
+				<SkeletonDefault class="w-full h-16 rounded-lg" />
+				<SkeletonDefault class="w-full h-16 rounded-lg" />
+			</div>
 			<!-- Discover Music -->
 			<div v-if="musics.length > 0 && !musicsFetching" class="space-y-8 text-center xl:space-y-10">
 				<p class="text-xl font-bold lg:text-4xl">Discover Music</p>
@@ -93,10 +101,36 @@
 					</button>
 				</div>
 			</div>
+			<div v-else-if="musicsFetching" class="grid grid-cols-2 gap-5 xl:grid-cols-4">
+				<SkeletonDefault class="w-full rounded-lg h-80" />
+				<SkeletonDefault class="w-full rounded-lg h-80" />
+				<SkeletonDefault class="w-full rounded-lg h-80" />
+				<SkeletonDefault class="w-full rounded-lg h-80" />
+			</div>
 			<!-- Recent Release -->
 			<LazyRecentReleases v-if="releases.length > 0 && !releasesFetching" :releases="releases" />
+			<div v-else-if="releasesFetching" class="grid grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+			</div>
 			<!-- Last Artist Added -->
 			<LazyArtistAdded v-if="artists.length > 0 && !artistsFetching" :artists="artists" />
+			<div v-else-if="artistsFetching" class="grid grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+				<SkeletonDefault class="w-full rounded-lg h-52" />
+			</div>
 		</section>
 	</div>
 </template>

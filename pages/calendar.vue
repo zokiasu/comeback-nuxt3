@@ -26,6 +26,7 @@
 	const onlyAlbums = ref<boolean>(false)
 	const onlyEps = ref<boolean>(false)
 	const onlySingles = ref<boolean>(false)
+	const loading = ref<boolean>(true)
 
 	function handleScrollCalendar() {
 		if (backTop.value) {
@@ -82,11 +83,19 @@
 			yearList.value.push(year)
 		}
 
-		releases.value = await getReleasesByMonthAndYear(
+		await getReleasesByMonthAndYear(
 			currentMonth.value,
 			currentYear.value,
-		)
-
+		).then((res) => {
+			loading.value = false
+			releases.value = res.sort((a, b) => {
+				if (a.date === b.date) {
+					return a.name.localeCompare(b.name)
+				}
+				return new Date(a.date).getTime() - new Date(b.date).getTime()
+			})
+		})
+		
 		window.addEventListener('scroll', handleScrollCalendar)
 	})
 
@@ -95,6 +104,13 @@
 			currentMonth.value,
 			currentYear.value,
 		)
+
+		releases.value = releases.value.sort((a, b) => {
+			if (a.date === b.date) {
+				return a.name.localeCompare(b.name)
+			}
+			return new Date(a.date).getTime() - new Date(b.date).getTime()
+		})
 	})
 
 	useHead({
@@ -218,6 +234,7 @@
 				class="!min-w-full"
 			/>
 		</transition-group>
+		<SkeletonDefault v-if="loading" text="Loading..." class="w-full h-48 rounded-lg" />
 		<!-- Back to top -->
 		<div
 			ref="backTop"
