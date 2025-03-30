@@ -4,6 +4,14 @@ import type { News } from '~/types/supabase/news'
 import type { QueryOptions, FilterOptions } from '~/types/supabase'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
+interface NewsResponse {
+	news: News[]
+	total: number
+	page: number
+	limit: number
+	totalPages: number
+}
+
 export function useSupabaseNews() {
 	const { supabase } = useSupabase() as { supabase: SupabaseClient }
 	const toast = useToast()
@@ -137,8 +145,21 @@ export function useSupabaseNews() {
 	}
 
 	// Récupère toutes les news
-	const getAllNews = async (options?: QueryOptions & FilterOptions) => {
-		let query = supabase.from('news').select('*')
+	const getAllNews = async (
+		options?: QueryOptions & FilterOptions,
+	): Promise<NewsResponse> => {
+		let query = supabase.from('news').select(
+			`
+				*,
+				artists:news_artists_junction(
+					artists(*)
+				),
+				contributions:user_news_contributions(
+					user:users(*)
+				)
+			`,
+			{ count: 'exact' },
+		)
 
 		if (options?.search) {
 			query = query.ilike('message', `%${options.search}%`)
@@ -172,14 +193,33 @@ export function useSupabaseNews() {
 			query = query.range(options.offset, options.offset + (options.limit || 10) - 1)
 		}
 
-		const { data, error } = await query
+		const { data, error, count } = await query
 
 		if (error) {
 			console.error('Erreur lors de la récupération des news:', error)
-			return []
+			return {
+				news: [],
+				total: 0,
+				page: 1,
+				limit: 10,
+				totalPages: 1,
+			}
 		}
 
-		return data as News[]
+		// Transformer les données pour avoir directement les artistes et l'utilisateur
+		const transformedData = data?.map((news) => ({
+			...news,
+			artists: news.artists?.map((artistJunction: any) => artistJunction.artists) || [],
+			user: news.contributions?.[0]?.user || null,
+		}))
+
+		return {
+			news: transformedData as News[],
+			total: count || 0,
+			page: options?.offset ? Math.floor(options.offset / (options.limit || 10)) + 1 : 1,
+			limit: options?.limit || 10,
+			totalPages: Math.ceil((count || 0) / (options?.limit || 10)),
+		}
 	}
 
 	// Récupère une news avec tous ses détails
@@ -279,7 +319,8 @@ export function useSupabaseNews() {
 						// Transformer les données mises à jour
 						const transformedUpdatedData = updatedData?.map((news) => ({
 							...news,
-							artists: news.artists?.map((artistJunction: any) => artistJunction.artists) || [],
+							artists:
+								news.artists?.map((artistJunction: any) => artistJunction.artists) || [],
 						}))
 						callback(transformedUpdatedData as News[])
 					}

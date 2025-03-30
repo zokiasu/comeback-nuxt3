@@ -49,11 +49,11 @@
 			required: true,
 		},
 		createdAt: {
-			type: Object,
+			type: String,
 			required: true,
 		},
 		updatedAt: {
-			type: Object,
+			type: String,
 			required: true,
 		},
 	})
@@ -61,13 +61,13 @@
 	const skeleton = ref(null)
 	const showFullDescription = ref(false)
 
-	const createdAtDate = new Date(createdAt.seconds * 1000).toLocaleDateString('fr-FR', {
+	const createdAtDate = new Date(createdAt).toLocaleDateString('fr-FR', {
 		day: '2-digit',
 		month: '2-digit',
 		year: '2-digit',
 	})
 
-	const updatedAtDate = new Date(updatedAt.seconds * 1000).toLocaleDateString('fr-FR', {
+	const updatedAtDate = new Date(updatedAt).toLocaleDateString('fr-FR', {
 		day: '2-digit',
 		month: '2-digit',
 		year: '2-digit',
@@ -121,25 +121,25 @@
 
 <template>
 	<div
-		class="list-complete-item relative flex h-full w-full flex-col rounded bg-quaternary p-3"
+		class="relative flex flex-col w-full h-full p-3 rounded list-complete-item bg-quaternary"
 	>
-		<div class="flex flex-grow flex-col space-y-2">
+		<div class="flex flex-col flex-grow space-y-2">
 			<div class="relative">
 				<div
 					ref="skeleton"
-					class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"
+					class="absolute inset-0 z-10 object-cover transition-all duration-1000 ease-in-out rounded animate-pulse bg-zinc-500"
 				></div>
 				<NuxtImg
 					:src="image"
 					:alt="name"
 					format="webp"
 					loading="lazy"
-					class="aspect-video w-full rounded bg-zinc-500 object-cover"
+					class="object-cover w-full rounded aspect-video bg-zinc-500"
 					@load="loadingDone"
 				/>
 			</div>
 
-			<div class="flex w-full items-center justify-between">
+			<div class="flex items-center justify-between w-full">
 				<div>
 					<p class="space-x-1">
 						<NuxtLink
@@ -159,12 +159,12 @@
 					<NuxtLink
 						:to="'/artist/edit/' + id"
 						target="_blank"
-						class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+						class="px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500"
 					>
 						Edit
 					</NuxtLink>
 					<button
-						class="rounded bg-quinary px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+						class="px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500"
 						@click="deleteArtist"
 					>
 						Delete
@@ -176,7 +176,7 @@
 				<p
 					v-for="style in styles"
 					:key="style.name"
-					class="rounded bg-quinary px-2 py-1 text-xs uppercase"
+					class="px-2 py-1 text-xs uppercase rounded bg-quinary"
 				>
 					{{ style.name }}
 				</p>
@@ -189,7 +189,7 @@
 				<p
 					v-if="description"
 					:class="{ collapsed: !showFullDescription }"
-					class="cursor-pointer text-xs"
+					class="text-xs cursor-pointer"
 					@click="showFullDescription = !showFullDescription"
 				>
 					{{ description }}
@@ -199,7 +199,7 @@
 
 			<div class="space-y-2">
 				<div
-					class="flex w-full items-center justify-between border-b border-zinc-500 pb-1"
+					class="flex items-center justify-between w-full pb-1 border-b border-zinc-500"
 					@click="showSocialLinks = !showSocialLinks"
 				>
 					<p class="text-sm font-semibold uppercase">
@@ -208,8 +208,8 @@
 							({{ socialList.length }})
 						</span>
 					</p>
-					<IconPlus v-if="!showSocialLinks" class="h-4 w-4" />
-					<IconMinus v-else class="h-4 w-4" />
+					<IconPlus v-if="!showSocialLinks" class="w-4 h-4" />
+					<IconMinus v-else class="w-4 h-4" />
 				</div>
 
 				<transition
@@ -224,7 +224,7 @@
 						v-show="showSocialLinks"
 						id="socialLinkContent"
 						ref="socialLinksEl"
-						class="collapse-content overflow-hidden"
+						class="overflow-hidden collapse-content"
 					>
 						<div v-if="socialList.length" class="flex flex-col space-y-1.5">
 							<a
@@ -232,13 +232,13 @@
 								:key="social"
 								:href="social.link"
 								target="_blank"
-								class="overflow-hidden rounded bg-quinary text-xs"
+								class="overflow-hidden text-xs rounded bg-quinary"
 							>
 								<p class="bg-secondary px-1.5 py-1 uppercase">{{ social.name }}</p>
 								<p class="px-1.5 py-1">{{ social.link }}</p>
 							</a>
 						</div>
-						<p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
+						<p v-else class="px-2 py-1 text-xs text-center uppercase rounded bg-quinary">
 							No Socials Link
 						</p>
 					</div>
@@ -247,7 +247,7 @@
 
 			<div class="space-y-2">
 				<div
-					class="flex w-full items-center justify-between border-b border-zinc-500 pb-1"
+					class="flex items-center justify-between w-full pb-1 border-b border-zinc-500"
 					@click="showPlatformsLinks = !showPlatformsLinks"
 				>
 					<p class="text-sm font-semibold uppercase">
@@ -256,8 +256,8 @@
 							({{ platformList.length }})
 						</span>
 					</p>
-					<IconPlus v-if="!showPlatformsLinks" class="h-4 w-4" />
-					<IconMinus v-else class="h-4 w-4" />
+					<IconPlus v-if="!showPlatformsLinks" class="w-4 h-4" />
+					<IconMinus v-else class="w-4 h-4" />
 				</div>
 
 				<transition
@@ -272,7 +272,7 @@
 						v-show="showPlatformsLinks"
 						id="socialLinkContent"
 						ref="platformsLinksEl"
-						class="collapse-content overflow-hidden"
+						class="overflow-hidden collapse-content"
 					>
 						<div
 							v-if="platformList.length"
@@ -283,20 +283,20 @@
 								:key="platform"
 								:href="platform.link"
 								target="_blank"
-								class="overflow-hidden rounded bg-quinary text-xs"
+								class="overflow-hidden text-xs rounded bg-quinary"
 							>
 								<p class="bg-secondary px-1.5 py-1 uppercase">{{ platform.name }}</p>
 								<p class="px-1.5 py-1">{{ platform.link }}</p>
 							</a>
 						</div>
-						<p v-else class="rounded bg-quinary px-2 py-1 text-center text-xs uppercase">
+						<p v-else class="px-2 py-1 text-xs text-center uppercase rounded bg-quinary">
 							No Platforms Link
 						</p>
 					</div>
 				</transition>
 			</div>
 		</div>
-		<div class="mt-auto flex flex-col justify-between text-xs md:flex-row">
+		<div class="flex flex-col justify-between mt-auto text-xs md:flex-row">
 			<p class="mt-auto">Created at {{ createdAtDate }}</p>
 			<p class="mt-auto">Updated at {{ updatedAtDate }}</p>
 		</div>

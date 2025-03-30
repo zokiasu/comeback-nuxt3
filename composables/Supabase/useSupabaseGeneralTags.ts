@@ -44,8 +44,8 @@ export function useSupabaseGeneralTags() {
 	}
 
 	// Supprime un tag
-	const deleteGeneralTag = async (id: string) => {
-		const { error } = await supabase.from('general_tags').delete().eq('id', id)
+	const deleteGeneralTag = async (name: string) => {
+		const { error } = await supabase.from('general_tags').delete().eq('name', name)
 
 		if (error) {
 			console.error('Erreur lors de la suppression du tag:', error)

@@ -1,5 +1,7 @@
-<script setup>
-	const { id, message, artist, artists, date } = defineProps({
+<script setup lang="ts">
+	import type { Artist } from '~/types/supabase/artist'
+	
+	const { id, message, artists, date } = defineProps({
 		id: {
 			type: String,
 			required: true,
@@ -8,16 +10,12 @@
 			type: String,
 			required: true,
 		},
-		artist: {
-			type: Object,
-			required: false,
-		},
 		artists: {
-			type: Object,
-			required: false,
+			type: Array as PropType<Artist[]>,
+			required: true,
 		},
 		date: {
-			type: Object,
+			type: String,
 			required: true,
 		},
 		user: {
@@ -30,14 +28,14 @@
 		},
 	})
 
-	const skeleton = ref(null)
+	const skeleton = ref<HTMLElement | null>(null)
 
 	const loadingDone = () => {
 		if (skeleton.value) skeleton.value.classList.add('opacity-0')
 	}
 
-	const convertDate = (timestamp) => {
-		const date = new Date(timestamp?.seconds * 1000)
+	const convertDate = (timestamp: string) => {
+		const date = new Date(timestamp)
 		return date.toLocaleDateString('fr-FR', {
 			year: 'numeric',
 			month: 'long',
@@ -56,32 +54,16 @@
 	<div class="list-complete-item relative h-full space-y-2.5 rounded bg-quaternary p-3">
 		<div class="grid grid-cols-3 gap-2">
 			<div
-				v-if="artist"
-				class="flex w-full flex-col items-center justify-center overflow-hidden rounded bg-quinary"
-			>
-				<NuxtImg
-					:src="artist.picture"
-					:alt="artist.name"
-					format="webp"
-					loading="lazy"
-					class="h-10 w-full object-cover"
-					@load="loadingDone"
-				/>
-				<p class="px-2 py-1">{{ artist.name }}</p>
-			</div>
-
-			<div
 				v-for="artistObject in artists"
-				v-else
 				:key="artistObject.id"
-				class="flex w-full flex-col items-center justify-center overflow-hidden rounded bg-quinary"
+				class="flex flex-col items-center justify-center w-full overflow-hidden rounded bg-quinary"
 			>
 				<NuxtImg
-					:src="artistObject.picture"
+					:src="artistObject.image"
 					:alt="artistObject.name"
 					format="webp"
 					loading="lazy"
-					class="h-10 w-full object-cover"
+					class="object-cover w-full h-10"
 					@load="loadingDone"
 				/>
 				<p class="px-2 py-1">{{ artistObject.name }}</p>
@@ -101,12 +83,12 @@
 		<div class="grid grid-cols-2 gap-3">
 			<button
 				disabled
-				class="rounded bg-quinary px-3 py-1 transition-all duration-300 ease-in-out hover:bg-tertiary/30"
+				class="px-3 py-1 transition-all duration-300 ease-in-out rounded bg-quinary hover:bg-tertiary/30"
 			>
 				Edit
 			</button>
 			<button
-				class="rounded bg-quinary px-3 py-1 transition-all duration-300 ease-in-out hover:bg-tertiary/30"
+				class="px-3 py-1 transition-all duration-300 ease-in-out rounded bg-quinary hover:bg-tertiary/30"
 				@click="deleteNews"
 			>
 				Delete

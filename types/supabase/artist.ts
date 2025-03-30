@@ -1,5 +1,6 @@
 import type { Release } from './release'
 import type { BaseEntity, ArtistGender, ArtistType } from '.'
+import type { ArtistSocialLink, ArtistPlatformLink } from '.'
 
 export interface Artist extends BaseEntity {
 	firebase_id?: string
@@ -16,6 +17,8 @@ export interface Artist extends BaseEntity {
 	active_career: boolean
 	general_tags: string[] | null
 	styles: string[] | null
+	social_links: ArtistSocialLink[]
+	platform_links: ArtistPlatformLink[]
 	groups?: Artist[]
 	members?: Artist[]
 	releases?: Release[]

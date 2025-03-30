@@ -477,6 +477,80 @@ export function useSupabaseArtist() {
 		callback(data as Artist[])
 	}
 
+	// Récupère les artistes par page avec pagination
+	const getArtistsByPage = async (
+		page: number,
+		limit: number,
+		options?: {
+			search?: string
+			type?: ArtistType
+			orderBy?: keyof Artist
+			orderDirection?: 'asc' | 'desc'
+		},
+	) => {
+		try {
+			// Calculer l'offset
+			const offset = (page - 1) * limit
+
+			// Construire la requête de base avec les relations
+			let query = supabase.from('artists').select(
+				`
+					*,
+					social_links:artist_social_links(*),
+					platform_links:artist_platform_links(*)
+				`,
+				{ count: 'exact' },
+			)
+
+			// Ajouter les filtres si présents
+			if (options?.search) {
+				query = query.ilike('name', `%${options.search}%`)
+			}
+
+			if (options?.type) {
+				query = query.eq('type', options.type)
+			}
+
+			// Ajouter le tri
+			if (options?.orderBy) {
+				query = query.order(options.orderBy, {
+					ascending: options.orderDirection === 'asc',
+				})
+			} else {
+				query = query.order('name')
+			}
+
+			// Ajouter la pagination
+			query = query.range(offset, offset + limit - 1)
+
+			// Exécuter la requête
+			const { data, error, count } = await query
+
+			if (error) {
+				console.error('Erreur lors de la récupération des artistes:', error)
+				throw new Error('Erreur lors de la récupération des artistes')
+			}
+
+			// Transformer les données pour correspondre au format attendu
+			const transformedData = data.map((artist) => ({
+				...artist,
+				social_links: artist.social_links || [],
+				platform_links: artist.platform_links || [],
+			}))
+
+			return {
+				artists: transformedData as Artist[],
+				total: count || 0,
+				page,
+				limit,
+				totalPages: Math.ceil((count || 0) / limit),
+			}
+		} catch (error) {
+			console.error('Erreur lors de la récupération des artistes:', error)
+			throw error
+		}
+	}
+
 	return {
 		artistExistInSupabase,
 		createArtist,
@@ -487,5 +561,6 @@ export function useSupabaseArtist() {
 		getArtistByIdLight,
 		getRealtimeLastestArtistsAdded,
 		getSocialAndPlatformLinksByArtistId,
+		getArtistsByPage,
 	}
 }

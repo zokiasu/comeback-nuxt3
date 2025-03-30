@@ -1,4 +1,8 @@
 <script setup lang="ts">
+	import type { Artist } from '~/types/supabase/artist'
+	import type { ArtistSocialLink, ArtistPlatformLink } from '~/types/supabase'
+	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
+
 	import {
 		collection,
 		getDocs,
@@ -14,7 +18,6 @@
 	import { useToast } from 'vue-toastification'
 	import debounce from 'lodash.debounce'
 	import { deletebyDoc } from '~/composables/useFirestore'
-	import type { Artist } from '~/types/artist'
 	import type { AlgoliaHit } from '~/types/algolia'
 
 	// Types
@@ -28,19 +31,22 @@
 	// État
 	const toast = useToast()
 	const { $firestore: db } = useNuxtApp()
+	const { getFullArtistById, getSocialAndPlatformLinksByArtistId, getArtistsByPage } =
+		useSupabaseArtist()
 
 	const artistFetch = ref<Artist[]>([])
 	const search = ref('')
 	const invertSort = ref(true)
 	const page = ref(1)
+	const currentPage = ref(1)
+	const totalPages = ref(1)
+	const totalArtists = ref(0)
 
 	const scrollContainer = ref<HTMLElement | null>(null)
-	const sort = ref<keyof Artist | 'name'>('createdAt')
+	const sort = ref<keyof Artist>('created_at')
 	const limitFetch = ref(48)
 	const typeFilter = ref<Artist['type'] | ''>('')
 	const isLoading = ref(false)
-	const nextFetch = ref<QueryDocumentSnapshot<DocumentData> | null>(null)
-	const maxArtist = ref(0)
 	const useAlgoliaForSearch = ref(true)
 
 	// Algolia Search
@@ -58,7 +64,7 @@
 
 	// Computed
 	const observerTarget = ref<HTMLElement | null>(null)
-	const hasMore = computed(() => artistFetch.value.length < maxArtist.value)
+	const hasMore = computed(() => currentPage.value <= totalPages.value)
 
 	// Fonctions
 	/**
@@ -88,7 +94,7 @@
 		try {
 			const coll = collection(db, 'artists')
 			const snapshot = await getCountFromServer(coll)
-			maxArtist.value = snapshot.data().count
+			totalArtists.value = snapshot.data().count
 		} catch (error) {
 			console.error("Erreur lors de la récupération du nombre d'artistes: ", error)
 			toast.error('Erreur lors du chargement des données')
@@ -111,23 +117,26 @@
 			)
 
 			if (result.value && result.value.hits) {
-				// Convertir les résultats Algolia en format Artist
-				algoliaResults.value = result.value.hits.map(
-					(hit: AlgoliaHit) =>
-						({
-							id: hit.objectID,
-							name: hit.name || '',
-							image: hit.image || '',
-							description: hit.description || '',
-							type: (hit.type as Artist['type']) || 'SOLO',
-							idYoutubeMusic: hit.idYoutubeMusic || '',
-							styles: hit.styles || [],
-							socialList: hit.socialList || [],
-							platformList: hit.platformList || [],
-							createdAt: hit.createdAt,
-							updatedAt: hit.updatedAt,
-						}) as Artist,
-				)
+				// Convertir les résultats Algolia en format Artist Supabase
+				algoliaResults.value = result.value.hits.map((hit: AlgoliaHit) => ({
+					id: hit.objectID,
+					id_youtube_music: hit.idYoutubeMusic || '',
+					name: hit.name || '',
+					image: hit.image || 'https://i.ibb.co/wLhbFZx/Frame-255.png',
+					description: hit.description || '',
+					birth_date: null,
+					debut_date: null,
+					gender: 'UNKNOWN',
+					type: (hit.type as Artist['type']) || 'SOLO',
+					verified: false,
+					active_career: true,
+					general_tags: null,
+					styles: hit.styles || [],
+					social_links: [],
+					platform_links: [],
+					created_at: hit.createdAt?.toDate().toISOString() || new Date().toISOString(),
+					updated_at: hit.updatedAt?.toDate().toISOString() || new Date().toISOString(),
+				}))
 			}
 		} catch (error) {
 			console.error('Erreur lors de la recherche Algolia:', error)
@@ -174,54 +183,42 @@
 	}
 
 	/**
-	 * Récupère les artistes depuis Firestore
+	 * Récupère les artistes depuis Supabase
 	 */
 	const getArtist = async (firstCall = false): Promise<void> => {
 		if (isLoading.value) return
 		isLoading.value = true
 
 		try {
-			// Récupère le nombre total d'artistes si nécessaire
-			if (maxArtist.value === 0) {
-				await getMaxArtistNumber()
-			}
-
-			// Construction de la requête
-			let colRef = buildArtistQuery()
-
-			// Pagination
-			if (!firstCall && nextFetch.value) {
-				colRef = query(colRef, startAfter(nextFetch.value))
-			}
-
-			// Limite de résultats
-			colRef = query(colRef, limit(limitFetch.value))
-			const snapshot = await getDocs(colRef)
-
-			if (snapshot.empty) {
-				isLoading.value = false
-				return
-			}
-
-			// Mise à jour du curseur de pagination
-			const lastVisible = snapshot.docs[snapshot.docs.length - 1]
-			nextFetch.value = lastVisible
-
-			// Transformation des données
-			const artists = snapshot.docs.map((doc) => ({
-				id: doc.id,
-				...doc.data(),
-			})) as Artist[]
-
-			// Mise à jour de la liste
+			// Si c'est le premier appel, réinitialiser la page
 			if (firstCall) {
-				artistFetch.value = artists
-				nextFetch.value = lastVisible
-			} else {
-				artistFetch.value = [...artistFetch.value, ...artists]
+				currentPage.value = 1
+				artistFetch.value = []
 			}
+
+			// Récupérer les artistes pour la page courante
+			const result = await getArtistsByPage(currentPage.value, limitFetch.value, {
+				search: search.value,
+				type: typeFilter.value || undefined,
+				orderBy: sort.value,
+				orderDirection: invertSort.value ? 'desc' : 'asc',
+			})
+
+			// Mettre à jour les données
+			totalArtists.value = result.total
+			totalPages.value = result.totalPages
+
+			// Ajouter les nouveaux artistes à la liste
+			if (firstCall) {
+				artistFetch.value = result.artists
+			} else {
+				artistFetch.value = [...artistFetch.value, ...result.artists]
+			}
+
+			// Incrémenter la page courante
+			currentPage.value++
 		} catch (error) {
-			console.error('Erreur lors de la récupération des documents: ', error)
+			console.error('Erreur lors de la récupération des artistes:', error)
 			toast.error('Erreur lors du chargement des artistes')
 		} finally {
 			isLoading.value = false
@@ -255,15 +252,15 @@
 		if (!artistFetch.value) return artistFetch.value
 
 		return [...artistFetch.value].sort((a, b) => {
-			if (sort.value === 'createdAt') {
+			if (sort.value === 'created_at') {
 				return invertSort.value
-					? (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)
-					: (a.createdAt?.toMillis() || 0) - (b.createdAt?.toMillis() || 0)
+					? new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+					: new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
 			}
-			if (sort.value === 'updatedAt') {
+			if (sort.value === 'updated_at') {
 				return invertSort.value
-					? (b.updatedAt?.toMillis() || 0) - (a.updatedAt?.toMillis() || 0)
-					: (a.updatedAt?.toMillis() || 0) - (b.updatedAt?.toMillis() || 0)
+					? new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+					: new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
 			}
 			if (sort.value === 'type') {
 				return invertSort.value
@@ -279,9 +276,19 @@
 	/**
 	 * Charge tous les artistes
 	 */
-	const loadAllArtists = () => {
-		limitFetch.value = maxArtist.value
-		getArtist(true)
+	const loadAllArtists = async () => {
+		try {
+			const result = await getArtistsByPage(1, totalArtists.value, {
+				search: search.value,
+				type: typeFilter.value || undefined,
+				orderBy: sort.value,
+				orderDirection: invertSort.value ? 'desc' : 'asc',
+			})
+			artistFetch.value = result.artists
+		} catch (error) {
+			console.error('Erreur lors du chargement de tous les artistes:', error)
+			toast.error('Erreur lors du chargement de tous les artistes')
+		}
 	}
 
 	/**
@@ -446,8 +453,8 @@
 					>
 						<option value="name">Name</option>
 						<option value="type">Type</option>
-						<option value="createdAt">Last Created</option>
-						<option value="updatedAt">Last Updated</option>
+						<option value="created_at">Last Created</option>
+						<option value="updated_at">Last Updated</option>
 					</select>
 					<button
 						class="p-2 transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl hover:bg-tertiary hover:text-quinary focus:outline-none"
@@ -477,14 +484,14 @@
 				:key="artist.id"
 				:image="artist.image"
 				:name="artist.name"
-				:description="artist.description"
+				:description="artist.description || ''"
 				:type="artist.type"
-				:id-youtube-music="artist.idYoutubeMusic"
-				:styles="artist.styles"
-				:social-list="artist.socialList"
-				:platform-list="artist.platformList"
-				:created-at="artist.createdAt"
-				:updated-at="artist.updatedAt"
+				:id-youtube-music="artist.id_youtube_music"
+				:styles="artist.styles || []"
+				:social-list="artist.social_links"
+				:platform-list="artist.platform_links"
+				:created-at="artist.created_at"
+				:updated-at="artist.updated_at"
 				@delete-artist="deleteArtist"
 			/>
 		</transition-group>
@@ -503,11 +510,11 @@
 				!useAlgoliaForSearch &&
 				filteredArtistList.length > 0 &&
 				artistFetch.length != 0 &&
-				artistFetch.length != maxArtist
+				artistFetch.length != totalArtists
 			"
 			class="flex flex-col items-center space-y-2 text-xs"
 		>
-			<p>({{ artistFetch.length }} / {{ maxArtist }})</p>
+			<p>({{ artistFetch.length }} / {{ totalArtists }})</p>
 			<div v-if="!isLoading" class="flex gap-2">
 				<button
 					class="flex w-full gap-1 px-2 py-1 mx-auto uppercase rounded bg-quinary hover:bg-zinc-500 md:w-fit"

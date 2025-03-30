@@ -10,7 +10,10 @@ export function useSupabaseRelease() {
 	const toast = useToast()
 
 	// Met à jour une release
-	const updateRelease = async (id: string, updates: Partial<Release>): Promise<Release | null> => {
+	const updateRelease = async (
+		id: string,
+		updates: Partial<Release>,
+	): Promise<Release | null> => {
 		const { data, error } = await supabase
 			.from('releases')
 			.update(updates)
@@ -326,6 +329,90 @@ export function useSupabaseRelease() {
 		}
 	}
 
+	// Récupère les releases par page avec pagination
+	const getReleasesByPage = async (
+		page: number,
+		limit: number,
+		options?: {
+			search?: string
+			type?: ReleaseType
+			orderBy?: keyof Release
+			orderDirection?: 'asc' | 'desc'
+			verified?: boolean
+		},
+	) => {
+		try {
+			// Calculer l'offset
+			const offset = (page - 1) * limit
+
+			// Construire la requête de base avec les relations
+			let query = supabase.from('releases').select(
+				`
+					*,
+					artists:artist_releases(
+						artist:artists(*)
+					),
+					musics:music_releases(
+						music:musics(*)
+					)
+				`,
+				{ count: 'exact' },
+			)
+
+			// Ajouter les filtres si présents
+			if (options?.search) {
+				query = query.ilike('name', `%${options.search}%`)
+			}
+
+			if (options?.type) {
+				query = query.eq('type', options.type)
+			}
+
+			if (options?.verified !== undefined) {
+				query = query.eq('verified', options.verified)
+			}
+
+			// Ajouter le tri
+			if (options?.orderBy) {
+				query = query.order(options.orderBy, {
+					ascending: options.orderDirection === 'asc',
+				})
+			} else {
+				query = query.order('date', { ascending: false })
+			}
+
+			// Ajouter la pagination
+			query = query.range(offset, offset + limit - 1)
+
+			// Exécuter la requête
+			const { data, error, count } = await query
+
+			if (error) {
+				console.error('Erreur lors de la récupération des releases:', error)
+				throw new Error('Erreur lors de la récupération des releases')
+			}
+
+			// Transformer les données pour correspondre au format attendu
+			const transformedData = data.map((release) => ({
+				...release,
+				firebase_id: release.id,
+				artists: release.artists?.map((ar: any) => ar.artist) || [],
+				musics: release.musics?.map((mr: any) => mr.music) || [],
+			}))
+
+			return {
+				releases: transformedData as Release[],
+				total: count || 0,
+				page,
+				limit,
+				totalPages: Math.ceil((count || 0) / limit),
+			}
+		} catch (error) {
+			console.error('Erreur lors de la récupération des releases:', error)
+			throw error
+		}
+	}
+
 	return {
 		updateRelease,
 		updateReleaseArtists,
@@ -336,5 +423,6 @@ export function useSupabaseRelease() {
 		getRealtimeLastestReleasesAdded,
 		getReleasesByMonthAndYear,
 		getSuggestedReleases,
+		getReleasesByPage,
 	}
 }

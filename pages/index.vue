@@ -18,6 +18,11 @@
 	const releases = ref<Release[]>([])
 	const musics = ref<Music[]>([])
 
+	const newsFetching = ref<boolean>(true)
+	const releasesFetching = ref<boolean>(true)
+	const artistsFetching = ref<boolean>(true)
+	const musicsFetching = ref<boolean>(true)
+
 	const comebacksToday = computed<News[]>(() => {
 		return comebacks.value.filter((comeback) => {
 			const comebacksDate = new Date(comeback.date)
@@ -31,27 +36,35 @@
 	})
 
 	onMounted(async () => {
-		musics.value = await getRandomMusics(4)
-
 		Promise.all([
 			new Promise<void>((resolve) =>
 				getRealtimeLastestNewsAdded((news: News[]) => {
 					comebacks.value = news
+					newsFetching.value = false
 					resolve()
 				}),
 			),
 			new Promise<void>((resolve) =>
 				getRealtimeLastestReleasesAdded(8, (rel: Release[]) => {
-					releases.value = rel
+					releases.value = rel.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+					releasesFetching.value = false
 					resolve()
 				}),
 			),
 			new Promise<void>((resolve) =>
 				getRealtimeLastestArtistsAdded(8, (art: Artist[]) => {
-					artists.value = art
+					artists.value = art.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+					artistsFetching.value = false
 					resolve()
 				}),
 			),
+			new Promise<void>((resolve) => {
+				getRandomMusics(4).then((musicList) => {
+					musics.value = musicList.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+					musicsFetching.value = false
+					resolve()
+				})
+			}),
 		])
 	})
 
@@ -67,9 +80,9 @@
 		<!-- Home Body -->
 		<section class="container p-5 py-10 mx-auto space-y-16 2xl:space-y-20">
 			<!-- Comeback Reported List -->
-			<ComebackReported v-if="comebacks.length > 0" :comeback-list="comebacks" />
+			<ComebackReported v-if="comebacks.length > 0 && !newsFetching" :comeback-list="comebacks" />
 			<!-- Discover Music -->
-			<div v-if="musics.length > 0" class="space-y-8 text-center xl:space-y-10">
+			<div v-if="musics.length > 0 && !musicsFetching" class="space-y-8 text-center xl:space-y-10">
 				<p class="text-xl font-bold lg:text-4xl">Discover Music</p>
 				<div class="space-y-5">
 					<div class="grid grid-cols-2 gap-5 xl:grid-cols-4">
@@ -81,9 +94,9 @@
 				</div>
 			</div>
 			<!-- Recent Release -->
-			<LazyRecentReleases v-if="releases.length > 0" :releases="releases" />
+			<LazyRecentReleases v-if="releases.length > 0 && !releasesFetching" :releases="releases" />
 			<!-- Last Artist Added -->
-			<LazyArtistAdded v-if="artists.length > 0" :artists="artists" />
+			<LazyArtistAdded v-if="artists.length > 0 && !artistsFetching" :artists="artists" />
 		</section>
 	</div>
 </template>

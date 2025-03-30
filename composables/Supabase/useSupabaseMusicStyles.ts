@@ -44,8 +44,8 @@ export function useSupabaseMusicStyles() {
 	}
 
 	// Supprime un style
-	const deleteMusicStyle = async (id: string) => {
-		const { error } = await supabase.from('music_styles').delete().eq('id', id)
+	const deleteMusicStyle = async (name: string) => {
+		const { error } = await supabase.from('music_styles').delete().eq('name', name)
 
 		if (error) {
 			console.error('Erreur lors de la suppression du style:', error)

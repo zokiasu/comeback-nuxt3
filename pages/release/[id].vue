@@ -41,6 +41,7 @@
 		}
 
 		try {
+			console.log('releaseData', releaseData)
 			await updateRelease(releaseId, releaseData)
 
 			// On utilise les musiques directement depuis release.value qui est réactif
@@ -66,10 +67,12 @@
 				}) || []
 
 			// Attendre que toutes les mises à jour soient terminées
-			await Promise.all(updatePromises)
-
-			toast.info('Release updated')
-			showModalEdit.value = false
+			await Promise.all(updatePromises).then(() => {
+				toast.info('Release updated')
+				showModalEdit.value = false
+			}).catch(() => {
+				toast.error('Une erreur est survenue lors de la mise à jour')
+			})
 		} catch (error) {
 			console.error('Error updating release:', error)
 			toast.error('Une erreur est survenue lors de la mise à jour')
@@ -85,11 +88,7 @@
 	}
 
 	const editRelease = async () => {
-		if (isLoginStore) {
-			showModalEdit.value = true
-		} else {
-			router.push('/authentification')
-		}
+		showModalEdit.value = true
 	}
 
 	onMounted(async () => {
@@ -147,9 +146,9 @@
 
 <template>
 	<div>
-		<div v-if="isLoading" class="container p-5 mx-auto space-y-12">
+		<div v-if="isLoading" class="mx-auto space-y-12">
 			<section class="space-y-2">
-				<SkeletonDefault class="w-3/4 h-3 rounded-full" />
+				<SkeletonDefault class="w-full min-h-[20rem] lg:max-h-[30rem] lg:min-h-[30rem]" />
 				<SkeletonDefault class="w-full h-3 rounded-full" />
 				<SkeletonDefault class="w-full h-3 rounded-full" />
 				<SkeletonDefault class="w-3/4 h-3 rounded-full" />
@@ -210,7 +209,7 @@
 									<p>-</p>
 									<p>{{ release.type }}</p>
 									<p>-</p>
-									<p>{{ release.year }}</p>
+									<p>{{ release.date }}</p>
 								</div>
 								<button
 									class="px-2 py-1 text-sm rounded bg-quaternary hover:bg-tertiary/10"
@@ -309,7 +308,7 @@
 						<div class="flex flex-col gap-1">
 							<ComebackLabel label="Date" />
 							<VueDatePicker
-								v-model="dateToDateFormat"
+								v-model="release.date"
 								placeholder="Select Date"
 								auto-apply
 								:enable-time-picker="false"
