@@ -92,7 +92,7 @@
 				if (a.date === b.date) {
 					return a.name.localeCompare(b.name)
 				}
-				return new Date(a.date).getTime() - new Date(b.date).getTime()
+				return new Date(b.date).getTime() - new Date(a.date).getTime()
 			})
 		})
 		
