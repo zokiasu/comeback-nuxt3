@@ -19,7 +19,7 @@
 	const totalPages = ref(1)
 	const totalReleases = ref(0)
 	const limitFetch = ref<number>(24)
-	const useAlgoliaForSearch = ref(true)
+	const useAlgoliaForSearch = ref(false)
 	const firstLoad = ref(true)
 	const typeFilter = ref<ReleaseType | ''>('')
 
@@ -193,12 +193,9 @@
 	})
 
 	// Watchers pour les filtres
-	watch(
-		[limitFetch, needToBeVerifiedFilter, noNeedToBeVerifiedFilter, sort],
-		async () => {
-			await getRelease(true)
-		},
-	)
+	watch([needToBeVerifiedFilter, noNeedToBeVerifiedFilter, sort], async () => {
+		await getRelease(true)
+	})
 
 	// Watcher pour la recherche
 	watch(search, () => {
@@ -383,42 +380,8 @@
 		<div
 			v-if="hasMore && !useAlgoliaForSearch"
 			ref="observerTarget"
-			class="flex items-center justify-center w-full h-20 my-8 bg-gray-200 rounded bg-opacity-10"
-		>
-			<div v-if="!isLoading" class="text-xs text-gray-400">
-				Faites défiler pour charger plus de releases
-			</div>
-			<div v-else class="loading-indicator">
-				<div class="loading-dot"></div>
-				<div class="loading-dot"></div>
-				<div class="loading-dot"></div>
-			</div>
-		</div>
-
-		<div
-			v-if="
-				!useAlgoliaForSearch &&
-				filteredReleaseList.length > 0 &&
-				releaseFetch.length != totalReleases
-			"
-			class="flex flex-col items-center space-y-2 text-xs"
-		>
-			<p>({{ releaseFetch.length }} / {{ totalReleases }})</p>
-			<div v-if="!isLoading" class="flex gap-2">
-				<button
-					class="flex w-full gap-1 px-2 py-1 mx-auto uppercase rounded bg-quinary hover:bg-zinc-500 md:w-fit"
-					@click="loadAllReleases"
-				>
-					<p>Load All</p>
-				</button>
-			</div>
-			<p
-				v-else
-				class="flex w-full gap-1 px-2 py-1 mx-auto uppercase rounded bg-quinary hover:bg-zinc-500 md:w-fit"
-			>
-				Loading...
-			</p>
-		</div>
+			class="w-full h-4 mb-4"
+		></div>
 	</div>
 </template>
 

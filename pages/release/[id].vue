@@ -67,12 +67,14 @@
 				}) || []
 
 			// Attendre que toutes les mises à jour soient terminées
-			await Promise.all(updatePromises).then(() => {
-				toast.info('Release updated')
-				showModalEdit.value = false
-			}).catch(() => {
-				toast.error('Une erreur est survenue lors de la mise à jour')
-			})
+			await Promise.all(updatePromises)
+				.then(() => {
+					toast.info('Release updated')
+					showModalEdit.value = false
+				})
+				.catch(() => {
+					toast.error('Une erreur est survenue lors de la mise à jour')
+				})
 		} catch (error) {
 			console.error('Error updating release:', error)
 			toast.error('Une erreur est survenue lors de la mise à jour')
@@ -89,6 +91,14 @@
 
 	const editRelease = async () => {
 		showModalEdit.value = true
+	}
+
+	const formatDate = (date: string) => {
+		const dateObject = new Date(date)
+		const day = dateObject.getDate().toString().padStart(2, '0')
+		const month = (dateObject.getMonth() + 1).toString().padStart(2, '0')
+		const year = dateObject.getFullYear()
+		return `${day}/${month}/${year}`
 	}
 
 	onMounted(async () => {
@@ -148,7 +158,7 @@
 	<div>
 		<div v-if="isLoading" class="mx-auto space-y-12">
 			<section class="space-y-2">
-				<SkeletonDefault class="w-full min-h-[20rem] lg:max-h-[30rem] lg:min-h-[30rem]" />
+				<SkeletonDefault class="min-h-[20rem] w-full lg:max-h-[30rem] lg:min-h-[30rem]" />
 				<SkeletonDefault class="w-full h-3 rounded-full" />
 				<SkeletonDefault class="w-full h-3 rounded-full" />
 				<SkeletonDefault class="w-3/4 h-3 rounded-full" />
@@ -209,7 +219,7 @@
 									<p>-</p>
 									<p>{{ release.type }}</p>
 									<p>-</p>
-									<p>{{ release.date }}</p>
+									<p>{{ formatDate(release.date) }}</p>
 								</div>
 								<button
 									class="px-2 py-1 text-sm rounded bg-quaternary hover:bg-tertiary/10"
