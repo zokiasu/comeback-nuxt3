@@ -89,9 +89,6 @@
 		).then((res) => {
 			loading.value = false
 			releases.value = res.sort((a, b) => {
-				if (a.date === b.date) {
-					return a.name.localeCompare(b.name)
-				}
 				return new Date(b.date).getTime() - new Date(a.date).getTime()
 			})
 		})
@@ -109,7 +106,7 @@
 			if (a.date === b.date) {
 				return a.name.localeCompare(b.name)
 			}
-			return new Date(a.date).getTime() - new Date(b.date).getTime()
+			return new Date(b.date).getTime() - new Date(a.date).getTime()
 		})
 	})
 
