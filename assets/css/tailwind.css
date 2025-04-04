@@ -1,6 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+	--color-primary: #9e0102; /* red */
+	--color-secondary: #1f1d1d; /* black */
+	--color-tertiary: #e1e1e1; /* white */
+	--color-quaternary: #2b2b2b; /* gray */
+	--color-quinary: #3a3a3a; /* gray medium */
+}
 
 html:focus-within {
 	scroll-behavior: smooth;
@@ -94,14 +100,14 @@ html:focus-within {
 
 /* La thumb de la scrollbar (la partie que l'on déplace) */
 .scrollBarLight::-webkit-scrollbar-thumb {
-	background: white; /* Couleur de la thumb */
+	background: var(--color-tertiary); /* Couleur de la thumb */
 	border-radius: 2.5px; /* Arrondi les bords de la thumb pour un aspect plus doux */
 }
 
 /* Pour Firefox */
 .scrollBarLight {
 	scrollbar-width: thin; /* "auto" ou "thin" */
-	scrollbar-color: white transparent; /* Couleur de la thumb et de la track */
+	scrollbar-color: var(--color-tertiary) transparent; /* Couleur de la thumb et de la track */
 }
 
 /**VUE MULTISELECT**/
@@ -116,7 +122,7 @@ fieldset[disabled] .multiselect {
 	top: 1px;
 	width: 40px;
 	height: 38px;
-	background: #fff;
+	background: var(--color-tertiary);
 	display: block;
 }
 
@@ -130,7 +136,7 @@ fieldset[disabled] .multiselect {
 	width: 16px;
 	height: 16px;
 	border-radius: 100%;
-	border-color: #9e0102 transparent transparent;
+	border-color: var(--color-primary) transparent transparent;
 	border-style: solid;
 	border-width: 2px;
 	box-shadow: 0 0 0 1px transparent;
@@ -219,7 +225,7 @@ fieldset[disabled] .multiselect {
 	line-height: 20px;
 	border: none;
 	border-radius: 5px;
-	background: #fff;
+	background: var(--color-tertiary);
 	padding: 0 0 0 5px;
 	width: calc(100%);
 	transition: border 0.1s ease;
@@ -270,7 +276,7 @@ fieldset[disabled] .multiselect {
 .multiselect--active .multiselect__tags {
 	border-radius: 5px;
 	border: 1px solid #e8e8e8;
-	background: #fff;
+	background: var(--color-tertiary);
 }
 
 .multiselect__tag {
@@ -279,9 +285,9 @@ fieldset[disabled] .multiselect {
 	padding: 4px 26px 4px 10px;
 	border-radius: 5px;
 	margin-right: 10px;
-	color: #fff;
+	color: var(--color-tertiary);
 	line-height: 1;
-	background: #9e0102;
+	background: var(--color-primary);
 	margin-bottom: 5px;
 	white-space: nowrap;
 	overflow: hidden;
@@ -307,7 +313,7 @@ fieldset[disabled] .multiselect {
 
 .multiselect__tag-icon::after {
 	content: '×';
-	color: #fff;
+	color: var(--color-tertiary);
 	font-size: 14px;
 }
 
@@ -319,7 +325,7 @@ fieldset[disabled] .multiselect {
 
 .multiselect__tag-icon:focus::after,
 .multiselect__tag-icon:hover::after {
-	color: #2b2b2b;
+	color: var(--color-quaternary);
 }
 
 .multiselect__current {
@@ -381,7 +387,7 @@ fieldset[disabled] .multiselect {
 .multiselect__content-wrapper {
 	position: absolute;
 	display: block;
-	background: #fff;
+	background: var(--color-tertiary);
 	width: 100%;
 	max-height: 240px;
 	overflow: auto;
@@ -444,15 +450,15 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__option--highlight {
-	background: #9e0102;
+	background: var(--color-primary);
 	outline: none;
-	color: white;
+	color: var(--color-tertiary);
 }
 
 .multiselect__option--highlight::after {
 	content: attr(data-select);
-	background: #9e0102;
-	color: white;
+	background: var(--color-primary);
+	color: var(--color-tertiary);
 }
 
 .multiselect__option--selected {
@@ -469,13 +475,13 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--selected.multiselect__option--highlight {
 	background: #ff6a6a;
-	color: #fff;
+	color: var(--color-tertiary);
 }
 
 .multiselect__option--selected.multiselect__option--highlight::after {
 	background: #ff6a6a;
 	content: attr(data-deselect);
-	color: #fff;
+	color: var(--color-tertiary);
 }
 
 .multiselect--disabled .multiselect__current,
@@ -498,7 +504,7 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--group.multiselect__option--highlight {
 	background: #35495e;
-	color: #fff;
+	color: var(--color-tertiary);
 }
 
 .multiselect__option--group.multiselect__option--highlight::after {
@@ -511,13 +517,13 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--group-selected.multiselect__option--highlight {
 	background: #ff6a6a;
-	color: #fff;
+	color: var(--color-tertiary);
 }
 
 .multiselect__option--group-selected.multiselect__option--highlight::after {
 	background: #ff6a6a;
 	content: attr(data-deselect);
-	color: #fff;
+	color: var(--color-tertiary);
 }
 
 .multiselect-enter-active,
@@ -626,31 +632,31 @@ fieldset[disabled] .multiselect {
 }
 
 .dp__theme_dark {
-	--dp-background-color: #2b2b2b !important;
-	--dp-text-color: #fff;
-	--dp-hover-color: #484848;
-	--dp-hover-text-color: #fff;
+	--dp-background-color: var(--color-quaternary) !important;
+	--dp-text-color: var(--color-tertiary);
+	--dp-hover-color: var(--color-quinary);
+	--dp-hover-text-color: var(--color-tertiary);
 	--dp-hover-icon-color: #959595;
-	--dp-primary-color: #9e0102 !important;
+	--dp-primary-color: var(--color-primary) !important;
 	--dp-primary-disabled-color: #61a8ea;
-	--dp-primary-text-color: #fff;
+	--dp-primary-text-color: var(--color-tertiary);
 	--dp-secondary-color: #a9a9a9;
 	--dp-border-color: transparent !important;
 	--dp-menu-border-color: #2d2d2d;
 	--dp-border-color-hover: transparent !important;
-	--dp-border-color-focus: #9e0102 !important;
+	--dp-border-color-focus: var(--color-primary) !important;
 	--dp-disabled-color: #737373;
 	--dp-disabled-color-text: #d0d0d0;
-	--dp-scroll-bar-background: #212121;
-	--dp-scroll-bar-color: #484848;
+	--dp-scroll-bar-background: var(--color-secondary);
+	--dp-scroll-bar-color: var(--color-quinary);
 	--dp-success-color: #00701a;
 	--dp-success-color-disabled: #428f59;
 	--dp-icon-color: #959595;
 	--dp-danger-color: #e53935;
 	--dp-marker-color: #e53935;
-	--dp-tooltip-color: #3e3e3e;
+	--dp-tooltip-color: var(--color-quinary);
 	--dp-highlight-color: rgb(0 92 178 / 20%);
-	--dp-range-between-dates-background-color: var(--dp-hover-color, #484848);
-	--dp-range-between-dates-text-color: var(--dp-hover-text-color, #fff);
-	--dp-range-between-border-color: var(--dp-hover-color, #fff);
+	--dp-range-between-dates-background-color: var(--dp-hover-color, var(--color-quinary));
+	--dp-range-between-dates-text-color: var(--dp-hover-text-color, var(--color-tertiary));
+	--dp-range-between-border-color: var(--dp-hover-color, var(--color-tertiary));
 }
