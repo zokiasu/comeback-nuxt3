@@ -13,7 +13,7 @@
 <template>
 	<div>
 		<label
-			class="text-sm font-semibold uppercase tracking-wide"
+			class="text-sm font-semibold tracking-wide uppercase"
 			:class="{ 'text-zinc-500': disabled }"
 		>
 			{{ label }}

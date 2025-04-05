@@ -28,7 +28,7 @@
 		:class="isPlayingVideo ? 'bottom-20' : 'bottom-5'"
 	>
 		<div
-			class="flex w-full justify-between divide-x divide-zinc-700 overflow-hidden rounded-full border border-zinc-700 bg-secondary shadow shadow-zinc-700 drop-shadow-sm"
+			class="bg-secondary-950 flex w-full justify-between divide-x divide-zinc-700 overflow-hidden rounded-full border border-zinc-700 shadow shadow-zinc-700 drop-shadow-sm"
 		>
 			<NuxtLink
 				:to="`/`"
@@ -71,7 +71,7 @@
 			</NuxtLink>
 			<button
 				v-else
-				class="flex w-full items-center justify-center bg-primary/20 py-2 transition-all duration-500 ease-in-out"
+				class="bg-primary-900/20 flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out"
 				@click="showModal = true"
 			>
 				<IconComeback class="mx-auto h-5 w-5" />

@@ -8,8 +8,10 @@
 	const { $firestore: db } = useNuxtApp()
 	const toast = useToast()
 	const { createStyle, createTag } = useFirebaseFunction()
-	const { createMusicStyle, getAllMusicStyles, deleteMusicStyle } = useSupabaseMusicStyles()
-	const { createGeneralTag, getAllGeneralTags, deleteGeneralTag } = useSupabaseGeneralTags()
+	const { createMusicStyle, getAllMusicStyles, deleteMusicStyle } =
+		useSupabaseMusicStyles()
+	const { createGeneralTag, getAllGeneralTags, deleteGeneralTag } =
+		useSupabaseGeneralTags()
 
 	const styleFetch = ref([] as any[])
 	const newStyle = ref('')
@@ -73,13 +75,13 @@
 	<div class="grid grid-cols-1 gap-5 overflow-y-auto lg:grid-cols-2">
 		<section id="styles" class="space-y-3">
 			<h2 class="text-lg font-semibold uppercase">Styles</h2>
-			<section id="input-new-search" class="flex justify-start w-full gap-2">
+			<section id="input-new-search" class="flex w-full justify-start gap-2">
 				<input
 					id="input"
 					v-model="newStyle"
 					type="text"
 					placeholder="Add new style"
-					class="w-full px-5 py-2 transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl placeholder:text-zinc-500 focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+					class="bg-quinary-900 placeholder-tertiary-200 focus:bg-tertiary-200 focus:text-quinary-900 focus:placeholder-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:outline-none"
 					@keyup.enter="
 						async () => {
 							await creationStyle()
@@ -87,7 +89,7 @@
 					"
 				/>
 				<button
-					class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
+					class="bg-quinary-900 w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
 					@click="
 						async () => {
 							await creationStyle()
@@ -103,33 +105,31 @@
 					:key="style.name"
 					class="flex items-center justify-between gap-2"
 				>
-					<div
-						class="flex flex-col w-full rounded bg-quaternary px-2.5 py-1"
-					>
+					<div class="bg-quaternary-950 flex w-full flex-col rounded px-2.5 py-1">
 						<p>{{ style.name }}</p>
 						<p class="text-xs text-zinc-500">
 							{{ style.created }}
 						</p>
 					</div>
 					<div
-						class="flex h-full cursor-pointer items-center justify-center rounded bg-quaternary px-2.5 hover:bg-primary"
+						class="bg-quaternary-950 hover:bg-primary-900 flex h-full cursor-pointer items-center justify-center rounded px-2.5"
 						@click="deleteStyle(style.name)"
 					>
-						<IconDelete class="w-4 h-4" />
+						<IconDelete class="h-4 w-4" />
 					</div>
 				</div>
 			</div>
 		</section>
-		
+
 		<section id="general-tags" class="space-y-3">
 			<h2 class="text-lg font-semibold uppercase">General Tags</h2>
-			<section id="input-new-search" class="flex justify-start w-full gap-2">
+			<section id="input-new-search" class="flex w-full justify-start gap-2">
 				<input
 					id="input"
 					v-model="newGeneralTag"
 					type="text"
 					placeholder="Add new tag"
-					class="w-full px-5 py-2 transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl placeholder:text-zinc-500 focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+					class="bg-quinary-900 placeholder-tertiary-200 focus:bg-tertiary-200 focus:text-quinary-900 focus:placeholder-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:outline-none"
 					@keyup.enter="
 						async () => {
 							await creationTag()
@@ -137,7 +137,7 @@
 					"
 				/>
 				<button
-					class="w-full px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500 sm:w-fit"
+					class="bg-quinary-900 w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
 					@click="
 						async () => {
 							await creationTag()
@@ -153,19 +153,17 @@
 					:key="tag.name"
 					class="flex items-center justify-between gap-2"
 				>
-					<div
-						class="flex flex-col w-full rounded bg-quaternary px-2.5 py-1"
-					>
+					<div class="bg-quaternary-950 flex w-full flex-col rounded px-2.5 py-1">
 						<p>{{ tag.name }}</p>
 						<p class="text-xs text-zinc-500">
 							{{ tag.created }}
 						</p>
 					</div>
 					<div
-						class="flex h-full cursor-pointer items-center justify-center rounded bg-quaternary px-2.5 hover:bg-primary"
+						class="bg-quaternary-950 hover:bg-primary-900 flex h-full cursor-pointer items-center justify-center rounded px-2.5"
 						@click="deleteTag(tag.name)"
 					>
-						<IconDelete class="w-4 h-4" />
+						<IconDelete class="h-4 w-4" />
 					</div>
 				</div>
 			</div>

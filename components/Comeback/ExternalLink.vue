@@ -4,7 +4,7 @@
 		rel="noopener"
 		:to="link"
 		target="_blank"
-		class="flex items-center gap-2 rounded bg-quaternary px-3.5 py-2.5 text-xs hover:bg-quinary"
+		class="bg-quaternary-950 hover:bg-quinary-900 flex items-center gap-2 rounded px-3.5 py-2.5 text-xs"
 	>
 		<img :src="icon" :alt="name" class="h-4 w-4" />
 		<p class="hidden text-xs font-semibold uppercase md:block">{{ name }}</p>

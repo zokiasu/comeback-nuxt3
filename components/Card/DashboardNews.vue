@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import type { Artist } from '~/types/supabase/artist'
-	
+
 	const { id, message, artists, date } = defineProps({
 		id: {
 			type: String,
@@ -51,19 +51,21 @@
 </script>
 
 <template>
-	<div class="list-complete-item relative h-full space-y-2.5 rounded bg-quaternary p-3">
+	<div
+		class="list-complete-item bg-quaternary-950 relative h-full space-y-2.5 rounded p-3"
+	>
 		<div class="grid grid-cols-3 gap-2">
 			<div
 				v-for="artistObject in artists"
 				:key="artistObject.id"
-				class="flex flex-col items-center justify-center w-full overflow-hidden rounded bg-quinary"
+				class="bg-quinary-900 flex w-full flex-col items-center justify-center overflow-hidden rounded"
 			>
 				<NuxtImg
 					:src="artistObject.image"
 					:alt="artistObject.name"
 					format="webp"
 					loading="lazy"
-					class="object-cover w-full h-10"
+					class="h-10 w-full object-cover"
 					@load="loadingDone"
 				/>
 				<p class="px-2 py-1">{{ artistObject.name }}</p>
@@ -83,12 +85,12 @@
 		<div class="grid grid-cols-2 gap-3">
 			<button
 				disabled
-				class="px-3 py-1 transition-all duration-300 ease-in-out rounded bg-quinary hover:bg-tertiary/30"
+				class="bg-quinary-900 hover:bg-tertiary-200/30 rounded px-3 py-1 transition-all duration-300 ease-in-out"
 			>
 				Edit
 			</button>
 			<button
-				class="px-3 py-1 transition-all duration-300 ease-in-out rounded bg-quinary hover:bg-tertiary/30"
+				class="bg-quinary-900 hover:bg-tertiary-200/30 rounded px-3 py-1 transition-all duration-300 ease-in-out"
 				@click="deleteNews"
 			>
 				Delete

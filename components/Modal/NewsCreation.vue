@@ -43,18 +43,20 @@
 			verified: false,
 		}
 		sendNews.value = true
-    
-    // Extraire uniquement les IDs des artistes
-    const artistIds = artistListSelected.value.map(artist => artist.id)
-		
-		createNews(news, artistIds).then((res) => {
-			toast.success('News created')
-			sendNews.value = false
-			closeModal()
-		}).catch((error) => {
-			toast.error('Error creating news')
-			console.error('Error creating news', error)
-		})
+
+		// Extraire uniquement les IDs des artistes
+		const artistIds = artistListSelected.value.map((artist) => artist.id)
+
+		createNews(news, artistIds)
+			.then((res) => {
+				toast.success('News created')
+				sendNews.value = false
+				closeModal()
+			})
+			.catch((error) => {
+				toast.error('Error creating news')
+				console.error('Error creating news', error)
+			})
 	}
 
 	const addArtistToNews = (artist: any) => {
@@ -95,7 +97,8 @@
 </script>
 
 <template>
-	<div class="space-y-5 py-2">
+	<div class="bg-secondary-950 space-y-5 p-5">
+		<h3 class="text-2xl font-bold">Create Comeback</h3>
 		<div class="relative">
 			<ComebackInput
 				v-model="searchArtist"
@@ -105,12 +108,12 @@
 			/>
 			<div
 				v-if="artistListSearched.length"
-				class="scrollBarLight oversc top-18 absolute z-10 flex h-40 w-full flex-col justify-start overflow-hidden overflow-y-auto bg-quaternary p-1"
+				class="scrollBarLight oversc bg-quaternary-950 absolute top-18 z-10 flex h-40 w-full flex-col justify-start overflow-hidden overflow-y-auto p-1"
 			>
 				<button
 					v-for="artist in artistListSearched"
 					:key="artist.id"
-					class="rounded p-2 text-start hover:bg-quinary"
+					class="hover:bg-quinary-900 rounded p-2 text-start"
 					@click="addArtistToNews(artist)"
 				>
 					{{ artist.name }}
@@ -125,7 +128,7 @@
 					v-for="artist in artistListSelected"
 					:key="artist.id"
 					@click="removeArtistFromNews(artist)"
-					class="flex flex-col justify-center items-center px-5 relative hover:bg-red-500/50 rounded py-1 cursor-pointer"
+					class="relative flex cursor-pointer flex-col items-center justify-center rounded px-5 py-1 hover:bg-red-500/50"
 				>
 					<img :src="artist.picture" class="h-8 w-8 rounded-full object-cover" />
 					<p>{{ artist.name }}</p>
@@ -155,7 +158,7 @@
 
 		<button
 			:disabled="sendNews"
-			class="w-full rounded bg-primary py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+			class="bg-primary-900 w-full rounded py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
 			@click="creationNews"
 		>
 			<p v-if="sendNews">Sending...</p>

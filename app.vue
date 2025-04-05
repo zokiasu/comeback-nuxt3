@@ -65,10 +65,12 @@
 </script>
 
 <template>
-	<NuxtLayout>
-		<NuxtLoadingIndicator color="#9E0102" />
-		<NuxtPage />
-	</NuxtLayout>
+	<UApp>
+		<NuxtLayout>
+			<NuxtLoadingIndicator color="#9E0102" />
+			<NuxtPage />
+		</NuxtLayout>
+	</UApp>
 </template>
 
 <style>

@@ -1,8 +1,8 @@
 import { useToast } from 'vue-toastification'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { useSupabase } from './useSupabase'
 import type { News } from '~/types/supabase/news'
 import type { QueryOptions, FilterOptions } from '~/types/supabase'
-import type { SupabaseClient } from '@supabase/supabase-js'
 
 interface NewsResponse {
 	news: News[]
@@ -288,7 +288,7 @@ export function useSupabaseNews() {
 		}))
 
 		// Appeler le callback avec les données transformées
-		callback(transformedData as News[])
+		callback(null, transformedData as News[])
 
 		// Mettre en place la souscription en temps réel
 		const subscription = supabase
@@ -322,7 +322,7 @@ export function useSupabaseNews() {
 							artists:
 								news.artists?.map((artistJunction: any) => artistJunction.artists) || [],
 						}))
-						callback(transformedUpdatedData as News[])
+						callback(null, transformedUpdatedData as News[])
 					}
 				},
 			)

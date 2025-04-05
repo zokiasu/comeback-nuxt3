@@ -117,12 +117,12 @@
 				:key="platform"
 				class="flex w-full gap-1"
 			>
-				<div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
+				<div class="bg-quinary-900 w-full space-y-3 rounded p-2 text-xs">
 					<input
 						type="text"
 						:value="platform.name"
 						placeholder="Platform's Name"
-						class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+						class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 						@input="
 							(e) => {
 								const target = e.target as HTMLInputElement
@@ -134,7 +134,7 @@
 						type="text"
 						:value="platform.link"
 						placeholder="Platform's Link"
-						class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+						class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 						@input="
 							(e) => {
 								const target = e.target as HTMLInputElement
@@ -144,7 +144,7 @@
 					/>
 				</div>
 				<button
-					class="rounded bg-primary p-5 text-xs hover:bg-red-900"
+					class="bg-primary-900 rounded p-5 text-xs hover:bg-red-900"
 					@click="
 						releaseToUpdate.platformList.splice(
 							releaseToUpdate.platformList.indexOf(platform),
@@ -156,7 +156,7 @@
 				</button>
 			</div>
 			<button
-				class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
+				class="bg-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
 				@click="releaseToUpdate.platformList.push({ name: '', link: '' })"
 			>
 				Add Platforms

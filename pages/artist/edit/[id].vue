@@ -1,4 +1,12 @@
 <script setup lang="ts">
+	// External Packages
+	import VueMultiselect from 'vue-multiselect'
+	import VueDatePicker from '@vuepic/vue-datepicker'
+	import { useToast } from 'vue-toastification'
+	import * as Mdl from '@kouts/vue-modal'
+	import _ from 'lodash'
+
+	// Internal Types
 	import type { Artist } from '~/types/supabase/artist'
 	import type { MusicStyle } from '~/types/supabase/music_style'
 	import type { GeneralTag } from '~/types/supabase/general_tag'
@@ -8,16 +16,14 @@
 		ArtistPlatformLink,
 		ArtistSocialLink,
 	} from '~/types/supabase'
+
+	// Internal Composables
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
 	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'
 
-	import VueMultiselect from 'vue-multiselect'
+	// CSS / Side Effects
 	import '@vuepic/vue-datepicker/dist/main.css'
-	import VueDatePicker from '@vuepic/vue-datepicker'
-	import { useToast } from 'vue-toastification'
-	import * as Mdl from '@kouts/vue-modal'
-	import _ from 'lodash'
 
 	definePageMeta({
 		middleware: 'auth',
@@ -145,14 +151,14 @@
 			artist.value = await getFullArtistById(route.params.id as string)
 			stylesList.value = await getAllMusicStyles()
 			tagsList.value = await getAllGeneralTags()
-			
+
 			if (artist.value) {
 				artistToEdit.value = { ...artist.value }
 
 				const { socialLinks, platformLinks } = await getSocialAndPlatformLinksByArtistId(
 					artist.value.id,
 				)
-				
+
 				artistPlatformList.value = platformLinks || []
 				artistSocialList.value = socialLinks || []
 				artistGroups.value = artist.value.groups || []
@@ -162,8 +168,12 @@
 				groupList.value = artistsList.value.filter((artist) => artist.type === 'GROUP')
 				membersList.value = artistsList.value
 
-				artistStyles.value = stylesList.value.filter((style) => artist.value?.styles?.includes(style.name))
-				artistTags.value = tagsList.value.filter((tag) => artist.value?.general_tags?.includes(tag.name))
+				artistStyles.value = stylesList.value.filter((style) =>
+					artist.value?.styles?.includes(style.name),
+				)
+				artistTags.value = tagsList.value.filter((tag) =>
+					artist.value?.general_tags?.includes(tag.name),
+				)
 
 				const textarea = document.querySelector('textarea')
 				if (textarea) {
@@ -196,12 +206,12 @@
 		class="container mx-auto min-h-[calc(100vh-60px)] space-y-5 p-5 lg:px-10"
 	>
 		<div
-			class="flex items-end justify-between pb-1 text-lg font-semibold uppercase border-b border-zinc-700 lg:text-xl"
+			class="flex items-end justify-between border-b border-zinc-700 pb-1 text-lg font-semibold uppercase lg:text-xl"
 		>
 			<p>Artist Edition : {{ artistToEdit.name }}</p>
 			<button
 				:disabled="isUploadingEdit"
-				class="px-3 py-1 text-base font-semibold uppercase transition-all duration-300 ease-in-out rounded w-fit bg-primary hover:scale-105 hover:bg-red-900"
+				class="bg-primary-900 w-fit rounded px-3 py-1 text-base font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
 				@click="sendUpdateArtist"
 			>
 				{{ isUploadingEdit ? 'Loading' : 'Saves' }}
@@ -213,7 +223,7 @@
 			<div class="flex flex-col gap-2">
 				<div class="flex items-end gap-2">
 					<ComebackLabel label="Image" />
-					<p class="text-sm italic text-quinary">
+					<p class="text-quinary-900 text-sm italic">
 						Picture will be automaticaly update based on Youtube Music
 					</p>
 				</div>
@@ -223,7 +233,7 @@
 					:alt="artistToEdit.name"
 					format="webp"
 					loading="lazy"
-					class="object-cover w-full rounded"
+					class="w-full rounded object-cover"
 				/>
 			</div>
 			<!-- Name & Id YTM & Birthday & Debut Date -->
@@ -283,7 +293,7 @@
 						<div
 							v-for="gender in validGenders"
 							:key="gender"
-							class="flex items-center w-full gap-2"
+							class="flex w-full items-center gap-2"
 						>
 							<input
 								:id="gender"
@@ -293,11 +303,11 @@
 								class="hidden"
 							/>
 							<button
-								class="w-full px-3 py-1 text-sm rounded"
+								class="w-full rounded px-3 py-1 text-sm"
 								:class="
 									artistToEdit.gender === gender
-										? 'bg-primary text-white'
-										: 'bg-quaternary'
+										? 'bg-primary-900 text-white'
+										: 'bg-quaternary-950'
 								"
 								@click="artistToEdit.gender = gender"
 							>
@@ -313,7 +323,7 @@
 						<div
 							v-for="type in artistTypes"
 							:key="type"
-							class="flex items-center w-full gap-2"
+							class="flex w-full items-center gap-2"
 						>
 							<input
 								:id="type"
@@ -323,9 +333,11 @@
 								class="hidden"
 							/>
 							<button
-								class="w-full px-3 py-1 text-sm rounded"
+								class="w-full rounded px-3 py-1 text-sm"
 								:class="
-									artistToEdit.type === type ? 'bg-primary text-white' : 'bg-quaternary'
+									artistToEdit.type === type
+										? 'bg-primary-900 text-white'
+										: 'bg-quaternary-950'
 								"
 								@click="artistToEdit.type = type"
 							>
@@ -344,7 +356,7 @@
 								{ value: false, label: 'Inactive' },
 							]"
 							:key="status.label"
-							class="flex items-center w-full gap-2"
+							class="flex w-full items-center gap-2"
 						>
 							<input
 								:id="status.label"
@@ -354,11 +366,11 @@
 								class="hidden"
 							/>
 							<button
-								class="w-full px-3 py-1 text-sm rounded"
+								class="w-full rounded px-3 py-1 text-sm"
 								:class="
 									artistToEdit.active_career === status.value
-										? 'bg-primary text-white'
-										: 'bg-quaternary'
+										? 'bg-primary-900 text-white'
+										: 'bg-quaternary-950'
 								"
 								@click="artistToEdit.active_career = status.value"
 							>
@@ -375,7 +387,7 @@
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="Styles" />
 						<button
-							class="px-2 py-1 text-xs font-semibold uppercase rounded w-fit bg-primary hover:bg-red-900"
+							class="bg-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
 							@click="showModalCreateStyle = true"
 						>
 							Create New Style
@@ -398,7 +410,7 @@
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="General Tags" />
 						<button
-							class="px-2 py-1 text-xs font-semibold uppercase rounded w-fit bg-primary hover:bg-red-900"
+							class="bg-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
 							@click="showModalCreateTag = true"
 						>
 							Create New Tag
@@ -423,7 +435,7 @@
 				<textarea
 					v-model="artistToEdit.description"
 					:placeholder="artistToEdit.description || 'Description'"
-					class="min-h-full w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:bg-tertiary focus:p-1.5 focus:text-secondary focus:outline-none"
+					class="focus:bg-tertiary-200 focus:text-secondary-950 min-h-full w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:p-1.5 focus:outline-none"
 					@input="(e: Event) => adjustTextarea(e.target as HTMLTextAreaElement)"
 				/>
 			</div>
@@ -433,7 +445,7 @@
 					<ComebackLabel label="Group" />
 					<button
 						v-if="isAdminStore"
-						class="px-2 py-1 text-xs font-semibold uppercase rounded w-fit bg-primary hover:bg-red-900"
+						class="bg-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
 						@click="showModalCreateArtist = true"
 					>
 						Create New Artist
@@ -457,7 +469,7 @@
 					<ComebackLabel label="Members" />
 					<button
 						v-if="isAdminStore"
-						class="px-2 py-1 text-xs font-semibold uppercase rounded w-fit bg-primary hover:bg-red-900"
+						class="bg-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
 						@click="showModalCreateArtist = true"
 					>
 						Create New Artist
@@ -485,12 +497,12 @@
 						:key="index + '_platform'"
 						class="flex w-full gap-1"
 					>
-						<div class="w-full p-2 space-y-3 text-xs rounded bg-quinary">
+						<div class="bg-quinary-900 w-full space-y-3 rounded p-2 text-xs">
 							<input
 								type="text"
 								:value="platform.name"
 								placeholder="Platform's Name"
-								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
 									(e: Event) =>
 										(artistPlatformList[index].name = (
@@ -502,7 +514,7 @@
 								type="text"
 								:value="platform.link"
 								placeholder="Platform's Link"
-								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
 									(e: Event) =>
 										(artistPlatformList[index].link = (
@@ -512,14 +524,14 @@
 							/>
 						</div>
 						<button
-							class="p-5 text-xs rounded bg-primary hover:bg-red-900"
+							class="bg-primary-900 rounded p-5 text-xs hover:bg-red-900"
 							@click="artistPlatformList.splice(index, 1)"
 						>
 							Delete
 						</button>
 					</div>
 					<button
-						class="w-full p-2 text-xs font-semibold uppercase rounded bg-primary hover:bg-red-900"
+						class="bg-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
 						@click="artistPlatformList.push({ name: '', link: '' })"
 					>
 						Add Platforms
@@ -533,12 +545,12 @@
 						:key="index + '_social'"
 						class="flex w-full gap-2"
 					>
-						<div class="w-full p-2 space-y-3 text-xs rounded bg-quinary">
+						<div class="bg-quinary-900 w-full space-y-3 rounded p-2 text-xs">
 							<input
 								type="text"
 								:value="social.name"
 								placeholder="Social's Name"
-								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
 									(e: Event) =>
 										(artistSocialList[index].name =
@@ -549,7 +561,7 @@
 								type="text"
 								:value="social.link"
 								placeholder="Social's Link"
-								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
 									(e: Event) =>
 										(artistSocialList[index].link =
@@ -558,14 +570,14 @@
 							/>
 						</div>
 						<button
-							class="p-5 text-xs rounded bg-primary hover:bg-red-900"
+							class="bg-primary-900 rounded p-5 text-xs hover:bg-red-900"
 							@click="artistSocialList.splice(index, 1)"
 						>
 							Delete
 						</button>
 					</div>
 					<button
-						class="w-full p-2 text-xs font-semibold uppercase rounded bg-primary hover:bg-red-900"
+						class="bg-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
 						@click="artistSocialList.push({ name: '', link: '' })"
 					>
 						Add Socials
@@ -574,10 +586,10 @@
 			</div>
 		</div>
 
-		<div class="pt-3 border-t border-zinc-700">
+		<div class="border-t border-zinc-700 pt-3">
 			<button
 				:disabled="isUploadingEdit"
-				class="w-full py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary hover:scale-105 hover:bg-red-900"
+				class="bg-primary-900 w-full rounded py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
 				@click="sendUpdateArtist"
 			>
 				{{ isUploadingEdit ? 'Loading' : 'Saves' }}
@@ -639,6 +651,6 @@
 		</Modal>
 	</div>
 	<div v-else>
-		<SkeletonDefault class="w-full rounded h-14" />
+		<SkeletonDefault class="h-14 w-full rounded" />
 	</div>
 </template>

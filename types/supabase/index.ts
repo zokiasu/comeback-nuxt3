@@ -223,52 +223,52 @@ export interface Database {
 					created_at?: string
 				}
 			}
-      artist_social_links: {
-        Row: {
-          id: string
-          artist_id: string
-          link: string
-          name: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          artist_id: string
-          link: string
-          name: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          artist_id?: string
-          link?: string
-          name?: string
-          created_at?: string
-        }
-      }
-      artist_platform_links: {
-        Row: {
-          id: string
-          artist_id: string
-          link: string
-          name: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          artist_id: string
-          link: string
-          name: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          artist_id?: string
-          link?: string
-          name?: string
-          created_at?: string
-        }
-      }
+			artist_social_links: {
+				Row: {
+					id: string
+					artist_id: string
+					link: string
+					name: string
+					created_at: string
+				}
+				Insert: {
+					id?: string
+					artist_id: string
+					link: string
+					name: string
+					created_at?: string
+				}
+				Update: {
+					id?: string
+					artist_id?: string
+					link?: string
+					name?: string
+					created_at?: string
+				}
+			}
+			artist_platform_links: {
+				Row: {
+					id: string
+					artist_id: string
+					link: string
+					name: string
+					created_at: string
+				}
+				Insert: {
+					id?: string
+					artist_id: string
+					link: string
+					name: string
+					created_at?: string
+				}
+				Update: {
+					id?: string
+					artist_id?: string
+					link?: string
+					name?: string
+					created_at?: string
+				}
+			}
 			music_artists: {
 				Row: {
 					music_id: string

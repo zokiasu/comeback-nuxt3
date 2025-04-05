@@ -99,7 +99,7 @@
 		<div class="flex flex-col gap-2">
 			<div class="flex items-end gap-2">
 				<ComebackLabel label="Image" />
-				<p class="text-sm italic text-quinary">
+				<p class="text-quinary-900 text-sm italic">
 					Picture will be automaticaly update based on Youtube Music
 				</p>
 			</div>
@@ -122,8 +122,8 @@
 					v-model="artist.type"
 					class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
 				>
-					<option value="SOLO" class="text-secondary">SOLO</option>
-					<option value="GROUP" class="text-secondary">GROUP</option>
+					<option value="SOLO" class="text-secondary-950">SOLO</option>
+					<option value="GROUP" class="text-secondary-950">GROUP</option>
 				</select>
 			</div>
 			<!-- Active Career -->
@@ -133,8 +133,8 @@
 					v-model="artist.activeCareer"
 					class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
 				>
-					<option :value="true" class="text-secondary">Active</option>
-					<option :value="false" class="text-secondary">Inactive</option>
+					<option :value="true" class="text-secondary-950">Active</option>
+					<option :value="false" class="text-secondary-950">Inactive</option>
 				</select>
 			</div>
 		</div>
@@ -177,7 +177,7 @@
 			<textarea
 				v-model="artist.description"
 				:placeholder="artist.description || 'Description'"
-				class="min-h-full w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:bg-tertiary focus:p-1.5 focus:text-secondary focus:outline-none"
+				class="focus:bg-tertiary-200 focus:text-secondary-950 min-h-full w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:p-1.5 focus:outline-none"
 				@input="adjustTextarea($event)"
 			/>
 		</div>
@@ -221,31 +221,31 @@
 					:key="platform"
 					class="flex w-full gap-1"
 				>
-					<div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
+					<div class="bg-quinary-900 w-full space-y-3 rounded p-2 text-xs">
 						<input
 							type="text"
 							:value="platform.name"
 							placeholder="Platform's Name"
-							class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+							class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 							@input="artist.platformList[index].name = $event.target.value"
 						/>
 						<input
 							type="text"
 							:value="platform.link"
 							placeholder="Platform's Link"
-							class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+							class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 							@input="artist.platformList[index].link = $event.target.value"
 						/>
 					</div>
 					<button
-						class="rounded bg-primary p-1 text-xs hover:bg-red-900"
+						class="bg-primary-900 rounded p-1 text-xs hover:bg-red-900"
 						@click="artist.platformList.splice(artist.platformList.indexOf(platform), 1)"
 					>
 						<IconDelete class="h-5 w-5" />
 					</button>
 				</div>
 				<button
-					class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
+					class="bg-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
 					@click="artist.platformList.push({ name: '', link: '' })"
 				>
 					Add Platforms
@@ -259,31 +259,31 @@
 					:key="social"
 					class="flex w-full gap-2"
 				>
-					<div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
+					<div class="bg-quinary-900 w-full space-y-3 rounded p-2 text-xs">
 						<input
 							type="text"
 							:value="social.name"
 							placeholder="Social's Name"
-							class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+							class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 							@input="artist.socialList[index].name = $event.target.value"
 						/>
 						<input
 							type="text"
 							:value="social.link"
 							placeholder="Social's Link"
-							class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+							class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 							@input="artist.socialList[index].link = $event.target.value"
 						/>
 					</div>
 					<button
-						class="rounded bg-primary p-1 text-xs hover:bg-red-900"
+						class="bg-primary-900 rounded p-1 text-xs hover:bg-red-900"
 						@click="artist.socialList.splice(artist.socialList.indexOf(social), 1)"
 					>
 						<IconDelete class="h-5 w-5" />
 					</button>
 				</div>
 				<button
-					class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
+					class="bg-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
 					@click="artist.socialList.push({ name: '', link: '' })"
 				>
 					Add Socials
@@ -294,7 +294,7 @@
 		<div class="border-t border-zinc-700 pt-3">
 			<button
 				:disabled="isUploadingEdit"
-				class="w-full rounded bg-primary py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+				class="bg-primary-900 w-full rounded py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
 				@click="sendCreateArtist"
 			>
 				{{ isUploadingEdit ? 'Loading' : 'Saves' }}

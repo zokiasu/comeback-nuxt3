@@ -159,10 +159,10 @@
 		<div v-if="isLoading" class="mx-auto space-y-12">
 			<section class="space-y-2">
 				<SkeletonDefault class="min-h-[20rem] w-full lg:max-h-[30rem] lg:min-h-[30rem]" />
-				<SkeletonDefault class="w-full h-3 rounded-full" />
-				<SkeletonDefault class="w-full h-3 rounded-full" />
-				<SkeletonDefault class="w-3/4 h-3 rounded-full" />
-				<SkeletonDefault class="w-2/4 h-3 rounded-full" />
+				<SkeletonDefault class="h-3 w-full rounded-full" />
+				<SkeletonDefault class="h-3 w-full rounded-full" />
+				<SkeletonDefault class="h-3 w-3/4 rounded-full" />
+				<SkeletonDefault class="h-3 w-2/4 rounded-full" />
 			</section>
 		</div>
 
@@ -173,7 +173,7 @@
 				<div class="relative h-fit min-h-[20rem] lg:max-h-[30rem] lg:min-h-[30rem]">
 					<div
 						class="absolute inset-0 min-h-[20rem] w-full transition-all duration-700 ease-in-out lg:max-h-[30rem] lg:min-h-[30rem]"
-						:class="imageLoaded ? 'bg-black opacity-30' : 'bg-primary opacity-100'"
+						:class="imageLoaded ? 'bg-black opacity-30' : 'bg-primary-900 opacity-100'"
 					/>
 					<NuxtImg
 						v-if="release.image"
@@ -187,7 +187,7 @@
 				</div>
 				<!-- Header Data-->
 				<div
-					class="z-10 flex flex-col justify-end p-5 space-y-3 transition-all duration-300 ease-in-out md:absolute md:inset-0 md:min-h-full md:justify-center md:bg-secondary/50"
+					class="md:bg-secondary-950/50 z-10 flex flex-col justify-end space-y-3 p-5 transition-all duration-300 ease-in-out md:absolute md:inset-0 md:min-h-full md:justify-center"
 				>
 					<div class="container mx-auto flex items-center gap-5 space-y-2.5 lg:items-end">
 						<NuxtImg
@@ -196,11 +196,11 @@
 							preload
 							:alt="release.name"
 							:src="release.image"
-							class="hidden aspect-square max-w-[12rem] rounded bg-primary md:block lg:max-w-[20rem]"
+							class="bg-primary-900 hidden aspect-square max-w-[12rem] rounded md:block lg:max-w-[20rem]"
 						/>
 						<SkeletonDefault
 							v-else
-							class="hidden aspect-square min-w-[12rem] max-w-[12rem] rounded md:block lg:min-w-[20rem] lg:max-w-[20rem]"
+							class="hidden aspect-square max-w-[12rem] min-w-[12rem] rounded md:block lg:max-w-[20rem] lg:min-w-[20rem]"
 						/>
 						<div class="mt-auto space-y-3">
 							<div class="space-y-2">
@@ -210,7 +210,7 @@
 								<div v-if="release.artists" class="flex items-center gap-2">
 									<NuxtLink
 										:to="`/artist/${release.artists[0].id}`"
-										class="flex items-center gap-2 rounded-full transition-all duration-300 ease-in-out hover:bg-secondary hover:px-3 hover:py-0.5"
+										class="hover:bg-secondary-950 flex items-center gap-2 rounded-full transition-all duration-300 ease-in-out hover:px-3 hover:py-0.5"
 									>
 										<p class="text-sm font-semibold">
 											{{ release.artists[0].name }}
@@ -222,7 +222,7 @@
 									<p>{{ formatDate(release.date) }}</p>
 								</div>
 								<button
-									class="px-2 py-1 text-sm rounded bg-quaternary hover:bg-tertiary/10"
+									class="bg-quaternary-950 hover:bg-tertiary-200/10 rounded px-2 py-1 text-sm"
 									@click="editRelease"
 								>
 									Edit
@@ -233,7 +233,7 @@
 				</div>
 			</section>
 
-			<section class="container p-5 py-5 mx-auto space-y-12 md:px-10 xl:px-0">
+			<section class="container mx-auto space-y-12 p-5 py-5 md:px-10 xl:px-0">
 				<!-- Musics -->
 				<section v-if="release.musics?.length && release.artists" class="space-y-2">
 					<CardDefault :name="`Tracks (${release.musics?.length})`">
@@ -248,7 +248,7 @@
 								:has-mv="song.ismv"
 								:music-image="song.thumbnails?.[2]?.url || ''"
 								:duration="song.duration || 0"
-								class="w-full bg-quinary"
+								class="bg-quinary-900 w-full"
 							/>
 						</transition-group>
 					</CardDefault>
@@ -304,7 +304,7 @@
 							<ComebackLabel label="Type" />
 							<select
 								v-model="release.type"
-								class="rounded border border-transparent bg-quaternary px-2 py-1.5 transition-all duration-150 ease-in-out hover:cursor-pointer focus:border-primary focus:outline-none"
+								class="bg-quaternary-950 focus:border-primary-900 rounded border border-transparent px-2 py-1.5 transition-all duration-150 ease-in-out hover:cursor-pointer focus:outline-none"
 							>
 								<option value="ALBUM">ALBUM</option>
 								<option value="EP">EP</option>
@@ -333,12 +333,12 @@
 							<div
 								v-for="music in release.musics"
 								:key="music.id_youtube_music"
-								class="py-1 pl-2 pr-1 space-y-1 rounded bg-quinary"
+								class="bg-quinary-900 space-y-1 rounded py-1 pr-1 pl-2"
 							>
-								<div class="flex items-center justify-between w-full gap-2">
+								<div class="flex w-full items-center justify-between gap-2">
 									<p>{{ music.name }}</p>
 									<div
-										class="flex items-center gap-2 px-2 py-1 text-xs rounded w-fit bg-quaternary"
+										class="bg-quaternary-950 flex w-fit items-center gap-2 rounded px-2 py-1 text-xs"
 									>
 										<label class="whitespace-nowrap">Has MV</label>
 										<input type="checkbox" v-model="music.ismv" />
@@ -350,7 +350,7 @@
 					</div>
 
 					<button
-						class="w-full py-2 font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary hover:scale-105 hover:bg-red-900"
+						class="bg-primary-900 w-full rounded py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
 						@click="updateReleaseFunction(release.id, release)"
 					>
 						<p>Update Release</p>

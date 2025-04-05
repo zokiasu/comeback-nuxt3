@@ -32,7 +32,7 @@
 
 		if (window.scrollY > 50) {
 			navbar.value.classList.add(
-				'bg-secondary',
+				'bg-secondary-950',
 				'border',
 				'border-zinc-700',
 				'shadow',
@@ -40,7 +40,7 @@
 			)
 		} else {
 			navbar.value.classList.remove(
-				'bg-secondary',
+				'bg-secondary-950',
 				'border',
 				'border-zinc-700',
 				'shadow',
@@ -89,7 +89,7 @@
 						"
 					>
 						SyncRadio
-						<span class="absolute -bottom-2 -right-4 px-2 text-xs font-bold text-primary">
+						<span class="absolute -bottom-2 -right-4 px-2 text-xs font-bold text-primary-900">
 							Beta
 						</span>
 					</NuxtLink> -->
@@ -109,23 +109,38 @@
 				<div class="flex items-center justify-center gap-x-2 text-sm">
 					<button
 						title="Search Artist"
-						class="rounded bg-quaternary p-2 hover:bg-tertiary/20"
+						class="bg-quaternary-950 hover:bg-tertiary-200/20 rounded p-2"
 						@click="showModalAlgolia = true"
 					>
 						<IconSearch class="h-3.5 w-3.5" />
 					</button>
+
 					<button
 						v-if="isLoginStore"
 						title="Add new comeback"
-						class="rounded bg-primary px-3 py-1 font-semibold transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50"
+						class="bg-primary-900 hover:bg-primary-900/50 rounded px-3 py-1 font-semibold transition-all duration-300 ease-in-out hover:scale-110"
 						@click="showModal = true"
 					>
 						New Comeback
 					</button>
+
+					<UModal>
+						<UButton
+							label="New Comeback"
+							color="primary"
+							variant="subtle"
+							class="cursor-pointer"
+						/>
+
+						<template #content>
+							<LazyModalNewsCreation />
+						</template>
+					</UModal>
+
 					<NuxtLink
 						v-if="!isLoginStore"
 						:to="`/authentification`"
-						class="rounded bg-quaternary px-3 py-1 text-[0.875rem]"
+						class="bg-quaternary-950 rounded px-3 py-1 text-[0.875rem]"
 					>
 						Login
 					</NuxtLink>
@@ -133,7 +148,7 @@
 						v-if="isLoginStore && userDataStore"
 						:to="profilePath"
 						title="Profile"
-						class="flex h-full items-center gap-2 rounded bg-quaternary px-3 py-1 hover:bg-tertiary/20"
+						class="flex h-full items-center gap-2 rounded bg-quaternary-950 px-3 py-1 hover:bg-tertiary-200/20"
 					>
 						<p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>
 					</NuxtLink> -->
@@ -141,13 +156,14 @@
 						v-if="isLoginStore"
 						:to="`/settings/profile`"
 						title="Settings"
-						class="flex h-full items-center gap-2 rounded bg-quaternary px-3 py-1 hover:bg-tertiary/20"
+						class="bg-quaternary-950 hover:bg-tertiary-200/20 flex h-full items-center gap-2 rounded px-3 py-1"
 					>
 						<IconSettings class="h-3.5 w-3.5" />
 					</NuxtLink>
 				</div>
 			</div>
 		</div>
+
 		<Modal
 			v-model="showModal"
 			title="Add a News"
@@ -159,9 +175,7 @@
 			:bg-in-class="`animate__fadeInUp`"
 			:bg-out-class="`animate__fadeOutDown`"
 		>
-			<LazyModalNewsCreation
-				@close-modal="showModal = false"
-			/>
+			<LazyModalNewsCreation @close-modal="showModal = false" />
 		</Modal>
 		<Modal
 			v-model="showModalAlgolia"

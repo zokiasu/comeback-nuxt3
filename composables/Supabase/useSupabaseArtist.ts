@@ -1,4 +1,5 @@
 import { useToast } from 'vue-toastification'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { useSupabase } from './useSupabase'
 import type {
 	QueryOptions,
@@ -8,7 +9,6 @@ import type {
 	ArtistPlatformLink,
 } from '~/types/supabase'
 import type { Artist } from '~/types/supabase/artist'
-import type { SupabaseClient } from '@supabase/supabase-js'
 
 export function useSupabaseArtist() {
 	const { supabase } = useSupabase() as { supabase: SupabaseClient }
@@ -474,6 +474,7 @@ export function useSupabaseArtist() {
 			throw new Error('Erreur lors de la récupération des derniers artistes')
 		}
 
+		// eslint-disable-next-line n/no-callback-literal
 		callback(data as Artist[])
 	}
 

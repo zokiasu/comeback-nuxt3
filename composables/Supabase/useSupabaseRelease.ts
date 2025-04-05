@@ -1,8 +1,8 @@
 import { useToast } from 'vue-toastification'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { useSupabase } from './useSupabase'
 import type { Release } from '~/types/supabase/release'
 import type { QueryOptions, FilterOptions, ReleaseType } from '~/types/supabase'
-import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Artist } from '~/types/supabase/artist'
 
 export function useSupabaseRelease() {

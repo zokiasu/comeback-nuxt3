@@ -1,8 +1,8 @@
 import { useToast } from 'vue-toastification'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { useSupabase } from './useSupabase'
 import type { QueryOptions, FilterOptions, MusicType } from '~/types/supabase'
 import type { Music } from '~/types/supabase/music'
-import type { SupabaseClient } from '@supabase/supabase-js'
 
 export function useSupabaseMusic() {
 	const { supabase } = useSupabase() as { supabase: SupabaseClient }
@@ -251,7 +251,7 @@ export function useSupabaseMusic() {
 			return
 		}
 
-		callback(data as Music[])
+		callback(null, data as Music[])
 	}
 
 	// Récupère un nombre aléatoire de musiques
@@ -309,7 +309,10 @@ export function useSupabaseMusic() {
 	}
 
 	// Récupère un nombre aléatoire de musiques liées à un artiste
-	const getRandomMusicsByArtistId = async (artistId: string, count: number): Promise<Music[]> => {
+	const getRandomMusicsByArtistId = async (
+		artistId: string,
+		count: number,
+	): Promise<Music[]> => {
 		try {
 			// 1. Récupérer des IDs aléatoires de musiques liées à l'artiste
 			const { data: randomMusics, error: randomError } = await supabase.rpc(

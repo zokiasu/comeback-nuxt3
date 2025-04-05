@@ -83,16 +83,13 @@
 			yearList.value.push(year)
 		}
 
-		await getReleasesByMonthAndYear(
-			currentMonth.value,
-			currentYear.value,
-		).then((res) => {
+		await getReleasesByMonthAndYear(currentMonth.value, currentYear.value).then((res) => {
 			loading.value = false
 			releases.value = res.sort((a, b) => {
 				return new Date(b.date).getTime() - new Date(a.date).getTime()
 			})
 		})
-		
+
 		window.addEventListener('scroll', handleScrollCalendar)
 	})
 
@@ -124,20 +121,20 @@
 <template>
 	<div
 		id="calendarPage"
-		class="container w-full min-h-screen p-3 mx-auto space-y-3 h-fit md:p-5"
+		class="container mx-auto h-fit min-h-screen w-full space-y-3 p-3 md:p-5"
 	>
 		<!-- Period Selector -->
 		<div>
 			<!-- Year Selector -->
 			<div
-				class="flex w-full gap-1 pb-1 overflow-x-auto text-xs font-semibold remove-scrollbar scrollBarLight snap-x snap-mandatory"
+				class="remove-scrollbar scrollBarLight flex w-full snap-x snap-mandatory gap-1 overflow-x-auto pb-1 text-xs font-semibold"
 			>
 				<button
 					v-for="year in yearList"
 					:id="String(year)"
 					:key="year"
 					class="h-full w-full snap-start rounded px-4 py-2.5"
-					:class="currentYear == year ? 'bg-primary' : 'bg-quaternary'"
+					:class="currentYear == year ? 'bg-primary-900' : 'bg-quaternary-950'"
 					@click="((currentYear = year), switchTypeFilter('ALL'))"
 				>
 					{{ year }}
@@ -146,14 +143,14 @@
 			<!-- Month Selector -->
 			<div
 				v-if="yearList.length"
-				class="flex w-full gap-1 pb-1 overflow-x-auto text-xs font-semibold remove-scrollbar scrollBarLight snap-x snap-mandatory"
+				class="remove-scrollbar scrollBarLight flex w-full snap-x snap-mandatory gap-1 overflow-x-auto pb-1 text-xs font-semibold"
 			>
 				<button
 					v-for="(month, index) in monthList"
 					:id="month.original"
 					:key="month.original"
 					class="h-full w-full snap-start rounded px-4 py-2.5"
-					:class="currentMonth == index ? 'bg-primary' : 'bg-quaternary'"
+					:class="currentMonth == index ? 'bg-primary-900' : 'bg-quaternary-950'"
 					@click="((currentMonth = index), switchTypeFilter('ALL'))"
 				>
 					<p class="block md:hidden">{{ month.minify }}</p>
@@ -162,15 +159,17 @@
 			</div>
 		</div>
 		<!-- Stats -->
-		<div class="py-3 space-y-2 text-xs border-y-2 border-quaternary">
+		<div class="border-quaternary-950 space-y-2 border-y-2 py-3 text-xs">
 			<!-- <p class="text-base font-semibold text-center">
         {{ monthList[currentMonth].original }} {{ currentYear }}'s stats
       </p> -->
-			<div class="grid items-center justify-center grid-cols-4 gap-1 lg:gap-5">
+			<div class="grid grid-cols-4 items-center justify-center gap-1 lg:gap-5">
 				<button
-					class="flex flex-col items-center justify-center w-full h-full px-2 py-1 rounded bg-primary"
+					class="bg-primary-900 flex h-full w-full flex-col items-center justify-center rounded px-2 py-1"
 					:class="
-						!onlyAlbums && !onlyEps && !onlySingles ? 'bg-primary' : 'bg-quaternary'
+						!onlyAlbums && !onlyEps && !onlySingles
+							? 'bg-primary-900'
+							: 'bg-quaternary-950'
 					"
 					@click="switchTypeFilter('ALL')"
 				>
@@ -178,8 +177,12 @@
 					<span class="text-base font-bold">{{ releases.length }}</span>
 				</button>
 				<button
-					class="flex flex-col items-center justify-center w-full h-full px-2 py-1 rounded bg-primary"
-					:class="onlyAlbums && !onlyEps && !onlySingles ? 'bg-primary' : 'bg-quaternary'"
+					class="bg-primary-900 flex h-full w-full flex-col items-center justify-center rounded px-2 py-1"
+					:class="
+						onlyAlbums && !onlyEps && !onlySingles
+							? 'bg-primary-900'
+							: 'bg-quaternary-950'
+					"
 					@click="switchTypeFilter('ALBUM')"
 				>
 					Total albums
@@ -188,8 +191,12 @@
 					</span>
 				</button>
 				<button
-					class="flex flex-col items-center justify-center w-full h-full px-2 py-1 rounded bg-primary"
-					:class="!onlyAlbums && onlyEps && !onlySingles ? 'bg-primary' : 'bg-quaternary'"
+					class="bg-primary-900 flex h-full w-full flex-col items-center justify-center rounded px-2 py-1"
+					:class="
+						!onlyAlbums && onlyEps && !onlySingles
+							? 'bg-primary-900'
+							: 'bg-quaternary-950'
+					"
 					@click="switchTypeFilter('EP')"
 				>
 					Total EPs
@@ -198,8 +205,12 @@
 					</span>
 				</button>
 				<button
-					class="flex flex-col items-center justify-center w-full h-full px-2 py-1 rounded bg-primary"
-					:class="!onlyAlbums && !onlyEps && onlySingles ? 'bg-primary' : 'bg-quaternary'"
+					class="bg-primary-900 flex h-full w-full flex-col items-center justify-center rounded px-2 py-1"
+					:class="
+						!onlyAlbums && !onlyEps && onlySingles
+							? 'bg-primary-900'
+							: 'bg-quaternary-950'
+					"
 					@click="switchTypeFilter('SINGLE')"
 				>
 					Total singles
@@ -209,7 +220,7 @@
 				</button>
 			</div>
 		</div>
-		<!-- <p class="text-sm italic text-primary">Some troubles have been noticed with our release recovery API and are working to resolve them quickly. We apologize for the inconvenience.</p> -->
+		<!-- <p class="text-sm italic text-primary-900">Some troubles have been noticed with our release recovery API and are working to resolve them quickly. We apologize for the inconvenience.</p> -->
 		<!-- Releases -->
 		<transition-group
 			tag="div"
@@ -231,14 +242,14 @@
 				class="!min-w-full"
 			/>
 		</transition-group>
-		<SkeletonDefault v-if="loading" text="Loading..." class="w-full h-48 rounded-lg" />
+		<SkeletonDefault v-if="loading" text="Loading..." class="h-48 w-full rounded-lg" />
 		<!-- Back to top -->
 		<div
 			ref="backTop"
-			class="sticky hidden w-full py-5 text-center bottom-12 lg:bottom-0"
+			class="sticky bottom-12 hidden w-full py-5 text-center lg:bottom-0"
 		>
 			<button
-				class="w-fit bg-quaternary px-4 py-2.5 text-xs font-semibold shadow shadow-zinc-700"
+				class="bg-quaternary-950 w-fit px-4 py-2.5 text-xs font-semibold shadow shadow-zinc-700"
 				@click="backToTop"
 			>
 				Back to top
