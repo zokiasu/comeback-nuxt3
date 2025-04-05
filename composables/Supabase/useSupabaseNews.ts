@@ -285,10 +285,10 @@ export function useSupabaseNews() {
 		const transformedData = data?.map((news) => ({
 			...news,
 			artists: news.artists?.map((artistJunction: any) => artistJunction.artists) || [],
-		}))
+		})) || []
 
 		// Appeler le callback avec les données transformées
-		callback(null, transformedData as News[])
+		callback(transformedData as News[])
 
 		// Mettre en place la souscription en temps réel
 		const subscription = supabase
@@ -321,8 +321,8 @@ export function useSupabaseNews() {
 							...news,
 							artists:
 								news.artists?.map((artistJunction: any) => artistJunction.artists) || [],
-						}))
-						callback(null, transformedUpdatedData as News[])
+						})) || []
+						callback(transformedUpdatedData as News[])
 					}
 				},
 			)
