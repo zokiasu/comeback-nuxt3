@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { Timestamp, doc, onSnapshot, updateDoc } from 'firebase/firestore'
-	import { useToast } from 'vue-toastification'
+
 	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
 	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
 	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'

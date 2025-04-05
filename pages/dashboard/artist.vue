@@ -11,7 +11,7 @@
 		QueryDocumentSnapshot,
 		type DocumentData,
 	} from 'firebase/firestore'
-	import { useToast } from 'vue-toastification'
+
 	import debounce from 'lodash.debounce'
 	import type { Artist } from '~/types/supabase/artist'
 	import type { ArtistSocialLink, ArtistPlatformLink } from '~/types/supabase'

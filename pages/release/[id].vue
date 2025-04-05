@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import * as Mdl from '@kouts/vue-modal'
 	import VueDatePicker from '@vuepic/vue-datepicker'
-	import { useToast } from 'vue-toastification'
+
 	import { useUserStore } from '@/stores/user'
 	import { type Release } from '@/types/supabase/release'
 	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'

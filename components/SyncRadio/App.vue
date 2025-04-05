@@ -1,5 +1,4 @@
 <script setup>
-	import { useToast } from 'vue-toastification'
 	import debounce from 'lodash.debounce'
 	import { useFirebaseRealtimeDatabase } from '~/composables/useFirebaseRealtimeDatabase'
 	import { useFirebaseUtils } from '~/composables/useFirebaseUtils'

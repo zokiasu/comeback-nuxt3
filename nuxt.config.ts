@@ -50,8 +50,6 @@ export default defineNuxtConfig({
 
 	plugins: [
 		'~/plugins/firebase.client.ts',
-		'~/plugins/toast.js',
-		'~/plugins/VueDatePicker.js',
 		'~/plugins/vueModal.js',
 	],
 
@@ -67,7 +65,6 @@ export default defineNuxtConfig({
 	build: {
 		transpile: [
 			'firebase',
-			'@vuepic/vue-datepicker',
 			'@kouts/vue-modal',
 			'vue-toastification',
 			'swiper',
@@ -170,9 +167,7 @@ export default defineNuxtConfig({
 		apiKey: process.env.ALGOLIA_API_KEY,
 		applicationId: process.env.ALGOLIA_APPLICATION_ID,
 		lite: true,
-		search: {
-			indexName: process.env.ALGOLIA_INDEX_NAME,
-		},
+		indexName: process.env.ALGOLIA_INDEX_NAME,
 		instantSearch: {
 			theme: 'algolia',
 		},

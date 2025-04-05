@@ -26,7 +26,6 @@
 </template>
 
 <script setup lang="ts">
-	import { useToast } from 'vue-toastification'
 	import type { GeneralTag } from '~/types/supabase/general_tag'
 	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'
 

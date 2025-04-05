@@ -1,9 +1,8 @@
 <script setup lang="ts">
 	// External Packages
-	import VueMultiselect from 'vue-multiselect'
-	import VueDatePicker from '@vuepic/vue-datepicker'
-	import { useToast } from 'vue-toastification'
 	import * as Mdl from '@kouts/vue-modal'
+	// Réimporter CalendarDate et getLocalTimeZone
+	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
 
 	// Internal Types
 	import type { Artist } from '~/types/supabase/artist'
@@ -21,12 +20,9 @@
 	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
 	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'
 
-	// CSS / Side Effects
-	import '@vuepic/vue-datepicker/dist/main.css'
-
-	definePageMeta({
-		middleware: 'auth',
-	})
+	// --- Type Helper for Menu Items ---
+	// Crée un type générique qui ajoute 'label' à un type existant T
+	type MenuItem<T> = T & { label: string }
 
 	const { Modal } = Mdl
 	const toast = useToast()
@@ -52,17 +48,17 @@
 	const artistImage = ref<string>('https://i.ibb.co/wLhbFZx/Frame-255.png')
 	const artistName = ref<string>('')
 	const artistIdYoutubeMusic = ref<string>('')
-	const birthdayToDate = ref<Date | null>(null)
-	const debutDateToDate = ref<Date | null>(null)
+	const birthdayToDate = ref<CalendarDate | null>(null) // Revenir à CalendarDate
+	const debutDateToDate = ref<CalendarDate | null>(null) // Revenir à CalendarDate
 
-	const artistGroups = ref<Artist[]>([])
-	const artistMembers = ref<Artist[]>([])
+	const artistGroups = ref<MenuItem<Artist>[]>([])
+	const artistMembers = ref<MenuItem<Artist>[]>([])
 	const artistGender = ref<ArtistGender>('UNKNOWN')
 	const artistType = ref<ArtistType>('SOLO')
 	const artistActiveCareer = ref<boolean>(true)
 
-	const artistStyles = ref<MusicStyle[]>([])
-	const artistTags = ref<GeneralTag[]>([])
+	const artistStyles = ref<MenuItem<MusicStyle>[]>([])
+	const artistTags = ref<MenuItem<GeneralTag>[]>([])
 	const artistDescription = ref<string>('')
 	const artistPlatformList = ref<
 		Omit<ArtistPlatformLink, 'id' | 'created_at' | 'artist_id'>[]
@@ -70,6 +66,48 @@
 	const artistSocialList = ref<
 		Omit<ArtistSocialLink, 'id' | 'created_at' | 'artist_id'>[]
 	>([])
+
+	const stylesForMenu = computed(() => {
+		return stylesList.value.map(
+			(style): MenuItem<MusicStyle> => ({
+				...style,
+				label: style.name,
+			}),
+		)
+	})
+
+	const tagsForMenu = computed(() => {
+		return tagsList.value.map(
+			(tag): MenuItem<GeneralTag> => ({
+				...tag,
+				label: tag.name,
+			}),
+		)
+	})
+
+	const groupsForMenu = computed(() => {
+		return groupList.value.map((artist): MenuItem<Omit<Artist, 'type'>> => {
+			const { type, ...rest } = artist
+			return {
+				...rest,
+				label: artist.name,
+			}
+		})
+	})
+
+	const membersForMenu = computed(() => {
+		return artistsList.value.map((artist): MenuItem<Omit<Artist, 'type'>> => {
+			const { type, ...rest } = artist
+			return {
+				...rest,
+				label: artist.name,
+			}
+		})
+	})
+
+	const df = new DateFormatter('en-US', {
+		dateStyle: 'medium'
+	})
 
 	const closeModalCreateStyle = async () => {
 		showModalCreateStyle.value = false
@@ -90,10 +128,18 @@
 			return
 		}
 
+		const selectedGroups = artistGroups.value.map(({ label, ...rest }) => rest as Artist)
+		const selectedMembers = artistMembers.value.map(
+			({ label, ...rest }) => rest as Artist,
+		)
+
 		const artistStyleListName = artistStyles.value.map((style) => style.name)
 		const artistTagListName = artistTags.value.map((tag) => tag.name)
 
-		const artist: Omit<Artist, 'id' | 'created_at' | 'updated_at'> = {
+		const artist: Omit<
+			Artist,
+			'id' | 'created_at' | 'updated_at' | 'social_links' | 'platform_links'
+		> = {
 			name: artistName.value,
 			image: artistImage.value,
 			description: artistDescription.value,
@@ -102,8 +148,13 @@
 			gender: artistGender.value,
 			active_career: artistActiveCareer.value,
 			verified: isAdminStore,
-			birth_date: birthdayToDate.value?.toISOString() || null,
-			debut_date: debutDateToDate.value?.toISOString() || null,
+			// Re-convertir CalendarDate en ISO string
+			birth_date: birthdayToDate.value
+				? birthdayToDate.value.toDate(getLocalTimeZone()).toISOString()
+				: null,
+			debut_date: debutDateToDate.value
+				? debutDateToDate.value.toDate(getLocalTimeZone()).toISOString()
+				: null,
 			styles: artistStyleListName,
 			general_tags: artistTagListName,
 		}
@@ -112,16 +163,21 @@
 			artist,
 			artistSocialList.value,
 			artistPlatformList.value,
-			artistGroups.value,
-			artistMembers.value,
-		).then((newArtist) => {
-			isUploadingEdit.value = false
-			toast.success('Artist created successfully')
-		})
+			selectedGroups,
+			selectedMembers,
+		)
+			.then((newArtist) => {
+				isUploadingEdit.value = false
+				toast.success('Artist created successfully')
+			})
+			.catch((error) => {
+				isUploadingEdit.value = false
+				toast.error('Failed to create artist: ' + error.message)
+			})
 	}
 
 	const closeModalCreateArtist = async () => {
-		artistsList.value = await queryByCollection('artists')
+		artistsList.value = await getAllArtists()
 		groupList.value = artistsList.value.filter((artist) => artist.type === 'GROUP')
 		showModalCreateArtist.value = false
 	}
@@ -154,13 +210,13 @@
 <template>
 	<div class="container mx-auto min-h-[calc(100vh-60px)] space-y-5 p-5 lg:px-10">
 		<div
-			class="flex items-center justify-between border-b border-zinc-700 pb-1 text-lg font-semibold uppercase lg:text-xl"
+			class="flex items-center justify-between pb-1 text-lg font-semibold uppercase border-b border-zinc-700 lg:text-xl"
 		>
 			<p>Artist Creation</p>
 			<div>
 				<button
 					:disabled="isUploadingEdit"
-					class="bg-primary-900 w-full rounded px-5 py-3 text-xs font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+					class="w-full px-5 py-3 text-xs font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary-900 hover:scale-105 hover:bg-red-900"
 					@click="creationArtist"
 				>
 					{{ isUploadingEdit ? 'Loading' : 'Saves' }}
@@ -173,7 +229,7 @@
 			<div class="flex flex-col gap-2">
 				<div class="flex items-end gap-2">
 					<ComebackLabel label="Image" />
-					<p class="text-quinary-900 text-sm italic">
+					<p class="text-sm italic text-quinary-900">
 						Picture will be automaticaly update based on Youtube Music
 					</p>
 				</div>
@@ -183,38 +239,69 @@
 					:alt="artistName"
 					format="webp"
 					loading="lazy"
-					class="w-full rounded object-cover"
+					class="object-cover w-full rounded"
 				/>
 			</div>
 			<!-- Name & Id YTM & Birthday & Debut Date -->
 			<div class="space-y-4">
-				<ComebackInput v-model="artistName" label="Name *" placeholder="Artist Name*" />
+				<ComebackInput
+					v-model="artistName"
+					label="Name *"
+					placeholder="Artist Name*"
+				/>
 				<ComebackInput
 					v-model="artistIdYoutubeMusic"
 					label="Id Youtube Music *"
 					placeholder="ID Youtube Music"
 				/>
-				<!-- Birthday -->
-				<div class="space-y-1" :class="{ hidden: artistType == 'GROUP' }">
-					<ComebackLabel label="Birthday" />
-					<VueDatePicker
-						v-model="birthdayToDate"
-						placeholder="Select Date"
-						auto-apply
-						:enable-time-picker="false"
-						dark
-					/>
-				</div>
-				<!-- Debut Date -->
-				<div class="space-y-1">
-					<ComebackLabel label="Debut Date" />
-					<VueDatePicker
-						v-model="debutDateToDate"
-						placeholder="Select Date"
-						auto-apply
-						:enable-time-picker="false"
-						dark
-					/>
+				<div
+					class="grid gap-5"
+					:class="artistType == 'GROUP' ? 'grid-cols-1' : 'grid-cols-2'"
+				>
+					<!-- Birthday -->
+					<div class="space-y-1" :class="{ hidden: artistType == 'GROUP' }">
+						<ComebackLabel label="Birthday" />
+						<UPopover>
+							<UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
+								{{ birthdayToDate ? df.format(birthdayToDate.toDate(getLocalTimeZone())) : 'Select a date' }}
+							</UButton>
+
+							<template #content>
+								<UCalendar
+									class="p-1 rounded bg-quinary-900"
+									:model-value="birthdayToDate as CalendarDate | null"
+									@update:model-value="
+										(value) => {
+											birthdayToDate = value as CalendarDate | null
+										}
+									"
+									:min-date="new Date(1900, 0, 1)"
+								/>
+							</template>
+						</UPopover>
+					</div>
+					<!-- Debut Date -->
+					<div class="space-y-1">
+						<ComebackLabel label="Debut Date" />
+						<UPopover>
+							<UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
+								{{ debutDateToDate ? df.format(debutDateToDate.toDate(getLocalTimeZone())) : 'Select a date' }}
+							</UButton>
+
+							<template #content>
+								<UCalendar
+									class="p-1 rounded bg-quinary-900"
+									:model-value="debutDateToDate as CalendarDate | null"
+									@update:model-value="
+										(value) => {
+											debutDateToDate = value as CalendarDate | null
+										}
+									"
+									:min-date="new Date(2000, 0, 1)"
+								/>
+							</template>
+						</UPopover>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -226,13 +313,13 @@
 				<div class="grid grid-cols-1 gap-1">
 					<div class="flex items-end gap-2">
 						<ComebackLabel label="Gender" />
-						<p class="text-quinary-900 text-sm italic">
+						<p class="text-sm italic text-quinary-900">
 							It's only for stat we don't assume any gender jugement
 						</p>
 					</div>
 					<select
 						v-model="artistGender"
-						class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
+						class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
 					>
 						<option default value="UNKNOWN" class="text-secondary-950">UNKNOWN</option>
 						<option value="MALE" class="text-secondary-950">MALE</option>
@@ -245,7 +332,7 @@
 					<ComebackLabel label="Type" />
 					<select
 						v-model="artistType"
-						class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
+						class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
 					>
 						<option value="SOLO" class="text-secondary-950">SOLO</option>
 						<option value="GROUP" class="text-secondary-950">GROUP</option>
@@ -256,7 +343,7 @@
 					<ComebackLabel label="Active Career" />
 					<select
 						v-model="artistActiveCareer"
-						class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
+						class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
 					>
 						<option :value="true" class="text-secondary-950">Active</option>
 						<option :value="false" class="text-secondary-950">Inactive</option>
@@ -270,22 +357,20 @@
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="Styles" />
 						<button
-							class="bg-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
+							class="px-2 py-1 text-xs font-semibold uppercase rounded bg-primary-900 w-fit hover:bg-red-900"
 							@click="showModalCreateStyle = true"
 						>
 							Create New Style
 						</button>
 					</div>
-					<VueMultiselect
+					<UInputMenu
 						v-model="artistStyles"
-						label="name"
-						track-by="name"
-						placeholder="Add a style"
-						:options="stylesList"
-						:multiple="true"
-						:close-on-select="false"
-						:clear-on-select="false"
-						:preserve-search="false"
+						:items="stylesForMenu"
+						by="id"
+						multiple
+						placeholder="Select styles"
+						searchable
+						searchable-placeholder="Search a style..."
 					/>
 				</div>
 				<!-- General Tags -->
@@ -293,22 +378,20 @@
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="General Tags" />
 						<button
-							class="bg-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
+							class="px-2 py-1 text-xs font-semibold uppercase rounded bg-primary-900 w-fit hover:bg-red-900"
 							@click="showModalCreateTag = true"
 						>
 							Create New Tag
 						</button>
 					</div>
-					<VueMultiselect
+					<UInputMenu
 						v-model="artistTags"
-						label="name"
-						track-by="name"
-						placeholder="Add a tag"
-						:options="tagsList"
-						:multiple="true"
-						:close-on-select="false"
-						:clear-on-select="false"
-						:preserve-search="false"
+						:items="tagsForMenu"
+						by="id"
+						multiple
+						placeholder="Select tags"
+						searchable
+						searchable-placeholder="Search a tag..."
 					/>
 				</div>
 			</div>
@@ -328,46 +411,42 @@
 					<ComebackLabel label="Group" />
 					<button
 						v-if="isAdminStore"
-						class="bg-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
+						class="px-2 py-1 text-xs font-semibold uppercase rounded bg-primary-900 w-fit hover:bg-red-900"
 						@click="showModalCreateArtist = true"
 					>
 						Create New Artist
 					</button>
 				</div>
-				<VueMultiselect
+				<UInputMenu
 					v-model="artistGroups"
-					label="name"
-					track-by="name"
-					:options="groupList"
+					:items="groupsForMenu"
+					by="id"
+					multiple
 					placeholder="Search a group"
-					:multiple="true"
-					:close-on-select="false"
-					:clear-on-select="false"
-					:preserve-search="false"
+					searchable
+					searchable-placeholder="Search a group..."
 				/>
 			</div>
 			<!-- Members -->
-			<div v-if="artistsList && artistType != 'SOLO'" class="flex flex-col gap-1">
+			<div v-if="artistsList && artistType == 'GROUP'" class="flex flex-col gap-1">
 				<div class="flex justify-between gap-3">
 					<ComebackLabel label="Members" />
 					<button
 						v-if="isAdminStore"
-						class="bg-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
+						class="px-2 py-1 text-xs font-semibold uppercase rounded bg-primary-900 w-fit hover:bg-red-900"
 						@click="showModalCreateArtist = true"
 					>
 						Create New Artist
 					</button>
 				</div>
-				<VueMultiselect
+				<UInputMenu
 					v-model="artistMembers"
-					label="name"
-					track-by="name"
-					:options="artistsList"
+					:items="membersForMenu"
+					by="id"
+					multiple
 					placeholder="Search a member"
-					:multiple="true"
-					:close-on-select="false"
-					:clear-on-select="false"
-					:preserve-search="false"
+					searchable
+					searchable-placeholder="Search a member..."
 				/>
 			</div>
 			<!-- Platforms & Socials -->
@@ -380,12 +459,12 @@
 						:key="index + '_platform'"
 						class="flex w-full gap-1"
 					>
-						<div class="bg-quinary-900 w-full space-y-3 rounded p-2 text-xs">
+						<div class="w-full p-2 space-y-3 text-xs rounded bg-quinary-900">
 							<input
 								type="text"
 								:value="platform.name"
 								placeholder="Platform's Name"
-								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
+								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
 								@input="
 									(e: Event) =>
 										(artistPlatformList[index].name = (
@@ -397,7 +476,7 @@
 								type="text"
 								:value="platform.link"
 								placeholder="Platform's Link"
-								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
+								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
 								@input="
 									(e: Event) =>
 										(artistPlatformList[index].link = (
@@ -407,14 +486,14 @@
 							/>
 						</div>
 						<button
-							class="bg-primary-900 rounded p-5 text-xs hover:bg-red-900"
+							class="p-5 text-xs rounded bg-primary-900 hover:bg-red-900"
 							@click="artistPlatformList.splice(artistPlatformList.indexOf(platform), 1)"
 						>
 							Delete
 						</button>
 					</div>
 					<button
-						class="bg-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
+						class="w-full p-2 text-xs font-semibold uppercase rounded bg-primary-900 hover:bg-red-900"
 						@click="artistPlatformList.push({ name: '', link: '' })"
 					>
 						Add Platforms
@@ -428,12 +507,12 @@
 						:key="index + '_social'"
 						class="flex w-full gap-2"
 					>
-						<div class="bg-quinary-900 w-full space-y-3 rounded p-2 text-xs">
+						<div class="w-full p-2 space-y-3 text-xs rounded bg-quinary-900">
 							<input
 								type="text"
 								:value="social.name"
 								placeholder="Social's Name"
-								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
+								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
 								@input="
 									(e: Event) =>
 										(artistSocialList[index].name =
@@ -444,7 +523,7 @@
 								type="text"
 								:value="social.link"
 								placeholder="Social's Link"
-								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
+								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
 								@input="
 									(e: Event) =>
 										(artistSocialList[index].link =
@@ -453,14 +532,14 @@
 							/>
 						</div>
 						<button
-							class="bg-primary-900 rounded p-5 text-xs hover:bg-red-900"
+							class="p-5 text-xs rounded bg-primary-900 hover:bg-red-900"
 							@click="artistSocialList.splice(artistSocialList.indexOf(social), 1)"
 						>
 							Delete
 						</button>
 					</div>
 					<button
-						class="bg-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
+						class="w-full p-2 text-xs font-semibold uppercase rounded bg-primary-900 hover:bg-red-900"
 						@click="artistSocialList.push({ name: '', link: '' })"
 					>
 						Add Socials
@@ -469,10 +548,10 @@
 			</div>
 		</div>
 
-		<div class="border-t border-zinc-700 pt-3">
+		<div class="pt-3 border-t border-zinc-700">
 			<button
 				:disabled="isUploadingEdit"
-				class="bg-primary-900 w-full rounded py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+				class="w-full py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary-900 hover:scale-105 hover:bg-red-900"
 				@click="creationArtist"
 			>
 				{{ isUploadingEdit ? 'Loading' : 'Saves' }}

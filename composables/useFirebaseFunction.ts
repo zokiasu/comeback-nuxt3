@@ -12,7 +12,7 @@ import {
 	QueryConstraint,
 } from 'firebase/firestore'
 import _ from 'lodash'
-import { useToast } from 'vue-toastification'
+
 import { useNuxtApp } from '#app'
 import type { Music } from '~/types/music'
 import { useFirebaseUtils } from '~/composables/useFirebaseUtils'

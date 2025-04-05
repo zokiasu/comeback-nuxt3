@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { useToast } from 'vue-toastification'
 	import type { News } from '~/types/supabase/news'
 	import { useSupabaseNews } from '~/composables/Supabase/useSupabaseNews'
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { Timestamp } from 'firebase/firestore'
 	import VueDatePicker from '@vuepic/vue-datepicker'
-	import { useToast } from 'vue-toastification'
+
 	import { type Release } from '@/types/release'
 	import { useFirebaseRelease } from '~/composables/useFirebaseRelease'
 

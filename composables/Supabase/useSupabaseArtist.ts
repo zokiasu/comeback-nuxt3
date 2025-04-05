@@ -1,4 +1,3 @@
-import { useToast } from 'vue-toastification'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { useSupabase } from './useSupabase'
 import type {
@@ -36,14 +35,20 @@ export function useSupabaseArtist() {
 
 	// Crée un nouvel artiste
 	const createArtist = async (
-		data: Omit<Artist, 'id' | 'created_at' | 'updated_at'>,
-		socialLinks?: Omit<ArtistSocialLink, 'id' | 'created_at' | 'artist_id'>[],
-		platformLinks?: Omit<ArtistPlatformLink, 'id' | 'created_at' | 'artist_id'>[],
-		artistGroups?: Artist[],
-		artistMembers?: Artist[],
-	): Promise<Artist> => {
+		data: Omit<
+			Artist,
+			'id' | 'created_at' | 'updated_at' | 'social_links' | 'platform_links'
+		>,
+		artistSocials: Omit<ArtistSocialLink, 'id' | 'created_at' | 'artist_id'>[],
+		artistPlatforms: Omit<ArtistPlatformLink, 'id' | 'created_at' | 'artist_id'>[],
+		artistGroups: Artist[],
+		artistMembers: Artist[],
+	) => {
 		if (data.id_youtube_music && (await artistExistInSupabase(data.id_youtube_music))) {
-			toast.error('Cet artiste existe déjà dans la base de données.')
+			toast.add({
+				title: 'Cet artiste existe déjà dans la base de données.',
+				color: 'error',
+			})
 			console.error('Cet artiste existe déjà dans la base de données.')
 			throw new Error('Cet artiste existe déjà dans la base de données.')
 		}
@@ -55,14 +60,17 @@ export function useSupabaseArtist() {
 			.single()
 
 		if (error) {
-			toast.error("Erreur lors de la création de l'artiste")
+			toast.add({
+				title: "Erreur lors de la création de l'artiste",
+				color: 'error',
+			})
 			console.error("Erreur lors de la création de l'artiste:", error)
 			throw new Error("Erreur lors de la création de l'artiste")
 		}
 
 		// Ajout des liens sociaux
-		if (socialLinks?.length) {
-			const socialLinksWithArtistId = socialLinks.map((link) => ({
+		if (artistSocials?.length) {
+			const socialLinksWithArtistId = artistSocials.map((link) => ({
 				...link,
 				artist_id: artist.id,
 			}))
@@ -77,8 +85,8 @@ export function useSupabaseArtist() {
 		}
 
 		// Ajout des liens de plateformes
-		if (platformLinks?.length) {
-			const platformLinksWithArtistId = platformLinks.map((link) => ({
+		if (artistPlatforms?.length) {
+			const platformLinksWithArtistId = artistPlatforms.map((link) => ({
 				...link,
 				artist_id: artist.id,
 			}))
@@ -131,7 +139,7 @@ export function useSupabaseArtist() {
 
 	// Met à jour un artiste
 	const updateArtist = async (
-		idYoutubeMusic: string,
+		artistId: string,
 		updates: Partial<Artist>,
 		socialLinks?: Omit<ArtistSocialLink, 'id' | 'created_at' | 'artist_id'>[],
 		platformLinks?: Omit<ArtistPlatformLink, 'id' | 'created_at' | 'artist_id'>[],
@@ -141,7 +149,7 @@ export function useSupabaseArtist() {
 		const { data: artist, error } = await supabase
 			.from('artists')
 			.update(updates)
-			.eq('id_youtube_music', idYoutubeMusic)
+			.eq('id', artistId)
 			.select()
 			.single()
 

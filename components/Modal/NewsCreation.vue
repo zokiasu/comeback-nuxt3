@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import VueDatePicker from '@vuepic/vue-datepicker'
 	import '@vuepic/vue-datepicker/dist/main.css'
-	import { useToast } from 'vue-toastification'
+
 	import debounce from 'lodash.debounce'
 	import algoliasearch from 'algoliasearch/lite'
 	import type { News } from '~/types/supabase/news'

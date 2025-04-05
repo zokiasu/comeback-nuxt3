@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { useToast } from 'vue-toastification'
 	import debounce from 'lodash.debounce'
 	import { Timestamp } from 'firebase/firestore'
 	import type { Release } from '~/types/supabase/release'

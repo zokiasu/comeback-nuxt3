@@ -26,7 +26,6 @@
 </template>
 
 <script setup lang="ts">
-	import { useToast } from 'vue-toastification'
 	import type { MusicStyle } from '~/types/supabase/music_style'
 	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
 
