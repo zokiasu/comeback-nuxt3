@@ -2,26 +2,18 @@
 	// External Packages
 	// Réimporter CalendarDate et getLocalTimeZone
 	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
-	import _ from 'lodash'
 
 	// Internal Types
 	import type { Artist } from '~/types/supabase/artist'
 	import type { MusicStyle } from '~/types/supabase/music_style'
 	import type { GeneralTag } from '~/types/supabase/general_tag'
-	import type {
-		ArtistGender,
-		ArtistType,
-		ArtistPlatformLink,
-		ArtistSocialLink,
-	} from '~/types/supabase'
+	import type { ArtistType, ArtistPlatformLink, ArtistSocialLink } from '~/types/supabase'
 
 	// Internal Composables
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
 	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'
 
-	// CSS / Side Effects
-	// --- Type Helper for Menu Items ---
 	// Crée un type générique qui ajoute 'label' à un type existant T
 	type MenuItem<T> = T & { label: string }
 
@@ -62,8 +54,8 @@
 	const validGenders = ['MALE', 'FEMALE', 'MIXTE', 'UNKNOWN', 'OTHER'] as const
 	const artistTypes = ['SOLO', 'GROUP'] as const
 
-	const birthdayToDate = ref<CalendarDate | null>(null)
-	const debutDateToDate = ref<CalendarDate | null>(null)
+	const birthdayToDate = ref<Date | null>(null)
+	const debutDateToDate = ref<Date | null>(null)
 
 	const artistToEdit = ref<Partial<Artist>>()
 
@@ -119,19 +111,15 @@
 	})
 
 	// --- Helper to parse date string ---
-	const parseToCalendarDate = (
-		dateString: string | null | undefined,
-	): CalendarDate | null => {
-		if (!dateString) return null
+	const parseToCalendarDate = (date: Date | null | undefined): CalendarDate | null => {
+		if (!date) return null
 		try {
-			const date = new Date(dateString)
-			if (isNaN(date.getTime())) return null // Invalid date
 			const year = date.getUTCFullYear()
-			const month = date.getUTCMonth() + 1 // CalendarDate expects 1-based month
+			const month = date.getUTCMonth() + 1
 			const day = date.getUTCDate()
 			return new CalendarDate(year, month, day)
 		} catch (e) {
-			console.error('Failed to parse date string:', dateString, e)
+			console.error('Failed to parse date:', date, e)
 			return null
 		}
 	}
@@ -157,10 +145,10 @@
 				active_career: artistToEdit.value?.active_career,
 				// Convertir CalendarDate en ISO string pour la BDD
 				birth_date: birthdayToDate.value
-					? birthdayToDate.value.toDate(getLocalTimeZone()).toISOString()
+					? new Date(birthdayToDate.value.toString()).toISOString()
 					: null,
 				debut_date: debutDateToDate.value
-					? debutDateToDate.value.toDate(getLocalTimeZone()).toISOString()
+					? new Date(debutDateToDate.value.toString()).toISOString()
 					: null,
 				// Mapper les objets sélectionnés pour obtenir les noms (ou IDs si backend changé)
 				styles: artistStyles.value.map((style) => style.name),
@@ -187,7 +175,7 @@
 					// Optionnel: recharger les données ou naviguer
 					router.push(`/artist/${route.params.id}`)
 				})
-				.catch((error) => {
+				.catch((error: any) => {
 					console.error("Erreur lors de la mise à jour de l'artiste:", error)
 					toast.add({
 						title: "Erreur lors de la mise à jour de l'artiste",
@@ -210,23 +198,6 @@
 	const adjustTextarea = (textarea: HTMLTextAreaElement) => {
 		textarea.style.height = 'auto'
 		textarea.style.height = `${textarea.scrollHeight}px`
-	}
-
-	const closeModalCreateArtist = async () => {
-		artistsList.value = await getAllArtists()
-		groupList.value = artistsList.value.filter((artist) => artist.type === 'GROUP')
-		membersList.value = artistsList.value
-		showModalCreateArtist.value = false
-	}
-
-	const closeModalCreateStyle = async () => {
-		showModalCreateStyle.value = false
-		stylesList.value = await getAllMusicStyles()
-	}
-
-	const closeModalCreateTag = async () => {
-		showModalCreateTag.value = false
-		tagsList.value = await getAllGeneralTags()
 	}
 
 	onMounted(async () => {
@@ -279,8 +250,12 @@
 						.filter((item): item is MenuItem<GeneralTag> => item !== null) || []
 
 				// Initialiser les CalendarDate à partir des dates de l'artiste
-				birthdayToDate.value = parseToCalendarDate(artist.value.birth_date)
-				debutDateToDate.value = parseToCalendarDate(artist.value.debut_date)
+				birthdayToDate.value = artist.value.birth_date
+					? new Date(artist.value.birth_date)
+					: null
+				debutDateToDate.value = artist.value.debut_date
+					? new Date(artist.value.debut_date)
+					: null
 
 				const textarea = document.querySelector('textarea')
 				if (textarea) {
@@ -375,20 +350,20 @@
 						<ComebackLabel label="Birthday" />
 						<UPopover>
 							<UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
-								{{
-									birthdayToDate
-										? df.format(birthdayToDate.toDate(getLocalTimeZone()))
-										: 'Select a date'
-								}}
+								{{ birthdayToDate ? df.format(birthdayToDate) : 'Select a date' }}
 							</UButton>
 							<template #content>
 								<UCalendar
 									class="bg-cb-quinary-900 rounded p-1"
-									:model-value="birthdayToDate as CalendarDate | null"
+									:model-value="parseToCalendarDate(birthdayToDate)"
 									:min-date="new Date(1900, 0, 1)"
 									@update:model-value="
 										(value) => {
-											birthdayToDate = value as CalendarDate | null
+											if (value) {
+												birthdayToDate = new Date(value.toString())
+											} else {
+												birthdayToDate = null
+											}
 										}
 									"
 								/>
@@ -400,20 +375,20 @@
 						<ComebackLabel label="Debut Date" />
 						<UPopover>
 							<UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
-								{{
-									debutDateToDate
-										? df.format(debutDateToDate.toDate(getLocalTimeZone()))
-										: 'Select a date'
-								}}
+								{{ debutDateToDate ? df.format(debutDateToDate) : 'Select a date' }}
 							</UButton>
 							<template #content>
 								<UCalendar
 									class="bg-cb-quinary-900 rounded p-1"
-									:model-value="debutDateToDate as CalendarDate | null"
+									:model-value="parseToCalendarDate(debutDateToDate)"
 									:min-date="new Date(2000, 0, 1)"
 									@update:model-value="
 										(value) => {
-											debutDateToDate = value as CalendarDate | null
+											if (value) {
+												debutDateToDate = new Date(value.toString())
+											} else {
+												debutDateToDate = null
+											}
 										}
 									"
 								/>
@@ -603,7 +578,6 @@
 								:tags-list="tagsList"
 								:group-list="groupList"
 								:members-list="membersList"
-								@close-modal="closeModalCreateArtist"
 							/>
 						</template>
 					</UModal>
@@ -638,7 +612,6 @@
 								:tags-list="tagsList"
 								:group-list="groupList"
 								:members-list="membersList"
-								@close-modal="closeModalCreateArtist"
 							/>
 						</template>
 					</UModal>

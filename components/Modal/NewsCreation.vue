@@ -148,8 +148,8 @@
 				<div
 					v-for="artist in artistListSelected"
 					:key="artist.id"
-					@click="removeArtistFromNews(artist)"
 					class="relative flex cursor-pointer flex-col items-center justify-center rounded px-5 py-1 hover:bg-red-500/50"
+					@click="removeArtistFromNews(artist)"
 				>
 					<img :src="artist.picture" class="h-8 w-8 rounded-full object-cover" />
 					<p>{{ artist.name }}</p>
@@ -162,6 +162,7 @@
 			<UCalendar
 				class="bg-cb-quinary-900 rounded p-1"
 				:model-value="parseToCalendarDate(newsDate)"
+				:min-date="new Date(1900, 0, 1)"
 				@update:model-value="
 					(value) => {
 						if (value) {
@@ -171,7 +172,6 @@
 						}
 					}
 				"
-				:min-date="new Date(1900, 0, 1)"
 			/>
 		</div>
 
