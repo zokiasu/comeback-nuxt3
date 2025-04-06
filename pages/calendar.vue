@@ -134,7 +134,7 @@
 					:id="String(year)"
 					:key="year"
 					class="h-full w-full snap-start rounded px-4 py-2.5"
-					:class="currentYear == year ? 'bg-primary-900' : 'bg-quaternary-950'"
+					:class="currentYear == year ? 'bg-cb-primary-900' : 'bg-cb-quaternary-950'"
 					@click="((currentYear = year), switchTypeFilter('ALL'))"
 				>
 					{{ year }}
@@ -150,7 +150,7 @@
 					:id="month.original"
 					:key="month.original"
 					class="h-full w-full snap-start rounded px-4 py-2.5"
-					:class="currentMonth == index ? 'bg-primary-900' : 'bg-quaternary-950'"
+					:class="currentMonth == index ? 'bg-cb-primary-900' : 'bg-cb-quaternary-950'"
 					@click="((currentMonth = index), switchTypeFilter('ALL'))"
 				>
 					<p class="block md:hidden">{{ month.minify }}</p>
@@ -159,17 +159,17 @@
 			</div>
 		</div>
 		<!-- Stats -->
-		<div class="border-quaternary-950 space-y-2 border-y-2 py-3 text-xs">
+		<div class="border-cb-quaternary-950 space-y-2 border-y-2 py-3 text-xs">
 			<!-- <p class="text-base font-semibold text-center">
         {{ monthList[currentMonth].original }} {{ currentYear }}'s stats
       </p> -->
 			<div class="grid grid-cols-4 items-center justify-center gap-1 lg:gap-5">
 				<button
-					class="bg-primary-900 flex h-full w-full flex-col items-center justify-center rounded px-2 py-1"
+					class="bg-cb-primary-900 flex h-full w-full flex-col items-center justify-center rounded px-2 py-1"
 					:class="
 						!onlyAlbums && !onlyEps && !onlySingles
-							? 'bg-primary-900'
-							: 'bg-quaternary-950'
+							? 'bg-cb-primary-900'
+							: 'bg-cb-quaternary-950'
 					"
 					@click="switchTypeFilter('ALL')"
 				>
@@ -177,11 +177,11 @@
 					<span class="text-base font-bold">{{ releases.length }}</span>
 				</button>
 				<button
-					class="bg-primary-900 flex h-full w-full flex-col items-center justify-center rounded px-2 py-1"
+					class="bg-cb-primary-900 flex h-full w-full flex-col items-center justify-center rounded px-2 py-1"
 					:class="
 						onlyAlbums && !onlyEps && !onlySingles
-							? 'bg-primary-900'
-							: 'bg-quaternary-950'
+							? 'bg-cb-primary-900'
+							: 'bg-cb-quaternary-950'
 					"
 					@click="switchTypeFilter('ALBUM')"
 				>
@@ -191,11 +191,11 @@
 					</span>
 				</button>
 				<button
-					class="bg-primary-900 flex h-full w-full flex-col items-center justify-center rounded px-2 py-1"
+					class="bg-cb-primary-900 flex h-full w-full flex-col items-center justify-center rounded px-2 py-1"
 					:class="
 						!onlyAlbums && onlyEps && !onlySingles
-							? 'bg-primary-900'
-							: 'bg-quaternary-950'
+							? 'bg-cb-primary-900'
+							: 'bg-cb-quaternary-950'
 					"
 					@click="switchTypeFilter('EP')"
 				>
@@ -205,11 +205,11 @@
 					</span>
 				</button>
 				<button
-					class="bg-primary-900 flex h-full w-full flex-col items-center justify-center rounded px-2 py-1"
+					class="bg-cb-primary-900 flex h-full w-full flex-col items-center justify-center rounded px-2 py-1"
 					:class="
 						!onlyAlbums && !onlyEps && onlySingles
-							? 'bg-primary-900'
-							: 'bg-quaternary-950'
+							? 'bg-cb-primary-900'
+							: 'bg-cb-quaternary-950'
 					"
 					@click="switchTypeFilter('SINGLE')"
 				>
@@ -220,7 +220,7 @@
 				</button>
 			</div>
 		</div>
-		<!-- <p class="text-sm italic text-primary-900">Some troubles have been noticed with our release recovery API and are working to resolve them quickly. We apologize for the inconvenience.</p> -->
+		<!-- <p class="text-sm italic text-cb-primary-900">Some troubles have been noticed with our release recovery API and are working to resolve them quickly. We apologize for the inconvenience.</p> -->
 		<!-- Releases -->
 		<transition-group
 			tag="div"
@@ -249,7 +249,7 @@
 			class="sticky bottom-12 hidden w-full py-5 text-center lg:bottom-0"
 		>
 			<button
-				class="bg-quaternary-950 w-fit px-4 py-2.5 text-xs font-semibold shadow shadow-zinc-700"
+				class="bg-cb-quaternary-950 w-fit px-4 py-2.5 text-xs font-semibold shadow shadow-zinc-700"
 				@click="backToTop"
 			>
 				Back to top

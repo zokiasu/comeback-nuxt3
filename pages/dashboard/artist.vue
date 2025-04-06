@@ -378,7 +378,7 @@
 	>
 		<section
 			id="searchbar"
-			class="bg-secondary-950 sticky top-0 z-20 w-full space-y-2 pb-2"
+			class="bg-cb-secondary-950 sticky top-0 z-20 w-full space-y-2 pb-2"
 		>
 			<div class="relative">
 				<input
@@ -386,10 +386,10 @@
 					v-model="search"
 					type="text"
 					placeholder="Search"
-					class="bg-quinary-900 placeholder-tertiary-200 focus:bg-tertiary-200 focus:text-quinary-900 focus:placeholder-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
+					class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
 				/>
 				<button
-					class="bg-tertiary-200 text-quinary-900 absolute top-1/2 right-2 -translate-y-1/2 rounded px-2 py-1 text-xs"
+					class="bg-cb-tertiary-200 text-cb-quinary-900 absolute top-1/2 right-2 -translate-y-1/2 rounded px-2 py-1 text-xs"
 					@click="toggleSearchMethod"
 					:title="
 						useAlgoliaForSearch
@@ -403,12 +403,12 @@
 			<div class="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
 				<div class="flex w-fit flex-wrap justify-between gap-2 sm:flex-nowrap">
 					<div
-						class="bg-quinary-900 flex w-full flex-row items-center justify-between gap-2 rounded px-2 py-1 text-xs uppercase sm:w-fit sm:justify-start"
+						class="bg-cb-quinary-900 flex w-full flex-row items-center justify-between gap-2 rounded px-2 py-1 text-xs uppercase sm:w-fit sm:justify-start"
 					>
 						<p class="sm:text-nowrap">Fetch Number</p>
 						<select
 							v-model="limitFetch"
-							class="bg-quinary-900 placeholder-tertiary-200 rounded border-none p-2 text-xs uppercase transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
+							class="bg-cb-quinary-900 placeholder-cb-tertiary-200 rounded border-none p-2 text-xs uppercase transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
 						>
 							<option value="10">10</option>
 							<option value="20">20</option>
@@ -422,14 +422,18 @@
 					</div>
 					<button
 						class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 lg:text-nowrap"
-						:class="filterState.onlyWithoutDesc ? 'bg-primary-900' : 'bg-quinary-900'"
+						:class="
+							filterState.onlyWithoutDesc ? 'bg-cb-primary-900' : 'bg-cb-quinary-900'
+						"
 						@click="changeOnlyFilter('onlyWithoutDesc')"
 					>
 						No description
 					</button>
 					<button
 						class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 lg:text-nowrap"
-						:class="filterState.onlyWithoutSocials ? 'bg-primary-900' : 'bg-quinary-900'"
+						:class="
+							filterState.onlyWithoutSocials ? 'bg-cb-primary-900' : 'bg-cb-quinary-900'
+						"
 						@click="changeOnlyFilter('onlyWithoutSocials')"
 					>
 						No Socials
@@ -437,7 +441,7 @@
 					<button
 						class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 lg:text-nowrap"
 						:class="
-							filterState.onlyWithoutPlatforms ? 'bg-primary-900' : 'bg-quinary-900'
+							filterState.onlyWithoutPlatforms ? 'bg-cb-primary-900' : 'bg-cb-quinary-900'
 						"
 						@click="changeOnlyFilter('onlyWithoutPlatforms')"
 					>
@@ -445,7 +449,9 @@
 					</button>
 					<button
 						class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 lg:text-nowrap"
-						:class="filterState.onlyWithoutStyles ? 'bg-primary-900' : 'bg-quinary-900'"
+						:class="
+							filterState.onlyWithoutStyles ? 'bg-cb-primary-900' : 'bg-cb-quinary-900'
+						"
 						@click="changeOnlyFilter('onlyWithoutStyles')"
 					>
 						No Styles
@@ -454,7 +460,7 @@
 				<div class="flex space-x-2">
 					<select
 						v-model="sort"
-						class="bg-quinary-900 placeholder-tertiary-200 hover:bg-tertiary-200 hover:text-quinary-900 w-full rounded border-none p-2 text-xs uppercase drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
+						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 hover:bg-cb-tertiary-200 hover:text-cb-quinary-900 w-full rounded border-none p-2 text-xs uppercase drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
 					>
 						<option value="name">Name</option>
 						<option value="type">Type</option>
@@ -462,18 +468,18 @@
 						<option value="updated_at">Last Updated</option>
 					</select>
 					<button
-						class="bg-quinary-900 placeholder-tertiary-200 hover:bg-tertiary-200 hover:text-quinary-900 rounded border-none p-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
+						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 hover:bg-cb-tertiary-200 hover:text-cb-quinary-900 rounded border-none p-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
 						@click="invertSort = !invertSort"
 					>
-						<icon-sort v-if="!invertSort" class="text-tertiary-200 h-6 w-6" />
-						<icon-sort-reverse v-else class="text-tertiary-200 h-6 w-6" />
+						<icon-sort v-if="!invertSort" class="text-cb-tertiary-200 h-6 w-6" />
+						<icon-sort-reverse v-else class="text-cb-tertiary-200 h-6 w-6" />
 					</button>
 				</div>
 			</div>
 		</section>
 
 		<div v-if="isSearching" class="flex justify-center">
-			<p class="bg-quinary-900 rounded px-4 py-2 text-center">Recherche en cours...</p>
+			<p class="bg-cb-quinary-900 rounded px-4 py-2 text-center">Recherche en cours...</p>
 		</div>
 
 		<transition-group
@@ -503,7 +509,7 @@
 
 		<p
 			v-else-if="!isSearching"
-			class="bg-quaternary-950 w-full p-5 text-center font-semibold uppercase"
+			class="bg-cb-quaternary-950 w-full p-5 text-center font-semibold uppercase"
 		>
 			No artist found
 		</p>
@@ -522,7 +528,7 @@
 			<p>({{ artistFetch.length }} / {{ totalArtists }})</p>
 			<div v-if="!isLoading" class="flex gap-2">
 				<button
-					class="bg-quinary-900 mx-auto flex w-full gap-1 rounded px-2 py-1 uppercase hover:bg-zinc-500 md:w-fit"
+					class="bg-cb-quinary-900 mx-auto flex w-full gap-1 rounded px-2 py-1 uppercase hover:bg-zinc-500 md:w-fit"
 					@click="loadAllArtists"
 				>
 					<p>Load All</p>
@@ -530,7 +536,7 @@
 			</div>
 			<p
 				v-else
-				class="bg-quinary-900 mx-auto flex w-full gap-1 rounded px-2 py-1 uppercase hover:bg-zinc-500 md:w-fit"
+				class="bg-cb-quinary-900 mx-auto flex w-full gap-1 rounded px-2 py-1 uppercase hover:bg-zinc-500 md:w-fit"
 			>
 				Loading...
 			</p>

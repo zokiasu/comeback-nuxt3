@@ -24,17 +24,17 @@
 			:class="isActualUser ? 'justify-end' : 'justify-start'"
 		>
 			<button v-if="isAdmin">
-				<IconDelete class="hover:text-primary-900 h-4 w-4 text-gray-500" />
+				<IconDelete class="hover:text-cb-primary-900 h-4 w-4 text-gray-500" />
 			</button>
 			<button v-if="isAdmin">
-				<IconMessageBlock class="hover:text-primary-900 h-4 w-4 text-gray-500" />
+				<IconMessageBlock class="hover:text-cb-primary-900 h-4 w-4 text-gray-500" />
 			</button>
 			<p class="text-[10px] uppercase">{{ userName }}</p>
 		</div>
 		<div class="w-fit max-w-full text-sm break-words">
 			<p
 				class="text-breaks w-fit max-w-full rounded p-1 px-2"
-				:class="isActualUser ? 'bg-quaternary-950' : 'bg-primary-900'"
+				:class="isActualUser ? 'bg-cb-quaternary-950' : 'bg-cb-primary-900'"
 			>
 				{{ message }}
 			</p>

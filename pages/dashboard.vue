@@ -12,11 +12,11 @@
 	<div class="min-h-dvh-wo-nav max-h-dvh-wo-nav flex h-screen gap-2 p-2">
 		<nav
 			ref="menuCollapsable"
-			class="bg-quaternary-950 flex h-full flex-col gap-2 rounded p-2 drop-shadow-xl transition-all duration-300 ease-in-out"
+			class="bg-cb-quaternary-950 flex h-full flex-col gap-2 rounded p-2 drop-shadow-xl transition-all duration-300 ease-in-out"
 			:class="collapseMenu ? 'w-12' : 'w-80'"
 		>
 			<div
-				class="hover:bg-quinary-900 flex cursor-pointer justify-between rounded py-3 text-zinc-500 transition-all duration-300 ease-in-out hover:text-white"
+				class="hover:bg-cb-quinary-900 flex cursor-pointer justify-between rounded py-3 text-zinc-500 transition-all duration-300 ease-in-out hover:text-white"
 				:class="{
 					'px-5': !collapseMenu,
 					'flex-col items-center': collapseMenu,
@@ -32,8 +32,9 @@
 				title="Artist"
 				class="flex items-center gap-2 rounded py-3 transition-all duration-300 ease-in-out"
 				:class="{
-					'bg-quinary-900 font-semibold text-white': routeN.name === 'dashboard-artist',
-					'hover:bg-quinary-900 text-zinc-500': routeN.name !== 'dashboard-artist',
+					'bg-cb-quinary-900 font-semibold text-white':
+						routeN.name === 'dashboard-artist',
+					'hover:bg-cb-quinary-900 text-zinc-500': routeN.name !== 'dashboard-artist',
 					'px-5': !collapseMenu,
 					'flex-col': collapseMenu,
 				}"
@@ -46,9 +47,10 @@
 				title="Artist Update"
 				class="flex items-center gap-2 rounded py-3 transition-all duration-300 ease-in-out"
 				:class="{
-					'bg-quinary-900 font-semibold text-white':
+					'bg-cb-quinary-900 font-semibold text-white':
 						routeN.name === 'dashboard-artistPending',
-					'hover:bg-quinary-900 text-zinc-500': routeN.name !== 'dashboard-artistPending',
+					'hover:bg-cb-quinary-900 text-zinc-500':
+						routeN.name !== 'dashboard-artistPending',
 					'px-5': !collapseMenu,
 					'flex-col': collapseMenu,
 				}"
@@ -61,8 +63,9 @@
 				title="Release"
 				class="flex items-center gap-2 rounded py-3 transition-all duration-300 ease-in-out"
 				:class="{
-					'bg-quinary-900 font-semibold text-white': routeN.name === 'dashboard-release',
-					'hover:bg-quinary-900 text-zinc-500': routeN.name !== 'dashboard-release',
+					'bg-cb-quinary-900 font-semibold text-white':
+						routeN.name === 'dashboard-release',
+					'hover:bg-cb-quinary-900 text-zinc-500': routeN.name !== 'dashboard-release',
 					'px-5': !collapseMenu,
 					'flex-col': collapseMenu,
 				}"
@@ -75,8 +78,8 @@
 				title="News"
 				class="flex items-center gap-2 rounded py-3 transition-all duration-300 ease-in-out"
 				:class="{
-					'bg-quinary-900 font-semibold text-white': routeN.name === 'dashboard-news',
-					'hover:bg-quinary-900 text-zinc-500': routeN.name !== 'dashboard-news',
+					'bg-cb-quinary-900 font-semibold text-white': routeN.name === 'dashboard-news',
+					'hover:bg-cb-quinary-900 text-zinc-500': routeN.name !== 'dashboard-news',
 					'px-5': !collapseMenu,
 					'flex-col': collapseMenu,
 				}"
@@ -89,8 +92,8 @@
 				title="General Datas"
 				class="flex items-center gap-2 rounded py-3 transition-all duration-300 ease-in-out"
 				:class="{
-					'bg-quinary-900 font-semibold text-white': routeN.name === 'dashboard-datas',
-					'hover:bg-quinary-900 text-zinc-500': routeN.name !== 'dashboard-datas',
+					'bg-cb-quinary-900 font-semibold text-white': routeN.name === 'dashboard-datas',
+					'hover:bg-cb-quinary-900 text-zinc-500': routeN.name !== 'dashboard-datas',
 					'px-5': !collapseMenu,
 					'flex-col': collapseMenu,
 				}"
@@ -103,8 +106,8 @@
 				title="Users"
 				class="flex items-center gap-2 rounded py-3 transition-all duration-300 ease-in-out"
 				:class="{
-					'bg-quinary-900 font-semibold text-white': routeN.name === 'dashboard-users',
-					'hover:bg-quinary-900 text-zinc-500': routeN.name !== 'dashboard-users',
+					'bg-cb-quinary-900 font-semibold text-white': routeN.name === 'dashboard-users',
+					'hover:bg-cb-quinary-900 text-zinc-500': routeN.name !== 'dashboard-users',
 					'px-5': !collapseMenu,
 					'flex-col': collapseMenu,
 				}"

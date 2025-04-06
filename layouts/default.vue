@@ -17,7 +17,7 @@
 </script>
 
 <template>
-	<div class="bg-secondary-950 text-tertiary-200 flex min-h-screen w-full flex-col">
+	<div class="bg-cb-secondary-950 text-cb-tertiary-200 flex min-h-screen w-full flex-col">
 		<Navigation class="hidden md:block" />
 		<div class="inset-x-0 z-50 py-3 md:hidden">
 			<img

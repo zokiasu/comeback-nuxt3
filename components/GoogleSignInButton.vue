@@ -11,7 +11,7 @@
 <template>
 	<div>
 		<button
-			class="tracking-wides bg-quaternary-950 hover:bg-primary-900 flex w-full flex-col items-center justify-center gap-3 rounded p-5 font-bold uppercase transition-all duration-500 ease-in-out"
+			class="tracking-wides bg-cb-quaternary-950 hover:bg-cb-primary-900 flex w-full flex-col items-center justify-center gap-3 rounded p-5 font-bold uppercase transition-all duration-500 ease-in-out"
 			@click="handleLoginWithGoogleClick"
 		>
 			<IconGoogle class="h-10 w-10" />

@@ -19,7 +19,7 @@
 </script>
 
 <template>
-	<div class="list-complete-item bg-quaternary-950 space-y-2 rounded p-3">
+	<div class="list-complete-item bg-cb-quaternary-950 space-y-2 rounded p-3">
 		<div v-if="artistPending.image" class="relative">
 			<NuxtImg
 				:src="artistPending.image"
@@ -55,12 +55,12 @@
 				<p
 					v-for="style in artistPending.styles"
 					:key="style.name"
-					class="bg-quinary-900 rounded px-2 py-1 text-xs uppercase"
+					class="bg-cb-quinary-900 rounded px-2 py-1 text-xs uppercase"
 				>
 					{{ style.name }}
 				</p>
 			</div>
-			<p v-else class="bg-quinary-900 rounded px-2 py-1 text-center text-xs uppercase">
+			<p v-else class="bg-cb-quinary-900 rounded px-2 py-1 text-center text-xs uppercase">
 				No Styles
 			</p>
 		</div>
@@ -73,12 +73,12 @@
 					:key="social.name"
 					:href="social.link"
 					target="_blank"
-					class="bg-quinary-900 truncate rounded px-2 py-1 text-xs"
+					class="bg-cb-quinary-900 truncate rounded px-2 py-1 text-xs"
 				>
 					{{ social.link }}
 				</a>
 			</div>
-			<p v-else class="bg-quinary-900 rounded px-2 py-1 text-center text-xs uppercase">
+			<p v-else class="bg-cb-quinary-900 rounded px-2 py-1 text-center text-xs uppercase">
 				No Socials Link
 			</p>
 		</div>
@@ -93,12 +93,12 @@
 					:key="platform.name"
 					:href="platform.link"
 					target="_blank"
-					class="bg-quinary-900 truncate rounded px-2 py-1 text-xs"
+					class="bg-cb-quinary-900 truncate rounded px-2 py-1 text-xs"
 				>
 					{{ platform.link }}
 				</a>
 			</div>
-			<p v-else class="bg-quinary-900 rounded px-2 py-1 text-center text-xs uppercase">
+			<p v-else class="bg-cb-quinary-900 rounded px-2 py-1 text-center text-xs uppercase">
 				No Platforms Link
 			</p>
 		</div>
@@ -109,12 +109,12 @@
 				<p
 					v-for="member in artistPending.members"
 					:key="member.id"
-					class="bg-quinary-900 truncate rounded px-2 py-1 text-xs"
+					class="bg-cb-quinary-900 truncate rounded px-2 py-1 text-xs"
 				>
 					{{ member.name }}
 				</p>
 			</div>
-			<p v-else class="bg-quinary-900 rounded px-2 py-1 text-center text-xs uppercase">
+			<p v-else class="bg-cb-quinary-900 rounded px-2 py-1 text-center text-xs uppercase">
 				No Members
 			</p>
 		</div>
@@ -125,12 +125,12 @@
 				<p
 					v-for="group in artistPending.groups"
 					:key="group.id"
-					class="bg-quinary-900 truncate rounded px-2 py-1 text-xs"
+					class="bg-cb-quinary-900 truncate rounded px-2 py-1 text-xs"
 				>
 					{{ group.name }}
 				</p>
 			</div>
-			<p v-else class="bg-quinary-900 rounded px-2 py-1 text-center text-xs uppercase">
+			<p v-else class="bg-cb-quinary-900 rounded px-2 py-1 text-center text-xs uppercase">
 				No Groups
 			</p>
 		</div>

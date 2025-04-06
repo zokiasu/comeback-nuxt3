@@ -65,7 +65,7 @@
 
 <template>
 	<section class="flex flex-col space-y-3">
-		<div class="bg-quinary-900 flex flex-grow flex-col rounded">
+		<div class="bg-cb-quinary-900 flex flex-grow flex-col rounded">
 			<p class="p-3 font-semibold uppercase">Chat together</p>
 			<div
 				v-if="messageList.length"
@@ -90,7 +90,7 @@
 					v-model="message"
 					type="text"
 					placeholder="Message"
-					class="bg-quinary-900 placeholder-tertiary-200 focus:bg-tertiary-200 focus:text-quinary-900 focus:placeholder-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none disabled:opacity-50"
+					class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none disabled:opacity-50"
 				/>
 			</form>
 		</div>

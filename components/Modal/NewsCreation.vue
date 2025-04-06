@@ -119,7 +119,7 @@
 </script>
 
 <template>
-	<div class="p-5 space-y-5 bg-secondary-950">
+	<div class="bg-cb-secondary-950 space-y-5 p-5">
 		<h3 class="text-2xl font-bold">Create Comeback</h3>
 		<div class="relative">
 			<ComebackInput
@@ -130,12 +130,12 @@
 			/>
 			<div
 				v-if="artistListSearched.length"
-				class="absolute z-10 flex flex-col justify-start w-full h-40 p-1 overflow-hidden overflow-y-auto scrollBarLight oversc bg-quaternary-950 top-18"
+				class="scrollBarLight oversc bg-cb-quaternary-950 absolute top-18 z-10 flex h-40 w-full flex-col justify-start overflow-hidden overflow-y-auto p-1"
 			>
 				<button
 					v-for="artist in artistListSearched"
 					:key="artist.id"
-					class="p-2 rounded hover:bg-quinary-900 text-start"
+					class="hover:bg-cb-quinary-900 rounded p-2 text-start"
 					@click="addArtistToNews(artist)"
 				>
 					{{ artist.name }}
@@ -150,9 +150,9 @@
 					v-for="artist in artistListSelected"
 					:key="artist.id"
 					@click="removeArtistFromNews(artist)"
-					class="relative flex flex-col items-center justify-center px-5 py-1 rounded cursor-pointer hover:bg-red-500/50"
+					class="relative flex cursor-pointer flex-col items-center justify-center rounded px-5 py-1 hover:bg-red-500/50"
 				>
-					<img :src="artist.picture" class="object-cover w-8 h-8 rounded-full" />
+					<img :src="artist.picture" class="h-8 w-8 rounded-full object-cover" />
 					<p>{{ artist.name }}</p>
 				</div>
 			</div>
@@ -161,7 +161,7 @@
 		<div class="flex flex-col gap-1">
 			<ComebackLabel label="Date" />
 			<UCalendar
-				class="p-1 rounded bg-quinary-900"
+				class="bg-cb-quinary-900 rounded p-1"
 				:model-value="parseToCalendarDate(newsDate)"
 				@update:model-value="
 					(value) => {
@@ -187,7 +187,7 @@
 
 		<button
 			:disabled="sendNews"
-			class="w-full py-2 font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary-900 hover:scale-105 hover:bg-red-900"
+			class="bg-cb-primary-900 w-full rounded py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
 			@click="creationNews"
 		>
 			<p v-if="sendNews">Sending...</p>

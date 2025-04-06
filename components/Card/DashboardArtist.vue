@@ -121,7 +121,7 @@
 
 <template>
 	<div
-		class="list-complete-item bg-quaternary-950 relative flex h-full w-full flex-col rounded p-3"
+		class="list-complete-item bg-cb-quaternary-950 relative flex h-full w-full flex-col rounded p-3"
 	>
 		<div class="flex flex-grow flex-col space-y-2">
 			<div class="relative">
@@ -145,7 +145,7 @@
 						<NuxtLink
 							:to="'/artist/' + id"
 							target="_blank"
-							class="hover:text-primary-900 font-semibold"
+							class="hover:text-cb-primary-900 font-semibold"
 						>
 							{{ name }}
 						</NuxtLink>
@@ -159,12 +159,12 @@
 					<NuxtLink
 						:to="'/artist/edit/' + id"
 						target="_blank"
-						class="bg-quinary-900 rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+						class="bg-cb-quinary-900 rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
 					>
 						Edit
 					</NuxtLink>
 					<button
-						class="bg-quinary-900 rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+						class="bg-cb-quinary-900 rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
 						@click="deleteArtist"
 					>
 						Delete
@@ -176,13 +176,13 @@
 				<p
 					v-for="style in styles"
 					:key="style.name"
-					class="bg-quinary-900 rounded px-2 py-1 text-xs uppercase"
+					class="bg-cb-quinary-900 rounded px-2 py-1 text-xs uppercase"
 				>
 					{{ style.name }}
 				</p>
 			</div>
 			<div v-else>
-				<p class="text-primary-900 text-xs">No styles</p>
+				<p class="text-cb-primary-900 text-xs">No styles</p>
 			</div>
 
 			<div>
@@ -194,7 +194,7 @@
 				>
 					{{ description }}
 				</p>
-				<p v-else class="text-primary-900 text-xs">No description</p>
+				<p v-else class="text-cb-primary-900 text-xs">No description</p>
 			</div>
 
 			<div class="space-y-2">
@@ -204,7 +204,7 @@
 				>
 					<p class="text-sm font-semibold uppercase">
 						Socials
-						<span :class="{ 'text-primary-900': socialList.length === 0 }">
+						<span :class="{ 'text-cb-primary-900': socialList.length === 0 }">
 							({{ socialList.length }})
 						</span>
 					</p>
@@ -232,15 +232,15 @@
 								:key="social"
 								:href="social.link"
 								target="_blank"
-								class="bg-quinary-900 overflow-hidden rounded text-xs"
+								class="bg-cb-quinary-900 overflow-hidden rounded text-xs"
 							>
-								<p class="bg-secondary-950 px-1.5 py-1 uppercase">{{ social.name }}</p>
+								<p class="bg-cb-secondary-950 px-1.5 py-1 uppercase">{{ social.name }}</p>
 								<p class="px-1.5 py-1">{{ social.link }}</p>
 							</a>
 						</div>
 						<p
 							v-else
-							class="bg-quinary-900 rounded px-2 py-1 text-center text-xs uppercase"
+							class="bg-cb-quinary-900 rounded px-2 py-1 text-center text-xs uppercase"
 						>
 							No Socials Link
 						</p>
@@ -255,7 +255,7 @@
 				>
 					<p class="text-sm font-semibold uppercase">
 						Platforms
-						<span :class="{ 'text-primary-900': platformList.length === 0 }">
+						<span :class="{ 'text-cb-primary-900': platformList.length === 0 }">
 							({{ platformList.length }})
 						</span>
 					</p>
@@ -286,15 +286,17 @@
 								:key="platform"
 								:href="platform.link"
 								target="_blank"
-								class="bg-quinary-900 overflow-hidden rounded text-xs"
+								class="bg-cb-quinary-900 overflow-hidden rounded text-xs"
 							>
-								<p class="bg-secondary-950 px-1.5 py-1 uppercase">{{ platform.name }}</p>
+								<p class="bg-cb-secondary-950 px-1.5 py-1 uppercase">
+									{{ platform.name }}
+								</p>
 								<p class="px-1.5 py-1">{{ platform.link }}</p>
 							</a>
 						</div>
 						<p
 							v-else
-							class="bg-quinary-900 rounded px-2 py-1 text-center text-xs uppercase"
+							class="bg-cb-quinary-900 rounded px-2 py-1 text-center text-xs uppercase"
 						>
 							No Platforms Link
 						</p>

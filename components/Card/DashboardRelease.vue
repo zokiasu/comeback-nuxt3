@@ -119,7 +119,7 @@
 
 <template>
 	<div
-		class="bg-quaternary-950 relative flex h-full flex-col justify-between gap-1.5 rounded p-3 text-xs"
+		class="bg-cb-quaternary-950 relative flex h-full flex-col justify-between gap-1.5 rounded p-3 text-xs"
 	>
 		<div class="space-y-1.5">
 			<div class="flex w-full justify-between text-xs">
@@ -139,7 +139,7 @@
 				Need To Be Verified
 			</p>
 
-			<div class="bg-primary-900 relative aspect-square w-full rounded">
+			<div class="bg-cb-primary-900 relative aspect-square w-full rounded">
 				<NuxtImg
 					v-show="imageLoaded"
 					ref="skeleton"
@@ -156,7 +156,7 @@
 				<NuxtLink
 					:to="'/release/' + id"
 					target="_blank"
-					class="hover:text-primary-900 font-semibold transition-all duration-300 ease-in-out"
+					class="hover:text-cb-primary-900 font-semibold transition-all duration-300 ease-in-out"
 				>
 					{{ name }}
 				</NuxtLink>
@@ -173,13 +173,16 @@
 						:key="platform.name + index"
 						:href="platform.link"
 						target="_blank"
-						class="bg-quinary-900 overflow-hidden rounded text-xs"
+						class="bg-cb-quinary-900 overflow-hidden rounded text-xs"
 					>
-						<p class="bg-secondary-950 px-1.5 py-1 uppercase">{{ platform.name }}</p>
+						<p class="bg-cb-secondary-950 px-1.5 py-1 uppercase">{{ platform.name }}</p>
 						<p class="truncate px-1.5 py-1">{{ platform.link }}</p>
 					</a>
 				</div>
-				<p v-else class="bg-quinary-900 rounded px-2 py-1 text-center text-xs uppercase">
+				<p
+					v-else
+					class="bg-cb-quinary-900 rounded px-2 py-1 text-center text-xs uppercase"
+				>
 					No Platforms Link
 				</p>
 			</div>
@@ -192,13 +195,13 @@
 			</p>
 			<div class="space-x-1">
 				<button
-					class="bg-quinary-900 rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+					class="bg-cb-quinary-900 rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
 					@click="showUpdateVerifiedRelease"
 				>
 					Edit
 				</button>
 				<button
-					class="bg-quinary-900 rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+					class="bg-cb-quinary-900 rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
 					@click="callDeleteRelease"
 				>
 					Delete

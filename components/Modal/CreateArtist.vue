@@ -156,7 +156,7 @@
 		<div class="flex flex-col gap-2">
 			<div class="flex items-end gap-2">
 				<ComebackLabel label="Image" />
-				<p class="text-sm italic text-quinary-900">
+				<p class="text-cb-quinary-900 text-sm italic">
 					Picture will be automaticaly update based on Youtube Music
 				</p>
 			</div>
@@ -177,10 +177,10 @@
 				<ComebackLabel label="Type" />
 				<select
 					v-model="artist.type"
-					class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
+					class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
 				>
-					<option value="SOLO" class="text-secondary-950">SOLO</option>
-					<option value="GROUP" class="text-secondary-950">GROUP</option>
+					<option value="SOLO" class="text-cb-secondary-950">SOLO</option>
+					<option value="GROUP" class="text-cb-secondary-950">GROUP</option>
 				</select>
 			</div>
 			<!-- Active Career -->
@@ -188,10 +188,10 @@
 				<ComebackLabel label="Active Career" />
 				<select
 					v-model="artist.active_career"
-					class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
+					class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
 				>
-					<option :value="true" class="text-secondary-950">Active</option>
-					<option :value="false" class="text-secondary-950">Inactive</option>
+					<option :value="true" class="text-cb-secondary-950">Active</option>
+					<option :value="false" class="text-cb-secondary-950">Inactive</option>
 				</select>
 			</div>
 		</div>
@@ -230,7 +230,7 @@
 			<textarea
 				v-model="artist.description"
 				:placeholder="artist.description || 'Description'"
-				class="focus:bg-tertiary-200 focus:text-secondary-950 min-h-full w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:p-1.5 focus:outline-none"
+				class="focus:bg-cb-tertiary-200 focus:text-cb-secondary-950 min-h-full w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:p-1.5 focus:outline-none"
 				@input="adjustTextarea($event)"
 			/>
 		</div>
@@ -270,12 +270,12 @@
 					:key="index"
 					class="flex w-full gap-1"
 				>
-					<div class="w-full p-2 space-y-3 text-xs rounded bg-quinary-900">
+					<div class="bg-cb-quinary-900 w-full space-y-3 rounded p-2 text-xs">
 						<input
 							type="text"
 							:value="platform.name"
 							placeholder="Platform's Name"
-							class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+							class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 							@input="
 								(e: Event) =>
 									(platformList[index].name = (e.target as HTMLInputElement).value)
@@ -285,7 +285,7 @@
 							type="text"
 							:value="platform.link"
 							placeholder="Platform's Link"
-							class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+							class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 							@input="
 								(e: Event) =>
 									(platformList[index].link = (e.target as HTMLInputElement).value)
@@ -293,14 +293,14 @@
 						/>
 					</div>
 					<button
-						class="p-1 text-xs rounded bg-primary-900 hover:bg-red-900"
+						class="bg-cb-primary-900 rounded p-1 text-xs hover:bg-red-900"
 						@click="platformList.splice(index, 1)"
 					>
-						<IconDelete class="w-5 h-5" />
+						<IconDelete class="h-5 w-5" />
 					</button>
 				</div>
 				<button
-					class="w-full p-2 text-xs font-semibold uppercase rounded bg-primary-900 hover:bg-red-900"
+					class="bg-cb-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
 					@click="platformList.push({ name: '', link: '' })"
 				>
 					Add Platforms
@@ -310,12 +310,12 @@
 			<div class="w-full space-y-2">
 				<ComebackLabel label="Socials" />
 				<div v-for="(social, index) in socialList" :key="index" class="flex w-full gap-2">
-					<div class="w-full p-2 space-y-3 text-xs rounded bg-quinary-900">
+					<div class="bg-cb-quinary-900 w-full space-y-3 rounded p-2 text-xs">
 						<input
 							type="text"
 							:value="social.name"
 							placeholder="Social's Name"
-							class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+							class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 							@input="
 								(e: Event) =>
 									(socialList[index].name = (e.target as HTMLInputElement).value)
@@ -325,7 +325,7 @@
 							type="text"
 							:value="social.link"
 							placeholder="Social's Link"
-							class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+							class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 							@input="
 								(e: Event) =>
 									(socialList[index].link = (e.target as HTMLInputElement).value)
@@ -333,14 +333,14 @@
 						/>
 					</div>
 					<button
-						class="p-1 text-xs rounded bg-primary-900 hover:bg-red-900"
+						class="bg-cb-primary-900 rounded p-1 text-xs hover:bg-red-900"
 						@click="socialList.splice(index, 1)"
 					>
-						<IconDelete class="w-5 h-5" />
+						<IconDelete class="h-5 w-5" />
 					</button>
 				</div>
 				<button
-					class="w-full p-2 text-xs font-semibold uppercase rounded bg-primary-900 hover:bg-red-900"
+					class="bg-cb-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
 					@click="socialList.push({ name: '', link: '' })"
 				>
 					Add Socials
@@ -348,10 +348,10 @@
 			</div>
 		</div>
 
-		<div class="pt-3 border-t border-zinc-700">
+		<div class="border-t border-zinc-700 pt-3">
 			<button
 				:disabled="isUploadingEdit"
-				class="w-full py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary-900 hover:scale-105 hover:bg-red-900"
+				class="bg-cb-primary-900 w-full rounded py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
 				@click="sendCreateArtist"
 			>
 				{{ isUploadingEdit ? 'Loading' : 'Saves' }}

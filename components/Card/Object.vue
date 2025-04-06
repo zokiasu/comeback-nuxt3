@@ -38,23 +38,23 @@
 <template>
 	<NuxtLink
 		:to="objectLink"
-		class="group bg-quaternary-950 shadow-secondary-950 max-w-[10rem] min-w-[10rem] space-y-3 rounded p-4 shadow-xl transition-all duration-500 ease-in-out"
+		class="group bg-cb-quaternary-950 shadow-cb-secondary-950 max-w-[10rem] min-w-[10rem] space-y-3 rounded p-4 shadow-xl transition-all duration-500 ease-in-out"
 	>
 		<div class="relative">
 			<div
-				:class="`bg-primary-900 absolute inset-0 aspect-square w-full object-cover transition-all duration-500 ease-in-out ${
+				:class="`bg-cb-primary-900 absolute inset-0 aspect-square w-full object-cover transition-all duration-500 ease-in-out ${
 					isArtist ? 'rounded-full' : 'rounded'
 				} ${imageLoaded ? 'opacity-0' : 'opacity-100'}`"
 			></div>
 			<NuxtImg
 				:src="image"
-				class="shadow-secondary-950 aspect-square w-full object-cover shadow-xl"
+				class="shadow-cb-secondary-950 aspect-square w-full object-cover shadow-xl"
 				:class="isArtist ? 'rounded-full' : 'rounded'"
 				@load="imageLoaded = true"
 			/>
 			<div
 				v-if="!isArtist && releaseDate"
-				class="bg-quaternary-950 absolute top-1 left-1 rounded px-1.5 text-xs uppercase"
+				class="bg-cb-quaternary-950 absolute top-1 left-1 rounded px-1.5 text-xs uppercase"
 				:class="dateAlwaysDisplay ? '' : 'opacity-0 group-hover:opacity-100'"
 			>
 				<p>
@@ -63,7 +63,7 @@
 			</div>
 			<div
 				v-if="!isArtist && releaseType"
-				class="bg-quaternary-950 absolute right-1 bottom-1 rounded px-1.5 text-xs uppercase"
+				class="bg-cb-quaternary-950 absolute right-1 bottom-1 rounded px-1.5 text-xs uppercase"
 				:class="dateAlwaysDisplay ? '' : 'opacity-0 group-hover:opacity-100'"
 			>
 				<p>

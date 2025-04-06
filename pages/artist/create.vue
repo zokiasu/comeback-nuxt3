@@ -106,7 +106,7 @@
 	})
 
 	const df = new DateFormatter('en-US', {
-		dateStyle: 'medium'
+		dateStyle: 'medium',
 	})
 
 	const closeModalCreateStyle = async () => {
@@ -210,13 +210,13 @@
 <template>
 	<div class="container mx-auto min-h-[calc(100vh-60px)] space-y-5 p-5 lg:px-10">
 		<div
-			class="flex items-center justify-between pb-1 text-lg font-semibold uppercase border-b border-zinc-700 lg:text-xl"
+			class="flex items-center justify-between border-b border-zinc-700 pb-1 text-lg font-semibold uppercase lg:text-xl"
 		>
 			<p>Artist Creation</p>
 			<div>
 				<button
 					:disabled="isUploadingEdit"
-					class="w-full px-5 py-3 text-xs font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary-900 hover:scale-105 hover:bg-red-900"
+					class="bg-cb-primary-900 w-full rounded px-5 py-3 text-xs font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
 					@click="creationArtist"
 				>
 					{{ isUploadingEdit ? 'Loading' : 'Saves' }}
@@ -229,7 +229,7 @@
 			<div class="flex flex-col gap-2">
 				<div class="flex items-end gap-2">
 					<ComebackLabel label="Image" />
-					<p class="text-sm italic text-quinary-900">
+					<p class="text-cb-quinary-900 text-sm italic">
 						Picture will be automaticaly update based on Youtube Music
 					</p>
 				</div>
@@ -239,16 +239,12 @@
 					:alt="artistName"
 					format="webp"
 					loading="lazy"
-					class="object-cover w-full rounded"
+					class="w-full rounded object-cover"
 				/>
 			</div>
 			<!-- Name & Id YTM & Birthday & Debut Date -->
 			<div class="space-y-4">
-				<ComebackInput
-					v-model="artistName"
-					label="Name *"
-					placeholder="Artist Name*"
-				/>
+				<ComebackInput v-model="artistName" label="Name *" placeholder="Artist Name*" />
 				<ComebackInput
 					v-model="artistIdYoutubeMusic"
 					label="Id Youtube Music *"
@@ -263,12 +259,16 @@
 						<ComebackLabel label="Birthday" />
 						<UPopover>
 							<UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
-								{{ birthdayToDate ? df.format(birthdayToDate.toDate(getLocalTimeZone())) : 'Select a date' }}
+								{{
+									birthdayToDate
+										? df.format(birthdayToDate.toDate(getLocalTimeZone()))
+										: 'Select a date'
+								}}
 							</UButton>
 
 							<template #content>
 								<UCalendar
-									class="p-1 rounded bg-quinary-900"
+									class="bg-cb-quinary-900 rounded p-1"
 									:model-value="birthdayToDate as CalendarDate | null"
 									@update:model-value="
 										(value) => {
@@ -285,12 +285,16 @@
 						<ComebackLabel label="Debut Date" />
 						<UPopover>
 							<UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
-								{{ debutDateToDate ? df.format(debutDateToDate.toDate(getLocalTimeZone())) : 'Select a date' }}
+								{{
+									debutDateToDate
+										? df.format(debutDateToDate.toDate(getLocalTimeZone()))
+										: 'Select a date'
+								}}
 							</UButton>
 
 							<template #content>
 								<UCalendar
-									class="p-1 rounded bg-quinary-900"
+									class="bg-cb-quinary-900 rounded p-1"
 									:model-value="debutDateToDate as CalendarDate | null"
 									@update:model-value="
 										(value) => {
@@ -313,18 +317,18 @@
 				<div class="grid grid-cols-1 gap-1">
 					<div class="flex items-end gap-2">
 						<ComebackLabel label="Gender" />
-						<p class="text-sm italic text-quinary-900">
+						<p class="text-cb-quinary-900 text-sm italic">
 							It's only for stat we don't assume any gender jugement
 						</p>
 					</div>
 					<select
 						v-model="artistGender"
-						class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
+						class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
 					>
-						<option default value="UNKNOWN" class="text-secondary-950">UNKNOWN</option>
-						<option value="MALE" class="text-secondary-950">MALE</option>
-						<option value="FEMALE" class="text-secondary-950">FEMALE</option>
-						<option value="MIXTE" class="text-secondary-950">MIXTE</option>
+						<option default value="UNKNOWN" class="text-cb-secondary-950">UNKNOWN</option>
+						<option value="MALE" class="text-cb-secondary-950">MALE</option>
+						<option value="FEMALE" class="text-cb-secondary-950">FEMALE</option>
+						<option value="MIXTE" class="text-cb-secondary-950">MIXTE</option>
 					</select>
 				</div>
 				<!-- Type -->
@@ -332,10 +336,10 @@
 					<ComebackLabel label="Type" />
 					<select
 						v-model="artistType"
-						class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
+						class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
 					>
-						<option value="SOLO" class="text-secondary-950">SOLO</option>
-						<option value="GROUP" class="text-secondary-950">GROUP</option>
+						<option value="SOLO" class="text-cb-secondary-950">SOLO</option>
+						<option value="GROUP" class="text-cb-secondary-950">GROUP</option>
 					</select>
 				</div>
 				<!-- Active Career -->
@@ -343,10 +347,10 @@
 					<ComebackLabel label="Active Career" />
 					<select
 						v-model="artistActiveCareer"
-						class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
+						class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
 					>
-						<option :value="true" class="text-secondary-950">Active</option>
-						<option :value="false" class="text-secondary-950">Inactive</option>
+						<option :value="true" class="text-cb-secondary-950">Active</option>
+						<option :value="false" class="text-cb-secondary-950">Inactive</option>
 					</select>
 				</div>
 			</div>
@@ -357,7 +361,7 @@
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="Styles" />
 						<button
-							class="px-2 py-1 text-xs font-semibold uppercase rounded bg-primary-900 w-fit hover:bg-red-900"
+							class="bg-cb-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
 							@click="showModalCreateStyle = true"
 						>
 							Create New Style
@@ -378,7 +382,7 @@
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="General Tags" />
 						<button
-							class="px-2 py-1 text-xs font-semibold uppercase rounded bg-primary-900 w-fit hover:bg-red-900"
+							class="bg-cb-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
 							@click="showModalCreateTag = true"
 						>
 							Create New Tag
@@ -401,7 +405,7 @@
 				<textarea
 					v-model="artistDescription"
 					placeholder="Description"
-					class="focus:bg-tertiary-200 focus:text-secondary-950 min-h-full w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:p-1.5 focus:outline-none"
+					class="focus:bg-cb-tertiary-200 focus:text-cb-secondary-950 min-h-full w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:p-1.5 focus:outline-none"
 					@input="adjustTextarea($event)"
 				/>
 			</div>
@@ -411,7 +415,7 @@
 					<ComebackLabel label="Group" />
 					<button
 						v-if="isAdminStore"
-						class="px-2 py-1 text-xs font-semibold uppercase rounded bg-primary-900 w-fit hover:bg-red-900"
+						class="bg-cb-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
 						@click="showModalCreateArtist = true"
 					>
 						Create New Artist
@@ -433,7 +437,7 @@
 					<ComebackLabel label="Members" />
 					<button
 						v-if="isAdminStore"
-						class="px-2 py-1 text-xs font-semibold uppercase rounded bg-primary-900 w-fit hover:bg-red-900"
+						class="bg-cb-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
 						@click="showModalCreateArtist = true"
 					>
 						Create New Artist
@@ -459,12 +463,12 @@
 						:key="index + '_platform'"
 						class="flex w-full gap-1"
 					>
-						<div class="w-full p-2 space-y-3 text-xs rounded bg-quinary-900">
+						<div class="bg-cb-quinary-900 w-full space-y-3 rounded p-2 text-xs">
 							<input
 								type="text"
 								:value="platform.name"
 								placeholder="Platform's Name"
-								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
 									(e: Event) =>
 										(artistPlatformList[index].name = (
@@ -476,7 +480,7 @@
 								type="text"
 								:value="platform.link"
 								placeholder="Platform's Link"
-								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
 									(e: Event) =>
 										(artistPlatformList[index].link = (
@@ -486,14 +490,14 @@
 							/>
 						</div>
 						<button
-							class="p-5 text-xs rounded bg-primary-900 hover:bg-red-900"
+							class="bg-cb-primary-900 rounded p-5 text-xs hover:bg-red-900"
 							@click="artistPlatformList.splice(artistPlatformList.indexOf(platform), 1)"
 						>
 							Delete
 						</button>
 					</div>
 					<button
-						class="w-full p-2 text-xs font-semibold uppercase rounded bg-primary-900 hover:bg-red-900"
+						class="bg-cb-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
 						@click="artistPlatformList.push({ name: '', link: '' })"
 					>
 						Add Platforms
@@ -507,12 +511,12 @@
 						:key="index + '_social'"
 						class="flex w-full gap-2"
 					>
-						<div class="w-full p-2 space-y-3 text-xs rounded bg-quinary-900">
+						<div class="bg-cb-quinary-900 w-full space-y-3 rounded p-2 text-xs">
 							<input
 								type="text"
 								:value="social.name"
 								placeholder="Social's Name"
-								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
 									(e: Event) =>
 										(artistSocialList[index].name =
@@ -523,7 +527,7 @@
 								type="text"
 								:value="social.link"
 								placeholder="Social's Link"
-								class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
 									(e: Event) =>
 										(artistSocialList[index].link =
@@ -532,14 +536,14 @@
 							/>
 						</div>
 						<button
-							class="p-5 text-xs rounded bg-primary-900 hover:bg-red-900"
+							class="bg-cb-primary-900 rounded p-5 text-xs hover:bg-red-900"
 							@click="artistSocialList.splice(artistSocialList.indexOf(social), 1)"
 						>
 							Delete
 						</button>
 					</div>
 					<button
-						class="w-full p-2 text-xs font-semibold uppercase rounded bg-primary-900 hover:bg-red-900"
+						class="bg-cb-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
 						@click="artistSocialList.push({ name: '', link: '' })"
 					>
 						Add Socials
@@ -548,10 +552,10 @@
 			</div>
 		</div>
 
-		<div class="pt-3 border-t border-zinc-700">
+		<div class="border-t border-zinc-700 pt-3">
 			<button
 				:disabled="isUploadingEdit"
-				class="w-full py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary-900 hover:scale-105 hover:bg-red-900"
+				class="bg-cb-primary-900 w-full rounded py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
 				@click="creationArtist"
 			>
 				{{ isUploadingEdit ? 'Loading' : 'Saves' }}

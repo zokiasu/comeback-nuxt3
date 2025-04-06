@@ -46,7 +46,7 @@
 		<div v-if="props.comebackList.length > maxDisplay" class="flex w-full justify-center">
 			<button
 				type="button"
-				class="border-tertiary-200 flex w-fit items-center gap-1 rounded border p-1 font-semibold"
+				class="border-cb-tertiary-200 flex w-fit items-center gap-1 rounded border p-1 font-semibold"
 				@click="toggleDisplayAll"
 			>
 				<IconPlus v-if="!displayAll" class="mx-auto h-3 w-3" />

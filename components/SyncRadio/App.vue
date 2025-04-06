@@ -455,8 +455,8 @@
 						class="rounded px-3 py-1"
 						:class="
 							searchOnComeback
-								? 'border-primary-900 lg:bg-primary-900 border lg:border-none'
-								: 'hover:bg-quinary-900'
+								? 'border-cb-primary-900 lg:bg-cb-primary-900 border lg:border-none'
+								: 'hover:bg-cb-quinary-900'
 						"
 						@click="searchOnComeback = true"
 					>
@@ -465,7 +465,7 @@
 							Search on
 							<span
 								class="font-bold"
-								:class="searchOnComeback ? 'text-tertiary-200' : 'text-primary-900'"
+								:class="searchOnComeback ? 'text-cb-tertiary-200' : 'text-cb-primary-900'"
 							>
 								Comeback
 							</span>
@@ -475,8 +475,8 @@
 						class="rounded px-3 py-1"
 						:class="
 							searchOnComeback
-								? 'hover:bg-quinary-900'
-								: 'border-primary-900 lg:bg-primary-900 border lg:border-none'
+								? 'hover:bg-cb-quinary-900'
+								: 'border-cb-primary-900 lg:bg-cb-primary-900 border lg:border-none'
 						"
 						@click="searchOnComeback = false"
 					>
@@ -487,14 +487,14 @@
 
 				<div class="flex gap-2">
 					<button
-						class="bg-quinary-900 text-tertiary-200 hover:bg-tertiary-200/30 flex w-full items-center justify-center gap-1 rounded px-3 py-1 transition-all duration-300 ease-in-out lg:w-fit lg:justify-start lg:py-1"
+						class="bg-cb-quinary-900 text-cb-tertiary-200 hover:bg-cb-tertiary-200/30 flex w-full items-center justify-center gap-1 rounded px-3 py-1 transition-all duration-300 ease-in-out lg:w-fit lg:justify-start lg:py-1"
 						@click="copyIdRoom"
 					>
 						<IconCopy class="h-4 w-4" />
 						<span class="hidden lg:block">Copy ID</span>
 					</button>
 					<button
-						class="bg-quinary-900 text-tertiary-200 hover:bg-tertiary-200/30 flex w-full items-center justify-center gap-1 rounded px-3 py-1 transition-all duration-300 ease-in-out lg:w-fit lg:justify-start lg:py-1"
+						class="bg-cb-quinary-900 text-cb-tertiary-200 hover:bg-cb-tertiary-200/30 flex w-full items-center justify-center gap-1 rounded px-3 py-1 transition-all duration-300 ease-in-out lg:w-fit lg:justify-start lg:py-1"
 						@click="shareRoomUrl"
 					>
 						<IconShare class="h-4 w-4" />
@@ -511,11 +511,11 @@
 						type="text"
 						placeholder="Search a song"
 						:disabled="!isAllowedToAddSong"
-						class="bg-quinary-900 placeholder-tertiary-200 focus:bg-tertiary-200 focus:text-quinary-900 focus:placeholder-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none disabled:opacity-50"
+						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none disabled:opacity-50"
 					/>
 					<button
 						v-if="searchComebackInput.length"
-						class="text-quaternary-950 hover:text-primary-900 absolute inset-y-0 right-2.5"
+						class="text-cb-quaternary-950 hover:text-cb-primary-900 absolute inset-y-0 right-2.5"
 						@click="((searchComebackInput = ''), (datas = []))"
 					>
 						<IconClose class="h-5 w-5" />
@@ -523,7 +523,7 @@
 				</div>
 				<div
 					v-if="searchMusicComeback.length"
-					class="bg-quaternary-950 absolute inset-x-0 top-20 z-50 gap-x-5 rounded py-5 drop-shadow lg:px-10"
+					class="bg-cb-quaternary-950 absolute inset-x-0 top-20 z-50 gap-x-5 rounded py-5 drop-shadow lg:px-10"
 				>
 					<div class="hidden gap-3 lg:flex">
 						<p>Limit Result :</p>
@@ -544,7 +544,7 @@
 						<div
 							v-for="data in searchMusicComeback"
 							:key="data.objectID"
-							class="hover:bg-primary-900/10 flex cursor-pointer items-center justify-between gap-3 rounded px-3 py-1.5 text-sm"
+							class="hover:bg-cb-primary-900/10 flex cursor-pointer items-center justify-between gap-3 rounded px-3 py-1.5 text-sm"
 							@click="addInPlaylistFromRecommandation(data.objectID)"
 						>
 							<div class="flex items-center gap-3">
@@ -561,13 +561,16 @@
 									</p>
 									<div class="flex gap-1 text-xs">
 										<p class="truncate">{{ data.artists[0].name }}</p>
-										<p v-if="data.ismv" class="bg-primary-900 rounded px-1 font-semibold">
+										<p
+											v-if="data.ismv"
+											class="bg-cb-primary-900 rounded px-1 font-semibold"
+										>
 											MV
 										</p>
 									</div>
 								</div>
 							</div>
-							<div class="bg-quinary-900 rounded p-2">
+							<div class="bg-cb-quinary-900 rounded p-2">
 								<IconPlus class="h-5 w-5" />
 							</div>
 						</div>
@@ -581,12 +584,12 @@
 					type="text"
 					placeholder="Youtube URL"
 					:disabled="!isAllowedToAddSong"
-					class="bg-quinary-900 placeholder-tertiary-200 focus:bg-tertiary-200 focus:text-quinary-900 focus:placeholder-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none disabled:opacity-50"
+					class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none disabled:opacity-50"
 				/>
 				<button
 					type="submit"
 					:disabled="!isAllowedToAddSong"
-					class="bg-primary-900 text-tertiary-200 hover:bg-primary-900/90 overflow-hidden rounded px-3 py-2 font-semibold uppercase transition-all duration-300 ease-in-out disabled:opacity-50 sm:max-w-[10rem] lg:w-full"
+					class="bg-cb-primary-900 text-cb-tertiary-200 hover:bg-cb-primary-900/90 overflow-hidden rounded px-3 py-2 font-semibold uppercase transition-all duration-300 ease-in-out disabled:opacity-50 sm:max-w-[10rem] lg:w-full"
 				>
 					<IconPlus class="mx-auto h-5 w-5 lg:hidden" />
 					<span class="hidden lg:block">Add URL</span>
@@ -604,7 +607,7 @@
 			</p>
 			<button
 				v-if="errorMessage"
-				class="bg-quaternary-950 hover:bg-primary-900 rounded-lg p-2 transition-all duration-300 ease-in-out"
+				class="bg-cb-quaternary-950 hover:bg-cb-primary-900 rounded-lg p-2 transition-all duration-300 ease-in-out"
 				@click="resetPlayer"
 			>
 				Reload Player
@@ -620,14 +623,14 @@
 
 		<section
 			id="playlist"
-			class="bg-quinary-900 space-y-2 overflow-hidden rounded p-2 text-xs lg:col-start-1 lg:col-end-2 lg:row-start-2"
+			class="bg-cb-quinary-900 space-y-2 overflow-hidden rounded p-2 text-xs lg:col-start-1 lg:col-end-2 lg:row-start-2"
 		>
 			<div class="flex w-full justify-between">
 				<div class="flex gap-3">
 					<p class="font-semibold uppercase">Playlist</p>
 					<button
 						v-if="isAllowedToAddSong && roomPlaylist"
-						class="hover:text-primary-900 flex"
+						class="hover:text-cb-primary-900 flex"
 						@click="nextVideo"
 					>
 						<p class="text-xs">Next Song</p>
@@ -635,7 +638,7 @@
 					</button>
 				</div>
 				<button v-if="isAdminRoom && roomPlaylist" @click="deletePlaylist">
-					<IconDelete class="hover:text-primary-900 h-5 w-5 cursor-pointer" />
+					<IconDelete class="hover:text-cb-primary-900 h-5 w-5 cursor-pointer" />
 				</button>
 			</div>
 
@@ -673,19 +676,19 @@
 
 		<section
 			id="recommandation"
-			class="bg-quinary-900 hidden rounded p-3 text-xs lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:block"
+			class="bg-cb-quinary-900 hidden rounded p-3 text-xs lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:block"
 		>
 			<div class="flex w-full items-center justify-between">
 				<p class="font-semibold uppercase">Recommandation</p>
 				<button
-					class="bg-quaternary-950 hover:bg-primary-900 rounded p-1 transition-all duration-300 ease-in-out"
+					class="bg-cb-quaternary-950 hover:bg-cb-primary-900 rounded p-1 transition-all duration-300 ease-in-out"
 					@click="reloadAllRecommandationCard"
 				>
 					<IconReload class="h-4 w-4" />
 				</button>
 			</div>
 			<div
-				class="divide-tertiary-200/30 flex h-full flex-col justify-between divide-y pb-5"
+				class="divide-cb-tertiary-200/30 flex h-full flex-col justify-between divide-y pb-5"
 			>
 				<LazySyncRadioRecommandationCard
 					id="recommandation-card-1"
@@ -719,8 +722,8 @@
 								class="rounded px-4 py-1"
 								:class="
 									isEveryoneCanAddSong
-										? 'bg-quaternary-950 hover:bg-primary-900'
-										: 'bg-primary-900'
+										? 'bg-cb-quaternary-950 hover:bg-cb-primary-900'
+										: 'bg-cb-primary-900'
 								"
 								@click="updateSettings('isEveryoneDJ', false)"
 							>
@@ -730,8 +733,8 @@
 								class="rounded px-4 py-1"
 								:class="
 									isEveryoneCanAddSong
-										? 'bg-primary-900'
-										: 'bg-quaternary-950 hover:bg-primary-900'
+										? 'bg-cb-primary-900'
+										: 'bg-cb-quaternary-950 hover:bg-cb-primary-900'
 								"
 								@click="updateSettings('isEveryoneDJ', true)"
 							>
@@ -747,8 +750,8 @@
 								class="rounded px-4 py-1"
 								:class="
 									permanentRoom
-										? 'bg-primary-900'
-										: 'bg-quaternary-950 hover:bg-primary-900'
+										? 'bg-cb-primary-900'
+										: 'bg-cb-quaternary-950 hover:bg-cb-primary-900'
 								"
 								@click="updateSettings('isTemporary', true)"
 							>
@@ -758,8 +761,8 @@
 								class="rounded px-4 py-1"
 								:class="
 									permanentRoom
-										? 'bg-quaternary-950 hover:bg-primary-900'
-										: 'bg-primary-900'
+										? 'bg-cb-quaternary-950 hover:bg-cb-primary-900'
+										: 'bg-cb-primary-900'
 								"
 								@click="updateSettings('isTemporary', false)"
 							>

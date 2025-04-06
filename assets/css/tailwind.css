@@ -2,65 +2,65 @@
 @import '@nuxt/ui';
 
 @theme {
-	--color-primary-50: #ffefef;
-	--color-primary-100: #ffdada;
-	--color-primary-200: #ffbbbb;
-	--color-primary-300: #ff8c8d;
-	--color-primary-400: #ff4a4b;
-	--color-primary-500: #ff1315;
-	--color-primary-600: #ff0002;
-	--color-primary-700: #e60001;
-	--color-primary-800: #bd0001;
-	--color-primary-900: #9e0102; /* Original */
-	--color-primary-950: #560001;
+	--color-cb-primary-50: #ffefef;
+	--color-cb-primary-100: #ffdada;
+	--color-cb-primary-200: #ffbbbb;
+	--color-cb-primary-300: #ff8c8d;
+	--color-cb-primary-400: #ff4a4b;
+	--color-cb-primary-500: #ff1315;
+	--color-cb-primary-600: #ff0002;
+	--color-cb-primary-700: #e60001;
+	--color-cb-primary-800: #bd0001;
+	--color-cb-primary-900: #9e0102; /* Original */
+	--color-cb-primary-950: #560001;
 
-	--color-secondary-50: #f8f7f7;
-	--color-secondary-100: #f0eeee;
-	--color-secondary-200: #dddada;
-	--color-secondary-300: #bfbaba;
-	--color-secondary-400: #9c9495;
-	--color-secondary-500: #807778;
-	--color-secondary-600: #696061;
-	--color-secondary-700: #554f4f;
-	--color-secondary-800: #494343;
-	--color-secondary-900: #3f3b3c;
-	--color-secondary-950: #1f1d1d; /* Original */
+	--color-cb-secondary-50: #f8f7f7;
+	--color-cb-secondary-100: #f0eeee;
+	--color-cb-secondary-200: #dddada;
+	--color-cb-secondary-300: #bfbaba;
+	--color-cb-secondary-400: #9c9495;
+	--color-cb-secondary-500: #807778;
+	--color-cb-secondary-600: #696061;
+	--color-cb-secondary-700: #554f4f;
+	--color-cb-secondary-800: #494343;
+	--color-cb-secondary-900: #3f3b3c;
+	--color-cb-secondary-950: #1f1d1d; /* Original */
 
-	--color-tertiary-50: #f7f7f7;
-	--color-tertiary-100: #ededed;
-	--color-tertiary-200: #e1e1e1; /* Original */
-	--color-tertiary-300: #c8c8c8;
-	--color-tertiary-400: #adadad;
-	--color-tertiary-500: #999999;
-	--color-tertiary-600: #888888;
-	--color-tertiary-700: #7b7b7b;
-	--color-tertiary-800: #676767;
-	--color-tertiary-900: #545454;
-	--color-tertiary-950: #363636;
+	--color-cb-tertiary-50: #f7f7f7;
+	--color-cb-tertiary-100: #ededed;
+	--color-cb-tertiary-200: #e1e1e1; /* Original */
+	--color-cb-tertiary-300: #c8c8c8;
+	--color-cb-tertiary-400: #adadad;
+	--color-cb-tertiary-500: #999999;
+	--color-cb-tertiary-600: #888888;
+	--color-cb-tertiary-700: #7b7b7b;
+	--color-cb-tertiary-800: #676767;
+	--color-cb-tertiary-900: #545454;
+	--color-cb-tertiary-950: #363636;
 
-	--color-quaternary-50: #f6f6f6;
-	--color-quaternary-100: #e7e7e7;
-	--color-quaternary-200: #d1d1d1;
-	--color-quaternary-300: #b0b0b0;
-	--color-quaternary-400: #888888;
-	--color-quaternary-500: #6d6d6d;
-	--color-quaternary-600: #5d5d5d;
-	--color-quaternary-700: #4f4f4f;
-	--color-quaternary-800: #454545;
-	--color-quaternary-900: #3d3d3d;
-	--color-quaternary-950: #2b2b2b; /* Original */
+	--color-cb-quaternary-50: #f6f6f6;
+	--color-cb-quaternary-100: #e7e7e7;
+	--color-cb-quaternary-200: #d1d1d1;
+	--color-cb-quaternary-300: #b0b0b0;
+	--color-cb-quaternary-400: #888888;
+	--color-cb-quaternary-500: #6d6d6d;
+	--color-cb-quaternary-600: #5d5d5d;
+	--color-cb-quaternary-700: #4f4f4f;
+	--color-cb-quaternary-800: #454545;
+	--color-cb-quaternary-900: #3d3d3d;
+	--color-cb-quaternary-950: #2b2b2b; /* Original */
 
-	--color-quinary-50: #f6f6f6;
-	--color-quinary-100: #e7e7e7;
-	--color-quinary-200: #d1d1d1;
-	--color-quinary-300: #b0b0b0;
-	--color-quinary-400: #888888;
-	--color-quinary-500: #6d6d6d;
-	--color-quinary-600: #5d5d5d;
-	--color-quinary-700: #4f4f4f;
-	--color-quinary-800: #454545;
-	--color-quinary-900: #3a3a3a; /* Original */
-	--color-quinary-950: #262626;
+	--color-cb-quinary-50: #f6f6f6;
+	--color-cb-quinary-100: #e7e7e7;
+	--color-cb-quinary-200: #d1d1d1;
+	--color-cb-quinary-300: #b0b0b0;
+	--color-cb-quinary-400: #888888;
+	--color-cb-quinary-500: #6d6d6d;
+	--color-cb-quinary-600: #5d5d5d;
+	--color-cb-quinary-700: #4f4f4f;
+	--color-cb-quinary-800: #454545;
+	--color-cb-quinary-900: #3a3a3a; /* Original */
+	--color-cb-quinary-950: #262626;
 }
 
 html:focus-within {
@@ -163,14 +163,4 @@ html:focus-within {
 .scrollBarLight {
 	scrollbar-width: thin; /* "auto" ou "thin" */
 	scrollbar-color: var(--color-tertiary) transparent; /* Couleur de la thumb et de la track */
-}
-
-@keyframes spinning {
-	from {
-		transform: rotate(0);
-	}
-
-	to {
-		transform: rotate(2turn);
-	}
 }

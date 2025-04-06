@@ -48,7 +48,7 @@
 			:placeholder="placeholder"
 			:value="modelValue?.toString()"
 			:disabled="disabled"
-			class="bg-quaternary-950 focus:border-primary-900 appearance-none rounded border border-transparent px-2 py-1.5 transition-all duration-150 ease-in-out outline-none focus:rounded"
+			class="bg-cb-quaternary-950 focus:border-cb-primary-900 appearance-none rounded border border-transparent px-2 py-1.5 transition-all duration-150 ease-in-out outline-none focus:rounded"
 			:class="{ 'border-zinc-500 text-zinc-500': disabled }"
 			@input="updateValue($event)"
 		/>

@@ -32,7 +32,7 @@
 
 		if (window.scrollY > 50) {
 			navbar.value.classList.add(
-				'bg-secondary-950',
+				'bg-cb-secondary-950',
 				'border',
 				'border-zinc-700',
 				'shadow',
@@ -40,7 +40,7 @@
 			)
 		} else {
 			navbar.value.classList.remove(
-				'bg-secondary-950',
+				'bg-cb-secondary-950',
 				'border',
 				'border-zinc-700',
 				'shadow',
@@ -89,7 +89,7 @@
 						"
 					>
 						SyncRadio
-						<span class="absolute -bottom-2 -right-4 px-2 text-xs font-bold text-primary-900">
+						<span class="absolute -bottom-2 -right-4 px-2 text-xs font-bold text-cb-primary-900">
 							Beta
 						</span>
 					</NuxtLink> -->
@@ -109,7 +109,7 @@
 				<div class="flex items-center justify-center gap-x-2 text-sm">
 					<button
 						title="Search Artist"
-						class="bg-quaternary-950 hover:bg-tertiary-200/20 rounded p-2"
+						class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 rounded p-2"
 						@click="showModalAlgolia = true"
 					>
 						<IconSearch class="h-3.5 w-3.5" />
@@ -118,7 +118,7 @@
 					<button
 						v-if="isLoginStore"
 						title="Add new comeback"
-						class="bg-primary-900 hover:bg-primary-900/50 rounded px-3 py-1 font-semibold transition-all duration-300 ease-in-out hover:scale-110"
+						class="bg-cb-primary-900 hover:bg-cb-primary-900/50 rounded px-3 py-1 font-semibold transition-all duration-300 ease-in-out hover:scale-110"
 						@click="showModal = true"
 					>
 						New Comeback
@@ -140,7 +140,7 @@
 					<NuxtLink
 						v-if="!isLoginStore"
 						:to="`/authentification`"
-						class="bg-quaternary-950 rounded px-3 py-1 text-[0.875rem]"
+						class="bg-cb-quaternary-950 rounded px-3 py-1 text-[0.875rem]"
 					>
 						Login
 					</NuxtLink>
@@ -148,7 +148,7 @@
 						v-if="isLoginStore && userDataStore"
 						:to="profilePath"
 						title="Profile"
-						class="flex h-full items-center gap-2 rounded bg-quaternary-950 px-3 py-1 hover:bg-tertiary-200/20"
+						class="flex h-full items-center gap-2 rounded bg-cb-quaternary-950 px-3 py-1 hover:bg-cb-tertiary-200/20"
 					>
 						<p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>
 					</NuxtLink> -->
@@ -156,7 +156,7 @@
 						v-if="isLoginStore"
 						:to="`/settings/profile`"
 						title="Settings"
-						class="bg-quaternary-950 hover:bg-tertiary-200/20 flex h-full items-center gap-2 rounded px-3 py-1"
+						class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 flex h-full items-center gap-2 rounded px-3 py-1"
 					>
 						<IconSettings class="h-3.5 w-3.5" />
 					</NuxtLink>

@@ -81,7 +81,7 @@
 					v-model="newStyle"
 					type="text"
 					placeholder="Add new style"
-					class="bg-quinary-900 placeholder-tertiary-200 focus:bg-tertiary-200 focus:text-quinary-900 focus:placeholder-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:outline-none"
+					class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:outline-none"
 					@keyup.enter="
 						async () => {
 							await creationStyle()
@@ -89,7 +89,7 @@
 					"
 				/>
 				<button
-					class="bg-quinary-900 w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+					class="bg-cb-quinary-900 w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
 					@click="
 						async () => {
 							await creationStyle()
@@ -105,14 +105,14 @@
 					:key="style.name"
 					class="flex items-center justify-between gap-2"
 				>
-					<div class="bg-quaternary-950 flex w-full flex-col rounded px-2.5 py-1">
+					<div class="bg-cb-quaternary-950 flex w-full flex-col rounded px-2.5 py-1">
 						<p>{{ style.name }}</p>
 						<p class="text-xs text-zinc-500">
 							{{ style.created }}
 						</p>
 					</div>
 					<div
-						class="bg-quaternary-950 hover:bg-primary-900 flex h-full cursor-pointer items-center justify-center rounded px-2.5"
+						class="bg-cb-quaternary-950 hover:bg-cb-primary-900 flex h-full cursor-pointer items-center justify-center rounded px-2.5"
 						@click="deleteStyle(style.name)"
 					>
 						<IconDelete class="h-4 w-4" />
@@ -129,7 +129,7 @@
 					v-model="newGeneralTag"
 					type="text"
 					placeholder="Add new tag"
-					class="bg-quinary-900 placeholder-tertiary-200 focus:bg-tertiary-200 focus:text-quinary-900 focus:placeholder-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:outline-none"
+					class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:outline-none"
 					@keyup.enter="
 						async () => {
 							await creationTag()
@@ -137,7 +137,7 @@
 					"
 				/>
 				<button
-					class="bg-quinary-900 w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
+					class="bg-cb-quinary-900 w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 sm:w-fit"
 					@click="
 						async () => {
 							await creationTag()
@@ -153,14 +153,14 @@
 					:key="tag.name"
 					class="flex items-center justify-between gap-2"
 				>
-					<div class="bg-quaternary-950 flex w-full flex-col rounded px-2.5 py-1">
+					<div class="bg-cb-quaternary-950 flex w-full flex-col rounded px-2.5 py-1">
 						<p>{{ tag.name }}</p>
 						<p class="text-xs text-zinc-500">
 							{{ tag.created }}
 						</p>
 					</div>
 					<div
-						class="bg-quaternary-950 hover:bg-primary-900 flex h-full cursor-pointer items-center justify-center rounded px-2.5"
+						class="bg-cb-quaternary-950 hover:bg-cb-primary-900 flex h-full cursor-pointer items-center justify-center rounded px-2.5"
 						@click="deleteTag(tag.name)"
 					>
 						<IconDelete class="h-4 w-4" />

@@ -105,7 +105,7 @@
 			/>
 			<div
 				class="absolute inset-0 flex items-end p-5 transition-all duration-500 ease-in-out lg:p-10 xl:p-14 2xl:px-32"
-				:class="imageBackLoaded ? 'bg-secondary-950/60' : 'bg-quinary-900'"
+				:class="imageBackLoaded ? 'bg-cb-secondary-950/60' : 'bg-cb-quinary-900'"
 			>
 				<div class="space-y-5 lg:container lg:mx-auto lg:px-5">
 					<SkeletonDefault v-if="isFetchingArtist" class="h-14 w-80 rounded" />
@@ -121,7 +121,7 @@
 					>
 						<p
 							v-if="artist.birth_date"
-							class="bg-quaternary-950 w-fit rounded px-3 py-1 text-xs font-semibold whitespace-nowrap uppercase"
+							class="bg-cb-quaternary-950 w-fit rounded px-3 py-1 text-xs font-semibold whitespace-nowrap uppercase"
 						>
 							Birthday :
 							{{
@@ -136,7 +136,7 @@
 						</p>
 						<p
 							v-if="artist.debut_date"
-							class="bg-quaternary-950 w-fit rounded px-3 py-1 text-xs font-semibold whitespace-nowrap uppercase"
+							class="bg-cb-quaternary-950 w-fit rounded px-3 py-1 text-xs font-semibold whitespace-nowrap uppercase"
 						>
 							Debut Date :
 							{{
@@ -154,14 +154,14 @@
 						<p
 							v-for="style in artist.styles"
 							:key="style"
-							class="bg-quaternary-950 w-fit rounded px-3 py-1 text-xs font-semibold whitespace-nowrap uppercase"
+							class="bg-cb-quaternary-950 w-fit rounded px-3 py-1 text-xs font-semibold whitespace-nowrap uppercase"
 						>
 							{{ style }}
 						</p>
 						<p
 							v-for="tag in artist.general_tags"
 							:key="tag"
-							class="bg-quaternary-950 w-fit rounded px-3 py-1 text-xs font-semibold whitespace-nowrap uppercase"
+							class="bg-cb-quaternary-950 w-fit rounded px-3 py-1 text-xs font-semibold whitespace-nowrap uppercase"
 						>
 							{{ tag }}
 						</p>
@@ -169,7 +169,7 @@
 					<div v-if="!isFetchingArtist" class="flex flex-wrap gap-2">
 						<NuxtLink
 							:to="editLink"
-							class="bg-secondary-950 px-2 py-1 text-xs font-semibold uppercase"
+							class="bg-cb-secondary-950 px-2 py-1 text-xs font-semibold uppercase"
 						>
 							Edit Artist
 						</NuxtLink>
@@ -252,7 +252,7 @@
 							:music-name="song.name"
 							:music-image="song?.thumbnails[0]?.url"
 							:duration="song?.duration?.toString() || '0'"
-							class="bg-quinary-900 w-full"
+							class="bg-cb-quinary-900 w-full"
 						/>
 					</transition-group>
 				</CardDefault>
@@ -273,7 +273,7 @@
 						<div class="pt-2">
 							<NuxtLink
 								:to="editLink"
-								class="bg-quaternary-950 mt-5 px-2 py-1 text-xs font-semibold uppercase"
+								class="bg-cb-quaternary-950 mt-5 px-2 py-1 text-xs font-semibold uppercase"
 							>
 								Add a description
 							</NuxtLink>

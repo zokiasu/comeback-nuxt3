@@ -120,11 +120,11 @@
 					type="text"
 					placeholder="Enter Room ID"
 					:disabled="!userData"
-					class="bg-quinary-900 placeholder-tertiary-200 focus:bg-tertiary-200 focus:text-quinary-900 focus:placeholder-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none disabled:opacity-50"
+					class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none disabled:opacity-50"
 				/>
 				<button
 					:disabled="!userData"
-					class="bg-primary-900 hover:bg-primary-900/50 rounded px-2 py-1 font-semibold text-nowrap transition-all duration-300 ease-in-out hover:scale-110 disabled:opacity-50"
+					class="bg-cb-primary-900 hover:bg-cb-primary-900/50 rounded px-2 py-1 font-semibold text-nowrap transition-all duration-300 ease-in-out hover:scale-110 disabled:opacity-50"
 					@click="redirectToRoom()"
 				>
 					Join Party
@@ -132,7 +132,7 @@
 			</div>
 			<button
 				:disabled="!userData"
-				class="bg-primary-900 hover:bg-primary-900/50 w-full rounded py-3 font-semibold transition-all duration-300 ease-in-out hover:scale-110 disabled:opacity-50"
+				class="bg-cb-primary-900 hover:bg-cb-primary-900/50 w-full rounded py-3 font-semibold transition-all duration-300 ease-in-out hover:scale-110 disabled:opacity-50"
 				@click="createARoom"
 			>
 				Create My Party
@@ -140,7 +140,7 @@
 			<p v-if="!userStore.isLoginStore" class="text-sm">
 				* You can create a party only if you are
 				<button
-					class="text-primary-900 hover:text-red-500"
+					class="text-cb-primary-900 hover:text-red-500"
 					@click="router.push('/authentification')"
 				>
 					logged in
@@ -152,7 +152,7 @@
 				v-for="room in roomList"
 				:key="room.id"
 				:to="'/syncradio?id=' + room.id"
-				class="bg-primary-900 hover:bg-primary-900/50 flex-grow rounded py-3 transition-all duration-300 ease-in-out hover:scale-110"
+				class="bg-cb-primary-900 hover:bg-cb-primary-900/50 flex-grow rounded py-3 transition-all duration-300 ease-in-out hover:scale-110"
 			>
 				<p>Room :</p>
 				<p>{{ room.id }}</p>

@@ -41,7 +41,7 @@
 		<div class="flex w-full justify-between">
 			<p class="text-2xl font-bold">Profile Settings</p>
 			<button
-				class="bg-primary-900 hover:bg-primary-900/90 rounded px-5 py-1"
+				class="bg-cb-primary-900 hover:bg-cb-primary-900/90 rounded px-5 py-1"
 				@click="updateUserDetails"
 			>
 				Save
@@ -65,7 +65,7 @@
 						v-model="userDetails.name"
 						type="text"
 						placeholder="Search Artist..."
-						class="bg-quinary-900 placeholder-tertiary-200 focus:bg-tertiary-200 focus:text-quinary-900 focus:placeholder-quinary-900 w-full rounded border-none px-3 py-1 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none lg:max-w-lg"
+						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-3 py-1 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none lg:max-w-lg"
 					/>
 				</div>
 				<div class="space-y-1">
@@ -76,7 +76,7 @@
 						v-model="userDetails.email"
 						type="text"
 						placeholder="Search Artist..."
-						class="bg-quinary-900 placeholder-tertiary-200 focus:bg-tertiary-200 focus:text-quinary-900 focus:placeholder-quinary-900 w-full rounded border-none px-3 py-1 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none lg:max-w-lg"
+						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-3 py-1 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none lg:max-w-lg"
 					/>
 				</div>
 				<div class="space-y-1">
@@ -123,7 +123,7 @@
 							v-model="searchInput"
 							type="text"
 							placeholder="Search Artist..."
-							class="bg-quinary-900 placeholder-tertiary-200 focus:bg-tertiary-200 focus:text-quinary-900 focus:placeholder-quinary-900 w-full rounded border-none px-3 py-1 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
+							class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-3 py-1 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
 						/>
 						<div
 							class="scrollBarLight grid max-h-[20dvh] w-full grid-cols-3 justify-between gap-2 overflow-hidden overflow-y-auto pr-2 xl:max-h-[50dvh] xl:grid-cols-5"
@@ -131,7 +131,7 @@
 							<button
 								v-for="artist in artistFiltered"
 								:key="artist.id"
-								class="group bg-quinary-900 h-fit space-y-1 rounded p-1 text-center"
+								class="group bg-cb-quinary-900 h-fit space-y-1 rounded p-1 text-center"
 								@click="userDetails.photoURL = artist.image"
 							>
 								<div class="relative">
@@ -143,9 +143,9 @@
 										class="aspect-video w-full rounded object-cover"
 									/>
 									<div
-										class="bg-quinary-900/90 absolute inset-0 hidden items-center justify-center group-hover:flex"
+										class="bg-cb-quinary-900/90 absolute inset-0 hidden items-center justify-center group-hover:flex"
 									>
-										<IconPlus class="text-tertiary-200 h-5 w-5" />
+										<IconPlus class="text-cb-tertiary-200 h-5 w-5" />
 									</div>
 								</div>
 								<p class="truncate">{{ artist.name }}</p>

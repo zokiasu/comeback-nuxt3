@@ -52,13 +52,13 @@
 
 <template>
 	<div
-		class="list-complete-item bg-quaternary-950 relative h-full space-y-2.5 rounded p-3"
+		class="list-complete-item bg-cb-quaternary-950 relative h-full space-y-2.5 rounded p-3"
 	>
 		<div class="grid grid-cols-3 gap-2">
 			<div
 				v-for="artistObject in artists"
 				:key="artistObject.id"
-				class="bg-quinary-900 flex w-full flex-col items-center justify-center overflow-hidden rounded"
+				class="bg-cb-quinary-900 flex w-full flex-col items-center justify-center overflow-hidden rounded"
 			>
 				<NuxtImg
 					:src="artistObject.image"
@@ -85,12 +85,12 @@
 		<div class="grid grid-cols-2 gap-3">
 			<button
 				disabled
-				class="bg-quinary-900 hover:bg-tertiary-200/30 rounded px-3 py-1 transition-all duration-300 ease-in-out"
+				class="bg-cb-quinary-900 hover:bg-cb-tertiary-200/30 rounded px-3 py-1 transition-all duration-300 ease-in-out"
 			>
 				Edit
 			</button>
 			<button
-				class="bg-quinary-900 hover:bg-tertiary-200/30 rounded px-3 py-1 transition-all duration-300 ease-in-out"
+				class="bg-cb-quinary-900 hover:bg-cb-tertiary-200/30 rounded px-3 py-1 transition-all duration-300 ease-in-out"
 				@click="deleteNews"
 			>
 				Delete

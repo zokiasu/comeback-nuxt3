@@ -25,8 +25,8 @@
 		class="relative flex w-full items-center gap-3 rounded-lg p-2 text-start"
 		:class="{
 			group: isAdmin,
-			'bg-primary-900': isActualPlaying,
-			'bg-quaternary-950': !isActualPlaying,
+			'bg-cb-primary-900': isActualPlaying,
+			'bg-cb-quaternary-950': !isActualPlaying,
 		}"
 		@click="playVideo"
 	>
@@ -47,7 +47,7 @@
 				:class="isAdmin ? '2xl:group-hover:flex' : ''"
 			>
 				<button @click="deleteInPlaylist">
-					<IconDelete class="hover:text-primary-900 h-3.5 w-3.5 cursor-pointer" />
+					<IconDelete class="hover:text-cb-primary-900 h-3.5 w-3.5 cursor-pointer" />
 				</button>
 			</div>
 		</div>

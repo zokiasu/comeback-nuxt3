@@ -13,14 +13,15 @@
 	<div class="min-h-dvh-wo-nav max-h-dvh-wo-nav flex h-screen gap-2 p-2">
 		<nav
 			ref="menuCollapsable"
-			class="bg-quaternary-950 flex h-full w-80 flex-col gap-2 rounded p-2 text-sm drop-shadow-xl transition-all duration-300 ease-in-out"
+			class="bg-cb-quaternary-950 flex h-full w-80 flex-col gap-2 rounded p-2 text-sm drop-shadow-xl transition-all duration-300 ease-in-out"
 		>
 			<NuxtLink
 				to="/settings/profile"
 				class="flex items-center gap-2 rounded px-3 py-1.5 transition-all duration-300 ease-in-out"
 				:class="{
-					'bg-quinary-900 font-semibold text-white': routeN.name === 'settings-profile',
-					'hover:bg-quinary-900 text-zinc-500': routeN.name !== 'settings-profile',
+					'bg-cb-quinary-900 font-semibold text-white':
+						routeN.name === 'settings-profile',
+					'hover:bg-cb-quinary-900 text-zinc-500': routeN.name !== 'settings-profile',
 				}"
 			>
 				<p>Profile</p>
@@ -30,27 +31,29 @@
 				to="/settings/general"
 				class="flex items-end justify-between gap-2 rounded px-3 py-1.5 transition-all duration-300 ease-in-out"
 				:class="{
-					'bg-quinary-900 font-semibold text-white': routeN.name === 'settings-general',
-					'hover:bg-quinary-900 text-zinc-500': routeN.name !== 'settings-general',
+					'bg-cb-quinary-900 font-semibold text-white':
+						routeN.name === 'settings-general',
+					'hover:bg-cb-quinary-900 text-zinc-500': routeN.name !== 'settings-general',
 				}"
 			>
 				<p>General Settings</p>
-				<span class="text-primary-900 px-2 text-[10px] font-bold">Coming Soon</span>
+				<span class="text-cb-primary-900 px-2 text-[10px] font-bold">Coming Soon</span>
 			</NuxtLink>
 
 			<NuxtLink
 				to="/settings/security"
 				class="flex items-end justify-between gap-2 rounded px-3 py-1.5 transition-all duration-300 ease-in-out"
 				:class="{
-					'bg-quinary-900 font-semibold text-white': routeN.name === 'settings-security',
-					'hover:bg-quinary-900 text-zinc-500': routeN.name !== 'settings-security',
+					'bg-cb-quinary-900 font-semibold text-white':
+						routeN.name === 'settings-security',
+					'hover:bg-cb-quinary-900 text-zinc-500': routeN.name !== 'settings-security',
 				}"
 			>
 				<p>Security & Privacy</p>
-				<span class="text-primary-900 px-2 text-[10px] font-bold">Coming Soon</span>
+				<span class="text-cb-primary-900 px-2 text-[10px] font-bold">Coming Soon</span>
 			</NuxtLink>
 
-			<div class="border-quinary-900 border-b"></div>
+			<div class="border-cb-quinary-900 border-b"></div>
 
 			<NuxtLink
 				:to="`/artist/create`"

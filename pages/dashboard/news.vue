@@ -185,20 +185,20 @@
 	>
 		<section
 			id="searchbar"
-			class="bg-secondary-950 sticky top-0 z-50 w-full space-y-2 pb-2"
+			class="bg-cb-secondary-950 sticky top-0 z-50 w-full space-y-2 pb-2"
 		>
 			<input
 				id="search-input"
 				v-model="search"
 				type="text"
 				placeholder="Rechercher par artiste, utilisateur ou message"
-				class="bg-quinary-900 placeholder-tertiary-200 focus:bg-tertiary-200 focus:text-quinary-900 focus:placeholder-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
+				class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
 			/>
 			<section class="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
 				<div class="flex space-x-2">
 					<select
 						v-model="sort"
-						class="bg-quinary-900 placeholder-tertiary-200 hover:bg-tertiary-200 hover:text-quinary-900 w-full rounded border-none p-2 text-xs uppercase drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
+						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 hover:bg-cb-tertiary-200 hover:text-cb-quinary-900 w-full rounded border-none p-2 text-xs uppercase drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
 					>
 						<option value="date">Date</option>
 						<option value="user">User</option>
@@ -206,15 +206,15 @@
 						<option value="created_at">Last Created</option>
 					</select>
 					<button
-						class="bg-quinary-900 placeholder-tertiary-200 hover:bg-tertiary-200 hover:text-quinary-900 rounded border-none p-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
+						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 hover:bg-cb-tertiary-200 hover:text-cb-quinary-900 rounded border-none p-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
 						@click="invertSort = !invertSort"
 					>
-						<icon-sort v-if="!invertSort" class="text-tertiary-200 h-6 w-6" />
-						<icon-sort-reverse v-else class="text-tertiary-200 h-6 w-6" />
+						<icon-sort v-if="!invertSort" class="text-cb-tertiary-200 h-6 w-6" />
+						<icon-sort-reverse v-else class="text-cb-tertiary-200 h-6 w-6" />
 					</button>
 					<select
 						v-model="limitFetch"
-						class="bg-quinary-900 placeholder-tertiary-200 rounded border-none p-2 text-xs uppercase transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
+						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 rounded border-none p-2 text-xs uppercase transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
 					>
 						<option value="12">12</option>
 						<option value="24">24</option>
@@ -226,7 +226,9 @@
 		</section>
 
 		<div v-if="isLoading && currentPage === 1" class="flex justify-center py-4">
-			<p class="bg-quinary-900 rounded px-4 py-2 text-center">Chargement des news...</p>
+			<p class="bg-cb-quinary-900 rounded px-4 py-2 text-center">
+				Chargement des news...
+			</p>
 		</div>
 
 		<transition-group
@@ -251,13 +253,13 @@
 
 		<p
 			v-else-if="!isLoading"
-			class="bg-quaternary-950 w-full p-5 text-center font-semibold uppercase"
+			class="bg-cb-quaternary-950 w-full p-5 text-center font-semibold uppercase"
 		>
 			Aucune news trouvée
 		</p>
 
 		<div v-if="isLoading && currentPage > 1" class="flex justify-center py-4">
-			<p class="bg-quinary-900 rounded px-4 py-2 text-center">
+			<p class="bg-cb-quinary-900 rounded px-4 py-2 text-center">
 				Chargement des news suivantes...
 			</p>
 		</div>

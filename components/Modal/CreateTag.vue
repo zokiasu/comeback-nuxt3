@@ -5,7 +5,7 @@
 			v-model="newGeneralTag"
 			type="text"
 			placeholder="Add new tag"
-			class="bg-quinary-900 placeholder-tertiary-200 focus:bg-tertiary-200 focus:text-quinary-900 focus:placeholder-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:outline-none"
+			class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:outline-none"
 			@keyup.enter="
 				async () => {
 					await createTag(newGeneralTag)
@@ -13,7 +13,7 @@
 			"
 		/>
 		<button
-			class="bg-primary-900 w-full rounded p-2 font-semibold hover:bg-red-900"
+			class="bg-cb-primary-900 w-full rounded p-2 font-semibold hover:bg-red-900"
 			@click="
 				async () => {
 					await createTag(newGeneralTag)

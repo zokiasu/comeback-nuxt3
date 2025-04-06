@@ -206,19 +206,23 @@
 			:sandbox="'allow-same-origin allow-scripts allow-presentation'"
 		></div>
 		<div
-			class="bg-secondary-950 relative flex w-full items-center justify-between px-5 py-3"
+			class="bg-cb-secondary-950 relative flex w-full items-center justify-between px-5 py-3"
 		>
 			<div class="flex w-full items-center space-x-2 sm:w-fit">
-				<button class="hover:text-primary-900" @click="seek(-10)">
+				<button class="hover:text-cb-primary-900" @click="seek(-10)">
 					<IconBackward10 class="h-7 w-7" />
 				</button>
-				<button v-if="isPlaying" class="hover:text-primary-900" @click="togglePlayPause">
+				<button
+					v-if="isPlaying"
+					class="hover:text-cb-primary-900"
+					@click="togglePlayPause"
+				>
 					<IconPause class="h-7 w-7" />
 				</button>
-				<button v-else class="hover:text-primary-900" @click="togglePlayPause">
+				<button v-else class="hover:text-cb-primary-900" @click="togglePlayPause">
 					<IconPlay class="h-7 w-7" />
 				</button>
-				<button class="hover:text-primary-900" @click="seek(10)">
+				<button class="hover:text-cb-primary-900" @click="seek(10)">
 					<IconForward10 class="h-7 w-7" />
 				</button>
 				<div class="hidden items-center gap-1 pl-5 text-xs md:flex">
@@ -232,7 +236,7 @@
 				<p class="text-xs">{{ musicNamePlaying }}</p>
 			</div>
 			<div v-else class="w-full sm:w-fit">
-				<p class="text-primary-900 font-bold">Video is restricted or unavailable.</p>
+				<p class="text-cb-primary-900 font-bold">Video is restricted or unavailable.</p>
 			</div>
 			<div class="hidden items-center gap-2 sm:flex">
 				<!-- <button @click="displayVideo" class="p-1 bg-red-500 rounded aspect-square">
@@ -261,7 +265,7 @@
 				@input="seekToTime"
 			/>
 			<button
-				class="bg-primary-900 absolute -top-6 left-2 rounded-t-lg px-3 py-0.5 text-xs font-semibold uppercase"
+				class="bg-cb-primary-900 absolute -top-6 left-2 rounded-t-lg px-3 py-0.5 text-xs font-semibold uppercase"
 				@click="closeYTPlayer"
 			>
 				Close

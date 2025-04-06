@@ -109,7 +109,7 @@
 						<LazyDiscoverMusic v-for="music in musics" :key="music.id" :music="music" />
 					</div>
 					<button
-						class="bg-quaternary-950 rounded px-3 py-1"
+						class="bg-cb-quaternary-950 rounded px-3 py-1"
 						@click="reloadDiscoverMusic"
 					>
 						Reload
