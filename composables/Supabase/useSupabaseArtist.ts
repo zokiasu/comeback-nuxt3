@@ -369,6 +369,15 @@ export function useSupabaseArtist() {
 		return data as Artist[]
 	}
 
+	const getAllArtistsLight = async () => {
+		const { data, error } = await supabase.from('artists').select('*')
+		if (error) {
+			console.error('Erreur lors de la récupération des artistes:', error)
+			throw new Error('Erreur lors de la récupération des artistes')
+		}
+		return data as Artist[]
+	}
+
 	// Récupère un artiste avec tous ses détails
 	const getFullArtistById = async (id: string): Promise<Artist> => {
 		try {
@@ -566,6 +575,7 @@ export function useSupabaseArtist() {
 		updateArtist,
 		deleteArtist,
 		getAllArtists,
+		getAllArtistsLight,
 		getFullArtistById,
 		getArtistByIdLight,
 		getRealtimeLastestArtistsAdded,

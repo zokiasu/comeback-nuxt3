@@ -1,20 +1,14 @@
 <script setup lang="ts">
 	import {
 		collection,
-		getDocs,
 		query,
 		where,
-		startAfter,
 		orderBy,
-		limit,
 		getCountFromServer,
-		QueryDocumentSnapshot,
-		type DocumentData,
 	} from 'firebase/firestore'
 
 	import debounce from 'lodash.debounce'
 	import type { Artist } from '~/types/supabase/artist'
-	import type { ArtistSocialLink, ArtistPlatformLink } from '~/types/supabase'
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 
 	import { deletebyDoc } from '~/composables/useFirestore'
@@ -31,8 +25,7 @@
 	// État
 	const toast = useToast()
 	const { $firestore: db } = useNuxtApp()
-	const { getFullArtistById, getSocialAndPlatformLinksByArtistId, getArtistsByPage } =
-		useSupabaseArtist()
+	const { getArtistsByPage } = useSupabaseArtist()
 
 	const artistFetch = ref<Artist[]>([])
 	const search = ref('')
@@ -77,27 +70,25 @@
 			try {
 				await deletebyDoc('artists', id)
 				artistFetch.value.splice(index, 1)
-				toast.success('Artiste supprimé')
+				toast.add({
+					title: 'Artiste supprimé',
+					description: "L'artiste a été supprimé avec succès",
+					color: 'success',
+				})
 			} catch (error) {
 				console.error('Erreur lors de la suppression du document: ', error)
-				toast.error("Erreur lors de la suppression de l'artiste")
+				toast.add({
+					title: "Erreur lors de la suppression de l'artiste",
+					description: "Une erreur est survenue lors de la suppression de l'artiste",
+					color: 'error',
+				})
 			}
 		} else {
-			toast.error('Artiste non trouvé')
-		}
-	}
-
-	/**
-	 * Récupère le nombre total d'artistes dans la base de données
-	 */
-	const getMaxArtistNumber = async (): Promise<void> => {
-		try {
-			const coll = collection(db, 'artists')
-			const snapshot = await getCountFromServer(coll)
-			totalArtists.value = snapshot.data().count
-		} catch (error) {
-			console.error("Erreur lors de la récupération du nombre d'artistes: ", error)
-			toast.error('Erreur lors du chargement des données')
+			toast.add({
+				title: 'Artiste non trouvé',
+				description: "L'artiste n'a pas été trouvé",
+				color: 'error',
+			})
 		}
 	}
 
@@ -140,47 +131,15 @@
 			}
 		} catch (error) {
 			console.error('Erreur lors de la recherche Algolia:', error)
-			toast.error('Erreur lors de la recherche')
+			toast.add({
+				title: 'Erreur lors de la recherche',
+				description: 'Une erreur est survenue lors de la recherche',
+				color: 'error',
+			})
 		} finally {
 			isSearching.value = false
 		}
 	}, 300)
-
-	/**
-	 * Construit la requête Firestore en fonction des filtres
-	 */
-	const buildArtistQuery = () => {
-		let colRef = query(collection(db, 'artists'), orderBy(sort.value, 'desc'))
-
-		// Filtre de recherche (si Algolia n'est pas utilisé)
-		if (!useAlgoliaForSearch.value && search.value) {
-			const searchTerm = search.value
-			colRef = query(
-				colRef,
-				orderBy('name'),
-				where('name', '>=', searchTerm),
-				where('name', '<=', searchTerm + '\uF8FF'),
-			)
-		}
-
-		// Filtres d'attributs manquants
-		if (filterState.onlyWithoutDesc) {
-			colRef = query(colRef, where('description', '==', ''))
-		} else if (filterState.onlyWithoutSocials) {
-			colRef = query(colRef, where('socialList', '==', []))
-		} else if (filterState.onlyWithoutPlatforms) {
-			colRef = query(colRef, where('platformList', '==', []))
-		} else if (filterState.onlyWithoutStyles) {
-			colRef = query(colRef, where('styles', '==', []))
-		}
-
-		// Filtre par type
-		if (typeFilter.value !== '') {
-			colRef = query(colRef, where('type', '==', typeFilter.value))
-		}
-
-		return colRef
-	}
 
 	/**
 	 * Récupère les artistes depuis Supabase
@@ -219,7 +178,11 @@
 			currentPage.value++
 		} catch (error) {
 			console.error('Erreur lors de la récupération des artistes:', error)
-			toast.error('Erreur lors du chargement des artistes')
+			toast.add({
+				title: 'Erreur lors du chargement des artistes',
+				description: 'Une erreur est survenue lors du chargement des artistes',
+				color: 'error',
+			})
 		} finally {
 			isLoading.value = false
 		}
@@ -287,7 +250,11 @@
 			artistFetch.value = result.artists
 		} catch (error) {
 			console.error('Erreur lors du chargement de tous les artistes:', error)
-			toast.error('Erreur lors du chargement de tous les artistes')
+			toast.add({
+				title: 'Erreur lors du chargement de tous les artistes',
+				description: 'Une erreur est survenue lors du chargement de tous les artistes',
+				color: 'error',
+			})
 		}
 	}
 
@@ -390,12 +357,12 @@
 				/>
 				<button
 					class="bg-cb-tertiary-200 text-cb-quinary-900 absolute top-1/2 right-2 -translate-y-1/2 rounded px-2 py-1 text-xs"
-					@click="toggleSearchMethod"
 					:title="
 						useAlgoliaForSearch
 							? 'Utiliser Firebase (recherche basique)'
 							: 'Utiliser Algolia (recherche avancée)'
 					"
+					@click="toggleSearchMethod"
 				>
 					{{ useAlgoliaForSearch ? 'Algolia' : 'Firebase' }}
 				</button>
