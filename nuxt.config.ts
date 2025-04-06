@@ -9,6 +9,10 @@ export default defineNuxtConfig({
 	ui: {
 		icons: ['heroicons', 'mdi'],
 	},
+	
+  colorMode: {
+    classSuffix: '',
+  },
 
 	devtools: { enabled: true },
 
