@@ -23,14 +23,6 @@ export default defineNuxtConfig({
 		},
 	},
 
-	nitro: {
-		preset: 'netlify',
-		static: true,
-		output: {
-			dir: './dist',
-		},
-	},
-
 	runtimeConfig: {
 		public: {
 			FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
