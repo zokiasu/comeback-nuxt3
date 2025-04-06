@@ -247,7 +247,12 @@
 								>
 									Edit
 								</button> -->
-								<UModal>
+								<UModal
+									:ui="{
+										overlay: 'bg-cb-quinary-950/75',
+										content: 'ring-cb-quinary-950',
+									}"
+								>
 									<UButton
 										label="Edit Release"
 										variant="soft"

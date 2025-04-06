@@ -187,7 +187,12 @@
 				<span class="font-bold">{{ releaseDate }}</span>
 			</p>
 			<div class="space-x-1">
-				<UModal>
+				<UModal
+					:ui="{
+						overlay: 'bg-cb-quinary-950/75',
+						content: 'ring-cb-quinary-950',
+					}"
+				>
 					<UButton
 						label="Edit"
 						variant="soft"

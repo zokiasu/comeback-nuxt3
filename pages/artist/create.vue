@@ -372,7 +372,12 @@
 				<div v-if="stylesList" class="flex flex-col gap-1">
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="Styles" />
-						<UModal>
+						<UModal
+							:ui="{
+								overlay: 'bg-cb-quinary-950/75',
+								content: 'ring-cb-quinary-950',
+							}"
+						>
 							<UButton
 								label="Create New Style"
 								variant="soft"
@@ -398,7 +403,12 @@
 				<div v-if="tagsList" class="flex flex-col gap-1">
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="General Tags" />
-						<UModal>
+						<UModal
+							:ui="{
+								overlay: 'bg-cb-quinary-950/75',
+								content: 'ring-cb-quinary-950',
+							}"
+						>
 							<UButton
 								label="Create New Tag"
 								variant="soft"
@@ -435,7 +445,13 @@
 			<div v-if="groupList" class="flex flex-col gap-1">
 				<div class="flex justify-between gap-3">
 					<ComebackLabel label="Group" />
-					<UModal v-if="isAdminStore">
+					<UModal
+						v-if="isAdminStore"
+						:ui="{
+							overlay: 'bg-cb-quinary-950/75',
+							content: 'ring-cb-quinary-950',
+						}"
+					>
 						<UButton
 							label="Create New Artist"
 							variant="soft"
@@ -467,7 +483,13 @@
 			<div v-if="artistsList && artistType == 'GROUP'" class="flex flex-col gap-1">
 				<div class="flex justify-between gap-3">
 					<ComebackLabel label="Members" />
-					<UModal v-if="isAdminStore">
+					<UModal
+						v-if="isAdminStore"
+						:ui="{
+							overlay: 'bg-cb-quinary-950/75',
+							content: 'ring-cb-quinary-950',
+						}"
+					>
 						<UButton
 							label="Create New Artist"
 							variant="soft"

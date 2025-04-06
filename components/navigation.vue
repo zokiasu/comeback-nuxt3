@@ -80,7 +80,12 @@
 				</nav>
 
 				<div class="flex items-center justify-center gap-x-2 text-sm">
-					<UModal>
+					<UModal
+						:ui="{
+							overlay: 'bg-cb-quinary-950/75',
+							content: 'ring-cb-quinary-950',
+						}"
+					>
 						<UButton
 							variant="soft"
 							class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
@@ -93,7 +98,12 @@
 						</template>
 					</UModal>
 
-					<UModal>
+					<UModal
+						:ui="{
+							overlay: 'bg-cb-quinary-950/75',
+							content: 'ring-cb-quinary-950',
+						}"
+					>
 						<UButton
 							label="New Comeback"
 							variant="soft"

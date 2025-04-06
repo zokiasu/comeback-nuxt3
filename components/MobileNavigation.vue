@@ -42,7 +42,12 @@
 				<IconCalendar class="mx-auto h-5 w-5" />
 			</NuxtLink>
 
-			<UModal>
+			<UModal
+				:ui="{
+					overlay: 'bg-cb-quinary-950/75',
+					content: 'ring-cb-quinary-950',
+				}"
+			>
 				<UButton
 					variant="soft"
 					class="flex w-full items-center justify-center rounded-none bg-transparent px-0 text-white"
@@ -79,7 +84,13 @@
 				<IconAccount class="mx-auto h-5 w-5" />
 			</NuxtLink>
 
-			<UModal v-else>
+			<UModal
+				v-else
+				:ui="{
+					overlay: 'bg-cb-quinary-950/75',
+					content: 'ring-cb-quinary-950',
+				}"
+			>
 				<UButton
 					variant="soft"
 					class="bg-cb-primary-700/10 flex w-full items-center justify-center rounded-none px-0 text-white"
