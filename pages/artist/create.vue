@@ -46,8 +46,8 @@
 	const artistImage = ref<string>('https://i.ibb.co/wLhbFZx/Frame-255.png')
 	const artistName = ref<string>('')
 	const artistIdYoutubeMusic = ref<string>('')
-	const birthdayToDate = ref<string | null>(null)
-	const debutDateToDate = ref<string | null>(null)
+	const birthdayToDate = ref<Date | null>(null)
+	const debutDateToDate = ref<Date | null>(null)
 
 	const artistGroups = ref<MenuItem<Artist>[]>([])
 	const artistMembers = ref<MenuItem<Artist>[]>([])
@@ -107,19 +107,15 @@
 		dateStyle: 'medium',
 	})
 
-	const parseToCalendarDate = (
-		dateString: string | null | undefined,
-	): CalendarDate | null => {
-		if (!dateString) return null
+	const parseToCalendarDate = (date: Date | null | undefined): CalendarDate | null => {
+		if (!date) return null
 		try {
-			const date = new Date(dateString)
-			if (isNaN(date.getTime())) return null
 			const year = date.getUTCFullYear()
 			const month = date.getUTCMonth() + 1
 			const day = date.getUTCDate()
 			return new CalendarDate(year, month, day)
 		} catch (e) {
-			console.error('Failed to parse date string:', dateString, e)
+			console.error('Failed to parse date:', date, e)
 			return null
 		}
 	}
@@ -128,7 +124,11 @@
 		isUploadingEdit.value = true
 
 		if (artistName.value === '') {
-			toast.error('Please fill the required fields')
+			toast.add({
+				title: 'Please fill the required fields',
+				description: 'Please fill the required fields',
+				color: 'error',
+			})
 			isUploadingEdit.value = false
 			return
 		}
@@ -154,12 +154,8 @@
 			active_career: artistActiveCareer.value,
 			verified: isAdminStore,
 			// Re-convertir CalendarDate en ISO string
-			birth_date: birthdayToDate.value
-				? birthdayToDate.value.toDate(getLocalTimeZone()).toISOString()
-				: null,
-			debut_date: debutDateToDate.value
-				? debutDateToDate.value.toDate(getLocalTimeZone()).toISOString()
-				: null,
+			birth_date: birthdayToDate.value ? birthdayToDate.value.toString() : null,
+			debut_date: debutDateToDate.value ? debutDateToDate.value.toString() : null,
 			styles: artistStyleListName,
 			general_tags: artistTagListName,
 		}
@@ -270,12 +266,12 @@
 					<div class="space-y-1" :class="{ hidden: artistType == 'GROUP' }">
 						<ComebackLabel label="Birthday" />
 						<UPopover>
-							<UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
-								{{
-									birthdayToDate
-										? df.format(birthdayToDate.toDate(getLocalTimeZone()))
-										: 'Select a date'
-								}}
+							<UButton
+								variant="subtle"
+								icon="i-lucide-calendar"
+								class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+							>
+								{{ birthdayToDate ? df.format(birthdayToDate) : 'Select a date' }}
 							</UButton>
 
 							<template #content>
@@ -284,8 +280,12 @@
 									:model-value="parseToCalendarDate(birthdayToDate)"
 									:min-date="new Date(1900, 0, 1)"
 									@update:model-value="
-										(value: ZonedDateTime | null) => {
-											birthdayToDate = value ? value.toString() : ''
+										(value) => {
+											if (value) {
+												birthdayToDate = new Date(value.toString())
+											} else {
+												birthdayToDate = null
+											}
 										}
 									"
 								/>
@@ -296,22 +296,26 @@
 					<div class="space-y-1">
 						<ComebackLabel label="Debut Date" />
 						<UPopover>
-							<UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
-								{{
-									debutDateToDate
-										? df.format(debutDateToDate.toDate(getLocalTimeZone()))
-										: 'Select a date'
-								}}
+							<UButton
+								variant="subtle"
+								icon="i-lucide-calendar"
+								class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+							>
+								{{ debutDateToDate ? df.format(debutDateToDate) : 'Select a date' }}
 							</UButton>
 
 							<template #content>
 								<UCalendar
 									class="bg-cb-quinary-900 rounded p-1"
-									:model-value="debutDateToDate"
+									:model-value="parseToCalendarDate(debutDateToDate)"
 									:min-date="new Date(2000, 0, 1)"
 									@update:model-value="
-										(value: ZonedDateTime | null) => {
-											debutDateToDate = value
+										(value) => {
+											if (value) {
+												debutDateToDate = new Date(value.toString())
+											} else {
+												debutDateToDate = null
+											}
 										}
 									"
 								/>
@@ -397,6 +401,11 @@
 						placeholder="Select styles"
 						searchable
 						searchable-placeholder="Search a style..."
+						class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+						:ui="{
+							content: 'bg-cb-quaternary-950',
+							item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
+						}"
 					/>
 				</div>
 				<!-- General Tags -->
@@ -428,6 +437,11 @@
 						placeholder="Select tags"
 						searchable
 						searchable-placeholder="Search a tag..."
+						class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+						:ui="{
+							content: 'bg-cb-quaternary-950',
+							item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
+						}"
 					/>
 				</div>
 			</div>
@@ -477,6 +491,11 @@
 					placeholder="Search a group"
 					searchable
 					searchable-placeholder="Search a group..."
+					class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+					:ui="{
+						content: 'bg-cb-quaternary-950',
+						item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
+					}"
 				/>
 			</div>
 			<!-- Members -->
@@ -515,6 +534,11 @@
 					placeholder="Search a member"
 					searchable
 					searchable-placeholder="Search a member..."
+					class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+					:ui="{
+						content: 'bg-cb-quaternary-950',
+						item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
+					}"
 				/>
 			</div>
 			<!-- Platforms & Socials -->

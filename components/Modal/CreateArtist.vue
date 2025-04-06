@@ -208,6 +208,11 @@
 					placeholder="Select styles"
 					searchable
 					searchable-placeholder="Search a style..."
+					class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+					:ui="{
+						content: 'bg-cb-quaternary-950',
+						item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
+					}"
 				/>
 			</div>
 			<!-- General Tags -->
@@ -221,6 +226,11 @@
 					placeholder="Select tags"
 					searchable
 					searchable-placeholder="Search a tag..."
+					class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+					:ui="{
+						content: 'bg-cb-quaternary-950',
+						item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
+					}"
 				/>
 			</div>
 		</div>
@@ -245,6 +255,11 @@
 				placeholder="Search a group"
 				searchable
 				searchable-placeholder="Search a group..."
+				class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+				:ui="{
+					content: 'bg-cb-quaternary-950',
+					item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
+				}"
 			/>
 		</div>
 		<!-- Members -->
@@ -258,6 +273,11 @@
 				placeholder="Search a member"
 				searchable
 				searchable-placeholder="Search a member..."
+				class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+				:ui="{
+					content: 'bg-cb-quaternary-950',
+					item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
+				}"
 			/>
 		</div>
 		<!-- Platforms & Socials -->
