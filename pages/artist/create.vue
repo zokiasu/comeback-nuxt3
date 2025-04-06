@@ -1,8 +1,11 @@
 <script setup lang="ts">
-	// External Packages
-	import * as Mdl from '@kouts/vue-modal'
 	// Réimporter CalendarDate et getLocalTimeZone
-	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
+	import {
+		CalendarDate,
+		DateFormatter,
+		getLocalTimeZone,
+		ZonedDateTime,
+	} from '@internationalized/date'
 
 	// Internal Types
 	import type { Artist } from '~/types/supabase/artist'
@@ -20,11 +23,9 @@
 	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
 	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'
 
-	// --- Type Helper for Menu Items ---
 	// Crée un type générique qui ajoute 'label' à un type existant T
 	type MenuItem<T> = T & { label: string }
 
-	const { Modal } = Mdl
 	const toast = useToast()
 	const { isAdminStore } = useUserStore()
 
@@ -36,9 +37,6 @@
 	const description = ref<string>('Create Artist Page')
 
 	const isUploadingEdit = ref<boolean>(false)
-	const showModalCreateArtist = ref<boolean>(false)
-	const showModalCreateStyle = ref<boolean>(false)
-	const showModalCreateTag = ref<boolean>(false)
 
 	const stylesList = ref<MusicStyle[]>([])
 	const tagsList = ref<GeneralTag[]>([])
@@ -48,8 +46,8 @@
 	const artistImage = ref<string>('https://i.ibb.co/wLhbFZx/Frame-255.png')
 	const artistName = ref<string>('')
 	const artistIdYoutubeMusic = ref<string>('')
-	const birthdayToDate = ref<CalendarDate | null>(null) // Revenir à CalendarDate
-	const debutDateToDate = ref<CalendarDate | null>(null) // Revenir à CalendarDate
+	const birthdayToDate = ref<string | null>(null)
+	const debutDateToDate = ref<string | null>(null)
 
 	const artistGroups = ref<MenuItem<Artist>[]>([])
 	const artistMembers = ref<MenuItem<Artist>[]>([])
@@ -109,14 +107,21 @@
 		dateStyle: 'medium',
 	})
 
-	const closeModalCreateStyle = async () => {
-		showModalCreateStyle.value = false
-		stylesList.value = await getAllMusicStyles()
-	}
-
-	const closeModalCreateTag = async () => {
-		showModalCreateTag.value = false
-		tagsList.value = await getAllGeneralTags()
+	const parseToCalendarDate = (
+		dateString: string | null | undefined,
+	): CalendarDate | null => {
+		if (!dateString) return null
+		try {
+			const date = new Date(dateString)
+			if (isNaN(date.getTime())) return null
+			const year = date.getUTCFullYear()
+			const month = date.getUTCMonth() + 1
+			const day = date.getUTCDate()
+			return new CalendarDate(year, month, day)
+		} catch (e) {
+			console.error('Failed to parse date string:', dateString, e)
+			return null
+		}
 	}
 
 	const creationArtist = async () => {
@@ -168,18 +173,25 @@
 		)
 			.then((newArtist) => {
 				isUploadingEdit.value = false
-				toast.success('Artist created successfully')
+				toast.add({
+					title: 'Artist created successfully',
+					description: 'Artist created successfully',
+					color: 'success',
+				})
 			})
 			.catch((error) => {
 				isUploadingEdit.value = false
-				toast.error('Failed to create artist: ' + error.message)
+				toast.add({
+					title: 'Failed to create artist',
+					description: error.message,
+					color: 'error',
+				})
 			})
 	}
 
 	const closeModalCreateArtist = async () => {
 		artistsList.value = await getAllArtists()
 		groupList.value = artistsList.value.filter((artist) => artist.type === 'GROUP')
-		showModalCreateArtist.value = false
 	}
 
 	const adjustTextarea = (event: Event) => {
@@ -269,13 +281,13 @@
 							<template #content>
 								<UCalendar
 									class="bg-cb-quinary-900 rounded p-1"
-									:model-value="birthdayToDate as CalendarDate | null"
+									:model-value="parseToCalendarDate(birthdayToDate)"
+									:min-date="new Date(1900, 0, 1)"
 									@update:model-value="
-										(value) => {
-											birthdayToDate = value as CalendarDate | null
+										(value: ZonedDateTime | null) => {
+											birthdayToDate = value ? value.toString() : ''
 										}
 									"
-									:min-date="new Date(1900, 0, 1)"
 								/>
 							</template>
 						</UPopover>
@@ -295,13 +307,13 @@
 							<template #content>
 								<UCalendar
 									class="bg-cb-quinary-900 rounded p-1"
-									:model-value="debutDateToDate as CalendarDate | null"
+									:model-value="debutDateToDate"
+									:min-date="new Date(2000, 0, 1)"
 									@update:model-value="
-										(value) => {
-											debutDateToDate = value as CalendarDate | null
+										(value: ZonedDateTime | null) => {
+											debutDateToDate = value
 										}
 									"
-									:min-date="new Date(2000, 0, 1)"
 								/>
 							</template>
 						</UPopover>
@@ -360,12 +372,17 @@
 				<div v-if="stylesList" class="flex flex-col gap-1">
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="Styles" />
-						<button
-							class="bg-cb-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
-							@click="showModalCreateStyle = true"
-						>
-							Create New Style
-						</button>
+						<UModal>
+							<UButton
+								label="Create New Style"
+								variant="soft"
+								class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
+							/>
+
+							<template #content>
+								<ModalCreateStyleTag :style-fetch="stylesList" />
+							</template>
+						</UModal>
 					</div>
 					<UInputMenu
 						v-model="artistStyles"
@@ -381,12 +398,17 @@
 				<div v-if="tagsList" class="flex flex-col gap-1">
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="General Tags" />
-						<button
-							class="bg-cb-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
-							@click="showModalCreateTag = true"
-						>
-							Create New Tag
-						</button>
+						<UModal>
+							<UButton
+								label="Create New Tag"
+								variant="soft"
+								class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
+							/>
+
+							<template #content>
+								<ModalCreateTag :general-tags="tagsList" />
+							</template>
+						</UModal>
 					</div>
 					<UInputMenu
 						v-model="artistTags"
@@ -413,13 +435,23 @@
 			<div v-if="groupList" class="flex flex-col gap-1">
 				<div class="flex justify-between gap-3">
 					<ComebackLabel label="Group" />
-					<button
-						v-if="isAdminStore"
-						class="bg-cb-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
-						@click="showModalCreateArtist = true"
-					>
-						Create New Artist
-					</button>
+					<UModal v-if="isAdminStore">
+						<UButton
+							label="Create New Artist"
+							variant="soft"
+							class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
+						/>
+
+						<template #content>
+							<ModalCreateArtist
+								:styles-list="stylesList"
+								:tags-list="tagsList"
+								:group-list="groupList"
+								:members-list="artistsList"
+								@close-modal="closeModalCreateArtist"
+							/>
+						</template>
+					</UModal>
 				</div>
 				<UInputMenu
 					v-model="artistGroups"
@@ -435,13 +467,23 @@
 			<div v-if="artistsList && artistType == 'GROUP'" class="flex flex-col gap-1">
 				<div class="flex justify-between gap-3">
 					<ComebackLabel label="Members" />
-					<button
-						v-if="isAdminStore"
-						class="bg-cb-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
-						@click="showModalCreateArtist = true"
-					>
-						Create New Artist
-					</button>
+					<UModal v-if="isAdminStore">
+						<UButton
+							label="Create New Artist"
+							variant="soft"
+							class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
+						/>
+
+						<template #content>
+							<ModalCreateArtist
+								:styles-list="stylesList"
+								:tags-list="tagsList"
+								:group-list="groupList"
+								:members-list="artistsList"
+								@close-modal="closeModalCreateArtist"
+							/>
+						</template>
+					</UModal>
 				</div>
 				<UInputMenu
 					v-model="artistMembers"
@@ -561,59 +603,5 @@
 				{{ isUploadingEdit ? 'Loading' : 'Saves' }}
 			</button>
 		</div>
-
-		<Modal
-			v-model="showModalCreateArtist"
-			title="Create Artist"
-			wrapper-class="modal-wrapper"
-			:modal-class="`modal-lg`"
-			:modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-			:in-class="`animate__bounceIn`"
-			:out-class="`animate__bounceOut`"
-			bg-class="animate__animated"
-			:bg-in-class="`animate__fadeInUp`"
-			:bg-out-class="`animate__fadeOutDown`"
-		>
-			<ModalCreateArtist
-				:styles-list="stylesList"
-				:tags-list="tagsList"
-				:group-list="groupList"
-				:members-list="artistsList"
-				@close-modal="closeModalCreateArtist"
-			/>
-		</Modal>
-
-		<Modal
-			v-model="showModalCreateStyle"
-			title="Create Style"
-			wrapper-class="modal-wrapper"
-			:modal-class="`modal-lg`"
-			:modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-			:in-class="`animate__bounceIn`"
-			:out-class="`animate__bounceOut`"
-			bg-class="animate__animated"
-			:bg-in-class="`animate__fadeInUp`"
-			:bg-out-class="`animate__fadeOutDown`"
-		>
-			<ModalCreateStyleTag
-				:style-fetch="stylesList"
-				@close-modal="closeModalCreateStyle"
-			/>
-		</Modal>
-
-		<Modal
-			v-model="showModalCreateTag"
-			title="Create Tag"
-			wrapper-class="modal-wrapper"
-			:modal-class="`modal-lg`"
-			:modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-			:in-class="`animate__bounceIn`"
-			:out-class="`animate__bounceOut`"
-			bg-class="animate__animated"
-			:bg-in-class="`animate__fadeInUp`"
-			:bg-out-class="`animate__fadeOutDown`"
-		>
-			<ModalCreateTag :general-tags="tagsList" @close-modal="closeModalCreateTag" />
-		</Modal>
 	</div>
 </template>

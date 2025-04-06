@@ -15,7 +15,7 @@ module.exports = {
 	rules: {
 		'import/first': 'off',
 		'vue/multi-word-component-names': 'off',
-		'prettier/prettier': 'error',
+		'prettier/prettier': ['error', { endOfLine: 'auto' }],
 		'no-console': 'off',
 		'no-unused-vars': 'warn',
 		'@typescript-eslint/no-unused-vars': 'warn',

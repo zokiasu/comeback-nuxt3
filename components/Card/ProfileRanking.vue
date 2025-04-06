@@ -76,15 +76,11 @@
 </template>
 
 <script setup lang="ts">
-	import * as Mdl from '@kouts/vue-modal'
-	import '@kouts/vue-modal/dist/vue-modal.css'
-
 	defineProps<{
 		ranking: any
 		isProfile: boolean
 	}>()
 
-	const { Modal } = Mdl
 	const showModal = ref(false)
 
 	const emit = defineEmits(['delete'])

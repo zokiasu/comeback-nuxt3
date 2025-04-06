@@ -1,4 +1,4 @@
-@import "tailwindcss" theme(static);
+@import "tailwindcss";
 @import "@nuxt/ui";
 
 @theme static {
@@ -65,6 +65,10 @@
 
 html:focus-within {
 	scroll-behavior: smooth;
+}
+
+.cb_button {
+	@apply bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-xs text-white;
 }
 
 .min-h-dvh-wo-nav {

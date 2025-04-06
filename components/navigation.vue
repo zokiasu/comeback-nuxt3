@@ -1,10 +1,8 @@
 <script setup lang="ts">
-	import * as Mdl from '@kouts/vue-modal'
 	import type { PropType } from 'vue'
 	import { useUserStore } from '@/stores/user'
 	import type { Artist } from '~/types/artist'
 
-	const { Modal } = Mdl
 	const userStore = useUserStore()
 	const route = useRoute()
 
@@ -79,20 +77,6 @@
 					>
 						Calendar
 					</NuxtLink>
-					<!-- <NuxtLink
-						:to="`/syncradio`"
-						class="relative"
-						:class="
-							route.name.startsWith('syncradio')
-								? 'font-semibold text-white'
-								: 'text-zinc-500'
-						"
-					>
-						SyncRadio
-						<span class="absolute -bottom-2 -right-4 px-2 text-xs font-bold text-cb-primary-900">
-							Beta
-						</span>
-					</NuxtLink> -->
 					<NuxtLink
 						v-if="isAdminStore"
 						:to="`/dashboard/artist`"
@@ -107,29 +91,24 @@
 				</nav>
 
 				<div class="flex items-center justify-center gap-x-2 text-sm">
-					<button
-						title="Search Artist"
-						class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 rounded p-2"
-						@click="showModalAlgolia = true"
-					>
-						<IconSearch class="h-3.5 w-3.5" />
-					</button>
+					<UModal>
+						<UButton
+							variant="soft"
+							class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
+						>
+							<UIcon name="material-symbols:search" class="size-4" />
+						</UButton>
 
-					<button
-						v-if="isLoginStore"
-						title="Add new comeback"
-						class="bg-cb-primary-900 hover:bg-cb-primary-900/50 rounded px-3 py-1 font-semibold transition-all duration-300 ease-in-out hover:scale-110"
-						@click="showModal = true"
-					>
-						New Comeback
-					</button>
+						<template #content>
+							<LazyAlgolia ref="algolia" />
+						</template>
+					</UModal>
 
 					<UModal>
 						<UButton
 							label="New Comeback"
-							color="primary"
-							variant="subtle"
-							class="cursor-pointer"
+							variant="soft"
+							class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
 						/>
 
 						<template #content>
@@ -137,59 +116,24 @@
 						</template>
 					</UModal>
 
-					<NuxtLink
-						v-if="!isLoginStore"
-						:to="`/authentification`"
-						class="bg-cb-quaternary-950 rounded px-3 py-1 text-[0.875rem]"
-					>
-						Login
-					</NuxtLink>
-					<!-- <NuxtLink
-						v-if="isLoginStore && userDataStore"
-						:to="profilePath"
-						title="Profile"
-						class="flex h-full items-center gap-2 rounded bg-cb-quaternary-950 px-3 py-1 hover:bg-cb-tertiary-200/20"
-					>
-						<p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>
-					</NuxtLink> -->
-					<NuxtLink
+					<UButton
 						v-if="isLoginStore"
-						:to="`/settings/profile`"
-						title="Settings"
-						class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 flex h-full items-center gap-2 rounded px-3 py-1"
+						to="/settings/profile"
+						variant="soft"
+						class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
 					>
-						<IconSettings class="h-3.5 w-3.5" />
-					</NuxtLink>
+						<UIcon name="material-symbols:settings-rounded" class="size-3" />
+					</UButton>
+
+					<UButton
+						v-else
+						to="/authentification"
+						variant="soft"
+						label="Login"
+						class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
+					/>
 				</div>
 			</div>
 		</div>
-
-		<Modal
-			v-model="showModal"
-			title="Add a News"
-			wrapper-class="animate__animated modal-wrapper"
-			:modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-			:in-class="`animate__fadeInDown`"
-			:out-class="`animate__bounceOut`"
-			bg-class="animate__animated"
-			:bg-in-class="`animate__fadeInUp`"
-			:bg-out-class="`animate__fadeOutDown`"
-		>
-			<LazyModalNewsCreation @close-modal="showModal = false" />
-		</Modal>
-		<Modal
-			v-model="showModalAlgolia"
-			title="Search Artist"
-			wrapper-class="modal-wrapper"
-			:modal-class="`modal-lg`"
-			:modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-			:in-class="`animate__bounceIn`"
-			:out-class="`animate__bounceOut`"
-			bg-class="animate__animated"
-			:bg-in-class="`animate__fadeInUp`"
-			:bg-out-class="`animate__fadeOutDown`"
-		>
-			<LazyAlgolia ref="algolia" @close-modal="showModalAlgolia = false" />
-		</Modal>
 	</div>
 </template>

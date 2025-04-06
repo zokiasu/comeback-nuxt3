@@ -1,9 +1,4 @@
 <script setup lang="ts">
-	// Déclaration du module pour vue-modal
-	declare module '@kouts/vue-modal'
-
-	import * as Mdl from '@kouts/vue-modal'
-	import '@kouts/vue-modal/dist/vue-modal.css'
 	import type { PropType } from 'vue'
 
 	// Interface pour la structure d'une plateforme
@@ -72,7 +67,6 @@
 		},
 	})
 
-	const { Modal } = Mdl
 	const emit = defineEmits(['deleteRelease', 'updateRelease', 'release-verified'])
 
 	const showModal = ref(false)
@@ -111,7 +105,6 @@
 	}
 
 	const onReleaseVerified = () => {
-		showModal.value = false
 		emit('updateRelease')
 		emit('release-verified')
 	}
@@ -194,12 +187,29 @@
 				<span class="font-bold">{{ releaseDate }}</span>
 			</p>
 			<div class="space-x-1">
-				<button
-					class="bg-cb-quinary-900 rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
-					@click="showUpdateVerifiedRelease"
-				>
-					Edit
-				</button>
+				<UModal>
+					<UButton
+						label="Edit"
+						variant="soft"
+						class="bg-cb-quinary-900 text-cb-tertiary-300 rounded px-2 py-1 text-xs font-normal uppercase hover:bg-zinc-500"
+					/>
+
+					<template #content>
+						<ModalEditRelease
+							:id="id"
+							v-model:show-modal="showModal"
+							:name="name"
+							:type="type"
+							:id-youtube-music="idYoutubeMusic"
+							:date="date"
+							:year-released="yearReleased"
+							:need-to-be-verified="needToBeVerified"
+							:artists-name="artistsName"
+							:platform-list="platformList"
+							@verified-release="onReleaseVerified"
+						/>
+					</template>
+				</UModal>
 				<button
 					class="bg-cb-quinary-900 rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
 					@click="callDeleteRelease"
@@ -217,42 +227,5 @@
 				Deleting processing...
 			</p>
 		</div>
-
-		<Modal
-			v-model="showModal"
-			:title="`Fix Release : ${artistsName} - ${name}`"
-			wrapper-class="animate__animated modal-wrapper"
-			:modal-class="`modal modal-xl`"
-			:modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-			:in-class="`animate__fadeInDown`"
-			:out-class="`animate__bounceOut`"
-			bg-class="animate__animated"
-			:bg-in-class="`animate__fadeInUp`"
-			:bg-out-class="`animate__fadeOutDown`"
-		>
-			<ModalEditRelease
-				:id="id"
-				v-model:show-modal="showModal"
-				:name="name"
-				:type="type"
-				:id-youtube-music="idYoutubeMusic"
-				:date="date"
-				:year-released="yearReleased"
-				:need-to-be-verified="needToBeVerified"
-				:artists-name="artistsName"
-				:platform-list="platformList"
-				@verified-release="onReleaseVerified"
-			/>
-		</Modal>
 	</div>
 </template>
-
-<style>
-	.modal {
-		min-width: 300px !important;
-	}
-	.modal-xl {
-		width: 80% !important;
-		max-width: 1140px !important;
-	}
-</style>

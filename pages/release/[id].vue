@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import * as Mdl from '@kouts/vue-modal'
 	import { CalendarDate, DateFormatter } from '@internationalized/date'
 
 	import { useUserStore } from '@/stores/user'
@@ -8,7 +7,6 @@
 	import { useSupabaseMusic } from '~/composables/Supabase/useSupabaseMusic'
 	import { type Music } from '@/types/supabase/music'
 
-	const { Modal } = Mdl
 	const { getReleaseById, getSuggestedReleases, updateRelease } = useSupabaseRelease()
 	const { updateMusic } = useSupabaseMusic()
 	const { isLoginStore } = useUserStore()
@@ -243,12 +241,88 @@
 									<p>-</p>
 									<p>{{ formatDate(release.date) }}</p>
 								</div>
-								<button
+								<!-- <button
 									class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/10 rounded px-2 py-1 text-sm"
 									@click="editRelease"
 								>
 									Edit
-								</button>
+								</button> -->
+								<UModal>
+									<UButton
+										label="Edit Release"
+										variant="soft"
+										class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
+									/>
+
+									<template #content>
+										<div class="space-y-3">
+											<ComebackInput v-model="release.name" label="Name" />
+
+											<div class="grid grid-cols-2 gap-3">
+												<div class="grid grid-cols-1 gap-1">
+													<ComebackLabel label="Type" />
+													<select
+														v-model="release.type"
+														class="bg-cb-quaternary-950 focus:border-cb-primary-900 rounded border border-transparent px-2 py-1.5 transition-all duration-150 ease-in-out hover:cursor-pointer focus:outline-none"
+													>
+														<option value="ALBUM">ALBUM</option>
+														<option value="EP">EP</option>
+														<option value="SINGLE">SINGLE</option>
+													</select>
+												</div>
+												<ComebackInput v-model="release.year" label="Year" />
+											</div>
+
+											<div class="flex flex-col gap-1">
+												<ComebackLabel label="Date" />
+												<UCalendar
+													class="bg-cb-quinary-900 rounded p-1"
+													:model-value="parseToCalendarDate(release.date)"
+													:min-date="new Date(1900, 0, 1)"
+													@update:model-value="
+														(value) => {
+															if (release) {
+																release.date = value ? value.toString() : ''
+															}
+														}
+													"
+												/>
+											</div>
+
+											<div class="flex flex-col gap-1">
+												<ComebackLabel label="Tracklist" />
+												<div class="space-y-2">
+													<div
+														v-for="music in release.musics"
+														:key="music.id_youtube_music"
+														class="bg-cb-quinary-900 space-y-1 rounded py-1 pr-1 pl-2"
+													>
+														<div class="flex w-full items-center justify-between gap-2">
+															<p>{{ music.name }}</p>
+															<div
+																class="bg-cb-quaternary-950 flex w-fit items-center gap-2 rounded px-2 py-1 text-xs"
+															>
+																<label class="whitespace-nowrap">Has MV</label>
+																<input v-model="music.ismv" type="checkbox" />
+															</div>
+														</div>
+														<ComebackInput
+															v-if="music.ismv"
+															v-model="music.id_youtube_music"
+														/>
+													</div>
+												</div>
+											</div>
+
+											<button
+												class="bg-cb-primary-900 w-full rounded py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+												@click="updateReleaseFunction(release.id, release)"
+											>
+												<p>Update Release</p>
+											</button>
+										</div>
+									</template>
+								</UModal>
 							</div>
 						</div>
 					</div>
@@ -296,86 +370,6 @@
 					</CardDefault>
 				</section>
 			</section>
-
-			<Modal
-				v-model="showModalEdit"
-				title="Edit Release"
-				wrapper-class="animate__animated modal-wrapper"
-				:modal-style="{
-					background: '#1F1D1D',
-					'border-radius': '0.25rem',
-					color: 'white',
-				}"
-				:in-class="`animate__fadeInDown`"
-				:out-class="`animate__bounceOut`"
-				bg-class="animate__animated"
-				:bg-in-class="`animate__fadeInUp`"
-				:bg-out-class="`animate__fadeOutDown`"
-			>
-				<div class="space-y-3">
-					<ComebackInput v-model="release.name" label="Name" />
-
-					<div class="grid grid-cols-2 gap-3">
-						<div class="grid grid-cols-1 gap-1">
-							<ComebackLabel label="Type" />
-							<select
-								v-model="release.type"
-								class="bg-cb-quaternary-950 focus:border-cb-primary-900 rounded border border-transparent px-2 py-1.5 transition-all duration-150 ease-in-out hover:cursor-pointer focus:outline-none"
-							>
-								<option value="ALBUM">ALBUM</option>
-								<option value="EP">EP</option>
-								<option value="SINGLE">SINGLE</option>
-							</select>
-						</div>
-						<ComebackInput v-model="release.year" label="Year" />
-					</div>
-
-					<div class="flex flex-col gap-1">
-						<ComebackLabel label="Date" />
-						<UCalendar
-							class="bg-cb-quinary-900 rounded p-1"
-							:model-value="parseToCalendarDate(release.date)"
-							@update:model-value="
-								(value) => {
-									if (release) {
-										release.date = value ? value.toString() : ''
-									}
-								}
-							"
-							:min-date="new Date(1900, 0, 1)"
-						/>
-					</div>
-
-					<div class="flex flex-col gap-1">
-						<ComebackLabel label="Tracklist" />
-						<div class="space-y-2">
-							<div
-								v-for="music in release.musics"
-								:key="music.id_youtube_music"
-								class="bg-cb-quinary-900 space-y-1 rounded py-1 pr-1 pl-2"
-							>
-								<div class="flex w-full items-center justify-between gap-2">
-									<p>{{ music.name }}</p>
-									<div
-										class="bg-cb-quaternary-950 flex w-fit items-center gap-2 rounded px-2 py-1 text-xs"
-									>
-										<label class="whitespace-nowrap">Has MV</label>
-										<input type="checkbox" v-model="music.ismv" />
-									</div>
-								</div>
-								<ComebackInput v-if="music.ismv" v-model="music.id_youtube_music" />
-							</div>
-						</div>
-					</div>
-
-					<button
-						class="bg-cb-primary-900 w-full rounded py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
-						@click="updateReleaseFunction(release.id, release)"
-					>
-						<p>Update Release</p>
-					</button>
-				</div>
-			</Modal>
 		</template>
 	</div>
 </template>

@@ -23,7 +23,11 @@
 	const updateUserDetails = async () => {
 		await updateUserData(userDetails.value)
 		userDetails.value = (await getUserData(userDetails.value.id)) as User
-		toast.success('User details updated')
+		toast.add({
+			title: 'User details updated',
+			description: 'Your user details have been updated successfully',
+			color: 'success',
+		})
 	}
 
 	onMounted(async () => {
@@ -40,12 +44,7 @@
 	>
 		<div class="flex w-full justify-between">
 			<p class="text-2xl font-bold">Profile Settings</p>
-			<button
-				class="bg-cb-primary-900 hover:bg-cb-primary-900/90 rounded px-5 py-1"
-				@click="updateUserDetails"
-			>
-				Save
-			</button>
+			<button class="cb_button" @click="updateUserDetails">Save</button>
 		</div>
 		<div v-if="userDetails" class="grid grid-cols-1 gap-5 lg:grid-cols-2">
 			<div class="space-y-5">

@@ -2,7 +2,6 @@
 	// External Packages
 	// Réimporter CalendarDate et getLocalTimeZone
 	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
-	import * as Mdl from '@kouts/vue-modal'
 	import _ from 'lodash'
 
 	// Internal Types
@@ -26,7 +25,6 @@
 	// Crée un type générique qui ajoute 'label' à un type existant T
 	type MenuItem<T> = T & { label: string }
 
-	const { Modal } = Mdl
 	const route = useRoute()
 	const router = useRouter()
 	const toast = useToast()
@@ -387,12 +385,12 @@
 								<UCalendar
 									class="bg-cb-quinary-900 rounded p-1"
 									:model-value="birthdayToDate as CalendarDate | null"
+									:min-date="new Date(1900, 0, 1)"
 									@update:model-value="
 										(value) => {
 											birthdayToDate = value as CalendarDate | null
 										}
 									"
-									:min-date="new Date(1900, 0, 1)"
 								/>
 							</template>
 						</UPopover>
@@ -412,12 +410,12 @@
 								<UCalendar
 									class="bg-cb-quinary-900 rounded p-1"
 									:model-value="debutDateToDate as CalendarDate | null"
+									:min-date="new Date(2000, 0, 1)"
 									@update:model-value="
 										(value) => {
 											debutDateToDate = value as CalendarDate | null
 										}
 									"
-									:min-date="new Date(2000, 0, 1)"
 								/>
 							</template>
 						</UPopover>
@@ -529,12 +527,17 @@
 				<div v-if="stylesList" class="flex flex-col gap-1">
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="Styles" />
-						<button
-							class="bg-cb-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
-							@click="showModalCreateStyle = true"
-						>
-							Create New Style
-						</button>
+						<UModal>
+							<UButton
+								label="Create New Style"
+								variant="soft"
+								class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
+							/>
+
+							<template #content>
+								<ModalCreateStyleTag :style-fetch="stylesList" />
+							</template>
+						</UModal>
 					</div>
 					<UInputMenu
 						v-model="artistStyles"
@@ -550,12 +553,17 @@
 				<div v-if="tagsList" class="flex flex-col gap-1">
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="General Tags" />
-						<button
-							class="bg-cb-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
-							@click="showModalCreateTag = true"
-						>
-							Create New Tag
-						</button>
+						<UModal>
+							<UButton
+								label="Create New Tag"
+								variant="soft"
+								class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
+							/>
+
+							<template #content>
+								<ModalCreateTag :general-tags="tagsList" />
+							</template>
+						</UModal>
 					</div>
 					<UInputMenu
 						v-model="artistTags"
@@ -582,13 +590,23 @@
 			<div v-if="groupList" class="flex flex-col gap-1">
 				<div class="flex justify-between gap-3">
 					<ComebackLabel label="Group" />
-					<button
-						v-if="isAdminStore"
-						class="bg-cb-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
-						@click="showModalCreateArtist = true"
-					>
-						Create New Artist
-					</button>
+					<UModal v-if="isAdminStore">
+						<UButton
+							label="Create New Artist"
+							variant="soft"
+							class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
+						/>
+
+						<template #content>
+							<ModalCreateArtist
+								:styles-list="stylesList"
+								:tags-list="tagsList"
+								:group-list="groupList"
+								:members-list="membersList"
+								@close-modal="closeModalCreateArtist"
+							/>
+						</template>
+					</UModal>
 				</div>
 				<UInputMenu
 					v-model="artistGroups"
@@ -607,13 +625,23 @@
 			>
 				<div class="flex justify-between gap-3">
 					<ComebackLabel label="Members" />
-					<button
-						v-if="isAdminStore"
-						class="bg-cb-primary-900 w-fit rounded px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
-						@click="showModalCreateArtist = true"
-					>
-						Create New Artist
-					</button>
+					<UModal v-if="isAdminStore">
+						<UButton
+							label="Create New Artist"
+							variant="soft"
+							class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
+						/>
+
+						<template #content>
+							<ModalCreateArtist
+								:styles-list="stylesList"
+								:tags-list="tagsList"
+								:group-list="groupList"
+								:members-list="membersList"
+								@close-modal="closeModalCreateArtist"
+							/>
+						</template>
+					</UModal>
 				</div>
 				<UInputMenu
 					v-model="artistMembers"
@@ -733,59 +761,5 @@
 				{{ isUploadingEdit ? 'Loading' : 'Saves' }}
 			</button>
 		</div>
-
-		<Modal
-			v-model="showModalCreateArtist"
-			title="Create Artist"
-			wrapper-class="modal-wrapper"
-			:modal-class="`modal-lg`"
-			:modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-			:in-class="`animate__bounceIn`"
-			:out-class="`animate__bounceOut`"
-			bg-class="animate__animated"
-			:bg-in-class="`animate__fadeInUp`"
-			:bg-out-class="`animate__fadeOutDown`"
-		>
-			<ModalCreateArtist
-				:styles-list="stylesList"
-				:tags-list="tagsList"
-				:group-list="groupList"
-				:members-list="membersList"
-				@close-modal="closeModalCreateArtist"
-			/>
-		</Modal>
-
-		<Modal
-			v-model="showModalCreateStyle"
-			title="Create Style"
-			wrapper-class="modal-wrapper"
-			:modal-class="`modal-lg`"
-			:modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-			:in-class="`animate__bounceIn`"
-			:out-class="`animate__bounceOut`"
-			bg-class="animate__animated"
-			:bg-in-class="`animate__fadeInUp`"
-			:bg-out-class="`animate__fadeOutDown`"
-		>
-			<ModalCreateStyleTag
-				:style-fetch="stylesList"
-				@close-modal="closeModalCreateStyle"
-			/>
-		</Modal>
-
-		<Modal
-			v-model="showModalCreateTag"
-			title="Create Tag"
-			wrapper-class="modal-wrapper"
-			:modal-class="`modal-lg`"
-			:modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-			:in-class="`animate__bounceIn`"
-			:out-class="`animate__bounceOut`"
-			bg-class="animate__animated"
-			:bg-in-class="`animate__fadeInUp`"
-			:bg-out-class="`animate__fadeOutDown`"
-		>
-			<ModalCreateTag :general-tags="tagsList" @close-modal="closeModalCreateTag" />
-		</Modal>
 	</div>
 </template>
