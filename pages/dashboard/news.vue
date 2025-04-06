@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { useToast } from 'vue-toastification'
 	import type { News } from '~/types/supabase/news'
 	import { useSupabaseNews } from '~/composables/Supabase/useSupabaseNews'
 
@@ -182,21 +181,24 @@
 <template>
 	<div
 		ref="scrollContainer"
-		class="relative h-full pr-2 space-y-3 overflow-hidden overflow-y-scroll scrollBarLight"
+		class="scrollBarLight relative h-full space-y-3 overflow-hidden overflow-y-scroll pr-2"
 	>
-		<section id="searchbar" class="sticky top-0 z-50 w-full pb-2 space-y-2 bg-secondary">
+		<section
+			id="searchbar"
+			class="bg-cb-secondary-950 sticky top-0 z-50 w-full space-y-2 pb-2"
+		>
 			<input
 				id="search-input"
 				v-model="search"
 				type="text"
 				placeholder="Rechercher par artiste, utilisateur ou message"
-				class="w-full px-5 py-2 transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+				class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
 			/>
-			<section class="flex flex-col w-full gap-2 sm:flex-row sm:justify-between">
+			<section class="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
 				<div class="flex space-x-2">
 					<select
 						v-model="sort"
-						class="w-full p-2 text-xs uppercase transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl hover:bg-tertiary hover:text-quinary focus:outline-none sm:w-fit"
+						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 hover:bg-cb-tertiary-200 hover:text-cb-quinary-900 w-full rounded border-none p-2 text-xs uppercase drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
 					>
 						<option value="date">Date</option>
 						<option value="user">User</option>
@@ -204,15 +206,15 @@
 						<option value="created_at">Last Created</option>
 					</select>
 					<button
-						class="p-2 transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl hover:bg-tertiary hover:text-quinary focus:outline-none"
+						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 hover:bg-cb-tertiary-200 hover:text-cb-quinary-900 rounded border-none p-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
 						@click="invertSort = !invertSort"
 					>
-						<icon-sort v-if="!invertSort" class="w-6 h-6 text-tertiary" />
-						<icon-sort-reverse v-else class="w-6 h-6 text-tertiary" />
+						<icon-sort v-if="!invertSort" class="text-cb-tertiary-200 h-6 w-6" />
+						<icon-sort-reverse v-else class="text-cb-tertiary-200 h-6 w-6" />
 					</button>
 					<select
 						v-model="limitFetch"
-						class="p-2 text-xs uppercase transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary focus:outline-none sm:w-fit"
+						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 rounded border-none p-2 text-xs uppercase transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
 					>
 						<option value="12">12</option>
 						<option value="24">24</option>
@@ -224,7 +226,9 @@
 		</section>
 
 		<div v-if="isLoading && currentPage === 1" class="flex justify-center py-4">
-			<p class="px-4 py-2 text-center rounded bg-quinary">Chargement des news...</p>
+			<p class="bg-cb-quinary-900 rounded px-4 py-2 text-center">
+				Chargement des news...
+			</p>
 		</div>
 
 		<transition-group
@@ -232,7 +236,7 @@
 			id="news-list"
 			name="list-complete"
 			tag="div"
-			class="grid items-center justify-center grid-cols-1 gap-5 transition-all duration-300 ease-in-out md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
+			class="grid grid-cols-1 items-center justify-center gap-5 transition-all duration-300 ease-in-out md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
 		>
 			<LazyCardDashboardNews
 				v-for="news in filteredNewsList"
@@ -249,13 +253,13 @@
 
 		<p
 			v-else-if="!isLoading"
-			class="w-full p-5 font-semibold text-center uppercase bg-quaternary"
+			class="bg-cb-quaternary-950 w-full p-5 text-center font-semibold uppercase"
 		>
 			Aucune news trouvée
 		</p>
 
 		<div v-if="isLoading && currentPage > 1" class="flex justify-center py-4">
-			<p class="px-4 py-2 text-center rounded bg-quinary">
+			<p class="bg-cb-quinary-900 rounded px-4 py-2 text-center">
 				Chargement des news suivantes...
 			</p>
 		</div>
@@ -263,7 +267,7 @@
 		<div
 			v-if="hasMore"
 			ref="observerTarget"
-			class="flex items-center justify-center w-full h-20 my-8 bg-gray-200 rounded bg-opacity-10"
+			class="bg-opacity-10 my-8 flex h-20 w-full items-center justify-center rounded bg-gray-200"
 		>
 			<div v-if="!isLoading" class="text-xs text-gray-400">
 				Faites défiler pour charger plus de news

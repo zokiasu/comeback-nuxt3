@@ -4,7 +4,7 @@
 	const props = defineProps({
 		music: {
 			type: Object as PropType<Music>,
-			default: {},
+			default: null,
 		},
 	})
 
@@ -26,12 +26,12 @@
 	<div>
 		<div v-if="music && music?.artists">
 			<button
-				class="group relative aspect-square max-h-96 w-full overflow-hidden rounded-lg bg-quinary drop-shadow-lg"
+				class="group bg-cb-quinary-900 relative aspect-square max-h-96 w-full overflow-hidden rounded-lg drop-shadow-lg"
 				@click="playVideo(music.id_youtube_music)"
 			>
 				<div v-if="music.thumbnails?.length" class="relative h-full w-full">
 					<div
-						class="absolute inset-0 h-full w-full bg-quinary transition-all duration-500 ease-in-out"
+						class="bg-cb-quinary-900 absolute inset-0 h-full w-full transition-all duration-500 ease-in-out"
 						:class="imageLoaded ? 'opacity-0' : 'opacity-100'"
 					/>
 					<NuxtImg
@@ -42,13 +42,13 @@
 					/>
 				</div>
 				<div
-					class="absolute inset-0 flex flex-col justify-between bg-quinary/70 p-2 lg:p-3"
+					class="bg-cb-quinary-900/70 absolute inset-0 flex flex-col justify-between p-2 lg:p-3"
 				>
 					<div class="space-y-1 text-left">
 						<NuxtLink
 							v-if="music.name"
 							:to="'/release/' + music.id"
-							class="font-semibold transition-all duration-300 ease-in-out hover:text-primary lg:text-xl"
+							class="hover:text-cb-primary-900 font-semibold transition-all duration-300 ease-in-out lg:text-xl"
 						>
 							{{ music.name }}
 						</NuxtLink>
@@ -59,11 +59,11 @@
 					<div class="flex justify-end">
 						<IconPause
 							v-if="isPlayingVideo && idYoutubeVideo === music.id_youtube_music"
-							class="h-8 w-8 transition-all duration-500 ease-in-out group-hover:text-primary md:h-10 md:w-10"
+							class="group-hover:text-cb-primary-900 h-8 w-8 transition-all duration-500 ease-in-out md:h-10 md:w-10"
 						/>
 						<IconPlay
 							v-else
-							class="h-8 w-8 transition-all duration-500 ease-in-out group-hover:text-primary md:h-10 md:w-10"
+							class="group-hover:text-cb-primary-900 h-8 w-8 transition-all duration-500 ease-in-out md:h-10 md:w-10"
 						/>
 					</div>
 				</div>
@@ -71,7 +71,7 @@
 		</div>
 		<SkeletonDefault
 			v-else
-			class="aspect-square h-full max-h-96 w-full rounded-lg bg-quinary drop-shadow-lg"
+			class="bg-cb-quinary-900 aspect-square h-full max-h-96 w-full rounded-lg drop-shadow-lg"
 		/>
 	</div>
 </template>

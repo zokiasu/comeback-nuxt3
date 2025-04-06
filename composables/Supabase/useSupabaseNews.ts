@@ -1,8 +1,7 @@
-import { useToast } from 'vue-toastification'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { useSupabase } from './useSupabase'
 import type { News } from '~/types/supabase/news'
 import type { QueryOptions, FilterOptions } from '~/types/supabase'
-import type { SupabaseClient } from '@supabase/supabase-js'
 
 interface NewsResponse {
 	news: News[]
@@ -282,12 +281,14 @@ export function useSupabaseNews() {
 		}
 
 		// Transformer les données pour avoir directement les artistes
-		const transformedData = data?.map((news) => ({
-			...news,
-			artists: news.artists?.map((artistJunction: any) => artistJunction.artists) || [],
-		}))
+		const transformedData =
+			data?.map((news) => ({
+				...news,
+				artists: news.artists?.map((artistJunction: any) => artistJunction.artists) || [],
+			})) || []
 
 		// Appeler le callback avec les données transformées
+		// eslint-disable-next-line n/no-callback-literal
 		callback(transformedData as News[])
 
 		// Mettre en place la souscription en temps réel
@@ -317,11 +318,14 @@ export function useSupabaseNews() {
 
 					if (!updatedError && updatedData) {
 						// Transformer les données mises à jour
-						const transformedUpdatedData = updatedData?.map((news) => ({
-							...news,
-							artists:
-								news.artists?.map((artistJunction: any) => artistJunction.artists) || [],
-						}))
+						const transformedUpdatedData =
+							updatedData?.map((news) => ({
+								...news,
+								artists:
+									news.artists?.map((artistJunction: any) => artistJunction.artists) ||
+									[],
+							})) || []
+						// eslint-disable-next-line n/no-callback-literal
 						callback(transformedUpdatedData as News[])
 					}
 				},

@@ -10,7 +10,6 @@ import {
 	orderByChild,
 	equalTo,
 } from 'firebase/database'
-import { useToast } from 'vue-toastification'
 
 export function useFirebaseRealtimeDatabase() {
 	const { $database: database } = useNuxtApp()

@@ -1,27 +1,14 @@
 <script setup lang="ts">
-	import * as Mdl from '@kouts/vue-modal'
-	import type { PropType } from 'vue'
 	import { useUserStore } from '@/stores/user'
-	import type { Artist } from '~/types/artist'
 
-	const { Modal } = Mdl
 	const userStore = useUserStore()
 	const route = useRoute()
 
 	const navbar = ref<HTMLElement | null>(null)
 	const algolia = ref<HTMLElement | null>(null)
-	const showModal = ref<boolean>(false)
-	const showModalAlgolia = ref<boolean>(false)
 
-	const userDataStore = computed(() => userStore.userDataStore)
 	const isLoginStore = computed(() => userStore.isLoginStore)
 	const isAdminStore = computed(() => userStore.isAdminStore)
-	const profilePath = computed(() => {
-		if (!userDataStore.value || !userDataStore.value.id) {
-			return '/settings/profile'
-		}
-		return `/profile/${userDataStore.value.id}`
-	})
 
 	onMounted(async () => {
 		window.addEventListener('scroll', handleScroll)
@@ -32,7 +19,7 @@
 
 		if (window.scrollY > 50) {
 			navbar.value.classList.add(
-				'bg-secondary',
+				'bg-cb-secondary-950',
 				'border',
 				'border-zinc-700',
 				'shadow',
@@ -40,7 +27,7 @@
 			)
 		} else {
 			navbar.value.classList.remove(
-				'bg-secondary',
+				'bg-cb-secondary-950',
 				'border',
 				'border-zinc-700',
 				'shadow',
@@ -79,20 +66,6 @@
 					>
 						Calendar
 					</NuxtLink>
-					<!-- <NuxtLink
-						:to="`/syncradio`"
-						class="relative"
-						:class="
-							route.name.startsWith('syncradio')
-								? 'font-semibold text-white'
-								: 'text-zinc-500'
-						"
-					>
-						SyncRadio
-						<span class="absolute -bottom-2 -right-4 px-2 text-xs font-bold text-primary">
-							Beta
-						</span>
-					</NuxtLink> -->
 					<NuxtLink
 						v-if="isAdminStore"
 						:to="`/dashboard/artist`"
@@ -107,75 +80,59 @@
 				</nav>
 
 				<div class="flex items-center justify-center gap-x-2 text-sm">
-					<button
-						title="Search Artist"
-						class="rounded bg-quaternary p-2 hover:bg-tertiary/20"
-						@click="showModalAlgolia = true"
+					<UModal
+						:ui="{
+							overlay: 'bg-cb-quinary-950/75',
+							content: 'ring-cb-quinary-950',
+						}"
 					>
-						<IconSearch class="h-3.5 w-3.5" />
-					</button>
-					<button
+						<UButton
+							variant="soft"
+							class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
+						>
+							<UIcon name="material-symbols:search" class="size-4" />
+						</UButton>
+
+						<template #content>
+							<LazyAlgolia ref="algolia" />
+						</template>
+					</UModal>
+
+					<UModal
+						:ui="{
+							overlay: 'bg-cb-quinary-950/75',
+							content: 'ring-cb-quinary-950',
+						}"
+					>
+						<UButton
+							label="New Comeback"
+							variant="soft"
+							class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
+						/>
+
+						<template #content>
+							<LazyModalNewsCreation />
+						</template>
+					</UModal>
+
+					<UButton
 						v-if="isLoginStore"
-						title="Add new comeback"
-						class="rounded bg-primary px-3 py-1 font-semibold transition-all duration-300 ease-in-out hover:scale-110 hover:bg-primary/50"
-						@click="showModal = true"
+						to="/settings/profile"
+						variant="soft"
+						class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
 					>
-						New Comeback
-					</button>
-					<NuxtLink
-						v-if="!isLoginStore"
-						:to="`/authentification`"
-						class="rounded bg-quaternary px-3 py-1 text-[0.875rem]"
-					>
-						Login
-					</NuxtLink>
-					<!-- <NuxtLink
-						v-if="isLoginStore && userDataStore"
-						:to="profilePath"
-						title="Profile"
-						class="flex h-full items-center gap-2 rounded bg-quaternary px-3 py-1 hover:bg-tertiary/20"
-					>
-						<p v-if="userDataStore" class="">Hi, {{ userDataStore.name }}</p>
-					</NuxtLink> -->
-					<NuxtLink
-						v-if="isLoginStore"
-						:to="`/settings/profile`"
-						title="Settings"
-						class="flex h-full items-center gap-2 rounded bg-quaternary px-3 py-1 hover:bg-tertiary/20"
-					>
-						<IconSettings class="h-3.5 w-3.5" />
-					</NuxtLink>
+						<UIcon name="material-symbols:settings-rounded" class="size-3" />
+					</UButton>
+
+					<UButton
+						v-else
+						to="/authentification"
+						variant="soft"
+						label="Login"
+						class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
+					/>
 				</div>
 			</div>
 		</div>
-		<Modal
-			v-model="showModal"
-			title="Add a News"
-			wrapper-class="animate__animated modal-wrapper"
-			:modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-			:in-class="`animate__fadeInDown`"
-			:out-class="`animate__bounceOut`"
-			bg-class="animate__animated"
-			:bg-in-class="`animate__fadeInUp`"
-			:bg-out-class="`animate__fadeOutDown`"
-		>
-			<LazyModalNewsCreation
-				@close-modal="showModal = false"
-			/>
-		</Modal>
-		<Modal
-			v-model="showModalAlgolia"
-			title="Search Artist"
-			wrapper-class="modal-wrapper"
-			:modal-class="`modal-lg`"
-			:modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-			:in-class="`animate__bounceIn`"
-			:out-class="`animate__bounceOut`"
-			bg-class="animate__animated"
-			:bg-in-class="`animate__fadeInUp`"
-			:bg-out-class="`animate__fadeOutDown`"
-		>
-			<LazyAlgolia ref="algolia" @close-modal="showModalAlgolia = false" />
-		</Modal>
 	</div>
 </template>

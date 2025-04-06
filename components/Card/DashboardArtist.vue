@@ -121,31 +121,31 @@
 
 <template>
 	<div
-		class="relative flex flex-col w-full h-full p-3 rounded list-complete-item bg-quaternary"
+		class="list-complete-item bg-cb-quaternary-950 relative flex h-full w-full flex-col rounded p-3"
 	>
-		<div class="flex flex-col flex-grow space-y-2">
+		<div class="flex flex-grow flex-col space-y-2">
 			<div class="relative">
 				<div
 					ref="skeleton"
-					class="absolute inset-0 z-10 object-cover transition-all duration-1000 ease-in-out rounded animate-pulse bg-zinc-500"
+					class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"
 				></div>
 				<NuxtImg
 					:src="image"
 					:alt="name"
 					format="webp"
 					loading="lazy"
-					class="object-cover w-full rounded aspect-video bg-zinc-500"
+					class="aspect-video w-full rounded bg-zinc-500 object-cover"
 					@load="loadingDone"
 				/>
 			</div>
 
-			<div class="flex items-center justify-between w-full">
+			<div class="flex w-full items-center justify-between">
 				<div>
 					<p class="space-x-1">
 						<NuxtLink
 							:to="'/artist/' + id"
 							target="_blank"
-							class="font-semibold hover:text-primary"
+							class="hover:text-cb-primary-900 font-semibold"
 						>
 							{{ name }}
 						</NuxtLink>
@@ -159,12 +159,12 @@
 					<NuxtLink
 						:to="'/artist/edit/' + id"
 						target="_blank"
-						class="px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500"
+						class="bg-cb-quinary-900 rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
 					>
 						Edit
 					</NuxtLink>
 					<button
-						class="px-2 py-1 text-xs uppercase rounded bg-quinary hover:bg-zinc-500"
+						class="bg-cb-quinary-900 rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
 						@click="deleteArtist"
 					>
 						Delete
@@ -176,40 +176,40 @@
 				<p
 					v-for="style in styles"
 					:key="style.name"
-					class="px-2 py-1 text-xs uppercase rounded bg-quinary"
+					class="bg-cb-quinary-900 rounded px-2 py-1 text-xs uppercase"
 				>
 					{{ style.name }}
 				</p>
 			</div>
 			<div v-else>
-				<p class="text-xs text-primary">No styles</p>
+				<p class="text-cb-primary-900 text-xs">No styles</p>
 			</div>
 
 			<div>
 				<p
 					v-if="description"
 					:class="{ collapsed: !showFullDescription }"
-					class="text-xs cursor-pointer"
+					class="cursor-pointer text-xs"
 					@click="showFullDescription = !showFullDescription"
 				>
 					{{ description }}
 				</p>
-				<p v-else class="text-xs text-primary">No description</p>
+				<p v-else class="text-cb-primary-900 text-xs">No description</p>
 			</div>
 
 			<div class="space-y-2">
 				<div
-					class="flex items-center justify-between w-full pb-1 border-b border-zinc-500"
+					class="flex w-full items-center justify-between border-b border-zinc-500 pb-1"
 					@click="showSocialLinks = !showSocialLinks"
 				>
 					<p class="text-sm font-semibold uppercase">
 						Socials
-						<span :class="{ 'text-primary': socialList.length === 0 }">
+						<span :class="{ 'text-cb-primary-900': socialList.length === 0 }">
 							({{ socialList.length }})
 						</span>
 					</p>
-					<IconPlus v-if="!showSocialLinks" class="w-4 h-4" />
-					<IconMinus v-else class="w-4 h-4" />
+					<IconPlus v-if="!showSocialLinks" class="h-4 w-4" />
+					<IconMinus v-else class="h-4 w-4" />
 				</div>
 
 				<transition
@@ -224,7 +224,7 @@
 						v-show="showSocialLinks"
 						id="socialLinkContent"
 						ref="socialLinksEl"
-						class="overflow-hidden collapse-content"
+						class="collapse-content overflow-hidden"
 					>
 						<div v-if="socialList.length" class="flex flex-col space-y-1.5">
 							<a
@@ -232,13 +232,16 @@
 								:key="social"
 								:href="social.link"
 								target="_blank"
-								class="overflow-hidden text-xs rounded bg-quinary"
+								class="bg-cb-quinary-900 overflow-hidden rounded text-xs"
 							>
-								<p class="bg-secondary px-1.5 py-1 uppercase">{{ social.name }}</p>
+								<p class="bg-cb-secondary-950 px-1.5 py-1 uppercase">{{ social.name }}</p>
 								<p class="px-1.5 py-1">{{ social.link }}</p>
 							</a>
 						</div>
-						<p v-else class="px-2 py-1 text-xs text-center uppercase rounded bg-quinary">
+						<p
+							v-else
+							class="bg-cb-quinary-900 rounded px-2 py-1 text-center text-xs uppercase"
+						>
 							No Socials Link
 						</p>
 					</div>
@@ -247,17 +250,17 @@
 
 			<div class="space-y-2">
 				<div
-					class="flex items-center justify-between w-full pb-1 border-b border-zinc-500"
+					class="flex w-full items-center justify-between border-b border-zinc-500 pb-1"
 					@click="showPlatformsLinks = !showPlatformsLinks"
 				>
 					<p class="text-sm font-semibold uppercase">
 						Platforms
-						<span :class="{ 'text-primary': platformList.length === 0 }">
+						<span :class="{ 'text-cb-primary-900': platformList.length === 0 }">
 							({{ platformList.length }})
 						</span>
 					</p>
-					<IconPlus v-if="!showPlatformsLinks" class="w-4 h-4" />
-					<IconMinus v-else class="w-4 h-4" />
+					<IconPlus v-if="!showPlatformsLinks" class="h-4 w-4" />
+					<IconMinus v-else class="h-4 w-4" />
 				</div>
 
 				<transition
@@ -272,7 +275,7 @@
 						v-show="showPlatformsLinks"
 						id="socialLinkContent"
 						ref="platformsLinksEl"
-						class="overflow-hidden collapse-content"
+						class="collapse-content overflow-hidden"
 					>
 						<div
 							v-if="platformList.length"
@@ -283,20 +286,25 @@
 								:key="platform"
 								:href="platform.link"
 								target="_blank"
-								class="overflow-hidden text-xs rounded bg-quinary"
+								class="bg-cb-quinary-900 overflow-hidden rounded text-xs"
 							>
-								<p class="bg-secondary px-1.5 py-1 uppercase">{{ platform.name }}</p>
+								<p class="bg-cb-secondary-950 px-1.5 py-1 uppercase">
+									{{ platform.name }}
+								</p>
 								<p class="px-1.5 py-1">{{ platform.link }}</p>
 							</a>
 						</div>
-						<p v-else class="px-2 py-1 text-xs text-center uppercase rounded bg-quinary">
+						<p
+							v-else
+							class="bg-cb-quinary-900 rounded px-2 py-1 text-center text-xs uppercase"
+						>
 							No Platforms Link
 						</p>
 					</div>
 				</transition>
 			</div>
 		</div>
-		<div class="flex flex-col justify-between mt-auto text-xs md:flex-row">
+		<div class="mt-auto flex flex-col justify-between text-xs md:flex-row">
 			<p class="mt-auto">Created at {{ createdAtDate }}</p>
 			<p class="mt-auto">Updated at {{ updatedAtDate }}</p>
 		</div>

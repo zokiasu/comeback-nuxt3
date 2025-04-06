@@ -1,8 +1,7 @@
-import { useToast } from 'vue-toastification'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { useSupabase } from './useSupabase'
 import type { QueryOptions, FilterOptions } from '~/types/supabase'
 import type { GeneralTag } from '~/types/supabase/general_tag'
-import type { SupabaseClient } from '@supabase/supabase-js'
 
 export function useSupabaseGeneralTags() {
 	const { supabase } = useSupabase() as { supabase: SupabaseClient }

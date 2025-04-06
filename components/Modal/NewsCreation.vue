@@ -1,7 +1,6 @@
 <script setup lang="ts">
-	import VueDatePicker from '@vuepic/vue-datepicker'
-	import '@vuepic/vue-datepicker/dist/main.css'
-	import { useToast } from 'vue-toastification'
+	import { CalendarDate } from '@internationalized/date'
+
 	import debounce from 'lodash.debounce'
 	import algoliasearch from 'algoliasearch/lite'
 	import type { News } from '~/types/supabase/news'
@@ -21,10 +20,22 @@
 	const sendNews = ref<boolean>(false)
 	const searchArtist = ref<string>('')
 	const artistListSearched = ref<any[]>([])
-
 	const artistListSelected = ref<any[]>([])
 	const newsDate = ref<Date | null>(null)
 	const newsMessage = ref<string>('')
+
+	const parseToCalendarDate = (date: Date | null | undefined): CalendarDate | null => {
+		if (!date) return null
+		try {
+			const year = date.getUTCFullYear()
+			const month = date.getUTCMonth() + 1
+			const day = date.getUTCDate()
+			return new CalendarDate(year, month, day)
+		} catch (e) {
+			console.error('Failed to parse date:', date, e)
+			return null
+		}
+	}
 
 	// Définition d'une fonction de recherche débattue
 	const debouncedSearch = debounce(async (query) => {
@@ -43,18 +54,30 @@
 			verified: false,
 		}
 		sendNews.value = true
-    
-    // Extraire uniquement les IDs des artistes
-    const artistIds = artistListSelected.value.map(artist => artist.id)
-		
-		createNews(news, artistIds).then((res) => {
-			toast.success('News created')
-			sendNews.value = false
-			closeModal()
-		}).catch((error) => {
-			toast.error('Error creating news')
-			console.error('Error creating news', error)
-		})
+
+		// Extraire uniquement les IDs des artistes
+		const artistIds = artistListSelected.value.map((artist) => artist.id)
+
+		createNews(news, artistIds)
+			.then((res) => {
+				toast.add({
+					title: 'News created',
+					description: 'News created successfully',
+					icon: 'i-lucide-check-circle',
+					color: 'success',
+				})
+				sendNews.value = false
+				closeModal()
+			})
+			.catch((error) => {
+				toast.add({
+					title: 'Error creating news',
+					description: 'Error creating news',
+					icon: 'i-lucide-x-circle',
+					color: 'error',
+				})
+				console.error('Error creating news', error)
+			})
 	}
 
 	const addArtistToNews = (artist: any) => {
@@ -95,7 +118,8 @@
 </script>
 
 <template>
-	<div class="space-y-5 py-2">
+	<div class="bg-cb-secondary-950 space-y-5 p-5">
+		<h3 class="text-2xl font-bold">Create Comeback</h3>
 		<div class="relative">
 			<ComebackInput
 				v-model="searchArtist"
@@ -105,12 +129,12 @@
 			/>
 			<div
 				v-if="artistListSearched.length"
-				class="scrollBarLight oversc top-18 absolute z-10 flex h-40 w-full flex-col justify-start overflow-hidden overflow-y-auto bg-quaternary p-1"
+				class="scrollBarLight oversc bg-cb-quaternary-950 absolute top-18 z-10 flex h-40 w-full flex-col justify-start overflow-hidden overflow-y-auto p-1"
 			>
 				<button
 					v-for="artist in artistListSearched"
 					:key="artist.id"
-					class="rounded p-2 text-start hover:bg-quinary"
+					class="hover:bg-cb-quinary-900 rounded p-2 text-start"
 					@click="addArtistToNews(artist)"
 				>
 					{{ artist.name }}
@@ -124,8 +148,8 @@
 				<div
 					v-for="artist in artistListSelected"
 					:key="artist.id"
+					class="relative flex cursor-pointer flex-col items-center justify-center rounded px-5 py-1 hover:bg-red-500/50"
 					@click="removeArtistFromNews(artist)"
-					class="flex flex-col justify-center items-center px-5 relative hover:bg-red-500/50 rounded py-1 cursor-pointer"
 				>
 					<img :src="artist.picture" class="h-8 w-8 rounded-full object-cover" />
 					<p>{{ artist.name }}</p>
@@ -135,12 +159,19 @@
 
 		<div class="flex flex-col gap-1">
 			<ComebackLabel label="Date" />
-			<VueDatePicker
-				v-model="newsDate"
-				placeholder="Select Date"
-				auto-apply
-				:enable-time-picker="false"
-				dark
+			<UCalendar
+				class="bg-cb-quinary-900 rounded p-1"
+				:model-value="parseToCalendarDate(newsDate)"
+				:min-date="new Date(1900, 0, 1)"
+				@update:model-value="
+					(value) => {
+						if (value) {
+							newsDate = new Date(value.toString())
+						} else {
+							newsDate = null
+						}
+					}
+				"
 			/>
 		</div>
 
@@ -155,7 +186,7 @@
 
 		<button
 			:disabled="sendNews"
-			class="w-full rounded bg-primary py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+			class="bg-cb-primary-900 w-full rounded py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
 			@click="creationNews"
 		>
 			<p v-if="sendNews">Sending...</p>

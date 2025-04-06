@@ -33,10 +33,7 @@
 				imageBackground.value = artist.value.image
 				title.value = artist.value.name
 				description.value = artist.value.description || ''
-				musicDiscover.value = await getRandomMusicsByArtistId(
-					artist.value.id,
-					9,
-				)
+				musicDiscover.value = await getRandomMusicsByArtistId(artist.value.id, 9)
 			}
 		} catch (error) {
 			console.error(error)
@@ -47,21 +44,29 @@
 	})
 
 	const members = computed(
-		() => artist.value?.members?.filter((member) => member.type === 'SOLO').sort((a, b) => a.name.localeCompare(b.name)) || [],
+		() =>
+			artist.value?.members
+				?.filter((member) => member.type === 'SOLO')
+				.sort((a, b) => a.name.localeCompare(b.name)) || [],
 	)
-	
+
 	const subUnitMembers = computed(
-		() => artist.value?.members?.filter((member) => member.type === 'GROUP').sort((a, b) => a.name.localeCompare(b.name)) || [],
+		() =>
+			artist.value?.members
+				?.filter((member) => member.type === 'GROUP')
+				.sort((a, b) => a.name.localeCompare(b.name)) || [],
 	)
-	
+
 	const singleRelease = computed(() => {
-		const singles = artist.value?.releases?.filter((release) => release.type === 'SINGLE') || []
+		const singles =
+			artist.value?.releases?.filter((release) => release.type === 'SINGLE') || []
 		singles.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 		return singles
 	})
 
 	const albumEpRelease = computed(() => {
-		const albums = artist.value?.releases?.filter((release) => release.type !== 'SINGLE') || []
+		const albums =
+			artist.value?.releases?.filter((release) => release.type !== 'SINGLE') || []
 		albums.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 		return albums
 	})
@@ -84,8 +89,6 @@
 	})
 </script>
 
-
-
 <template>
 	<div v-if="artist">
 		<section
@@ -97,15 +100,15 @@
 				:alt="artist?.name + '_background'"
 				format="webp"
 				loading="lazy"
-				class="absolute inset-0 object-cover w-full h-full"
+				class="absolute inset-0 h-full w-full object-cover"
 				@load="imageBackLoaded = true"
 			/>
 			<div
 				class="absolute inset-0 flex items-end p-5 transition-all duration-500 ease-in-out lg:p-10 xl:p-14 2xl:px-32"
-				:class="imageBackLoaded ? 'bg-secondary/60' : 'bg-quinary'"
+				:class="imageBackLoaded ? 'bg-cb-secondary-950/60' : 'bg-cb-quinary-900'"
 			>
 				<div class="space-y-5 lg:container lg:mx-auto lg:px-5">
-					<SkeletonDefault v-if="isFetchingArtist" class="rounded h-14 w-80" />
+					<SkeletonDefault v-if="isFetchingArtist" class="h-14 w-80 rounded" />
 					<h1
 						v-if="artist.name && !isFetchingArtist"
 						class="text-3xl font-bold md:text-6xl xl:text-7xl"
@@ -118,7 +121,7 @@
 					>
 						<p
 							v-if="artist.birth_date"
-							class="px-3 py-1 text-xs font-semibold uppercase rounded w-fit whitespace-nowrap bg-quaternary"
+							class="bg-cb-quaternary-950 w-fit rounded px-3 py-1 text-xs font-semibold whitespace-nowrap uppercase"
 						>
 							Birthday :
 							{{
@@ -133,7 +136,7 @@
 						</p>
 						<p
 							v-if="artist.debut_date"
-							class="px-3 py-1 text-xs font-semibold uppercase rounded w-fit whitespace-nowrap bg-quaternary"
+							class="bg-cb-quaternary-950 w-fit rounded px-3 py-1 text-xs font-semibold whitespace-nowrap uppercase"
 						>
 							Debut Date :
 							{{
@@ -151,14 +154,14 @@
 						<p
 							v-for="style in artist.styles"
 							:key="style"
-							class="px-3 py-1 text-xs font-semibold uppercase rounded w-fit whitespace-nowrap bg-quaternary"
+							class="bg-cb-quaternary-950 w-fit rounded px-3 py-1 text-xs font-semibold whitespace-nowrap uppercase"
 						>
 							{{ style }}
 						</p>
 						<p
 							v-for="tag in artist.general_tags"
 							:key="tag"
-							class="px-3 py-1 text-xs font-semibold uppercase rounded w-fit whitespace-nowrap bg-quaternary"
+							class="bg-cb-quaternary-950 w-fit rounded px-3 py-1 text-xs font-semibold whitespace-nowrap uppercase"
 						>
 							{{ tag }}
 						</p>
@@ -166,7 +169,7 @@
 					<div v-if="!isFetchingArtist" class="flex flex-wrap gap-2">
 						<NuxtLink
 							:to="editLink"
-							class="px-2 py-1 text-xs font-semibold uppercase bg-secondary"
+							class="bg-cb-secondary-950 px-2 py-1 text-xs font-semibold uppercase"
 						>
 							Edit Artist
 						</NuxtLink>
@@ -176,13 +179,13 @@
 		</section>
 
 		<section
-			class="p-5 py-8 mx-auto space-y-8 lg:container lg:space-y-14 lg:px-14 lg:py-10 xl:px-5"
+			class="mx-auto space-y-8 p-5 py-8 lg:container lg:space-y-14 lg:px-14 lg:py-10 xl:px-5"
 		>
 			<div v-if="isFetchingArtist" class="space-y-2">
-				<SkeletonDefault class="w-3/4 h-5 rounded" />
-				<SkeletonDefault class="w-2/4 h-5 rounded" />
-				<SkeletonDefault class="w-2/6 h-5 rounded" />
-				<SkeletonDefault class="w-2/5 h-5 rounded" />
+				<SkeletonDefault class="h-5 w-3/4 rounded" />
+				<SkeletonDefault class="h-5 w-2/4 rounded" />
+				<SkeletonDefault class="h-5 w-2/6 rounded" />
+				<SkeletonDefault class="h-5 w-2/5 rounded" />
 			</div>
 
 			<div v-else class="space-y-5">
@@ -204,7 +207,7 @@
 					<SkeletonDefault
 						v-for="i in 3"
 						:key="`skeleton_platforms_` + i"
-						class="w-20 h-6 rounded"
+						class="h-6 w-20 rounded"
 					/>
 				</div>
 
@@ -226,11 +229,14 @@
 					<SkeletonDefault
 						v-for="i in 3"
 						:key="`skeleton_socials_` + i"
-						class="w-20 h-6 rounded"
+						class="h-6 w-20 rounded"
 					/>
 				</div>
 
-				<CardDefault v-if="artist.id_youtube_music && musicDiscover.length > 0" name="Discover Music">
+				<CardDefault
+					v-if="artist.id_youtube_music && musicDiscover.length > 0"
+					name="Discover Music"
+				>
 					<transition-group
 						v-if="musicDiscover.length > 0"
 						name="list-complete"
@@ -246,7 +252,7 @@
 							:music-name="song.name"
 							:music-image="song?.thumbnails[0]?.url"
 							:duration="song?.duration?.toString() || '0'"
-							class="w-full bg-quinary"
+							class="bg-cb-quinary-900 w-full"
 						/>
 					</transition-group>
 				</CardDefault>
@@ -267,7 +273,7 @@
 						<div class="pt-2">
 							<NuxtLink
 								:to="editLink"
-								class="px-2 py-1 mt-5 text-xs font-semibold uppercase bg-quaternary"
+								class="bg-cb-quaternary-950 mt-5 px-2 py-1 text-xs font-semibold uppercase"
 							>
 								Add a description
 							</NuxtLink>
@@ -275,13 +281,13 @@
 					</div>
 				</CardDefault>
 			</div>
-			
+
 			<div v-if="members?.length && !isFetchingArtist">
 				<CardDefault name="Members">
 					<transition-group
 						name="list-complete"
 						tag="div"
-						class="flex gap-3 pb-3 overflow-x-auto scrollBarLight snap-x snap-mandatory xl:flex-wrap"
+						class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 xl:flex-wrap"
 					>
 						<CardObject
 							v-for="soloMember in members"
@@ -301,7 +307,7 @@
 					<transition-group
 						name="list-complete"
 						tag="div"
-						class="flex gap-3 pb-3 overflow-x-auto scrollBarLight snap-x snap-mandatory xl:flex-wrap"
+						class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 xl:flex-wrap"
 					>
 						<CardObject
 							v-for="release in albumEpRelease"
@@ -324,7 +330,7 @@
 					<transition-group
 						name="list-complete"
 						tag="div"
-						class="flex gap-3 pb-3 overflow-x-auto scrollBarLight snap-x snap-mandatory xl:flex-wrap"
+						class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 xl:flex-wrap"
 					>
 						<CardObject
 							v-for="release in singleRelease"
@@ -347,7 +353,7 @@
 					<transition-group
 						name="list-complete"
 						tag="div"
-						class="flex gap-3 pb-3 overflow-x-auto scrollBarLight snap-x snap-mandatory xl:flex-wrap"
+						class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 xl:flex-wrap"
 					>
 						<CardObject
 							v-for="groupMember in subUnitMembers"
@@ -367,7 +373,7 @@
 					<transition-group
 						name="list-complete"
 						tag="div"
-						class="flex gap-3 pb-3 overflow-x-auto scrollBarLight snap-x snap-mandatory xl:flex-wrap"
+						class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 xl:flex-wrap"
 					>
 						<CardObject
 							v-for="group in artist.groups"

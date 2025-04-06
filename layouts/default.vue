@@ -17,7 +17,7 @@
 </script>
 
 <template>
-	<div class="min-h-screen flex flex-col w-full bg-secondary text-tertiary">
+	<div class="bg-cb-secondary-950 text-cb-tertiary-200 flex min-h-screen w-full flex-col">
 		<Navigation class="hidden md:block" />
 		<div class="inset-x-0 z-50 py-3 md:hidden">
 			<img
@@ -28,7 +28,7 @@
 				class="mx-auto block h-8 w-auto"
 			/>
 		</div>
-		<main class="flex-1 flex flex-col">
+		<main class="flex flex-1 flex-col">
 			<slot />
 		</main>
 		<LazyFooter v-if="displayingFooter" />

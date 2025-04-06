@@ -87,9 +87,9 @@
 		<button
 			v-if="musicId"
 			:disabled="idYoutubeVideo == musicId"
-			class="col-span-1 flex w-full items-center gap-2 rounded bg-quaternary p-2 px-3"
+			class="bg-cb-quaternary-950 col-span-1 flex w-full items-center gap-2 rounded p-2 px-3"
 			:class="{
-				'group hover:bg-tertiary/10': idYoutubeVideo != musicId,
+				'group hover:bg-cb-tertiary-200/10': idYoutubeVideo != musicId,
 				'col-span-4': ismv && horizontalMode,
 			}"
 			@click="playVideo(musicId)"
@@ -100,7 +100,7 @@
 					format="webp"
 					:alt="musicName"
 					:src="musicImage"
-					class="h-10 w-10 rounded shadow shadow-secondary"
+					class="shadow-cb-secondary-950 h-10 w-10 rounded shadow"
 				/>
 			</div>
 			<div class="min-w-0 flex-1 overflow-hidden">
@@ -120,7 +120,7 @@
 						format="webp"
 						:alt="artistName"
 						:src="artistImage"
-						class="h-3 w-3 rounded-full object-cover shadow shadow-secondary"
+						class="shadow-cb-secondary-950 h-3 w-3 rounded-full object-cover shadow"
 					/>
 					<NuxtLink
 						v-if="artistName && artistId"
@@ -153,7 +153,7 @@
 		</button>
 		<button
 			v-if="ismv"
-			class="flex w-full items-center justify-center rounded bg-primary px-2 py-1 text-xs font-semibold uppercase tracking-widest hover:bg-primary/50"
+			class="bg-cb-primary-900 hover:bg-cb-primary-900/50 flex w-full items-center justify-center rounded px-2 py-1 text-xs font-semibold tracking-widest uppercase"
 			:class="horizontalMode ? 'w-fit' : 'w-full'"
 			@click="displayVideo = true"
 		>
@@ -175,7 +175,9 @@
 				allowfullscreen
 			></iframe>
 
-			<p class="cursor-pointer text-tertiary/80 hover:text-tertiary">Close M/V</p>
+			<p class="text-cb-tertiary-200/80 hover:text-cb-tertiary-200 cursor-pointer">
+				Close M/V
+			</p>
 		</div>
 	</div>
 </template>

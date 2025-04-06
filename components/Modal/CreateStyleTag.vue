@@ -5,7 +5,7 @@
 			v-model="newStyle"
 			type="text"
 			placeholder="Add new style"
-			class="w-full rounded border-none bg-quinary px-5 py-2 placeholder-tertiary drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+			class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:outline-none"
 			@keyup.enter="
 				async () => {
 					await createStyle()
@@ -13,7 +13,7 @@
 			"
 		/>
 		<button
-			class="w-full rounded bg-primary p-2 font-semibold hover:bg-red-900"
+			class="bg-cb-primary-900 w-full rounded p-2 font-semibold hover:bg-red-900"
 			@click="
 				async () => {
 					await createStyle()
@@ -28,7 +28,6 @@
 <script setup lang="ts">
 	import type { MusicStyle } from '~/types/supabase/music_style'
 	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
-	import { useToast } from 'vue-toastification'
 
 	const props = defineProps({
 		styleFetch: {
@@ -38,7 +37,7 @@
 	})
 
 	const emit = defineEmits(['close-modal'])
-	
+
 	const { createMusicStyle } = useSupabaseMusicStyles()
 	const toast = useToast()
 

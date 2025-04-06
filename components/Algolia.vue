@@ -35,11 +35,15 @@
 			v-model="searchInput"
 			type="text"
 			placeholder="Search Artist..."
-			class="w-full px-5 py-2 transition-all duration-300 ease-in-out border-none rounded bg-quinary placeholder-tertiary drop-shadow-xl focus:bg-tertiary focus:text-quinary focus:placeholder-quinary focus:outline-none"
+			class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
 		/>
 		<div v-if="datas.length" class="flex flex-col gap-2" @click="closeModal">
-			<LazyNuxtLink v-for="artist in datas" :key="artist.objectID" :to="`/artist/${artist.objectID}`">
-				<p class="w-full p-2 text-xs rounded bg-primary">{{ artist.name }}</p>
+			<LazyNuxtLink
+				v-for="artist in datas"
+				:key="artist.objectID"
+				:to="`/artist/${artist.objectID}`"
+			>
+				<p class="bg-cb-primary-900 w-full rounded p-2 text-xs">{{ artist.name }}</p>
 			</LazyNuxtLink>
 		</div>
 	</div>

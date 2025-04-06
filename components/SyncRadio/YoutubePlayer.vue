@@ -1,6 +1,4 @@
 <script setup>
-	import toast from '~/plugins/toast'
-
 	const idYoutubeVideo = ref('')
 	const emit = defineEmits(['videoEnded', 'videoError', 'updateDuration'])
 

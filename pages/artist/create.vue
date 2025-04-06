@@ -1,4 +1,13 @@
 <script setup lang="ts">
+	// Réimporter CalendarDate et getLocalTimeZone
+	import {
+		CalendarDate,
+		DateFormatter,
+		getLocalTimeZone,
+		ZonedDateTime,
+	} from '@internationalized/date'
+
+	// Internal Types
 	import type { Artist } from '~/types/supabase/artist'
 	import type { MusicStyle } from '~/types/supabase/music_style'
 	import type { GeneralTag } from '~/types/supabase/general_tag'
@@ -8,21 +17,15 @@
 		ArtistPlatformLink,
 		ArtistSocialLink,
 	} from '~/types/supabase'
+
+	// Internal Composables
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
 	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'
 
-	import VueMultiselect from 'vue-multiselect'
-	import '@vuepic/vue-datepicker/dist/main.css'
-	import VueDatePicker from '@vuepic/vue-datepicker'
-	import { useToast } from 'vue-toastification'
-	import * as Mdl from '@kouts/vue-modal'
+	// Crée un type générique qui ajoute 'label' à un type existant T
+	type MenuItem<T> = T & { label: string }
 
-	definePageMeta({
-		middleware: 'auth',
-	})
-
-	const { Modal } = Mdl
 	const toast = useToast()
 	const { isAdminStore } = useUserStore()
 
@@ -34,9 +37,6 @@
 	const description = ref<string>('Create Artist Page')
 
 	const isUploadingEdit = ref<boolean>(false)
-	const showModalCreateArtist = ref<boolean>(false)
-	const showModalCreateStyle = ref<boolean>(false)
-	const showModalCreateTag = ref<boolean>(false)
 
 	const stylesList = ref<MusicStyle[]>([])
 	const tagsList = ref<GeneralTag[]>([])
@@ -49,14 +49,14 @@
 	const birthdayToDate = ref<Date | null>(null)
 	const debutDateToDate = ref<Date | null>(null)
 
-	const artistGroups = ref<Artist[]>([])
-	const artistMembers = ref<Artist[]>([])
+	const artistGroups = ref<MenuItem<Artist>[]>([])
+	const artistMembers = ref<MenuItem<Artist>[]>([])
 	const artistGender = ref<ArtistGender>('UNKNOWN')
 	const artistType = ref<ArtistType>('SOLO')
 	const artistActiveCareer = ref<boolean>(true)
 
-	const artistStyles = ref<MusicStyle[]>([])
-	const artistTags = ref<GeneralTag[]>([])
+	const artistStyles = ref<MenuItem<MusicStyle>[]>([])
+	const artistTags = ref<MenuItem<GeneralTag>[]>([])
 	const artistDescription = ref<string>('')
 	const artistPlatformList = ref<
 		Omit<ArtistPlatformLink, 'id' | 'created_at' | 'artist_id'>[]
@@ -65,29 +65,86 @@
 		Omit<ArtistSocialLink, 'id' | 'created_at' | 'artist_id'>[]
 	>([])
 
-	const closeModalCreateStyle = async () => {
-		showModalCreateStyle.value = false
-		stylesList.value = await getAllMusicStyles()
-	}
+	const stylesForMenu = computed(() => {
+		return stylesList.value.map(
+			(style): MenuItem<MusicStyle> => ({
+				...style,
+				label: style.name,
+			}),
+		)
+	})
 
-	const closeModalCreateTag = async () => {
-		showModalCreateTag.value = false
-		tagsList.value = await getAllGeneralTags()
+	const tagsForMenu = computed(() => {
+		return tagsList.value.map(
+			(tag): MenuItem<GeneralTag> => ({
+				...tag,
+				label: tag.name,
+			}),
+		)
+	})
+
+	const groupsForMenu = computed(() => {
+		return groupList.value.map((artist): MenuItem<Omit<Artist, 'type'>> => {
+			const { type, ...rest } = artist
+			return {
+				...rest,
+				label: artist.name,
+			}
+		})
+	})
+
+	const membersForMenu = computed(() => {
+		return artistsList.value.map((artist): MenuItem<Omit<Artist, 'type'>> => {
+			const { type, ...rest } = artist
+			return {
+				...rest,
+				label: artist.name,
+			}
+		})
+	})
+
+	const df = new DateFormatter('en-US', {
+		dateStyle: 'medium',
+	})
+
+	const parseToCalendarDate = (date: Date | null | undefined): CalendarDate | null => {
+		if (!date) return null
+		try {
+			const year = date.getUTCFullYear()
+			const month = date.getUTCMonth() + 1
+			const day = date.getUTCDate()
+			return new CalendarDate(year, month, day)
+		} catch (e) {
+			console.error('Failed to parse date:', date, e)
+			return null
+		}
 	}
 
 	const creationArtist = async () => {
 		isUploadingEdit.value = true
 
 		if (artistName.value === '') {
-			toast.error('Please fill the required fields')
+			toast.add({
+				title: 'Please fill the required fields',
+				description: 'Please fill the required fields',
+				color: 'error',
+			})
 			isUploadingEdit.value = false
 			return
 		}
 
+		const selectedGroups = artistGroups.value.map(({ label, ...rest }) => rest as Artist)
+		const selectedMembers = artistMembers.value.map(
+			({ label, ...rest }) => rest as Artist,
+		)
+
 		const artistStyleListName = artistStyles.value.map((style) => style.name)
 		const artistTagListName = artistTags.value.map((tag) => tag.name)
 
-		const artist: Omit<Artist, 'id' | 'created_at' | 'updated_at'> = {
+		const artist: Omit<
+			Artist,
+			'id' | 'created_at' | 'updated_at' | 'social_links' | 'platform_links'
+		> = {
 			name: artistName.value,
 			image: artistImage.value,
 			description: artistDescription.value,
@@ -96,8 +153,9 @@
 			gender: artistGender.value,
 			active_career: artistActiveCareer.value,
 			verified: isAdminStore,
-			birth_date: birthdayToDate.value?.toISOString() || null,
-			debut_date: debutDateToDate.value?.toISOString() || null,
+			// Re-convertir CalendarDate en ISO string
+			birth_date: birthdayToDate.value ? birthdayToDate.value.toString() : null,
+			debut_date: debutDateToDate.value ? debutDateToDate.value.toString() : null,
 			styles: artistStyleListName,
 			general_tags: artistTagListName,
 		}
@@ -106,18 +164,30 @@
 			artist,
 			artistSocialList.value,
 			artistPlatformList.value,
-			artistGroups.value,
-			artistMembers.value,
-		).then((newArtist) => {
-			isUploadingEdit.value = false
-			toast.success('Artist created successfully')
-		})
+			selectedGroups,
+			selectedMembers,
+		)
+			.then((newArtist) => {
+				isUploadingEdit.value = false
+				toast.add({
+					title: 'Artist created successfully',
+					description: 'Artist created successfully',
+					color: 'success',
+				})
+			})
+			.catch((error) => {
+				isUploadingEdit.value = false
+				toast.add({
+					title: 'Failed to create artist',
+					description: error.message,
+					color: 'error',
+				})
+			})
 	}
 
 	const closeModalCreateArtist = async () => {
-		artistsList.value = await queryByCollection('artists')
+		artistsList.value = await getAllArtists()
 		groupList.value = artistsList.value.filter((artist) => artist.type === 'GROUP')
-		showModalCreateArtist.value = false
 	}
 
 	const adjustTextarea = (event: Event) => {
@@ -154,7 +224,7 @@
 			<div>
 				<button
 					:disabled="isUploadingEdit"
-					class="w-full rounded bg-primary px-5 py-3 text-xs font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+					class="bg-cb-primary-900 w-full rounded px-5 py-3 text-xs font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
 					@click="creationArtist"
 				>
 					{{ isUploadingEdit ? 'Loading' : 'Saves' }}
@@ -167,7 +237,7 @@
 			<div class="flex flex-col gap-2">
 				<div class="flex items-end gap-2">
 					<ComebackLabel label="Image" />
-					<p class="text-sm italic text-quinary">
+					<p class="text-cb-quinary-900 text-sm italic">
 						Picture will be automaticaly update based on Youtube Music
 					</p>
 				</div>
@@ -188,27 +258,70 @@
 					label="Id Youtube Music *"
 					placeholder="ID Youtube Music"
 				/>
-				<!-- Birthday -->
-				<div class="space-y-1" :class="{ hidden: artistType == 'GROUP' }">
-					<ComebackLabel label="Birthday" />
-					<VueDatePicker
-						v-model="birthdayToDate"
-						placeholder="Select Date"
-						auto-apply
-						:enable-time-picker="false"
-						dark
-					/>
-				</div>
-				<!-- Debut Date -->
-				<div class="space-y-1">
-					<ComebackLabel label="Debut Date" />
-					<VueDatePicker
-						v-model="debutDateToDate"
-						placeholder="Select Date"
-						auto-apply
-						:enable-time-picker="false"
-						dark
-					/>
+				<div
+					class="grid gap-5"
+					:class="artistType == 'GROUP' ? 'grid-cols-1' : 'grid-cols-2'"
+				>
+					<!-- Birthday -->
+					<div class="space-y-1" :class="{ hidden: artistType == 'GROUP' }">
+						<ComebackLabel label="Birthday" />
+						<UPopover>
+							<UButton
+								variant="subtle"
+								icon="i-lucide-calendar"
+								class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+							>
+								{{ birthdayToDate ? df.format(birthdayToDate) : 'Select a date' }}
+							</UButton>
+
+							<template #content>
+								<UCalendar
+									class="bg-cb-quinary-900 rounded p-1"
+									:model-value="parseToCalendarDate(birthdayToDate)"
+									:min-date="new Date(1900, 0, 1)"
+									@update:model-value="
+										(value) => {
+											if (value) {
+												birthdayToDate = new Date(value.toString())
+											} else {
+												birthdayToDate = null
+											}
+										}
+									"
+								/>
+							</template>
+						</UPopover>
+					</div>
+					<!-- Debut Date -->
+					<div class="space-y-1">
+						<ComebackLabel label="Debut Date" />
+						<UPopover>
+							<UButton
+								variant="subtle"
+								icon="i-lucide-calendar"
+								class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+							>
+								{{ debutDateToDate ? df.format(debutDateToDate) : 'Select a date' }}
+							</UButton>
+
+							<template #content>
+								<UCalendar
+									class="bg-cb-quinary-900 rounded p-1"
+									:model-value="parseToCalendarDate(debutDateToDate)"
+									:min-date="new Date(2000, 0, 1)"
+									@update:model-value="
+										(value) => {
+											if (value) {
+												debutDateToDate = new Date(value.toString())
+											} else {
+												debutDateToDate = null
+											}
+										}
+									"
+								/>
+							</template>
+						</UPopover>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -220,7 +333,7 @@
 				<div class="grid grid-cols-1 gap-1">
 					<div class="flex items-end gap-2">
 						<ComebackLabel label="Gender" />
-						<p class="text-sm italic text-quinary">
+						<p class="text-cb-quinary-900 text-sm italic">
 							It's only for stat we don't assume any gender jugement
 						</p>
 					</div>
@@ -228,10 +341,10 @@
 						v-model="artistGender"
 						class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
 					>
-						<option default value="UNKNOWN" class="text-secondary">UNKNOWN</option>
-						<option value="MALE" class="text-secondary">MALE</option>
-						<option value="FEMALE" class="text-secondary">FEMALE</option>
-						<option value="MIXTE" class="text-secondary">MIXTE</option>
+						<option default value="UNKNOWN" class="text-cb-secondary-950">UNKNOWN</option>
+						<option value="MALE" class="text-cb-secondary-950">MALE</option>
+						<option value="FEMALE" class="text-cb-secondary-950">FEMALE</option>
+						<option value="MIXTE" class="text-cb-secondary-950">MIXTE</option>
 					</select>
 				</div>
 				<!-- Type -->
@@ -241,8 +354,8 @@
 						v-model="artistType"
 						class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
 					>
-						<option value="SOLO" class="text-secondary">SOLO</option>
-						<option value="GROUP" class="text-secondary">GROUP</option>
+						<option value="SOLO" class="text-cb-secondary-950">SOLO</option>
+						<option value="GROUP" class="text-cb-secondary-950">GROUP</option>
 					</select>
 				</div>
 				<!-- Active Career -->
@@ -252,8 +365,8 @@
 						v-model="artistActiveCareer"
 						class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
 					>
-						<option :value="true" class="text-secondary">Active</option>
-						<option :value="false" class="text-secondary">Inactive</option>
+						<option :value="true" class="text-cb-secondary-950">Active</option>
+						<option :value="false" class="text-cb-secondary-950">Inactive</option>
 					</select>
 				</div>
 			</div>
@@ -263,46 +376,72 @@
 				<div v-if="stylesList" class="flex flex-col gap-1">
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="Styles" />
-						<button
-							class="w-fit rounded bg-primary px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
-							@click="showModalCreateStyle = true"
+						<UModal
+							:ui="{
+								overlay: 'bg-cb-quinary-950/75',
+								content: 'ring-cb-quinary-950',
+							}"
 						>
-							Create New Style
-						</button>
+							<UButton
+								label="Create New Style"
+								variant="soft"
+								class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
+							/>
+
+							<template #content>
+								<ModalCreateStyleTag :style-fetch="stylesList" />
+							</template>
+						</UModal>
 					</div>
-					<VueMultiselect
+					<UInputMenu
 						v-model="artistStyles"
-						label="name"
-						track-by="name"
-						placeholder="Add a style"
-						:options="stylesList"
-						:multiple="true"
-						:close-on-select="false"
-						:clear-on-select="false"
-						:preserve-search="false"
+						:items="stylesForMenu"
+						by="id"
+						multiple
+						placeholder="Select styles"
+						searchable
+						searchable-placeholder="Search a style..."
+						class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+						:ui="{
+							content: 'bg-cb-quaternary-950',
+							item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
+						}"
 					/>
 				</div>
 				<!-- General Tags -->
 				<div v-if="tagsList" class="flex flex-col gap-1">
 					<div class="flex justify-between gap-3">
 						<ComebackLabel label="General Tags" />
-						<button
-							class="w-fit rounded bg-primary px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
-							@click="showModalCreateTag = true"
+						<UModal
+							:ui="{
+								overlay: 'bg-cb-quinary-950/75',
+								content: 'ring-cb-quinary-950',
+							}"
 						>
-							Create New Tag
-						</button>
+							<UButton
+								label="Create New Tag"
+								variant="soft"
+								class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
+							/>
+
+							<template #content>
+								<ModalCreateTag :general-tags="tagsList" />
+							</template>
+						</UModal>
 					</div>
-					<VueMultiselect
+					<UInputMenu
 						v-model="artistTags"
-						label="name"
-						track-by="name"
-						placeholder="Add a tag"
-						:options="tagsList"
-						:multiple="true"
-						:close-on-select="false"
-						:clear-on-select="false"
-						:preserve-search="false"
+						:items="tagsForMenu"
+						by="id"
+						multiple
+						placeholder="Select tags"
+						searchable
+						searchable-placeholder="Search a tag..."
+						class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+						:ui="{
+							content: 'bg-cb-quaternary-950',
+							item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
+						}"
 					/>
 				</div>
 			</div>
@@ -312,7 +451,7 @@
 				<textarea
 					v-model="artistDescription"
 					placeholder="Description"
-					class="min-h-full w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:bg-tertiary focus:p-1.5 focus:text-secondary focus:outline-none"
+					class="focus:bg-cb-tertiary-200 focus:text-cb-secondary-950 min-h-full w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:p-1.5 focus:outline-none"
 					@input="adjustTextarea($event)"
 				/>
 			</div>
@@ -320,48 +459,86 @@
 			<div v-if="groupList" class="flex flex-col gap-1">
 				<div class="flex justify-between gap-3">
 					<ComebackLabel label="Group" />
-					<button
+					<UModal
 						v-if="isAdminStore"
-						class="w-fit rounded bg-primary px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
-						@click="showModalCreateArtist = true"
+						:ui="{
+							overlay: 'bg-cb-quinary-950/75',
+							content: 'ring-cb-quinary-950',
+						}"
 					>
-						Create New Artist
-					</button>
+						<UButton
+							label="Create New Artist"
+							variant="soft"
+							class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
+						/>
+
+						<template #content>
+							<ModalCreateArtist
+								:styles-list="stylesList"
+								:tags-list="tagsList"
+								:group-list="groupList"
+								:members-list="artistsList"
+								@close-modal="closeModalCreateArtist"
+							/>
+						</template>
+					</UModal>
 				</div>
-				<VueMultiselect
+				<UInputMenu
 					v-model="artistGroups"
-					label="name"
-					track-by="name"
-					:options="groupList"
+					:items="groupsForMenu"
+					by="id"
+					multiple
 					placeholder="Search a group"
-					:multiple="true"
-					:close-on-select="false"
-					:clear-on-select="false"
-					:preserve-search="false"
+					searchable
+					searchable-placeholder="Search a group..."
+					class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+					:ui="{
+						content: 'bg-cb-quaternary-950',
+						item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
+					}"
 				/>
 			</div>
 			<!-- Members -->
-			<div v-if="artistsList && artistType != 'SOLO'" class="flex flex-col gap-1">
+			<div v-if="artistsList && artistType == 'GROUP'" class="flex flex-col gap-1">
 				<div class="flex justify-between gap-3">
 					<ComebackLabel label="Members" />
-					<button
+					<UModal
 						v-if="isAdminStore"
-						class="w-fit rounded bg-primary px-2 py-1 text-xs font-semibold uppercase hover:bg-red-900"
-						@click="showModalCreateArtist = true"
+						:ui="{
+							overlay: 'bg-cb-quinary-950/75',
+							content: 'ring-cb-quinary-950',
+						}"
 					>
-						Create New Artist
-					</button>
+						<UButton
+							label="Create New Artist"
+							variant="soft"
+							class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
+						/>
+
+						<template #content>
+							<ModalCreateArtist
+								:styles-list="stylesList"
+								:tags-list="tagsList"
+								:group-list="groupList"
+								:members-list="artistsList"
+								@close-modal="closeModalCreateArtist"
+							/>
+						</template>
+					</UModal>
 				</div>
-				<VueMultiselect
+				<UInputMenu
 					v-model="artistMembers"
-					label="name"
-					track-by="name"
-					:options="artistsList"
+					:items="membersForMenu"
+					by="id"
+					multiple
 					placeholder="Search a member"
-					:multiple="true"
-					:close-on-select="false"
-					:clear-on-select="false"
-					:preserve-search="false"
+					searchable
+					searchable-placeholder="Search a member..."
+					class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+					:ui="{
+						content: 'bg-cb-quaternary-950',
+						item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
+					}"
 				/>
 			</div>
 			<!-- Platforms & Socials -->
@@ -374,12 +551,12 @@
 						:key="index + '_platform'"
 						class="flex w-full gap-1"
 					>
-						<div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
+						<div class="bg-cb-quinary-900 w-full space-y-3 rounded p-2 text-xs">
 							<input
 								type="text"
 								:value="platform.name"
 								placeholder="Platform's Name"
-								class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
 									(e: Event) =>
 										(artistPlatformList[index].name = (
@@ -391,7 +568,7 @@
 								type="text"
 								:value="platform.link"
 								placeholder="Platform's Link"
-								class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
 									(e: Event) =>
 										(artistPlatformList[index].link = (
@@ -401,14 +578,14 @@
 							/>
 						</div>
 						<button
-							class="rounded bg-primary p-5 text-xs hover:bg-red-900"
+							class="bg-cb-primary-900 rounded p-5 text-xs hover:bg-red-900"
 							@click="artistPlatformList.splice(artistPlatformList.indexOf(platform), 1)"
 						>
 							Delete
 						</button>
 					</div>
 					<button
-						class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
+						class="bg-cb-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
 						@click="artistPlatformList.push({ name: '', link: '' })"
 					>
 						Add Platforms
@@ -422,12 +599,12 @@
 						:key="index + '_social'"
 						class="flex w-full gap-2"
 					>
-						<div class="w-full space-y-3 rounded bg-quinary p-2 text-xs">
+						<div class="bg-cb-quinary-900 w-full space-y-3 rounded p-2 text-xs">
 							<input
 								type="text"
 								:value="social.name"
 								placeholder="Social's Name"
-								class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
 									(e: Event) =>
 										(artistSocialList[index].name =
@@ -438,7 +615,7 @@
 								type="text"
 								:value="social.link"
 								placeholder="Social's Link"
-								class="w-full appearance-none border-b bg-transparent outline-none transition-all duration-150 ease-in-out"
+								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
 									(e: Event) =>
 										(artistSocialList[index].link =
@@ -447,14 +624,14 @@
 							/>
 						</div>
 						<button
-							class="rounded bg-primary p-5 text-xs hover:bg-red-900"
+							class="bg-cb-primary-900 rounded p-5 text-xs hover:bg-red-900"
 							@click="artistSocialList.splice(artistSocialList.indexOf(social), 1)"
 						>
 							Delete
 						</button>
 					</div>
 					<button
-						class="w-full rounded bg-primary p-2 text-xs font-semibold uppercase hover:bg-red-900"
+						class="bg-cb-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
 						@click="artistSocialList.push({ name: '', link: '' })"
 					>
 						Add Socials
@@ -466,65 +643,11 @@
 		<div class="border-t border-zinc-700 pt-3">
 			<button
 				:disabled="isUploadingEdit"
-				class="w-full rounded bg-primary py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+				class="bg-cb-primary-900 w-full rounded py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
 				@click="creationArtist"
 			>
 				{{ isUploadingEdit ? 'Loading' : 'Saves' }}
 			</button>
 		</div>
-
-		<Modal
-			v-model="showModalCreateArtist"
-			title="Create Artist"
-			wrapper-class="modal-wrapper"
-			:modal-class="`modal-lg`"
-			:modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-			:in-class="`animate__bounceIn`"
-			:out-class="`animate__bounceOut`"
-			bg-class="animate__animated"
-			:bg-in-class="`animate__fadeInUp`"
-			:bg-out-class="`animate__fadeOutDown`"
-		>
-			<ModalCreateArtist
-				:styles-list="stylesList"
-				:tags-list="tagsList"
-				:group-list="groupList"
-				:members-list="artistsList"
-				@close-modal="closeModalCreateArtist"
-			/>
-		</Modal>
-
-		<Modal
-			v-model="showModalCreateStyle"
-			title="Create Style"
-			wrapper-class="modal-wrapper"
-			:modal-class="`modal-lg`"
-			:modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-			:in-class="`animate__bounceIn`"
-			:out-class="`animate__bounceOut`"
-			bg-class="animate__animated"
-			:bg-in-class="`animate__fadeInUp`"
-			:bg-out-class="`animate__fadeOutDown`"
-		>
-			<ModalCreateStyleTag
-				:style-fetch="stylesList"
-				@close-modal="closeModalCreateStyle"
-			/>
-		</Modal>
-
-		<Modal
-			v-model="showModalCreateTag"
-			title="Create Tag"
-			wrapper-class="modal-wrapper"
-			:modal-class="`modal-lg`"
-			:modal-style="{ background: '#1F1D1D', 'border-radius': '0.25rem', color: 'white' }"
-			:in-class="`animate__bounceIn`"
-			:out-class="`animate__bounceOut`"
-			bg-class="animate__animated"
-			:bg-in-class="`animate__fadeInUp`"
-			:bg-out-class="`animate__fadeOutDown`"
-		>
-			<ModalCreateTag :general-tags="tagsList" @close-modal="closeModalCreateTag" />
-		</Modal>
 	</div>
 </template>

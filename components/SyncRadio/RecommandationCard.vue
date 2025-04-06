@@ -39,40 +39,40 @@
 			<div class="max-w-[60%] flex-grow space-y-2">
 				<div class="relative h-[14px]">
 					<p
-						class="text-sm font-semibold truncate hover:absolute hover:z-10 hover:overflow-auto hover:bg-quinary"
+						class="hover:bg-cb-quinary-900 truncate text-sm font-semibold hover:absolute hover:z-10 hover:overflow-auto"
 					>
 						{{ musicName }}
 					</p>
 				</div>
 				<div class="flex gap-1 text-xs">
 					<p class="truncate">{{ musicArtists }}</p>
-					<p v-if="hasMv" class="px-1 font-semibold rounded bg-primary">MV</p>
+					<p v-if="hasMv" class="bg-cb-primary-900 rounded px-1 font-semibold">MV</p>
 				</div>
 			</div>
 			<div class="space-x-2">
 				<button
-					class="p-2 transition-all duration-300 ease-in-out rounded-lg bg-quaternary hover:bg-primary"
+					class="bg-cb-quaternary-950 hover:bg-cb-primary-900 rounded-lg p-2 transition-all duration-300 ease-in-out"
 					@click="reloadRandomMusic"
 				>
-					<IconReload class="w-4 h-4" />
+					<IconReload class="h-4 w-4" />
 				</button>
 				<button
 					v-if="isAdminRoom"
-					class="p-2 transition-all duration-300 ease-in-out rounded-lg bg-quaternary hover:bg-primary"
+					class="bg-cb-quaternary-950 hover:bg-cb-primary-900 rounded-lg p-2 transition-all duration-300 ease-in-out"
 					@click="addInPlaylist"
 				>
-					<IconPlus class="w-4 h-4" />
+					<IconPlus class="h-4 w-4" />
 				</button>
 				<!-- <button
 					v-else
 					disabled
-					class="p-2 transition-all duration-300 ease-in-out rounded-lg bg-quaternary hover:bg-primary disabled:bg-secondary/30 disabled:text-tertiary/20 disabled:hover:bg-secondary/30"
+					class="p-2 transition-all duration-300 ease-in-out rounded-lg bg-cb-quaternary-950 hover:bg-cb-primary-900 disabled:bg-cb-secondary-950/30 disabled:text-cb-tertiary-200/20 disabled:hover:bg-cb-secondary-950/30"
 					@click="sendMusic"
 				>
 					<IconSend class="w-4 h-4" />
 				</button> -->
 			</div>
 		</div>
-		<SkeletonDefault v-else class="h-10 my-2 rounded-lg" />
+		<SkeletonDefault v-else class="my-2 h-10 rounded-lg" />
 	</div>
 </template>

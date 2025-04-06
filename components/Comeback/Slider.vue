@@ -1,7 +1,7 @@
 <template>
 	<div class="relative h-full w-full overflow-hidden">
 		<div
-			class="absolute inset-0 z-10 bg-quinary transition-all duration-500 ease-in-out"
+			class="bg-cb-quinary-900 absolute inset-0 z-10 transition-all duration-500 ease-in-out"
 			:class="imageLoaded ? 'opacity-0' : 'opacity-100'"
 		></div>
 		<NuxtImg
@@ -13,7 +13,7 @@
 		/>
 		<NuxtLink
 			:to="`/artist/${id}`"
-			class="absolute inset-0 z-50 flex flex-col items-start justify-end bg-secondary/30 p-5 sm:items-center sm:justify-center"
+			class="bg-cb-secondary-950/30 absolute inset-0 z-50 flex flex-col items-start justify-end p-5 sm:items-center sm:justify-center"
 		>
 			<p class="text-3xl font-bold lg:text-5xl xl:text-7xl 2xl:text-9xl">
 				{{ name }}

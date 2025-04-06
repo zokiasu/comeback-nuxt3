@@ -205,21 +205,27 @@
 			:allow="'autoplay; encrypted-media'"
 			:sandbox="'allow-same-origin allow-scripts allow-presentation'"
 		></div>
-		<div class="relative flex items-center justify-between w-full px-5 py-3 bg-secondary">
-			<div class="flex items-center w-full space-x-2 sm:w-fit">
-				<button class="hover:text-primary" @click="seek(-10)">
+		<div
+			class="bg-cb-secondary-950 relative flex w-full items-center justify-between px-5 py-3"
+		>
+			<div class="flex w-full items-center space-x-2 sm:w-fit">
+				<button class="hover:text-cb-primary-900" @click="seek(-10)">
 					<IconBackward10 class="h-7 w-7" />
 				</button>
-				<button v-if="isPlaying" class="hover:text-primary" @click="togglePlayPause">
+				<button
+					v-if="isPlaying"
+					class="hover:text-cb-primary-900"
+					@click="togglePlayPause"
+				>
 					<IconPause class="h-7 w-7" />
 				</button>
-				<button v-else class="hover:text-primary" @click="togglePlayPause">
+				<button v-else class="hover:text-cb-primary-900" @click="togglePlayPause">
 					<IconPlay class="h-7 w-7" />
 				</button>
-				<button class="hover:text-primary" @click="seek(10)">
+				<button class="hover:text-cb-primary-900" @click="seek(10)">
 					<IconForward10 class="h-7 w-7" />
 				</button>
-				<div class="items-center hidden gap-1 pl-5 text-xs md:flex">
+				<div class="hidden items-center gap-1 pl-5 text-xs md:flex">
 					<p>{{ convertDuration(currentTime) }}</p>
 					<p>/</p>
 					<p>{{ convertDuration(duration) }}</p>
@@ -230,9 +236,9 @@
 				<p class="text-xs">{{ musicNamePlaying }}</p>
 			</div>
 			<div v-else class="w-full sm:w-fit">
-				<p class="font-bold text-primary">Video is restricted or unavailable.</p>
+				<p class="text-cb-primary-900 font-bold">Video is restricted or unavailable.</p>
 			</div>
-			<div class="items-center hidden gap-2 sm:flex">
+			<div class="hidden items-center gap-2 sm:flex">
 				<!-- <button @click="displayVideo" class="p-1 bg-red-500 rounded aspect-square">
           D
         </button> -->
@@ -255,11 +261,11 @@
 				type="range"
 				min="0"
 				:max="duration"
-				class="absolute left-0 w-full h-1 overflow-hidden cursor-pointer -top-1"
+				class="absolute -top-1 left-0 h-1 w-full cursor-pointer overflow-hidden"
 				@input="seekToTime"
 			/>
 			<button
-				class="absolute -top-6 left-2 rounded-t-lg bg-primary px-3 py-0.5 text-xs font-semibold uppercase"
+				class="bg-cb-primary-900 absolute -top-6 left-2 rounded-t-lg px-3 py-0.5 text-xs font-semibold uppercase"
 				@click="closeYTPlayer"
 			>
 				Close

@@ -48,13 +48,13 @@
 			:placeholder="placeholder"
 			:value="modelValue?.toString()"
 			:disabled="disabled"
-			class="appearance-none rounded border border-transparent bg-quaternary px-2 py-1.5 outline-none transition-all duration-150 ease-in-out focus:rounded focus:border-primary"
+			class="bg-cb-quaternary-950 focus:border-cb-primary-900 appearance-none rounded border border-transparent px-2 py-1.5 transition-all duration-150 ease-in-out outline-none focus:rounded"
 			:class="{ 'border-zinc-500 text-zinc-500': disabled }"
 			@input="updateValue($event)"
 		/>
 		<button
 			v-if="modelValue && !disabled"
-			class="absolute bottom-3 right-2"
+			class="absolute right-2 bottom-3"
 			@click="clear"
 		>
 			<IconClose class="h-4 w-4" />

@@ -1,14 +1,12 @@
 <script setup lang="ts">
-	import * as Mdl from '@kouts/vue-modal'
-	import VueDatePicker from '@vuepic/vue-datepicker'
-	import { useToast } from 'vue-toastification'
+	import { CalendarDate, DateFormatter } from '@internationalized/date'
+
 	import { useUserStore } from '@/stores/user'
 	import { type Release } from '@/types/supabase/release'
 	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
 	import { useSupabaseMusic } from '~/composables/Supabase/useSupabaseMusic'
 	import { type Music } from '@/types/supabase/music'
 
-	const { Modal } = Mdl
 	const { getReleaseById, getSuggestedReleases, updateRelease } = useSupabaseRelease()
 	const { updateMusic } = useSupabaseMusic()
 	const { isLoginStore } = useUserStore()
@@ -21,13 +19,29 @@
 
 	const showModal = ref<boolean>(false)
 	const showModalEdit = ref<boolean>(false)
-	const dateToDateFormat = ref<Date | null>(null)
 
 	const release = ref<Release | null>(null)
 	const suggestedReleases = ref<Release[]>([])
 	const imageLoaded = ref<boolean>(false)
 	const isLoading = ref<boolean>(true)
 	const musicList = ref<Partial<Music>[]>([])
+
+	const parseToCalendarDate = (
+		dateString: string | null | undefined,
+	): CalendarDate | null => {
+		if (!dateString) return null
+		try {
+			const date = new Date(dateString)
+			if (isNaN(date.getTime())) return null
+			const year = date.getUTCFullYear()
+			const month = date.getUTCMonth() + 1
+			const day = date.getUTCDate()
+			return new CalendarDate(year, month, day)
+		} catch (e) {
+			console.error('Failed to parse date string:', dateString, e)
+			return null
+		}
+	}
 
 	const updateReleaseFunction = async (
 		releaseId: string,
@@ -69,15 +83,21 @@
 			// Attendre que toutes les mises à jour soient terminées
 			await Promise.all(updatePromises)
 				.then(() => {
-					toast.info('Release updated')
+					toast.add({ color: 'info', title: 'Release updated' })
 					showModalEdit.value = false
 				})
 				.catch(() => {
-					toast.error('Une erreur est survenue lors de la mise à jour')
+					toast.add({
+						color: 'error',
+						title: 'Une erreur est survenue lors de la mise à jour',
+					})
 				})
 		} catch (error) {
 			console.error('Error updating release:', error)
-			toast.error('Une erreur est survenue lors de la mise à jour')
+			toast.add({
+				color: 'error',
+				title: 'Une erreur est survenue lors de la mise à jour',
+			})
 		}
 	}
 
@@ -159,10 +179,10 @@
 		<div v-if="isLoading" class="mx-auto space-y-12">
 			<section class="space-y-2">
 				<SkeletonDefault class="min-h-[20rem] w-full lg:max-h-[30rem] lg:min-h-[30rem]" />
-				<SkeletonDefault class="w-full h-3 rounded-full" />
-				<SkeletonDefault class="w-full h-3 rounded-full" />
-				<SkeletonDefault class="w-3/4 h-3 rounded-full" />
-				<SkeletonDefault class="w-2/4 h-3 rounded-full" />
+				<SkeletonDefault class="h-3 w-full rounded-full" />
+				<SkeletonDefault class="h-3 w-full rounded-full" />
+				<SkeletonDefault class="h-3 w-3/4 rounded-full" />
+				<SkeletonDefault class="h-3 w-2/4 rounded-full" />
 			</section>
 		</div>
 
@@ -173,7 +193,7 @@
 				<div class="relative h-fit min-h-[20rem] lg:max-h-[30rem] lg:min-h-[30rem]">
 					<div
 						class="absolute inset-0 min-h-[20rem] w-full transition-all duration-700 ease-in-out lg:max-h-[30rem] lg:min-h-[30rem]"
-						:class="imageLoaded ? 'bg-black opacity-30' : 'bg-primary opacity-100'"
+						:class="imageLoaded ? 'bg-black opacity-30' : 'bg-cb-primary-900 opacity-100'"
 					/>
 					<NuxtImg
 						v-if="release.image"
@@ -187,7 +207,7 @@
 				</div>
 				<!-- Header Data-->
 				<div
-					class="z-10 flex flex-col justify-end p-5 space-y-3 transition-all duration-300 ease-in-out md:absolute md:inset-0 md:min-h-full md:justify-center md:bg-secondary/50"
+					class="md:bg-cb-secondary-950/50 z-10 flex flex-col justify-end space-y-3 p-5 transition-all duration-300 ease-in-out md:absolute md:inset-0 md:min-h-full md:justify-center"
 				>
 					<div class="container mx-auto flex items-center gap-5 space-y-2.5 lg:items-end">
 						<NuxtImg
@@ -196,11 +216,11 @@
 							preload
 							:alt="release.name"
 							:src="release.image"
-							class="hidden aspect-square max-w-[12rem] rounded bg-primary md:block lg:max-w-[20rem]"
+							class="bg-cb-primary-900 hidden aspect-square max-w-[12rem] rounded md:block lg:max-w-[20rem]"
 						/>
 						<SkeletonDefault
 							v-else
-							class="hidden aspect-square min-w-[12rem] max-w-[12rem] rounded md:block lg:min-w-[20rem] lg:max-w-[20rem]"
+							class="hidden aspect-square max-w-[12rem] min-w-[12rem] rounded md:block lg:max-w-[20rem] lg:min-w-[20rem]"
 						/>
 						<div class="mt-auto space-y-3">
 							<div class="space-y-2">
@@ -210,7 +230,7 @@
 								<div v-if="release.artists" class="flex items-center gap-2">
 									<NuxtLink
 										:to="`/artist/${release.artists[0].id}`"
-										class="flex items-center gap-2 rounded-full transition-all duration-300 ease-in-out hover:bg-secondary hover:px-3 hover:py-0.5"
+										class="hover:bg-cb-secondary-950 flex items-center gap-2 rounded-full transition-all duration-300 ease-in-out hover:px-3 hover:py-0.5"
 									>
 										<p class="text-sm font-semibold">
 											{{ release.artists[0].name }}
@@ -221,19 +241,100 @@
 									<p>-</p>
 									<p>{{ formatDate(release.date) }}</p>
 								</div>
-								<button
-									class="px-2 py-1 text-sm rounded bg-quaternary hover:bg-tertiary/10"
+								<!-- <button
+									class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/10 rounded px-2 py-1 text-sm"
 									@click="editRelease"
 								>
 									Edit
-								</button>
+								</button> -->
+								<UModal
+									:ui="{
+										overlay: 'bg-cb-quinary-950/75',
+										content: 'ring-cb-quinary-950',
+									}"
+								>
+									<UButton
+										label="Edit Release"
+										variant="soft"
+										class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
+									/>
+
+									<template #content>
+										<div class="space-y-3">
+											<ComebackInput v-model="release.name" label="Name" />
+
+											<div class="grid grid-cols-2 gap-3">
+												<div class="grid grid-cols-1 gap-1">
+													<ComebackLabel label="Type" />
+													<select
+														v-model="release.type"
+														class="bg-cb-quaternary-950 focus:border-cb-primary-900 rounded border border-transparent px-2 py-1.5 transition-all duration-150 ease-in-out hover:cursor-pointer focus:outline-none"
+													>
+														<option value="ALBUM">ALBUM</option>
+														<option value="EP">EP</option>
+														<option value="SINGLE">SINGLE</option>
+													</select>
+												</div>
+												<ComebackInput v-model="release.year" label="Year" />
+											</div>
+
+											<div class="flex flex-col gap-1">
+												<ComebackLabel label="Date" />
+												<UCalendar
+													class="bg-cb-quinary-900 rounded p-1"
+													:model-value="parseToCalendarDate(release.date)"
+													:min-date="new Date(1900, 0, 1)"
+													@update:model-value="
+														(value) => {
+															if (release) {
+																release.date = value ? value.toString() : ''
+															}
+														}
+													"
+												/>
+											</div>
+
+											<div class="flex flex-col gap-1">
+												<ComebackLabel label="Tracklist" />
+												<div class="space-y-2">
+													<div
+														v-for="music in release.musics"
+														:key="music.id_youtube_music"
+														class="bg-cb-quinary-900 space-y-1 rounded py-1 pr-1 pl-2"
+													>
+														<div class="flex w-full items-center justify-between gap-2">
+															<p>{{ music.name }}</p>
+															<div
+																class="bg-cb-quaternary-950 flex w-fit items-center gap-2 rounded px-2 py-1 text-xs"
+															>
+																<label class="whitespace-nowrap">Has MV</label>
+																<input v-model="music.ismv" type="checkbox" />
+															</div>
+														</div>
+														<ComebackInput
+															v-if="music.ismv"
+															v-model="music.id_youtube_music"
+														/>
+													</div>
+												</div>
+											</div>
+
+											<button
+												class="bg-cb-primary-900 w-full rounded py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+												@click="updateReleaseFunction(release.id, release)"
+											>
+												<p>Update Release</p>
+											</button>
+										</div>
+									</template>
+								</UModal>
 							</div>
 						</div>
 					</div>
 				</div>
 			</section>
 
-			<section class="container p-5 py-5 mx-auto space-y-12 md:px-10 xl:px-0">
+			<section class="container mx-auto space-y-12 p-5 py-5 md:px-10 xl:px-0">
 				<!-- Musics -->
 				<section v-if="release.musics?.length && release.artists" class="space-y-2">
 					<CardDefault :name="`Tracks (${release.musics?.length})`">
@@ -248,7 +349,7 @@
 								:has-mv="song.ismv"
 								:music-image="song.thumbnails?.[2]?.url || ''"
 								:duration="song.duration || 0"
-								class="w-full bg-quinary"
+								class="bg-cb-quinary-900 w-full"
 							/>
 						</transition-group>
 					</CardDefault>
@@ -274,89 +375,6 @@
 					</CardDefault>
 				</section>
 			</section>
-
-			<Modal
-				v-model="showModalEdit"
-				title="Edit Release"
-				wrapper-class="animate__animated modal-wrapper"
-				:modal-style="{
-					background: '#1F1D1D',
-					'border-radius': '0.25rem',
-					color: 'white',
-				}"
-				:in-class="`animate__fadeInDown`"
-				:out-class="`animate__bounceOut`"
-				bg-class="animate__animated"
-				:bg-in-class="`animate__fadeInUp`"
-				:bg-out-class="`animate__fadeOutDown`"
-			>
-				<div class="space-y-3">
-					<ComebackInput v-model="release.name" label="Name" />
-
-					<div class="grid grid-cols-2 gap-3">
-						<ComebackInput
-							:value="release.artists?.[0]?.name || ''"
-							label="Artist Name"
-							disabled
-						/>
-
-						<div class="grid grid-cols-1 gap-1">
-							<ComebackLabel label="Type" />
-							<select
-								v-model="release.type"
-								class="rounded border border-transparent bg-quaternary px-2 py-1.5 transition-all duration-150 ease-in-out hover:cursor-pointer focus:border-primary focus:outline-none"
-							>
-								<option value="ALBUM">ALBUM</option>
-								<option value="EP">EP</option>
-								<option value="SINGLE">SINGLE</option>
-							</select>
-						</div>
-					</div>
-
-					<div class="grid grid-cols-2 gap-3">
-						<ComebackInput v-model="release.year" label="Year" />
-						<div class="flex flex-col gap-1">
-							<ComebackLabel label="Date" />
-							<VueDatePicker
-								v-model="release.date"
-								placeholder="Select Date"
-								auto-apply
-								:enable-time-picker="false"
-								dark
-							/>
-						</div>
-					</div>
-
-					<div class="flex flex-col gap-1">
-						<ComebackLabel label="Tracklist" />
-						<div class="space-y-2">
-							<div
-								v-for="music in release.musics"
-								:key="music.id_youtube_music"
-								class="py-1 pl-2 pr-1 space-y-1 rounded bg-quinary"
-							>
-								<div class="flex items-center justify-between w-full gap-2">
-									<p>{{ music.name }}</p>
-									<div
-										class="flex items-center gap-2 px-2 py-1 text-xs rounded w-fit bg-quaternary"
-									>
-										<label class="whitespace-nowrap">Has MV</label>
-										<input type="checkbox" v-model="music.ismv" />
-									</div>
-								</div>
-								<ComebackInput v-if="music.ismv" v-model="music.id_youtube_music" />
-							</div>
-						</div>
-					</div>
-
-					<button
-						class="w-full py-2 font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary hover:scale-105 hover:bg-red-900"
-						@click="updateReleaseFunction(release.id, release)"
-					>
-						<p>Update Release</p>
-					</button>
-				</div>
-			</Modal>
 		</template>
 	</div>
 </template>

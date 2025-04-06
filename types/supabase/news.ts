@@ -1,6 +1,6 @@
 import type { Artist } from './artist'
-import type { BaseEntity } from '.'
 import type { User } from './user'
+import type { BaseEntity } from '.'
 
 export interface News extends BaseEntity {
 	message: string

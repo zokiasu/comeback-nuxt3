@@ -48,7 +48,7 @@
 	>
 		<section
 			v-if="artists"
-			class="h-full w-full shrink space-y-1 overflow-hidden bg-quinary p-2"
+			class="bg-cb-quinary-900 h-full w-full shrink space-y-1 overflow-hidden p-2"
 		>
 			<div class="flex flex-wrap gap-1">
 				<NuxtLink
@@ -67,12 +67,12 @@
 						/>
 					</div>
 					<h2
-						class="truncate text-xs font-semibold transition-all duration-300 ease-in-out group-hover:text-primary lg:text-sm"
+						class="group-hover:text-cb-primary-900 truncate text-xs font-semibold transition-all duration-300 ease-in-out lg:text-sm"
 					>
 						{{ artistObject.name }}
 						<span
 							v-if="artists.length > 1 && index != artists.length - 1"
-							class="group-hover:text-tertiary"
+							class="group-hover:text-cb-tertiary-200"
 						>
 							,
 						</span>
@@ -83,23 +83,23 @@
 		</section>
 
 		<section
-			class="-mt-0.5 flex min-w-[18%] items-center justify-center bg-quaternary px-3 py-1 text-center md:mt-0 md:py-0"
+			class="bg-cb-quaternary-950 -mt-0.5 flex min-w-[18%] items-center justify-center px-3 py-1 text-center md:mt-0 md:py-0"
 		>
 			<p
 				v-if="!isDatePassed(new Date(date)) && !isSameDate(new Date(date))"
-				class="my-auto whitespace-nowrap text-lg font-bold lg:text-xl"
+				class="my-auto text-lg font-bold whitespace-nowrap lg:text-xl"
 			>
 				D-{{ daysUntil(new Date(date)) }}
 			</p>
 			<p
 				v-if="isSameDate(new Date(date))"
-				class="my-auto whitespace-nowrap font-medium text-primary"
+				class="text-cb-primary-900 my-auto font-medium whitespace-nowrap"
 			>
 				Today
 			</p>
 			<p
 				v-if="!isSameDate(new Date(date)) && isDatePassed(new Date(date))"
-				class="my-auto whitespace-nowrap font-medium text-primary"
+				class="text-cb-primary-900 my-auto font-medium whitespace-nowrap"
 			>
 				Outed
 			</p>

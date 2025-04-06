@@ -1,8 +1,7 @@
-import { useToast } from 'vue-toastification'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { useSupabase } from './useSupabase'
 import type { QueryOptions, FilterOptions } from '~/types/supabase'
 import type { MusicStyle } from '~/types/supabase/music_style'
-import type { SupabaseClient } from '@supabase/supabase-js'
 
 export function useSupabaseMusicStyles() {
 	const { supabase } = useSupabase() as { supabase: SupabaseClient }
