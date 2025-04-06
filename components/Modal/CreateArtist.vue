@@ -1,89 +1,146 @@
 <script lang="ts" setup>
-	import VueMultiselect from 'vue-multiselect'
+	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
 
-	import { Timestamp } from 'firebase/firestore'
-	import { useFirebaseArtist } from '~/composables/useFirebaseArtist'
+	import type { Artist } from '~/types/supabase/artist'
+	import type { MusicStyle } from '~/types/supabase/music_style'
+	import type { GeneralTag } from '~/types/supabase/general_tag'
+	import type {
+		ArtistGender,
+		ArtistType,
+		ArtistPlatformLink,
+		ArtistSocialLink,
+	} from '~/types/supabase'
+
+	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
+
+	// --- Type Helper for Menu Items ---
+	type MenuItem<T> = T & { label: string }
 
 	const toast = useToast()
-	const { createArtist } = useFirebaseArtist()
+	const { createArtist } = useSupabaseArtist()
 
 	const { stylesList, tagsList, groupList, membersList } = defineProps({
 		stylesList: {
-			type: Array,
+			type: Array as PropType<MusicStyle[]>,
 			required: true,
 		},
 		tagsList: {
-			type: Array,
+			type: Array as PropType<GeneralTag[]>,
 			required: true,
 		},
 		groupList: {
-			type: Array,
+			type: Array as PropType<Artist[]>,
 			required: true,
 		},
 		membersList: {
-			type: Array,
+			type: Array as PropType<Artist[]>,
 			required: true,
 		},
 	})
 
 	const emit = defineEmits(['closeModal'])
 
-	const artist = ref({
-		id: '',
-		idYoutubeMusic: '',
+	const artist = ref<Partial<Artist>>({
 		name: '',
-		type: 'SOLO',
+		id_youtube_music: '',
+		type: 'SOLO' as ArtistType,
 		description: '',
 		image: 'https://i.ibb.co/wLhbFZx/Frame-255.png',
 		verified: false,
-		activeCareer: false,
-		platformList: [] as { name: string; link: string }[],
-		socialList: [] as { name: string; link: string }[],
+		active_career: true,
+		gender: 'UNKNOWN' as ArtistGender,
 		styles: [],
-		generalTags: [],
-		groups: [],
-		members: [],
-		createdAt: null as Timestamp | null,
-		updatedAt: null as Timestamp | null,
+		general_tags: [],
 	})
 
+	const platformList = ref<Omit<ArtistPlatformLink, 'id' | 'created_at' | 'artist_id'>[]>(
+		[],
+	)
+	const socialList = ref<Omit<ArtistSocialLink, 'id' | 'created_at' | 'artist_id'>[]>([])
+	const selectedGroups = ref<MenuItem<Omit<Artist, 'type'>>[]>([])
+	const selectedMembers = ref<MenuItem<Omit<Artist, 'type'>>[]>([])
+	const artistStyles = ref<MenuItem<MusicStyle>[]>([])
+	const artistTags = ref<MenuItem<GeneralTag>[]>([])
+
 	const isUploadingEdit = ref(false)
+
+	// --- Computed Properties for UInputMenu Items ---
+	const stylesForMenu = computed((): MenuItem<MusicStyle>[] => {
+		return stylesList.map(
+			(style): MenuItem<MusicStyle> => ({
+				...style,
+				label: style.name,
+			}),
+		)
+	})
+
+	const tagsForMenu = computed((): MenuItem<GeneralTag>[] => {
+		return tagsList.map(
+			(tag): MenuItem<GeneralTag> => ({
+				...tag,
+				label: tag.name,
+			}),
+		)
+	})
+
+	const groupsForMenu = computed(() => {
+		return groupList.map((artist): MenuItem<Omit<Artist, 'type'>> => {
+			const { type, ...rest } = artist
+			return {
+				...rest,
+				label: artist.name,
+			}
+		})
+	})
+
+	const membersForMenu = computed(() => {
+		return membersList.map((artist): MenuItem<Omit<Artist, 'type'>> => {
+			const { type, ...rest } = artist
+			return {
+				...rest,
+				label: artist.name,
+			}
+		})
+	})
 
 	const sendCreateArtist = async () => {
 		isUploadingEdit.value = true
 
 		if (artist.value.name === '') {
-			toast.error('Please fill the required fields')
+			toast.add({ title: 'Please fill the required fields', color: 'error' })
 			isUploadingEdit.value = false
 			return
 		}
 
-		const today = new Date()
-
-		today.setDate(today.getDate())
-		today.setHours(0, 0, 0, 0)
-
-		const todayTimestamp = Timestamp.fromDate(today)
-
-		artist.value.createdAt = todayTimestamp
-		artist.value.updatedAt = todayTimestamp
-		artist.value.verified = true
-
-		createArtist(artist.value)
-			.then((res) => {
-				if (res != null) {
-					toast.success('Artist created')
-					isUploadingEdit.value = false
-					emit('closeModal')
-				} else {
-					toast.error('Error: Artist not created')
-					isUploadingEdit.value = false
-				}
+		try {
+			await createArtist(
+				{
+					...artist.value,
+					styles: artistStyles.value.map((style) => style.name),
+					general_tags: artistTags.value.map((tag) => tag.name),
+				} as Omit<Artist, 'id' | 'created_at' | 'updated_at'>,
+				socialList.value,
+				platformList.value,
+				selectedGroups.value.map(({ label, ...rest }) => ({
+					...rest,
+					type: 'GROUP' as ArtistType,
+				})),
+				selectedMembers.value.map(({ label, ...rest }) => ({
+					...rest,
+					type: 'SOLO' as ArtistType,
+				})),
+			)
+			toast.add({ title: 'Artist created successfully', color: 'success' })
+			isUploadingEdit.value = false
+			emit('closeModal')
+		} catch (error: any) {
+			toast.add({
+				title: 'Error creating artist',
+				description: error.message,
+				color: 'error',
 			})
-			.catch((error) => {
-				toast.error('Error: ' + error)
-				isUploadingEdit.value = false
-			})
+			isUploadingEdit.value = false
+		}
 	}
 
 	const adjustTextarea = (event: Event) => {
@@ -99,7 +156,7 @@
 		<div class="flex flex-col gap-2">
 			<div class="flex items-end gap-2">
 				<ComebackLabel label="Image" />
-				<p class="text-quinary-900 text-sm italic">
+				<p class="text-sm italic text-quinary-900">
 					Picture will be automaticaly update based on Youtube Music
 				</p>
 			</div>
@@ -108,7 +165,7 @@
 		<div class="grid grid-cols-1 gap-5">
 			<ComebackInput v-model="artist.name" label="Name *" placeholder="Artist Name*" />
 			<ComebackInput
-				v-model="artist.idYoutubeMusic"
+				v-model="artist.id_youtube_music"
 				label="Id Youtube Music"
 				placeholder="ID Youtube Music"
 			/>
@@ -120,7 +177,7 @@
 				<ComebackLabel label="Type" />
 				<select
 					v-model="artist.type"
-					class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
+					class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
 				>
 					<option value="SOLO" class="text-secondary-950">SOLO</option>
 					<option value="GROUP" class="text-secondary-950">GROUP</option>
@@ -130,8 +187,8 @@
 			<div class="grid grid-cols-1 gap-1">
 				<ComebackLabel label="Active Career" />
 				<select
-					v-model="artist.activeCareer"
-					class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
+					v-model="artist.active_career"
+					class="bg-transparent border-b appearance-none hover:cursor-pointer focus:outline-none"
 				>
 					<option :value="true" class="text-secondary-950">Active</option>
 					<option :value="false" class="text-secondary-950">Inactive</option>
@@ -143,31 +200,27 @@
 			<!-- Styles -->
 			<div v-if="stylesList" class="flex flex-col gap-1">
 				<ComebackLabel label="Styles" />
-				<VueMultiselect
-					v-model="artist.styles"
-					label="name"
-					track-by="name"
-					placeholder="Add a style"
-					:options="stylesList"
-					:multiple="true"
-					:close-on-select="false"
-					:clear-on-select="false"
-					:preserve-search="false"
+				<UInputMenu
+					v-model="artistStyles"
+					:items="stylesForMenu"
+					by="id"
+					multiple
+					placeholder="Select styles"
+					searchable
+					searchable-placeholder="Search a style..."
 				/>
 			</div>
 			<!-- General Tags -->
 			<div v-if="tagsList" class="flex flex-col gap-1">
 				<ComebackLabel label="General Tags" />
-				<VueMultiselect
-					v-model="artist.generalTags"
-					label="name"
-					track-by="name"
-					placeholder="Add a tag"
-					:options="tagsList"
-					:multiple="true"
-					:close-on-select="false"
-					:clear-on-select="false"
-					:preserve-search="false"
+				<UInputMenu
+					v-model="artistTags"
+					:items="tagsForMenu"
+					by="id"
+					multiple
+					placeholder="Select tags"
+					searchable
+					searchable-placeholder="Search a tag..."
 				/>
 			</div>
 		</div>
@@ -184,31 +237,27 @@
 		<!-- Group -->
 		<div v-if="groupList" class="flex flex-col gap-1">
 			<ComebackLabel label="Group" />
-			<VueMultiselect
-				v-model="artist.groups"
-				label="name"
-				track-by="name"
-				:options="groupList"
-				placeholder="Search or add a group"
-				:multiple="true"
-				:close-on-select="false"
-				:clear-on-select="false"
-				:preserve-search="false"
+			<UInputMenu
+				v-model="selectedGroups"
+				:items="groupsForMenu"
+				by="id"
+				multiple
+				placeholder="Search a group"
+				searchable
+				searchable-placeholder="Search a group..."
 			/>
 		</div>
 		<!-- Members -->
-		<div v-if="membersList && artist.type != 'SOLO'" class="flex flex-col gap-1">
+		<div v-if="membersList && artist.type !== 'SOLO'" class="flex flex-col gap-1">
 			<ComebackLabel label="Members" />
-			<VueMultiselect
-				v-model="artist.members"
-				label="name"
-				track-by="name"
-				:options="membersList"
-				placeholder="Search or add a member"
-				:multiple="true"
-				:close-on-select="false"
-				:clear-on-select="false"
-				:preserve-search="false"
+			<UInputMenu
+				v-model="selectedMembers"
+				:items="membersForMenu"
+				by="id"
+				multiple
+				placeholder="Search a member"
+				searchable
+				searchable-placeholder="Search a member..."
 			/>
 		</div>
 		<!-- Platforms & Socials -->
@@ -217,36 +266,42 @@
 			<div class="w-full space-y-2">
 				<ComebackLabel label="Platforms" />
 				<div
-					v-for="(platform, index) in artist.platformList"
-					:key="platform"
+					v-for="(platform, index) in platformList"
+					:key="index"
 					class="flex w-full gap-1"
 				>
-					<div class="bg-quinary-900 w-full space-y-3 rounded p-2 text-xs">
+					<div class="w-full p-2 space-y-3 text-xs rounded bg-quinary-900">
 						<input
 							type="text"
 							:value="platform.name"
 							placeholder="Platform's Name"
-							class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
-							@input="artist.platformList[index].name = $event.target.value"
+							class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+							@input="
+								(e: Event) =>
+									(platformList[index].name = (e.target as HTMLInputElement).value)
+							"
 						/>
 						<input
 							type="text"
 							:value="platform.link"
 							placeholder="Platform's Link"
-							class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
-							@input="artist.platformList[index].link = $event.target.value"
+							class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+							@input="
+								(e: Event) =>
+									(platformList[index].link = (e.target as HTMLInputElement).value)
+							"
 						/>
 					</div>
 					<button
-						class="bg-primary-900 rounded p-1 text-xs hover:bg-red-900"
-						@click="artist.platformList.splice(artist.platformList.indexOf(platform), 1)"
+						class="p-1 text-xs rounded bg-primary-900 hover:bg-red-900"
+						@click="platformList.splice(index, 1)"
 					>
-						<IconDelete class="h-5 w-5" />
+						<IconDelete class="w-5 h-5" />
 					</button>
 				</div>
 				<button
-					class="bg-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
-					@click="artist.platformList.push({ name: '', link: '' })"
+					class="w-full p-2 text-xs font-semibold uppercase rounded bg-primary-900 hover:bg-red-900"
+					@click="platformList.push({ name: '', link: '' })"
 				>
 					Add Platforms
 				</button>
@@ -254,47 +309,49 @@
 			<!-- Socials -->
 			<div class="w-full space-y-2">
 				<ComebackLabel label="Socials" />
-				<div
-					v-for="(social, index) in artist.socialList"
-					:key="social"
-					class="flex w-full gap-2"
-				>
-					<div class="bg-quinary-900 w-full space-y-3 rounded p-2 text-xs">
+				<div v-for="(social, index) in socialList" :key="index" class="flex w-full gap-2">
+					<div class="w-full p-2 space-y-3 text-xs rounded bg-quinary-900">
 						<input
 							type="text"
 							:value="social.name"
 							placeholder="Social's Name"
-							class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
-							@input="artist.socialList[index].name = $event.target.value"
+							class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+							@input="
+								(e: Event) =>
+									(socialList[index].name = (e.target as HTMLInputElement).value)
+							"
 						/>
 						<input
 							type="text"
 							:value="social.link"
 							placeholder="Social's Link"
-							class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
-							@input="artist.socialList[index].link = $event.target.value"
+							class="w-full transition-all duration-150 ease-in-out bg-transparent border-b outline-none appearance-none"
+							@input="
+								(e: Event) =>
+									(socialList[index].link = (e.target as HTMLInputElement).value)
+							"
 						/>
 					</div>
 					<button
-						class="bg-primary-900 rounded p-1 text-xs hover:bg-red-900"
-						@click="artist.socialList.splice(artist.socialList.indexOf(social), 1)"
+						class="p-1 text-xs rounded bg-primary-900 hover:bg-red-900"
+						@click="socialList.splice(index, 1)"
 					>
-						<IconDelete class="h-5 w-5" />
+						<IconDelete class="w-5 h-5" />
 					</button>
 				</div>
 				<button
-					class="bg-primary-900 w-full rounded p-2 text-xs font-semibold uppercase hover:bg-red-900"
-					@click="artist.socialList.push({ name: '', link: '' })"
+					class="w-full p-2 text-xs font-semibold uppercase rounded bg-primary-900 hover:bg-red-900"
+					@click="socialList.push({ name: '', link: '' })"
 				>
 					Add Socials
 				</button>
 			</div>
 		</div>
 
-		<div class="border-t border-zinc-700 pt-3">
+		<div class="pt-3 border-t border-zinc-700">
 			<button
 				:disabled="isUploadingEdit"
-				class="bg-primary-900 w-full rounded py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+				class="w-full py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary-900 hover:scale-105 hover:bg-red-900"
 				@click="sendCreateArtist"
 			>
 				{{ isUploadingEdit ? 'Loading' : 'Saves' }}

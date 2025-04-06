@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import * as Mdl from '@kouts/vue-modal'
-	import VueDatePicker from '@vuepic/vue-datepicker'
+	import { CalendarDate, DateFormatter } from '@internationalized/date'
 
 	import { useUserStore } from '@/stores/user'
 	import { type Release } from '@/types/supabase/release'
@@ -21,13 +21,29 @@
 
 	const showModal = ref<boolean>(false)
 	const showModalEdit = ref<boolean>(false)
-	const dateToDateFormat = ref<Date | null>(null)
 
 	const release = ref<Release | null>(null)
 	const suggestedReleases = ref<Release[]>([])
 	const imageLoaded = ref<boolean>(false)
 	const isLoading = ref<boolean>(true)
 	const musicList = ref<Partial<Music>[]>([])
+
+	const parseToCalendarDate = (
+		dateString: string | null | undefined,
+	): CalendarDate | null => {
+		if (!dateString) return null
+		try {
+			const date = new Date(dateString)
+			if (isNaN(date.getTime())) return null
+			const year = date.getUTCFullYear()
+			const month = date.getUTCMonth() + 1
+			const day = date.getUTCDate()
+			return new CalendarDate(year, month, day)
+		} catch (e) {
+			console.error('Failed to parse date string:', dateString, e)
+			return null
+		}
+	}
 
 	const updateReleaseFunction = async (
 		releaseId: string,
@@ -69,15 +85,21 @@
 			// Attendre que toutes les mises à jour soient terminées
 			await Promise.all(updatePromises)
 				.then(() => {
-					toast.info('Release updated')
+					toast.add({ color: 'info', title: 'Release updated' })
 					showModalEdit.value = false
 				})
 				.catch(() => {
-					toast.error('Une erreur est survenue lors de la mise à jour')
+					toast.add({
+						color: 'error',
+						title: 'Une erreur est survenue lors de la mise à jour',
+					})
 				})
 		} catch (error) {
 			console.error('Error updating release:', error)
-			toast.error('Une erreur est survenue lors de la mise à jour')
+			toast.add({
+				color: 'error',
+				title: 'Une erreur est survenue lors de la mise à jour',
+			})
 		}
 	}
 
@@ -159,10 +181,10 @@
 		<div v-if="isLoading" class="mx-auto space-y-12">
 			<section class="space-y-2">
 				<SkeletonDefault class="min-h-[20rem] w-full lg:max-h-[30rem] lg:min-h-[30rem]" />
-				<SkeletonDefault class="h-3 w-full rounded-full" />
-				<SkeletonDefault class="h-3 w-full rounded-full" />
-				<SkeletonDefault class="h-3 w-3/4 rounded-full" />
-				<SkeletonDefault class="h-3 w-2/4 rounded-full" />
+				<SkeletonDefault class="w-full h-3 rounded-full" />
+				<SkeletonDefault class="w-full h-3 rounded-full" />
+				<SkeletonDefault class="w-3/4 h-3 rounded-full" />
+				<SkeletonDefault class="w-2/4 h-3 rounded-full" />
 			</section>
 		</div>
 
@@ -187,7 +209,7 @@
 				</div>
 				<!-- Header Data-->
 				<div
-					class="md:bg-secondary-950/50 z-10 flex flex-col justify-end space-y-3 p-5 transition-all duration-300 ease-in-out md:absolute md:inset-0 md:min-h-full md:justify-center"
+					class="z-10 flex flex-col justify-end p-5 space-y-3 transition-all duration-300 ease-in-out md:bg-secondary-950/50 md:absolute md:inset-0 md:min-h-full md:justify-center"
 				>
 					<div class="container mx-auto flex items-center gap-5 space-y-2.5 lg:items-end">
 						<NuxtImg
@@ -222,7 +244,7 @@
 									<p>{{ formatDate(release.date) }}</p>
 								</div>
 								<button
-									class="bg-quaternary-950 hover:bg-tertiary-200/10 rounded px-2 py-1 text-sm"
+									class="px-2 py-1 text-sm rounded bg-quaternary-950 hover:bg-tertiary-200/10"
 									@click="editRelease"
 								>
 									Edit
@@ -233,7 +255,7 @@
 				</div>
 			</section>
 
-			<section class="container mx-auto space-y-12 p-5 py-5 md:px-10 xl:px-0">
+			<section class="container p-5 py-5 mx-auto space-y-12 md:px-10 xl:px-0">
 				<!-- Musics -->
 				<section v-if="release.musics?.length && release.artists" class="space-y-2">
 					<CardDefault :name="`Tracks (${release.musics?.length})`">
@@ -248,7 +270,7 @@
 								:has-mv="song.ismv"
 								:music-image="song.thumbnails?.[2]?.url || ''"
 								:duration="song.duration || 0"
-								class="bg-quinary-900 w-full"
+								class="w-full bg-quinary-900"
 							/>
 						</transition-group>
 					</CardDefault>
@@ -294,12 +316,6 @@
 					<ComebackInput v-model="release.name" label="Name" />
 
 					<div class="grid grid-cols-2 gap-3">
-						<ComebackInput
-							:value="release.artists?.[0]?.name || ''"
-							label="Artist Name"
-							disabled
-						/>
-
 						<div class="grid grid-cols-1 gap-1">
 							<ComebackLabel label="Type" />
 							<select
@@ -311,20 +327,23 @@
 								<option value="SINGLE">SINGLE</option>
 							</select>
 						</div>
+						<ComebackInput v-model="release.year" label="Year" />
 					</div>
 
-					<div class="grid grid-cols-2 gap-3">
-						<ComebackInput v-model="release.year" label="Year" />
-						<div class="flex flex-col gap-1">
-							<ComebackLabel label="Date" />
-							<VueDatePicker
-								v-model="release.date"
-								placeholder="Select Date"
-								auto-apply
-								:enable-time-picker="false"
-								dark
-							/>
-						</div>
+					<div class="flex flex-col gap-1">
+						<ComebackLabel label="Date" />
+						<UCalendar
+							class="p-1 rounded bg-quinary-900"
+							:model-value="parseToCalendarDate(release.date)"
+							@update:model-value="
+								(value) => {
+									if (release) {
+										release.date = value ? value.toString() : ''
+									}
+								}
+							"
+							:min-date="new Date(1900, 0, 1)"
+						/>
 					</div>
 
 					<div class="flex flex-col gap-1">
@@ -333,12 +352,12 @@
 							<div
 								v-for="music in release.musics"
 								:key="music.id_youtube_music"
-								class="bg-quinary-900 space-y-1 rounded py-1 pr-1 pl-2"
+								class="py-1 pl-2 pr-1 space-y-1 rounded bg-quinary-900"
 							>
-								<div class="flex w-full items-center justify-between gap-2">
+								<div class="flex items-center justify-between w-full gap-2">
 									<p>{{ music.name }}</p>
 									<div
-										class="bg-quaternary-950 flex w-fit items-center gap-2 rounded px-2 py-1 text-xs"
+										class="flex items-center gap-2 px-2 py-1 text-xs rounded bg-quaternary-950 w-fit"
 									>
 										<label class="whitespace-nowrap">Has MV</label>
 										<input type="checkbox" v-model="music.ismv" />
@@ -350,7 +369,7 @@
 					</div>
 
 					<button
-						class="bg-primary-900 w-full rounded py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+						class="w-full py-2 font-semibold uppercase transition-all duration-300 ease-in-out rounded bg-primary-900 hover:scale-105 hover:bg-red-900"
 						@click="updateReleaseFunction(release.id, release)"
 					>
 						<p>Update Release</p>
