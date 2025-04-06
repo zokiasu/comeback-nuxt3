@@ -6,10 +6,6 @@ export default defineNuxtConfig({
 
 	css: ['~/assets/css/tailwind.css'],
 
-	ui: {
-		icons: ['heroicons', 'mdi'],
-	},
-
 	colorMode: {
 		classSuffix: '',
 	},
@@ -23,7 +19,7 @@ export default defineNuxtConfig({
 		},
 	},
 
-	ssr: false,
+	ssr: true,
 
 	nitro: {
 		preset: 'netlify',
@@ -156,7 +152,6 @@ export default defineNuxtConfig({
 		apiKey: process.env.ALGOLIA_API_KEY,
 		applicationId: process.env.ALGOLIA_APPLICATION_ID,
 		lite: true,
-		indexName: process.env.ALGOLIA_INDEX_NAME,
 		instantSearch: {
 			theme: 'algolia',
 		},
