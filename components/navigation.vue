@@ -1,25 +1,14 @@
 <script setup lang="ts">
-	import type { PropType } from 'vue'
 	import { useUserStore } from '@/stores/user'
-	import type { Artist } from '~/types/artist'
 
 	const userStore = useUserStore()
 	const route = useRoute()
 
 	const navbar = ref<HTMLElement | null>(null)
 	const algolia = ref<HTMLElement | null>(null)
-	const showModal = ref<boolean>(false)
-	const showModalAlgolia = ref<boolean>(false)
 
-	const userDataStore = computed(() => userStore.userDataStore)
 	const isLoginStore = computed(() => userStore.isLoginStore)
 	const isAdminStore = computed(() => userStore.isAdminStore)
-	const profilePath = computed(() => {
-		if (!userDataStore.value || !userDataStore.value.id) {
-			return '/settings/profile'
-		}
-		return `/profile/${userDataStore.value.id}`
-	})
 
 	onMounted(async () => {
 		window.addEventListener('scroll', handleScroll)

@@ -6,11 +6,15 @@ export default defineNuxtConfig({
 
 	css: ['~/assets/css/tailwind.css'],
 
+	plugins: ['~/plugins/firebase.client.ts'],
+
+	ssr: true,
+
+	devtools: { enabled: true },
+
 	colorMode: {
 		classSuffix: '',
 	},
-
-	devtools: { enabled: true },
 
 	vite: {
 		plugins: [tailwindcss()],
@@ -18,8 +22,6 @@ export default defineNuxtConfig({
 			chunkSizeWarningLimit: 1600,
 		},
 	},
-
-	ssr: true,
 
 	nitro: {
 		preset: 'netlify',
@@ -47,8 +49,6 @@ export default defineNuxtConfig({
 			supabaseKey: process.env.SUPABASE_KEY,
 		},
 	},
-
-	plugins: ['~/plugins/firebase.client.ts'],
 
 	experimental: {
 		payloadExtraction: false,

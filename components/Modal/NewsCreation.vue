@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { CalendarDate, DateFormatter } from '@internationalized/date'
+	import { CalendarDate } from '@internationalized/date'
 
 	import debounce from 'lodash.debounce'
 	import algoliasearch from 'algoliasearch/lite'
@@ -20,7 +20,6 @@
 	const sendNews = ref<boolean>(false)
 	const searchArtist = ref<string>('')
 	const artistListSearched = ref<any[]>([])
-
 	const artistListSelected = ref<any[]>([])
 	const newsDate = ref<Date | null>(null)
 	const newsMessage = ref<string>('')

@@ -38,7 +38,7 @@
 		"@supabase/supabase-js": "^2.49.1",
 		"@tailwindcss/vite": "^4.1.2",
 		"animate.css": "^4.1.1",
-		"body-scroll-freezer": "^1.0.5",	
+		"body-scroll-freezer": "^1.0.5",
 		"firebase": "^11.1.0",
 		"firebase-admin": "^13.0.2",
 		"lodash": "^4.17.21",
