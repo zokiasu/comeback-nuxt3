@@ -225,8 +225,6 @@
 									<p>-</p>
 									<p>{{ formatDate(release.date) }}</p>
 								</div>
-								<!-- <button
-									class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/10 rounded px-2 py-1 text-sm"
 								<UModal
 									v-if="isAdminStore && isLoginStore"
 									:ui="{
