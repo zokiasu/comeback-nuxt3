@@ -1,14 +1,13 @@
 <script setup lang="ts">
 	import { useUserStore } from '@/stores/user'
+	import { storeToRefs } from 'pinia'
 
 	const userStore = useUserStore()
+	const { isLoginStore, isAdminStore } = storeToRefs(userStore)
 	const route = useRoute()
 
 	const navbar = ref<HTMLElement | null>(null)
 	const algolia = ref<HTMLElement | null>(null)
-
-	const isLoginStore = computed(() => userStore.isLoginStore)
-	const isAdminStore = computed(() => userStore.isAdminStore)
 
 	onMounted(async () => {
 		window.addEventListener('scroll', handleScroll)
@@ -99,6 +98,7 @@
 					</UModal>
 
 					<UModal
+						v-if="isLoginStore"
 						:ui="{
 							overlay: 'bg-cb-quinary-950/75',
 							content: 'ring-cb-quinary-950',

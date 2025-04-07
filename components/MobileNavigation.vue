@@ -1,12 +1,6 @@
 <script setup lang="ts">
-	import type { PropType } from 'vue'
-	import type { Artist } from '~/types/artist'
-
 	const isPlayingVideo = useIsPlayingVideo()
 	const userStore = useUserStore()
-
-	const showModal = ref(false)
-	const showModalAlgolia = ref(false)
 
 	const userDataStore = computed(() => userStore.userDataStore)
 	const isLoginStore = computed(() => userStore.isLoginStore)

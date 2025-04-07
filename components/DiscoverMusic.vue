@@ -47,7 +47,7 @@
 					<div class="space-y-1 text-left">
 						<NuxtLink
 							v-if="music.name"
-							:to="'/release/' + music.id"
+							:to="'/release/' + music.releases?.[0]?.id"
 							class="hover:text-cb-primary-900 font-semibold transition-all duration-300 ease-in-out lg:text-xl"
 						>
 							{{ music.name }}

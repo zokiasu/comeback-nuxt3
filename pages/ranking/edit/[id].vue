@@ -194,6 +194,7 @@
 <script lang="ts" setup>
 	import draggable from 'vuedraggable'
 	import { collection, getDocs, query, where } from 'firebase/firestore'
+	import { storeToRefs } from 'pinia'
 
 	import { useFirebaseRealtimeDatabase } from '~/composables/useFirebaseRealtimeDatabase'
 	import { useFirebaseUtils } from '~/composables/useFirebaseUtils'
@@ -202,7 +203,7 @@
 	const toast = useToast()
 	const route = useRoute()
 	const router = useRouter()
-	const { userDataStore, isLoginStore } = useUserStore()
+	const { userDataStore, isLoginStore } = storeToRefs(useUserStore())
 	const { $firestore: database } = useNuxtApp()
 	const { snapshotResultToArray } = useFirebaseUtils()
 	const { writeData, readData } = useFirebaseRealtimeDatabase()
@@ -231,7 +232,7 @@
 	}
 
 	const getRanking = async (id: string) => {
-		const path = `/rankings/${userDataStore.id}/${id}`
+		const path = `/rankings/${userDataStore.value.id}/${id}`
 		return await readData(path)
 	}
 
@@ -242,16 +243,16 @@
 	}
 
 	const updateRanking = async () => {
-		if (!userDataStore.id || !isLoginStore) return
+		if (!userDataStore.value.id || !isLoginStore.value) return
 
-		const path = `/rankings/${userDataStore.id}/${route.params.id}`
+		const path = `/rankings/${userDataStore.value.id}/${route.params.id}`
 		try {
 			await writeData(path, {
 				name: rankingName.value,
 				musics: rankingMusics.value,
 			})
 			toast.success('Ranking updated')
-			router.push(`/profile/${userDataStore?.id}`)
+			router.push(`/profile/${userDataStore.value.id}`)
 		} catch (error) {
 			console.error('Error updating ranking:', error)
 			toast.error('Error updating ranking')
@@ -300,7 +301,7 @@
 		rankingName.value = rankingData.name
 		rankingMusics.value = rankingData.musics
 
-		if (!isLoginStore) {
+		if (!isLoginStore.value) {
 			toast.info('You must be logged in to edit a ranking')
 		}
 	})

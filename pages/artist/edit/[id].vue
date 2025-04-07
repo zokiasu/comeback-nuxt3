@@ -1,7 +1,9 @@
 <script setup lang="ts">
 	// External Packages
-	// Réimporter CalendarDate et getLocalTimeZone
+	import { CalendarDate, DateFormatter } from '@internationalized/date'
 	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
+	import { useUserStore } from '~/stores/user'
+	import { storeToRefs } from 'pinia'
 
 	// Internal Types
 	import type { Artist } from '~/types/supabase/artist'
@@ -20,7 +22,8 @@
 	const route = useRoute()
 	const router = useRouter()
 	const toast = useToast()
-	const { isAdminStore } = useUserStore()
+	const userStore = useUserStore()
+	const { isAdminStore } = storeToRefs(userStore)
 
 	const {
 		getAllArtists,
@@ -35,9 +38,6 @@
 	const description = ref('Edit Artist Page')
 
 	const isUploadingEdit = ref<boolean>(false)
-	const showModalCreateArtist = ref<boolean>(false)
-	const showModalCreateStyle = ref<boolean>(false)
-	const showModalCreateTag = ref<boolean>(false)
 
 	const artist = ref<Artist | null>(null)
 	const groupList = ref<Artist[]>([]) // Garde les groupes potentiels
