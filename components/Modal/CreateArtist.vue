@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
-
 	import type { Artist } from '~/types/supabase/artist'
 	import type { MusicStyle } from '~/types/supabase/music_style'
 	import type { GeneralTag } from '~/types/supabase/general_tag'
