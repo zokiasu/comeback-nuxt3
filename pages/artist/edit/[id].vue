@@ -1,9 +1,8 @@
 <script setup lang="ts">
 	// External Packages
 	import { CalendarDate, DateFormatter } from '@internationalized/date'
-	import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
-	import { useUserStore } from '~/stores/user'
 	import { storeToRefs } from 'pinia'
+	import { useUserStore } from '~/stores/user'
 
 	// Internal Types
 	import type { Artist } from '~/types/supabase/artist'
