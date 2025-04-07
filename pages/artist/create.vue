@@ -1,13 +1,9 @@
 <script setup lang="ts">
 	// Réimporter CalendarDate et getLocalTimeZone
-	import {
-		CalendarDate,
-		DateFormatter,
-		getLocalTimeZone,
-		ZonedDateTime,
-	} from '@internationalized/date'
+	import { CalendarDate, DateFormatter } from '@internationalized/date'
 
 	// Internal Types
+	import { storeToRefs } from 'pinia'
 	import type { Artist } from '~/types/supabase/artist'
 	import type { MusicStyle } from '~/types/supabase/music_style'
 	import type { GeneralTag } from '~/types/supabase/general_tag'
@@ -23,12 +19,16 @@
 	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
 	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'
 
+	// Internal Stores
+	import { useUserStore } from '~/stores/user'
+
 	// Crée un type générique qui ajoute 'label' à un type existant T
 	type MenuItem<T> = T & { label: string }
 
 	const toast = useToast()
-	const { isAdminStore } = useUserStore()
-
+	const router = useRouter()
+	const userStore = useUserStore()
+	const { isAdminStore } = storeToRefs(userStore)
 	const { getAllArtists, createArtist } = useSupabaseArtist()
 	const { getAllMusicStyles } = useSupabaseMusicStyles()
 	const { getAllGeneralTags } = useSupabaseGeneralTags()
@@ -152,7 +152,7 @@
 			type: artistType.value,
 			gender: artistGender.value,
 			active_career: artistActiveCareer.value,
-			verified: isAdminStore,
+			verified: isAdminStore.value,
 			// Re-convertir CalendarDate en ISO string
 			birth_date: birthdayToDate.value ? birthdayToDate.value.toString() : null,
 			debut_date: debutDateToDate.value ? debutDateToDate.value.toString() : null,

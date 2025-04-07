@@ -1,5 +1,6 @@
 <script setup lang="ts">
-	import { CalendarDate, DateFormatter } from '@internationalized/date'
+	import { CalendarDate } from '@internationalized/date'
+	import { storeToRefs } from 'pinia'
 
 	import { useUserStore } from '@/stores/user'
 	import { type Release } from '@/types/supabase/release'
@@ -9,16 +10,13 @@
 
 	const { getReleaseById, getSuggestedReleases, updateRelease } = useSupabaseRelease()
 	const { updateMusic } = useSupabaseMusic()
-	const { isLoginStore } = useUserStore()
+	const userStore = useUserStore()
+	const { isLoginStore, isAdminStore } = storeToRefs(userStore)
 	const toast = useToast()
 	const route = useRoute()
-	const router = useRouter()
 
 	const title = ref<string>('Release Page')
 	const description = ref<string>('Release')
-
-	const showModal = ref<boolean>(false)
-	const showModalEdit = ref<boolean>(false)
 
 	const release = ref<Release | null>(null)
 	const suggestedReleases = ref<Release[]>([])
@@ -55,7 +53,6 @@
 		}
 
 		try {
-			console.log('releaseData', releaseData)
 			await updateRelease(releaseId, releaseData)
 
 			// On utilise les musiques directement depuis release.value qui est réactif
@@ -84,7 +81,6 @@
 			await Promise.all(updatePromises)
 				.then(() => {
 					toast.add({ color: 'info', title: 'Release updated' })
-					showModalEdit.value = false
 				})
 				.catch(() => {
 					toast.add({
@@ -99,18 +95,6 @@
 				title: 'Une erreur est survenue lors de la mise à jour',
 			})
 		}
-	}
-
-	const verifyShowModal = () => {
-		if (isLoginStore) {
-			showModal.value = true
-		} else {
-			router.push('/authentification')
-		}
-	}
-
-	const editRelease = async () => {
-		showModalEdit.value = true
 	}
 
 	const formatDate = (date: string) => {
@@ -243,11 +227,8 @@
 								</div>
 								<!-- <button
 									class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/10 rounded px-2 py-1 text-sm"
-									@click="editRelease"
-								>
-									Edit
-								</button> -->
 								<UModal
+									v-if="isAdminStore && isLoginStore"
 									:ui="{
 										overlay: 'bg-cb-quinary-950/75',
 										content: 'ring-cb-quinary-950',
@@ -256,7 +237,7 @@
 									<UButton
 										label="Edit Release"
 										variant="soft"
-										class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
+										class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full cursor-pointer items-center justify-center text-xs text-white"
 									/>
 
 									<template #content>

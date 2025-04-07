@@ -5,8 +5,10 @@
 	import type { ArtistSocialLink, ArtistPlatformLink } from '~/types/supabase'
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 	import { useSupabaseMusic } from '~/composables/Supabase/useSupabaseMusic'
+	import { storeToRefs } from 'pinia'
 
-	const { isLoginStore } = useUserStore()
+	const userStore = useUserStore()
+	const { isLoginStore, isAdminStore } = storeToRefs(userStore)
 	const { getFullArtistById, getSocialAndPlatformLinksByArtistId } = useSupabaseArtist()
 	const { getRandomMusicsByArtistId } = useSupabaseMusic()
 
@@ -72,7 +74,7 @@
 	})
 
 	const editLink = computed(() => {
-		if (!isLoginStore) {
+		if (!isLoginStore || !isAdminStore) {
 			return '/authentification'
 		}
 		return '/artist/edit/' + route.params.id
@@ -166,7 +168,7 @@
 							{{ tag }}
 						</p>
 					</div>
-					<div v-if="!isFetchingArtist" class="flex flex-wrap gap-2">
+					<div v-if="!isFetchingArtist && isAdminStore" class="flex flex-wrap gap-2">
 						<NuxtLink
 							:to="editLink"
 							class="bg-cb-secondary-950 px-2 py-1 text-xs font-semibold uppercase"
@@ -270,7 +272,7 @@
 							Write a description to share more information about this artist with our
 							community.
 						</p>
-						<div class="pt-2">
+						<div v-if="isAdminStore" class="pt-2">
 							<NuxtLink
 								:to="editLink"
 								class="bg-cb-quaternary-950 mt-5 px-2 py-1 text-xs font-semibold uppercase"

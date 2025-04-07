@@ -201,6 +201,9 @@
 <script setup lang="ts">
 	import draggable from 'vuedraggable'
 	import { collection, getDocs, orderBy, query, where } from 'firebase/firestore'
+	import { getAuth, onAuthStateChanged } from 'firebase/auth'
+	import { getFirestore, addDoc } from 'firebase/firestore'
+	import { storeToRefs } from 'pinia'
 
 	import { useFirebaseRealtimeDatabase } from '~/composables/useFirebaseRealtimeDatabase'
 	import { useFirebaseUtils } from '~/composables/useFirebaseUtils'
@@ -208,7 +211,7 @@
 
 	const toast = useToast()
 	const router = useRouter()
-	const { userDataStore, isLoginStore } = useUserStore()
+	const { userDataStore, isLoginStore } = storeToRefs(useUserStore())
 	const { $firestore: database } = useNuxtApp()
 	const { snapshotResultToArray } = useFirebaseUtils()
 	const { writeDataWithRandomId } = useFirebaseRealtimeDatabase()
