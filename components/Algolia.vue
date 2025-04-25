@@ -24,6 +24,7 @@
 	// Initialisation des réactifs
 	const searchInput = ref('')
 	const datas = ref<Artist[]>([])
+	const isOpen = ref(false)
 
 	// Utilisation de Algolia Search de manière optimisée
 	const { result, search } = useAlgoliaSearch('ARTISTS')
@@ -42,14 +43,14 @@
 		}
 	})
 
-	const emit = defineEmits(['closeModal'])
 	const closeModal = () => {
-		emit('closeModal')
+		isOpen.value = false
 	}
 </script>
 
 <template>
 	<UModal
+		v-model:open="isOpen"
 		:ui="{
 			overlay: 'bg-cb-quinary-950/75',
 			content: 'ring-cb-quinary-950',
@@ -58,11 +59,15 @@
 		<UButton
 			icon="material-symbols:search"
 			variant="soft"
-			class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
+			title="Search"
+			class="lg:bg-cb-quaternary-950 lg:hover:bg-cb-tertiary-200/20 w-full items-center justify-center rounded-none bg-transparent px-0 text-white lg:h-full lg:rounded lg:text-xs"
+			@click="isOpen = true"
 		/>
 
 		<template #content>
-			<div class="relative space-y-2">
+			<div
+				class="bg-cb-quinary-950/75 relative min-h-[80dvh] space-y-2 p-5 lg:min-h-[20dvh]"
+			>
 				<input
 					id="search-input"
 					v-model="searchInput"
@@ -70,11 +75,12 @@
 					placeholder="Search Artist..."
 					class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
 				/>
-				<div v-if="datas.length" class="flex flex-col gap-2" @click="closeModal">
+				<div v-if="datas.length" class="flex flex-col gap-2">
 					<LazyNuxtLink
 						v-for="artist in datas"
 						:key="artist.objectID"
 						:to="`/artist/${artist.objectID}`"
+						@click="closeModal"
 					>
 						<p class="bg-cb-primary-900 w-full rounded p-2 text-xs">{{ artist.name }}</p>
 					</LazyNuxtLink>

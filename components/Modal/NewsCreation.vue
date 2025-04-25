@@ -132,15 +132,12 @@
 		}"
 	>
 		<UButton
-			label="New Comeback"
 			variant="soft"
-			class="bg-cb-primary-900 hover:bg-cb-primary-900/90 hidden h-full cursor-pointer items-center justify-center rounded px-5 text-white lg:block"
-		/>
-		<UButton
-			variant="soft"
-			class="bg-cb-primary-700/10 flex w-full items-center justify-center rounded-none px-0 text-white lg:hidden"
+			title="New Comeback"
+			:label="'New Comeback'"
+			class="bg-cb-primary-700/10 lg:bg-cb-primary-900 lg:hover:bg-cb-primary-900/90 w-full items-center justify-center rounded-none px-0 text-white lg:h-full lg:cursor-pointer lg:rounded lg:px-5"
 		>
-			<IconComeback class="mx-auto size-5" />
+			<IconComeback class="mx-auto size-5 lg:hidden" />
 		</UButton>
 
 		<template #content>
