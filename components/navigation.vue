@@ -1,6 +1,6 @@
 <script setup lang="ts">
-	import { useUserStore } from '@/stores/user'
 	import { storeToRefs } from 'pinia'
+	import { useUserStore } from '@/stores/user'
 
 	const userStore = useUserStore()
 	const { isLoginStore, isAdminStore } = storeToRefs(userStore)
@@ -78,42 +78,10 @@
 					</NuxtLink>
 				</nav>
 
-				<div class="flex items-center justify-center gap-x-2 text-sm">
-					<UModal
-						:ui="{
-							overlay: 'bg-cb-quinary-950/75',
-							content: 'ring-cb-quinary-950',
-						}"
-					>
-						<UButton
-							variant="soft"
-							class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
-						>
-							<UIcon name="material-symbols:search" class="size-4" />
-						</UButton>
+				<div class="flex items-center justify-center gap-2">
+					<Algolia ref="algolia" />
 
-						<template #content>
-							<LazyAlgolia ref="algolia" />
-						</template>
-					</UModal>
-
-					<UModal
-						v-if="isLoginStore"
-						:ui="{
-							overlay: 'bg-cb-quinary-950/75',
-							content: 'ring-cb-quinary-950',
-						}"
-					>
-						<UButton
-							label="New Comeback"
-							variant="soft"
-							class="bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-white"
-						/>
-
-						<template #content>
-							<LazyModalNewsCreation />
-						</template>
-					</UModal>
+					<ModalNewsCreation v-if="isLoginStore" />
 
 					<UButton
 						v-if="isLoginStore"

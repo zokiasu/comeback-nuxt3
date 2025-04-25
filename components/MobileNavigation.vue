@@ -78,24 +78,7 @@
 				<IconAccount class="mx-auto h-5 w-5" />
 			</NuxtLink>
 
-			<UModal
-				v-else
-				:ui="{
-					overlay: 'bg-cb-quinary-950/75',
-					content: 'ring-cb-quinary-950',
-				}"
-			>
-				<UButton
-					variant="soft"
-					class="bg-cb-primary-700/10 flex w-full items-center justify-center rounded-none px-0 text-white"
-				>
-					<IconComeback class="mx-auto size-5" />
-				</UButton>
-
-				<template #content>
-					<ModalNewsCreation />
-				</template>
-			</UModal>
+			<ModalNewsCreation v-else />
 		</div>
 	</div>
 </template>
