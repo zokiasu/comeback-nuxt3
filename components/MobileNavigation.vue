@@ -36,31 +36,15 @@
 				<IconCalendar class="mx-auto h-5 w-5" />
 			</NuxtLink>
 
-			<UModal
-				:ui="{
-					overlay: 'bg-cb-quinary-950/75',
-					content: 'ring-cb-quinary-950',
-				}"
-			>
-				<UButton
-					variant="soft"
-					class="flex w-full items-center justify-center rounded-none bg-transparent px-0 text-white"
-				>
-					<UIcon name="material-symbols:search" class="size-4" />
-				</UButton>
+			<Algolia ref="algolia" />
 
-				<template #content>
-					<Algolia ref="algolia" />
-				</template>
-			</UModal>
-
-			<NuxtLink
+			<!-- <NuxtLink
 				v-if="isLoginStore && userDataStore"
 				:to="profilePath"
 				class="flex w-full items-center justify-center py-2 transition-all duration-500 ease-in-out hover:bg-zinc-500/50"
 			>
 				<IconArtist class="mx-auto h-5 w-5" />
-			</NuxtLink>
+			</NuxtLink> -->
 
 			<NuxtLink
 				v-if="isAdminStore"
