@@ -45,7 +45,7 @@
 			<p class="text-2xl font-bold">Profile Settings</p>
 			<button class="cb_button" @click="updateUserDetails">Save</button>
 		</div>
-		<div v-if="userDetails" class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+		<div v-if="userDetails" class="grid flex-1 grid-cols-1 gap-5 lg:grid-cols-2">
 			<section class="space-y-5">
 				<div class="space-y-1">
 					<p class="font-semibold uppercase">ID</p>
@@ -105,17 +105,20 @@
 						}}
 					</p>
 				</div>
+				<div class="space-y-1">
+					<UButton label="Save" class="cb_button w-full" @click="updateUserDetails" />
+				</div>
 			</section>
 
-			<section class="space-y-1">
+			<section class="flex h-full flex-col space-y-1">
 				<p class="font-semibold uppercase">Photo</p>
-				<div class="flex flex-col gap-5">
+				<div class="flex flex-1 flex-col gap-5">
 					<NuxtImg
 						:src="userDetails.photoURL ?? 'https://i.ibb.co/wLhbFZx/Frame-255.png'"
 						:alt="userDetails.name"
 						class="bg-cb-primary-950 aspect-video h-80 w-full rounded object-cover"
 					/>
-					<div v-if="artistList.length > 0" class="space-y-2 text-sm">
+					<div v-if="artistList.length > 0" class="flex-1 space-y-2 text-sm">
 						<input
 							id="search-input"
 							v-model="searchInput"
@@ -124,7 +127,7 @@
 							class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-3 py-1 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
 						/>
 						<div
-							class="scrollBarLight grid max-h-[20dvh] w-full grid-cols-3 justify-between gap-2 overflow-hidden overflow-y-auto pr-2 xl:max-h-[50dvh] xl:grid-cols-5"
+							class="scrollBarLight grid h-full w-full grid-cols-3 justify-between gap-2 overflow-hidden overflow-y-auto pr-2 xl:max-h-[50dvh] xl:grid-cols-5"
 						>
 							<button
 								v-for="artist in artistFiltered"

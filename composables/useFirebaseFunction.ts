@@ -11,7 +11,6 @@ import {
 	onSnapshot,
 	QueryConstraint,
 } from 'firebase/firestore'
-import _ from 'lodash'
 
 import { useNuxtApp } from '#app'
 import type { Music } from '~/types/music'
@@ -239,7 +238,7 @@ export function useFirebaseFunction() {
 
 				return (
 					comeback.artist.name.toLowerCase() === artistName.toLowerCase() &&
-					_.isEqual(cbDate, dateToTest)
+					cbDate.getTime() === dateToTest.getTime()
 				)
 			})
 		} catch (error) {

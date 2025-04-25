@@ -1,11 +1,11 @@
 <script setup lang="ts">
+	import { storeToRefs } from 'pinia'
 	import { useUserStore } from '@/stores/user'
 	import type { Artist } from '~/types/supabase/artist'
 	import type { Music } from '~/types/supabase/music'
 	import type { ArtistSocialLink, ArtistPlatformLink } from '~/types/supabase'
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 	import { useSupabaseMusic } from '~/composables/Supabase/useSupabaseMusic'
-	import { storeToRefs } from 'pinia'
 
 	const userStore = useUserStore()
 	const { isLoginStore, isAdminStore } = storeToRefs(userStore)

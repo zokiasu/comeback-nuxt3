@@ -1,12 +1,10 @@
 <script setup lang="ts">
 	import { CalendarDate } from '@internationalized/date'
 
-	import debounce from 'lodash.debounce'
 	import algoliasearch from 'algoliasearch/lite'
 	import type { News } from '~/types/supabase/news'
 	import { useSupabaseNews } from '~/composables/Supabase/useSupabaseNews'
-
-	const emit = defineEmits(['closeModal'])
+	import { useDebounce } from '~/composables/useDebounce'
 
 	const toast = useToast()
 	const config = useRuntimeConfig()
@@ -18,6 +16,7 @@
 	const index = client.initIndex('ARTISTS')
 
 	const sendNews = ref<boolean>(false)
+	const isOpen = ref<boolean>(false)
 	const searchArtist = ref<string>('')
 	const artistListSearched = ref<any[]>([])
 	const artistListSelected = ref<any[]>([])
@@ -38,7 +37,7 @@
 	}
 
 	// Définition d'une fonction de recherche débattue
-	const debouncedSearch = debounce(async (query) => {
+	const debouncedSearch = useDebounce(async (query) => {
 		try {
 			const { hits } = await index.search(query)
 			artistListSearched.value = hits.slice(0, 10)
@@ -99,7 +98,14 @@
 	}
 
 	const closeModal = () => {
-		emit('closeModal')
+		// Réinitialisation des états
+		searchArtist.value = ''
+		artistListSearched.value = []
+		artistListSelected.value = []
+		newsDate.value = null
+		newsMessage.value = ''
+		sendNews.value = false
+		isOpen.value = false
 	}
 
 	watchEffect(() => {
@@ -118,79 +124,101 @@
 </script>
 
 <template>
-	<div class="bg-cb-secondary-950 space-y-5 p-5">
-		<h3 class="text-2xl font-bold">Create Comeback</h3>
-		<div class="relative">
-			<ComebackInput
-				v-model="searchArtist"
-				label="Select artist(s)"
-				placeholder="Search Artist"
-				@clear="clearSearch"
-			/>
-			<div
-				v-if="artistListSearched.length"
-				class="scrollBarLight oversc bg-cb-quaternary-950 absolute top-18 z-10 flex h-40 w-full flex-col justify-start overflow-hidden overflow-y-auto p-1"
-			>
+	<UModal
+		v-model:open="isOpen"
+		:ui="{
+			overlay: 'bg-cb-quinary-950/75',
+			content: 'ring-cb-quinary-950',
+		}"
+	>
+		<UButton
+			label="New Comeback"
+			variant="soft"
+			class="bg-cb-primary-900 hover:bg-cb-primary-900/90 hidden h-full cursor-pointer items-center justify-center rounded px-5 text-white lg:block"
+		/>
+		<UButton
+			variant="soft"
+			class="bg-cb-primary-700/10 flex w-full items-center justify-center rounded-none px-0 text-white lg:hidden"
+		>
+			<IconComeback class="mx-auto size-5" />
+		</UButton>
+
+		<template #content>
+			<div class="bg-cb-secondary-950 space-y-5 p-5">
+				<h3 class="text-2xl font-bold">Create Comeback</h3>
+				<div class="relative">
+					<ComebackInput
+						v-model="searchArtist"
+						label="Select artist(s)"
+						placeholder="Search Artist"
+						@clear="clearSearch"
+					/>
+					<div
+						v-if="artistListSearched.length"
+						class="scrollBarLight oversc bg-cb-quaternary-950 absolute top-18 z-10 flex h-40 w-full flex-col justify-start overflow-hidden overflow-y-auto p-1"
+					>
+						<button
+							v-for="artist in artistListSearched"
+							:key="artist.id"
+							class="hover:bg-cb-quinary-900 rounded p-2 text-start"
+							@click="addArtistToNews(artist)"
+						>
+							{{ artist.name }}
+						</button>
+					</div>
+				</div>
+
+				<div v-if="artistListSelected.length" class="flex flex-col gap-1">
+					<ComebackLabel label="Artist(s)" />
+					<div class="flex flex-wrap gap-5">
+						<div
+							v-for="artist in artistListSelected"
+							:key="artist.id"
+							class="relative flex cursor-pointer flex-col items-center justify-center rounded px-5 py-1 hover:bg-red-500/50"
+							@click="removeArtistFromNews(artist)"
+						>
+							<img :src="artist.picture" class="h-8 w-8 rounded-full object-cover" />
+							<p>{{ artist.name }}</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="flex flex-col gap-1">
+					<ComebackLabel label="Date" />
+					<UCalendar
+						class="bg-cb-quinary-900 rounded p-1"
+						:model-value="parseToCalendarDate(newsDate)"
+						:min-date="new Date(1900, 0, 1)"
+						@update:model-value="
+							(value) => {
+								if (value) {
+									newsDate = new Date(value.toString())
+								} else {
+									newsDate = null
+								}
+							}
+						"
+					/>
+				</div>
+
+				<div class="flex flex-col gap-1">
+					<ComebackInput
+						v-model="newsMessage"
+						label="Your News"
+						placeholder="Your News"
+						@clear="newsMessage = ''"
+					/>
+				</div>
+
 				<button
-					v-for="artist in artistListSearched"
-					:key="artist.id"
-					class="hover:bg-cb-quinary-900 rounded p-2 text-start"
-					@click="addArtistToNews(artist)"
+					:disabled="sendNews"
+					class="bg-cb-primary-900 w-full rounded py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
+					@click="creationNews"
 				>
-					{{ artist.name }}
+					<p v-if="sendNews">Sending...</p>
+					<p v-else>Send News</p>
 				</button>
 			</div>
-		</div>
-
-		<div v-if="artistListSelected.length" class="flex flex-col gap-1">
-			<ComebackLabel label="Artist(s)" />
-			<div class="flex flex-wrap gap-5">
-				<div
-					v-for="artist in artistListSelected"
-					:key="artist.id"
-					class="relative flex cursor-pointer flex-col items-center justify-center rounded px-5 py-1 hover:bg-red-500/50"
-					@click="removeArtistFromNews(artist)"
-				>
-					<img :src="artist.picture" class="h-8 w-8 rounded-full object-cover" />
-					<p>{{ artist.name }}</p>
-				</div>
-			</div>
-		</div>
-
-		<div class="flex flex-col gap-1">
-			<ComebackLabel label="Date" />
-			<UCalendar
-				class="bg-cb-quinary-900 rounded p-1"
-				:model-value="parseToCalendarDate(newsDate)"
-				:min-date="new Date(1900, 0, 1)"
-				@update:model-value="
-					(value) => {
-						if (value) {
-							newsDate = new Date(value.toString())
-						} else {
-							newsDate = null
-						}
-					}
-				"
-			/>
-		</div>
-
-		<div class="flex flex-col gap-1">
-			<ComebackInput
-				v-model="newsMessage"
-				label="Your News"
-				placeholder="Your News"
-				@clear="newsMessage = ''"
-			/>
-		</div>
-
-		<button
-			:disabled="sendNews"
-			class="bg-cb-primary-900 w-full rounded py-2 font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
-			@click="creationNews"
-		>
-			<p v-if="sendNews">Sending...</p>
-			<p v-else>Send News</p>
-		</button>
-	</div>
+		</template>
+	</UModal>
 </template>

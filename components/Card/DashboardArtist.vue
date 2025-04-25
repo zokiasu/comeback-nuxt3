@@ -172,13 +172,13 @@
 				</div>
 			</div>
 
-			<div v-if="styles.length" class="flex gap-1">
+			<div v-if="styles.length" class="flex flex-wrap gap-1">
 				<p
 					v-for="style in styles"
-					:key="style.name"
+					:key="style"
 					class="bg-cb-quinary-900 rounded px-2 py-1 text-xs uppercase"
 				>
-					{{ style.name }}
+					{{ style }}
 				</p>
 			</div>
 			<div v-else>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-	import debounce from 'lodash.debounce'
 	import { Timestamp } from 'firebase/firestore'
 	import type { Release } from '~/types/supabase/release'
 	import type { ReleaseType } from '~/types/supabase'
 	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
 	import type { AlgoliaHit } from '~/types/algolia'
+	import { useDebounce } from '~/composables/useDebounce'
 
 	const { deleteRelease: deleteReleaseFunction, getReleasesByPage } = useSupabaseRelease()
 	const toast = useToast()
@@ -36,7 +36,7 @@
 	/**
 	 * Effectue une recherche avec Algolia
 	 */
-	const performAlgoliaSearch = debounce(async () => {
+	const performAlgoliaSearch = useDebounce(async () => {
 		if (search.value.length < 2) {
 			algoliaResults.value = []
 			return

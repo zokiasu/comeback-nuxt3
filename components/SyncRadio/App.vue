@@ -1,8 +1,8 @@
 <script setup>
-	import debounce from 'lodash.debounce'
 	import { useFirebaseRealtimeDatabase } from '~/composables/useFirebaseRealtimeDatabase'
 	import { useFirebaseUtils } from '~/composables/useFirebaseUtils'
 	import { useUserStore } from '~/stores/user'
+	import { useDebounce } from '~/composables/useDebounce'
 
 	// Initialisation des réactifs
 	const searchComebackInput = ref('')
