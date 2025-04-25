@@ -78,7 +78,7 @@
 					</NuxtLink>
 				</nav>
 
-				<div class="flex items-center justify-center gap-2">
+				<div class="flex items-center justify-center gap-3">
 					<Algolia ref="algolia" />
 
 					<ModalNewsCreation v-if="isLoginStore" />

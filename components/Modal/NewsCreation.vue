@@ -1,10 +1,10 @@
 <script setup lang="ts">
 	import { CalendarDate } from '@internationalized/date'
 
-	import debounce from 'lodash.debounce'
 	import algoliasearch from 'algoliasearch/lite'
 	import type { News } from '~/types/supabase/news'
 	import { useSupabaseNews } from '~/composables/Supabase/useSupabaseNews'
+	import { useDebounce } from '~/composables/useDebounce'
 
 	const toast = useToast()
 	const config = useRuntimeConfig()
@@ -37,7 +37,7 @@
 	}
 
 	// Définition d'une fonction de recherche débattue
-	const debouncedSearch = debounce(async (query) => {
+	const debouncedSearch = useDebounce(async (query) => {
 		try {
 			const { hits } = await index.search(query)
 			artistListSearched.value = hits.slice(0, 10)

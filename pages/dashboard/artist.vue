@@ -7,7 +7,7 @@
 		getCountFromServer,
 	} from 'firebase/firestore'
 
-	import debounce from 'lodash.debounce'
+	import { useDebounce } from '~/composables/useDebounce'
 	import type { Artist } from '~/types/supabase/artist'
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 
@@ -95,7 +95,7 @@
 	/**
 	 * Effectue une recherche avec Algolia
 	 */
-	const performAlgoliaSearch = debounce(async () => {
+	const performAlgoliaSearch = useDebounce(async () => {
 		if (search.value.length < 2) {
 			algoliaResults.value = []
 			return

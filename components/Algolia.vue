@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { ref, watchEffect } from 'vue'
-	import debounce from 'lodash.debounce'
+	import { useDebounce } from '~/composables/useDebounce'
 
 	interface Artist {
 		objectID: string
@@ -29,7 +29,7 @@
 	const { result, search } = useAlgoliaSearch('ARTISTS')
 
 	// Définition d'une fonction de recherche débattue
-	const debouncedSearch = debounce(async (query: any) => {
+	const debouncedSearch = useDebounce(async (query: any) => {
 		await useAsyncData('ssr-search-results', () => search({ query }))
 		if (!result.value) return
 		console.log(result.value.hits)
