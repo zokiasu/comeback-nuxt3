@@ -1,12 +1,4 @@
 <script setup lang="ts">
-	import {
-		collection,
-		query,
-		where,
-		orderBy,
-		getCountFromServer,
-	} from 'firebase/firestore'
-
 	import { useDebounce } from '~/composables/useDebounce'
 	import type { Artist } from '~/types/supabase/artist'
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'

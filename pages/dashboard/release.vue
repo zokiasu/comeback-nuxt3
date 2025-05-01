@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { Timestamp } from 'firebase/firestore'
 	import type { Release } from '~/types/supabase/release'
 	import type { ReleaseType } from '~/types/supabase'
 	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
@@ -286,12 +285,12 @@
 				/>
 				<button
 					class="bg-cb-tertiary-200 text-cb-quinary-900 absolute top-1/2 right-2 -translate-y-1/2 rounded px-2 py-1 text-xs"
-					@click="toggleSearchMethod"
 					:title="
 						useAlgoliaForSearch
 							? 'Utiliser Supabase (recherche basique)'
 							: 'Utiliser Algolia (recherche avancée)'
 					"
+					@click="toggleSearchMethod"
 				>
 					{{ useAlgoliaForSearch ? 'Algolia' : 'Supabase' }}
 				</button>
@@ -376,16 +375,10 @@
 		</p>
 
 		<div v-if="isLoading && !firstLoad" class="flex justify-center py-4">
-			<p class="bg-cb-quinary-900 rounded px-4 py-2 text-center">
-				Chargement des releases...
-			</p>
+			<p>Chargement des releases suivantes...</p>
 		</div>
 
-		<div
-			v-if="hasMore && !useAlgoliaForSearch"
-			ref="observerTarget"
-			class="mb-4 h-4 w-full"
-		></div>
+		<div v-if="hasMore && !useAlgoliaForSearch" ref="observerTarget" />
 	</div>
 </template>
 

@@ -52,7 +52,11 @@
 			currentPage.value++
 		} catch (error) {
 			console.error('Erreur lors de la récupération des news:', error)
-			toast.error('Erreur lors du chargement des news')
+			toast.add({
+				title: 'Erreur',
+				description: 'Erreur lors du chargement des news',
+				color: 'error',
+			})
 		} finally {
 			isLoading.value = false
 		}
@@ -98,16 +102,30 @@
 			const success = await deleteNewsFunction(id)
 			if (success) {
 				newsFetch.value = newsFetch.value.filter((news) => news.id !== id)
-				toast.success('News supprimée')
+				toast.add({
+					title: 'Succès',
+					description: 'News supprimée',
+					color: 'success',
+				})
 			} else {
-				toast.error('Erreur lors de la suppression de la news')
+				toast.add({
+					title: 'Erreur',
+					description: 'Erreur lors de la suppression de la news',
+					color: 'error',
+				})
 			}
 		} catch (error) {
 			console.error('Erreur lors de la suppression de la news:', error)
-			toast.error('Erreur lors de la suppression de la news')
+			toast.add({
+				title: 'Erreur',
+				description: 'Erreur lors de la suppression de la news',
+				color: 'error',
+			})
 		}
 	}
 
+	// Maintient pour compatibilité avec l'affichage frontend,
+	// mais nous utilisons principalement le tri backend pour les performances
 	const sortNews = (a: News, b: News) => {
 		if (sort.value === 'created_at') {
 			if (!a.created_at && !b.created_at) return 0
@@ -127,50 +145,23 @@
 				: new Date(a.date).getTime() - new Date(b.date).getTime()
 		}
 
-		if (sort.value === 'user') {
-			if (!a.user?.id && !b.user?.id) return 0
-			if (!a.user?.id) return invertSort.value ? -1 : 1
-			if (!b.user?.id) return invertSort.value ? 1 : -1
-			return invertSort.value
-				? b.user.id.localeCompare(a.user.id)
-				: a.user.id.localeCompare(b.user.id)
-		}
-
 		if (sort.value === 'artist') {
-			if (!a.artists?.[0]?.id && !b.artists?.[0]?.id) return 0
-			if (!a.artists?.[0]?.id) return invertSort.value ? -1 : 1
-			if (!b.artists?.[0]?.id) return invertSort.value ? 1 : -1
+			if (!a.artists?.[0]?.name && !b.artists?.[0]?.name) return 0
+			if (!a.artists?.[0]?.name) return invertSort.value ? -1 : 1
+			if (!b.artists?.[0]?.name) return invertSort.value ? 1 : -1
 			return invertSort.value
-				? b.artists[0].id.localeCompare(a.artists[0].id)
-				: a.artists[0].id.localeCompare(b.artists[0].id)
+				? b.artists[0].name.localeCompare(a.artists[0].name)
+				: a.artists[0].name.localeCompare(b.artists[0].name)
 		}
 
 		return 0
 	}
 
+	// La liste filtrée est déjà triée par le backend,
+	// mais on applique un tri frontend pour les résultats récupérés
 	const filteredNewsList = computed(() => {
 		if (!newsFetch.value || newsFetch.value.length === 0) return []
-
-		// Appliquer d'abord le tri
-		const sortedNews = [...newsFetch.value].sort(sortNews)
-
-		// Ensuite appliquer le filtre de recherche si nécessaire
-		if (!search.value) {
-			return sortedNews
-		}
-
-		const searchTerm = search.value.toLowerCase()
-		return sortedNews.filter((news) => {
-			const userName = news.user?.name?.toLowerCase() || ''
-			const artistName = news.artists?.[0]?.name?.toLowerCase() || ''
-			const message = news.message?.toLowerCase() || ''
-
-			return (
-				userName.includes(searchTerm) ||
-				artistName.includes(searchTerm) ||
-				message.includes(searchTerm)
-			)
-		})
+		return [...newsFetch.value]
 	})
 
 	watch([search, sort, invertSort, limitFetch], () => {
@@ -201,9 +192,8 @@
 						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 hover:bg-cb-tertiary-200 hover:text-cb-quinary-900 w-full rounded border-none p-2 text-xs uppercase drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
 					>
 						<option value="date">Date</option>
-						<option value="user">User</option>
-						<option value="artist">Artist</option>
-						<option value="created_at">Last Created</option>
+						<option value="created_at">Date de création</option>
+						<option value="artist">Nom d'artiste</option>
 					</select>
 					<button
 						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 hover:bg-cb-tertiary-200 hover:text-cb-quinary-900 rounded border-none p-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
@@ -243,7 +233,7 @@
 				:id="news.id"
 				:key="news.id"
 				:message="news.message"
-				:artists="news.artists"
+				:artists="news.artists || []"
 				:date="news.date"
 				:user="news.user || {}"
 				:verified="news.verified"
@@ -259,32 +249,10 @@
 		</p>
 
 		<div v-if="isLoading && currentPage > 1" class="flex justify-center py-4">
-			<p class="bg-cb-quinary-900 rounded px-4 py-2 text-center">
-				Chargement des news suivantes...
-			</p>
+			<p>Chargement des news suivantes...</p>
 		</div>
 
-		<div
-			v-if="hasMore"
-			ref="observerTarget"
-			class="bg-opacity-10 my-8 flex h-20 w-full items-center justify-center rounded bg-gray-200"
-		>
-			<div v-if="!isLoading" class="text-xs text-gray-400">
-				Faites défiler pour charger plus de news
-			</div>
-			<div v-else class="loading-indicator">
-				<div class="loading-dot"></div>
-				<div class="loading-dot"></div>
-				<div class="loading-dot"></div>
-			</div>
-		</div>
-
-		<div
-			v-if="filteredNewsList.length > 0 && newsFetch.length !== totalNews"
-			class="flex flex-col items-center space-y-2 text-xs"
-		>
-			<p>({{ newsFetch.length }} / {{ totalNews }})</p>
-		</div>
+		<div v-if="hasMore" ref="observerTarget" />
 	</div>
 </template>
 
