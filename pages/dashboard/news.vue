@@ -124,6 +124,15 @@
 		}
 	}
 
+	const updateNewsInList = (updatedNews: News) => {
+		// Trouver l'index de la news dans le tableau
+		const index = newsFetch.value.findIndex((news) => news.id === updatedNews.id)
+		if (index !== -1) {
+			// Remplacer la news par la version mise à jour
+			newsFetch.value[index] = updatedNews
+		}
+	}
+
 	// Maintient pour compatibilité avec l'affichage frontend,
 	// mais nous utilisons principalement le tri backend pour les performances
 	const sortNews = (a: News, b: News) => {
@@ -238,6 +247,7 @@
 				:user="news.user || {}"
 				:verified="news.verified"
 				@delete-news="deleteNews(news.id)"
+				@update-news="updateNewsInList"
 			/>
 		</transition-group>
 
