@@ -7,5 +7,10 @@ export default defineAppConfig({
 			quaternary: 'cb-quaternary',
 			quinary: 'cb-quinary',
 		},
+		button: {
+			slots: {
+				base: 'cursor-pointer',
+			},
+		},
 	},
 })
