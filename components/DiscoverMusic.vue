@@ -25,7 +25,7 @@
 <template>
 	<div v-if="music && music?.artists">
 		<UButton
-			class="group bg-cb-quinary-900 text-cb-tertiary-200 relative aspect-square max-h-96 w-full overflow-hidden rounded-lg drop-shadow-lg"
+			class="bg-cb-quinary-900 text-cb-tertiary-200 hover:text-cb-primary-900 relative aspect-square max-h-96 w-full overflow-hidden rounded-lg drop-shadow-lg"
 			@click="playVideo(music.id_youtube_music)"
 		>
 			<div v-if="music.thumbnails?.length" class="relative h-full w-full">
@@ -58,11 +58,11 @@
 				<div class="flex justify-end">
 					<IconPause
 						v-if="isPlayingVideo && idYoutubeVideo === music.id_youtube_music"
-						class="group-hover:text-cb-primary-900 h-8 w-8 transition-all duration-500 ease-in-out md:h-10 md:w-10"
+						class="h-8 w-8 transition-all duration-500 ease-in-out md:h-10 md:w-10"
 					/>
 					<IconPlay
 						v-else
-						class="group-hover:text-cb-primary-900 h-8 w-8 transition-all duration-500 ease-in-out md:h-10 md:w-10"
+						class="h-8 w-8 transition-all duration-500 ease-in-out md:h-10 md:w-10"
 					/>
 				</div>
 			</div>
