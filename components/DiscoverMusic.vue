@@ -25,7 +25,7 @@
 <template>
 	<div v-if="music && music?.artists">
 		<UButton
-			class="bg-cb-quinary-900 text-cb-tertiary-200 hover:text-cb-primary-900 relative aspect-square max-h-96 w-full overflow-hidden rounded-lg drop-shadow-lg"
+			class="bg-cb-quinary-900 text-cb-tertiary-200 hover:text-cb-primary-900 relative aspect-square max-h-96 w-full overflow-hidden rounded-lg drop-shadow-lg !p-0"
 			@click="playVideo(music.id_youtube_music)"
 		>
 			<div v-if="music.thumbnails?.length" class="relative h-full w-full">
