@@ -122,12 +122,18 @@
 	function shareRoomUrl() {
 		const url = window.location.href
 		navigator.clipboard.writeText(url)
-		toast.success('Room link copied to clipboard.')
+		toast.add({
+			title: 'Room link copied to clipboard.',
+			color: 'success',
+		})
 	}
 
 	function copyIdRoom() {
 		navigator.clipboard.writeText(roomId)
-		toast.success('Room ID copied to clipboard.')
+		toast.add({
+			title: 'Room ID copied to clipboard.',
+			color: 'success',
+		})
 	}
 
 	const setVideoRef = (el, index) => {
@@ -196,9 +202,10 @@
 				})
 			}
 		} else {
-			toast.error(
-				'Sorry you are not allowed to play a video. Ask a admin or a moderator.',
-			)
+			toast.add({
+				title: 'Sorry you are not allowed to play a video. Ask a admin or a moderator.',
+				color: 'error',
+			})
 		}
 	}
 
@@ -208,9 +215,10 @@
 			reIndexAllPlaylist()
 			reIndexActualPlayingVideo()
 		} else {
-			toast.error(
-				'Sorry you are not allowed to delete a video. Ask a admin or a moderator.',
-			)
+			toast.add({
+				title: 'Sorry you are not allowed to delete a video. Ask a admin or a moderator.',
+				color: 'error',
+			})
 		}
 	}
 
@@ -345,7 +353,10 @@
 	}
 
 	const videoError = () => {
-		toast.error('Video is restricted or unavailable. Please try another video.')
+		toast.add({
+			title: 'Video is restricted or unavailable. Please try another video.',
+			color: 'error',
+		})
 		errorMessage.value = true
 	}
 
@@ -355,9 +366,11 @@
 			writeData('/syncradio/' + roomId + '/playlist/', roomPlaylist.value)
 			reIndexActualPlayingVideo()
 		} else {
-			toast.error(
-				'Sorry you are not allowed to delete the playlist. Ask a admin or a moderator.',
-			)
+			toast.add({
+				title:
+					'Sorry you are not allowed to delete the playlist. Ask a admin or a moderator.',
+				color: 'error',
+			})
 		}
 	}
 
@@ -434,7 +447,10 @@
 				}
 			})
 		} else if (!data) {
-			toast.error('Room not found. Please create a new room.')
+			toast.add({
+				title: 'Room not found. Please create a new room.',
+				color: 'error',
+			})
 			router.push('/syncradio')
 		}
 	})

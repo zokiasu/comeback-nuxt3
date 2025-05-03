@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { Timestamp } from 'firebase/firestore'
 	import type { Release } from '~/types/supabase/release'
 	import type { ReleaseType } from '~/types/supabase'
 	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
@@ -68,7 +67,10 @@
 			}
 		} catch (error) {
 			console.error('Erreur lors de la recherche Algolia:', error)
-			toast.error('Erreur lors de la recherche')
+			toast.add({
+				title: 'Erreur lors de la recherche',
+				color: 'error',
+			})
 		} finally {
 			isSearching.value = false
 		}
@@ -128,7 +130,10 @@
 			currentPage.value++
 		} catch (error) {
 			console.error('Erreur lors de la récupération des releases:', error)
-			toast.error('Erreur lors du chargement des releases')
+			toast.add({
+				title: 'Erreur lors du chargement des releases',
+				color: 'error',
+			})
 		} finally {
 			isLoading.value = false
 		}
@@ -138,15 +143,24 @@
 		try {
 			const res = await deleteReleaseFunction(id)
 			if (res) {
-				toast.success('Release supprimé')
+				toast.add({
+					title: 'Release supprimé',
+					color: 'success',
+				})
 				releaseFetch.value = releaseFetch.value.filter((release) => release.id !== id)
 			} else {
 				console.log('Erreur lors de la suppression du release')
-				toast.error('Erreur lors de la suppression du release')
+				toast.add({
+					title: 'Erreur lors de la suppression du release',
+					color: 'error',
+				})
 			}
 		} catch (error) {
 			console.error('Erreur lors de la suppression du release:', error)
-			toast.error('Erreur lors de la suppression du release')
+			toast.add({
+				title: 'Erreur lors de la suppression du release',
+				color: 'error',
+			})
 		}
 	}
 
@@ -262,7 +276,10 @@
 			releaseFetch.value = result.releases
 		} catch (error) {
 			console.error('Erreur lors du chargement de tous les releases:', error)
-			toast.error('Erreur lors du chargement de tous les releases')
+			toast.add({
+				title: 'Erreur lors du chargement de tous les releases',
+				color: 'error',
+			})
 		}
 	}
 </script>
@@ -286,12 +303,12 @@
 				/>
 				<button
 					class="bg-cb-tertiary-200 text-cb-quinary-900 absolute top-1/2 right-2 -translate-y-1/2 rounded px-2 py-1 text-xs"
-					@click="toggleSearchMethod"
 					:title="
 						useAlgoliaForSearch
 							? 'Utiliser Supabase (recherche basique)'
 							: 'Utiliser Algolia (recherche avancée)'
 					"
+					@click="toggleSearchMethod"
 				>
 					{{ useAlgoliaForSearch ? 'Algolia' : 'Supabase' }}
 				</button>
@@ -376,16 +393,10 @@
 		</p>
 
 		<div v-if="isLoading && !firstLoad" class="flex justify-center py-4">
-			<p class="bg-cb-quinary-900 rounded px-4 py-2 text-center">
-				Chargement des releases...
-			</p>
+			<p>Chargement des releases suivantes...</p>
 		</div>
 
-		<div
-			v-if="hasMore && !useAlgoliaForSearch"
-			ref="observerTarget"
-			class="mb-4 h-4 w-full"
-		></div>
+		<div v-if="hasMore && !useAlgoliaForSearch" ref="observerTarget" />
 	</div>
 </template>
 

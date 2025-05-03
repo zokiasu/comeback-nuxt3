@@ -43,7 +43,11 @@ export function useSupabaseNews() {
 
 		if (error) {
 			console.error('Erreur lors de la création de la news:', error)
-			toast.error('Erreur lors de la création de la news')
+			toast.add({
+				title: 'Erreur',
+				description: 'Erreur lors de la création de la news',
+				color: 'error',
+			})
 			throw new Error('Erreur lors de la création de la news')
 		}
 
@@ -59,7 +63,11 @@ export function useSupabaseNews() {
 
 		if (junctionError) {
 			console.error('Erreur lors de la création des relations artistes:', junctionError)
-			toast.error('Erreur lors de la création des relations artistes')
+			toast.add({
+				title: 'Erreur',
+				description: 'Erreur lors de la création des relations artistes',
+				color: 'error',
+			})
 			throw new Error('Erreur lors de la création des relations artistes')
 		}
 
@@ -77,7 +85,11 @@ export function useSupabaseNews() {
 
 		if (error) {
 			console.error('Erreur lors de la mise à jour de la news:', error)
-			toast.error('Erreur lors de la mise à jour de la news')
+			toast.add({
+				title: 'Erreur',
+				description: 'Erreur lors de la mise à jour de la news',
+				color: 'error',
+			})
 			return null
 		}
 
@@ -97,7 +109,11 @@ export function useSupabaseNews() {
 					'Erreur lors de la suppression des anciennes relations:',
 					deleteError,
 				)
-				toast.error('Erreur lors de la mise à jour des artistes')
+				toast.add({
+					title: 'Erreur',
+					description: 'Erreur lors de la mise à jour des artistes',
+					color: 'error',
+				})
 				throw deleteError
 			}
 
@@ -118,7 +134,11 @@ export function useSupabaseNews() {
 						'Erreur lors de la création des nouvelles relations:',
 						insertError,
 					)
-					toast.error('Erreur lors de la mise à jour des artistes')
+					toast.add({
+						title: 'Erreur',
+						description: 'Erreur lors de la mise à jour des artistes',
+						color: 'error',
+					})
 					throw insertError
 				}
 			}
@@ -136,7 +156,11 @@ export function useSupabaseNews() {
 
 		if (error) {
 			console.error('Erreur lors de la suppression de la news:', error)
-			toast.error('Erreur lors de la suppression de la news')
+			toast.add({
+				title: 'Erreur',
+				description: 'Erreur lors de la suppression de la news',
+				color: 'error',
+			})
 			return false
 		}
 
@@ -176,10 +200,17 @@ export function useSupabaseNews() {
 			query = query.eq('verified', options.verified)
 		}
 
+		// Gérer le tri spécifiquement
 		if (options?.orderBy) {
-			query = query.order(options.orderBy, {
-				ascending: options.orderDirection === 'asc',
-			})
+			if (options.orderBy === 'artist') {
+				// Pour le tri par artiste, on récupère toutes les données et on trie côté client
+				query = query.order('id', { ascending: true })
+			} else {
+				// Pour les autres champs, on utilise le tri côté serveur
+				query = query.order(options.orderBy, {
+					ascending: options.orderDirection === 'asc',
+				})
+			}
 		} else {
 			query = query.order('date', { ascending: false })
 		}
@@ -212,8 +243,21 @@ export function useSupabaseNews() {
 			user: news.contributions?.[0]?.user || null,
 		}))
 
+		// Si le tri est par artiste, on trie manuellement les résultats
+		let sortedData = transformedData as News[]
+		if (options?.orderBy === 'artist') {
+			console.log('Tri par artiste appliqué côté client')
+			sortedData = sortedData.sort((a, b) => {
+				const nameA = a.artists?.[0]?.name || ''
+				const nameB = b.artists?.[0]?.name || ''
+				return options.orderDirection === 'asc'
+					? nameA.localeCompare(nameB)
+					: nameB.localeCompare(nameA)
+			})
+		}
+
 		return {
-			news: transformedData as News[],
+			news: sortedData,
 			total: count || 0,
 			page: options?.offset ? Math.floor(options.offset / (options.limit || 10)) + 1 : 1,
 			limit: options?.limit || 10,

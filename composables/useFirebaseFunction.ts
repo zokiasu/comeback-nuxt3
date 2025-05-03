@@ -193,7 +193,10 @@ export function useFirebaseFunction() {
 				...styleFetch,
 			],
 		}).then(() => {
-			toast.success('Style added')
+			toast.add({
+				title: 'Style added',
+				color: 'success',
+			})
 		})
 	}
 
@@ -209,7 +212,10 @@ export function useFirebaseFunction() {
 				...generalTagFetch,
 			],
 		}).then(() => {
-			toast.success('Tag added')
+			toast.add({
+				title: 'Tag added',
+				color: 'success',
+			})
 		})
 	}
 

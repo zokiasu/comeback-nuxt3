@@ -45,7 +45,10 @@
 		if (roomIdInput.value.trim()) {
 			router.push('/syncradio?id=' + roomIdInput.value.trim())
 		} else {
-			toast.error('Please enter a valid Room ID')
+			toast.add({
+				title: 'Please enter a valid Room ID',
+				color: 'error',
+			})
 		}
 	}
 

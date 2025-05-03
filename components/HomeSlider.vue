@@ -9,15 +9,28 @@
 	import 'swiper/css/parallax'
 	import type { News } from '~/types/supabase/news'
 
-	defineProps<{
+	const props = defineProps<{
 		newsToday: News[]
 	}>()
+
+	const todayDate = new Date()
+	const todayDateFormatted = todayDate.toLocaleDateString('en-US', {
+		month: 'long',
+		day: 'numeric',
+		year: 'numeric',
+	})
 </script>
 
 <template>
 	<div
 		class="relative max-h-[20rem] min-h-[20rem] w-full md:max-h-[30rem] md:min-h-[30rem] lg:aspect-video lg:max-h-[40rem] lg:min-h-[40rem]"
 	>
+		<div class="absolute inset-x-0 bottom-5 z-20 flex justify-center">
+			<UBadge
+				:label="`Today's Date : ${todayDateFormatted}`"
+				class="bg-cb-quaternary-900 w-fit px-3 text-white"
+			/>
+		</div>
 		<transition name="fade" mode="out-in">
 			<section v-if="newsToday.length > 0" class="absolute inset-0">
 				<div class="absolute top-10 z-10">
@@ -41,18 +54,27 @@
 						class="h-full"
 					>
 						<SwiperSlide v-for="comeback in newsToday" :key="comeback.id" class="h-full">
-							<ComebackSlider
-								v-if="comeback.artists && comeback.artists.length > 0"
-								:id="comeback.artists[0].id"
-								:image="comeback.artists[0].image"
-								:name="comeback.artists[0].name"
-							/>
+							<template
+								v-if="
+									comeback.artists &&
+									Array.isArray(comeback.artists) &&
+									comeback.artists.length > 0
+								"
+							>
+								<ComebackSlider :artists="comeback.artists" />
+							</template>
+							<div
+								v-else
+								class="flex h-full w-full items-center justify-center bg-black/70"
+							>
+								<p class="text-3xl font-bold">Données d'artiste indisponibles</p>
+							</div>
 						</SwiperSlide>
 					</Swiper>
 				</ClientOnly>
 			</section>
 
-			<section
+			<div
 				v-else
 				class="absolute inset-0 bg-[url('/slider-placeholder.webp')] bg-cover bg-center bg-no-repeat"
 			>
@@ -66,11 +88,9 @@
 					<p class="text-[3vw] xl:text-3xl">
 						Track every next release by your favorite artists
 					</p>
+					<p class="text-cb-primary-900 text-center">No Comeback Reported Today</p>
 				</div>
-				<p class="text-cb-primary-900 absolute inset-x-0 bottom-5 z-20 text-center">
-					No Comeback Reported Today
-				</p>
-			</section>
+			</div>
 		</transition>
 	</div>
 </template>

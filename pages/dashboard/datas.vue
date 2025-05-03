@@ -34,11 +34,17 @@
 
 	const creationStyle = async () => {
 		if (styleFetch.value.find((style) => style.name === newStyle.value)) {
-			toast.error('Style already exists')
+			toast.add({
+				title: 'Style already exists',
+				color: 'error',
+			})
 			return
 		}
 		await createMusicStyle({ name: newStyle.value }).then(async () => {
-			toast.success('Style created')
+			toast.add({
+				title: 'Style created',
+				color: 'success',
+			})
 			styleFetch.value = await getAllMusicStyles()
 			newStyle.value = ''
 		})
@@ -46,11 +52,17 @@
 
 	const creationTag = async () => {
 		if (generalTagFetch.value.find((tag) => tag.name === newGeneralTag.value)) {
-			toast.error('Tag already exists')
+			toast.add({
+				title: 'Tag already exists',
+				color: 'error',
+			})
 			return
 		}
 		await createGeneralTag({ name: newGeneralTag.value }).then(async () => {
-			toast.success('Tag created')
+			toast.add({
+				title: 'Tag created',
+				color: 'success',
+			})
 			generalTagFetch.value = await getAllGeneralTags()
 			newGeneralTag.value = ''
 		})
@@ -59,14 +71,20 @@
 	const deleteStyle = async (name: string) => {
 		styleFetch.value = styleFetch.value.filter((style) => style.name !== name)
 		await deleteMusicStyle(name).then(() => {
-			toast.success('Style deleted')
+			toast.add({
+				title: 'Style deleted',
+				color: 'success',
+			})
 		})
 	}
 
 	const deleteTag = async (name: string) => {
 		generalTagFetch.value = generalTagFetch.value.filter((tag) => tag.name !== name)
 		await deleteGeneralTag(name).then(() => {
-			toast.success('Tag deleted')
+			toast.add({
+				title: 'Tag deleted',
+				color: 'success',
+			})
 		})
 	}
 </script>
@@ -81,7 +99,7 @@
 					v-model="newStyle"
 					type="text"
 					placeholder="Add new style"
-					class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out placeholder:text-zinc-500 focus:outline-none"
+					class="bg-cb-quinary-900 placeholder-cb-tertiary-200 focus:bg-cb-tertiary-200 focus:text-cb-quinary-900 focus:placeholder-cb-quinary-900 w-full rounded border-none px-5 py-2 drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none"
 					@keyup.enter="
 						async () => {
 							await creationStyle()

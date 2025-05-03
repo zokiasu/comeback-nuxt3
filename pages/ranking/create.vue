@@ -228,9 +228,15 @@
 	const addMusicToRanking = (music: any) => {
 		if (!rankingMusics.value.includes(music)) {
 			rankingMusics.value.push(music)
-			toast.success('Music added to ranking')
+			toast.add({
+				title: 'Music added to ranking',
+				color: 'success',
+			})
 		} else {
-			toast.error('Music already in ranking')
+			toast.add({
+				title: 'Music already in ranking',
+				color: 'error',
+			})
 		}
 	}
 
@@ -259,10 +265,21 @@
 	const createRanking = async () => {
 		if (!userDataStore?.id || !isLoginStore) return
 
-		if (!rankingName.value) return toast.error('Ranking name is required')
+		if (!rankingName.value) {
+			toast.add({
+				title: 'Ranking name is required',
+				color: 'error',
+			})
+			return
+		}
 
-		if (rankingMusics.value.length < 3)
-			return toast.error('Ranking must have at least 3 musics')
+		if (rankingMusics.value.length < 3) {
+			toast.add({
+				title: 'Ranking must have at least 3 musics',
+				color: 'error',
+			})
+			return
+		}
 
 		const path = `/rankings/${userDataStore.id}`
 
@@ -271,11 +288,17 @@
 				name: rankingName.value,
 				musics: rankingMusics.value,
 			})
-			toast.success('Ranking created')
+			toast.add({
+				title: 'Ranking created',
+				color: 'success',
+			})
 			router.push(`/profile/${userDataStore?.id}`)
 		} catch (error) {
 			console.error('Error updating ranking:', error)
-			toast.error('Error updating ranking')
+			toast.add({
+				title: 'Error updating ranking',
+				color: 'error',
+			})
 		}
 	}
 
@@ -328,7 +351,10 @@
 		musics.value = (await getAllMusics()) as any[]
 
 		if (!isLoginStore) {
-			toast.info('You must be logged in to create a ranking')
+			toast.add({
+				title: 'You must be logged in to create a ranking',
+				color: 'info',
+			})
 		}
 	})
 </script>

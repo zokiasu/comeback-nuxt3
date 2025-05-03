@@ -49,7 +49,10 @@
 		}
 
 		if (props.styleFetch.find((style) => style.name === newStyle.value)) {
-			toast.error('This style already exists')
+			toast.add({
+				title: 'This style already exists',
+				color: 'error',
+			})
 			return
 		}
 
