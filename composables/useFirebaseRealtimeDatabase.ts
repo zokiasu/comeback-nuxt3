@@ -60,7 +60,10 @@ export function useFirebaseRealtimeDatabase() {
 		const dataRef = ref(database as any, path)
 		try {
 			await remove(dataRef)
-			toast.success('Successfully deleted!')
+			toast.add({
+				title: 'Successfully deleted!',
+				color: 'success',
+			})
 		} catch (error) {
 			console.error('Error deleting data:', error)
 			// toast.error('Failed to delete data')

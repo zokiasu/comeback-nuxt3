@@ -18,7 +18,10 @@ export function useSupabaseMusic() {
 
 		if (error) {
 			console.error('Erreur lors de la mise à jour de la musique:', error)
-			toast.error('Erreur lors de la mise à jour de la musique')
+			toast.add({
+				title: 'Erreur lors de la mise à jour de la musique',
+				color: 'error',
+			})
 			return null
 		}
 
@@ -38,7 +41,10 @@ export function useSupabaseMusic() {
 					'Erreur lors de la suppression des anciennes relations:',
 					deleteError,
 				)
-				toast.error('Erreur lors de la mise à jour des artistes')
+				toast.add({
+					title: 'Erreur lors de la mise à jour des artistes',
+					color: 'error',
+				})
 				throw deleteError
 			}
 
@@ -56,7 +62,10 @@ export function useSupabaseMusic() {
 						'Erreur lors de la création des nouvelles relations:',
 						insertError,
 					)
-					toast.error('Erreur lors de la mise à jour des artistes')
+					toast.add({
+						title: 'Erreur lors de la mise à jour des artistes',
+						color: 'error',
+					})
 					throw insertError
 				}
 			}
@@ -79,7 +88,10 @@ export function useSupabaseMusic() {
 					'Erreur lors de la suppression des anciennes relations:',
 					deleteError,
 				)
-				toast.error('Erreur lors de la mise à jour des releases')
+				toast.add({
+					title: 'Erreur lors de la mise à jour des releases',
+					color: 'error',
+				})
 				throw deleteError
 			}
 
@@ -97,7 +109,10 @@ export function useSupabaseMusic() {
 						'Erreur lors de la création des nouvelles relations:',
 						insertError,
 					)
-					toast.error('Erreur lors de la mise à jour des releases')
+					toast.add({
+						title: 'Erreur lors de la mise à jour des releases',
+						color: 'error',
+					})
 					throw insertError
 				}
 			}
@@ -120,7 +135,10 @@ export function useSupabaseMusic() {
 
 		if (error) {
 			console.error('Erreur lors de la suppression de la musique:', error)
-			toast.error('Erreur lors de la suppression de la musique')
+			toast.add({
+				title: 'Erreur lors de la suppression de la musique',
+				color: 'error',
+			})
 			return false
 		}
 

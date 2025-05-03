@@ -49,11 +49,19 @@
 		}
 
 		if (props.generalTags.find((tag) => tag.name === newGeneralTag)) {
-			toast.error('Tag already exists')
+			toast.add({
+				title: 'Tag already exists',
+				description: 'Tag already exists',
+				color: 'error',
+			})
 			return
 		}
 
 		await createGeneralTag({ name: newGeneralTag })
-		toast.success('Tag created successfully')
+		toast.add({
+			title: 'Tag created successfully',
+			description: 'Tag created successfully',
+			color: 'success',
+		})
 	}
 </script>

@@ -22,7 +22,10 @@ export function useSupabaseRelease() {
 
 		if (error) {
 			console.error('Erreur lors de la mise à jour de la release:', error)
-			toast.error('Erreur lors de la mise à jour de la release')
+			toast.add({
+				title: 'Erreur lors de la mise à jour de la release',
+				color: 'error',
+			})
 			return null
 		}
 
@@ -42,7 +45,10 @@ export function useSupabaseRelease() {
 					'Erreur lors de la suppression des anciennes relations:',
 					deleteError,
 				)
-				toast.error('Erreur lors de la mise à jour des artistes')
+				toast.add({
+					title: 'Erreur lors de la mise à jour des artistes',
+					color: 'error',
+				})
 				throw deleteError
 			}
 
@@ -60,7 +66,10 @@ export function useSupabaseRelease() {
 						'Erreur lors de la création des nouvelles relations:',
 						insertError,
 					)
-					toast.error('Erreur lors de la mise à jour des artistes')
+					toast.add({
+						title: 'Erreur lors de la mise à jour des artistes',
+						color: 'error',
+					})
 					throw insertError
 				}
 			}
@@ -85,7 +94,10 @@ export function useSupabaseRelease() {
 
 		if (error) {
 			console.error('Erreur lors de la suppression de la release:', error)
-			toast.error('Erreur lors de la suppression de la release')
+			toast.add({
+				title: 'Erreur lors de la suppression de la release',
+				color: 'error',
+			})
 			return false
 		}
 
@@ -267,7 +279,10 @@ export function useSupabaseRelease() {
 
 			if (error) {
 				console.error('Erreur lors de la récupération des releases du mois:', error)
-				toast.error('Erreur lors de la récupération des releases du mois')
+				toast.add({
+					title: 'Erreur lors de la récupération des releases du mois',
+					color: 'error',
+				})
 				throw error
 			}
 

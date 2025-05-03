@@ -67,7 +67,10 @@
 			}
 		} catch (error) {
 			console.error('Erreur lors de la recherche Algolia:', error)
-			toast.error('Erreur lors de la recherche')
+			toast.add({
+				title: 'Erreur lors de la recherche',
+				color: 'error',
+			})
 		} finally {
 			isSearching.value = false
 		}
@@ -127,7 +130,10 @@
 			currentPage.value++
 		} catch (error) {
 			console.error('Erreur lors de la récupération des releases:', error)
-			toast.error('Erreur lors du chargement des releases')
+			toast.add({
+				title: 'Erreur lors du chargement des releases',
+				color: 'error',
+			})
 		} finally {
 			isLoading.value = false
 		}
@@ -137,15 +143,24 @@
 		try {
 			const res = await deleteReleaseFunction(id)
 			if (res) {
-				toast.success('Release supprimé')
+				toast.add({
+					title: 'Release supprimé',
+					color: 'success',
+				})
 				releaseFetch.value = releaseFetch.value.filter((release) => release.id !== id)
 			} else {
 				console.log('Erreur lors de la suppression du release')
-				toast.error('Erreur lors de la suppression du release')
+				toast.add({
+					title: 'Erreur lors de la suppression du release',
+					color: 'error',
+				})
 			}
 		} catch (error) {
 			console.error('Erreur lors de la suppression du release:', error)
-			toast.error('Erreur lors de la suppression du release')
+			toast.add({
+				title: 'Erreur lors de la suppression du release',
+				color: 'error',
+			})
 		}
 	}
 
@@ -261,7 +276,10 @@
 			releaseFetch.value = result.releases
 		} catch (error) {
 			console.error('Erreur lors du chargement de tous les releases:', error)
-			toast.error('Erreur lors du chargement de tous les releases')
+			toast.add({
+				title: 'Erreur lors du chargement de tous les releases',
+				color: 'error',
+			})
 		}
 	}
 </script>

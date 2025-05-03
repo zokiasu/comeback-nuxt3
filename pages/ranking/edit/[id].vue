@@ -219,9 +219,15 @@
 	const addMusicToRanking = (music: any) => {
 		if (!rankingMusics.value.includes(music)) {
 			rankingMusics.value.push(music)
-			toast.success('Music added to ranking')
+			toast.add({
+				title: 'Music added to ranking',
+				color: 'success',
+			})
 		} else {
-			toast.error('Music already in ranking')
+			toast.add({
+				title: 'Music already in ranking',
+				color: 'error',
+			})
 		}
 	}
 
@@ -251,11 +257,17 @@
 				name: rankingName.value,
 				musics: rankingMusics.value,
 			})
-			toast.success('Ranking updated')
+			toast.add({
+				title: 'Ranking updated',
+				color: 'success',
+			})
 			router.push(`/profile/${userDataStore.value.id}`)
 		} catch (error) {
 			console.error('Error updating ranking:', error)
-			toast.error('Error updating ranking')
+			toast.add({
+				title: 'Error updating ranking',
+				color: 'error',
+			})
 		}
 	}
 
@@ -302,7 +314,10 @@
 		rankingMusics.value = rankingData.musics
 
 		if (!isLoginStore.value) {
-			toast.info('You must be logged in to edit a ranking')
+			toast.add({
+				title: 'You must be logged in to edit a ranking',
+				color: 'info',
+			})
 		}
 	})
 </script>

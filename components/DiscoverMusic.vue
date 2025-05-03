@@ -25,12 +25,12 @@
 <template>
 	<div v-if="music && music?.artists">
 		<UButton
-			class="bg-cb-quinary-900 text-cb-tertiary-200 hover:text-cb-primary-900 relative aspect-square max-h-96 w-full overflow-hidden rounded-lg drop-shadow-lg !p-0"
+			class="bg-cb-quinary-900 text-cb-tertiary-200 hover:text-cb-primary-900 relative aspect-square max-h-96 w-full overflow-hidden rounded-lg !p-0 drop-shadow-lg"
 			@click="playVideo(music.id_youtube_music)"
 		>
 			<div v-if="music.thumbnails?.length" class="relative h-full w-full">
 				<div
-					class="bg-cb-quinary-900 absolute inset-0 h-full w-full transition-all duration-500 ease-in-out"
+					class="bg-cb-quinary-900 absolute inset-0 h-full w-full"
 					:class="imageLoaded ? 'opacity-0' : 'opacity-100'"
 				/>
 				<NuxtImg
@@ -47,7 +47,7 @@
 					<NuxtLink
 						v-if="music.name"
 						:to="'/release/' + music.releases?.[0]?.id"
-						class="hover:text-cb-primary-900 font-semibold transition-all duration-300 ease-in-out lg:text-xl"
+						class="hover:text-cb-primary-900 font-semibold lg:text-xl"
 					>
 						{{ music.name }}
 					</NuxtLink>
@@ -58,12 +58,9 @@
 				<div class="flex justify-end">
 					<IconPause
 						v-if="isPlayingVideo && idYoutubeVideo === music.id_youtube_music"
-						class="h-8 w-8 transition-all duration-500 ease-in-out md:h-10 md:w-10"
+						class="h-8 w-8 md:h-10 md:w-10"
 					/>
-					<IconPlay
-						v-else
-						class="h-8 w-8 transition-all duration-500 ease-in-out md:h-10 md:w-10"
-					/>
+					<IconPlay v-else class="h-8 w-8 md:h-10 md:w-10" />
 				</div>
 			</div>
 		</UButton>
