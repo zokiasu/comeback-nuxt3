@@ -3,26 +3,22 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
 	compatibilityDate: '2025-05-27',
-	
+
 	modules: [
 		'@pinia/nuxt',
 		'@nuxt/image',
 		'@nuxtjs/algolia',
 		'@nuxt/ui',
 		'@vite-pwa/nuxt',
+		'@nuxtjs/supabase',
+		'@nuxt/eslint',
 	],
 
 	css: ['~/assets/css/tailwind.css'],
 
-	plugins: ['~/plugins/firebase.client.ts'],
-
 	ssr: true,
 
 	devtools: { enabled: true },
-
-	colorMode: {
-		classSuffix: '',
-	},
 
 	vite: {
 		plugins: [tailwindcss()],
@@ -33,20 +29,28 @@ export default defineNuxtConfig({
 
 	runtimeConfig: {
 		public: {
-			FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
-			FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
-			FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
-			FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
-			FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
-			FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
-			FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
 			YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
 			ALGOLIA_API_KEY: process.env.ALGOLIA_API_KEY,
 			ALGOLIA_APPLICATION_ID: process.env.ALGOLIA_APPLICATION_ID,
 			ALGOLIA_INDEX_NAME: process.env.ALGOLIA_INDEX_NAME,
 			SUPABASE_URL: process.env.SUPABASE_URL,
 			SUPABASE_KEY: process.env.SUPABASE_KEY,
+			SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
 		},
+		SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY,
+	},
+
+	supabase: {
+		url: process.env.SUPABASE_URL,
+		key: process.env.SUPABASE_KEY,
+		serviceKey: process.env.SUPABASE_SERVICE_KEY,
+		redirectOptions: {
+			login: '/authentification',
+			callback: '/auth/callback',
+			exclude: ['/'],
+			saveRedirectToCookie: true,
+		},
+		types: './types/supabase.ts',
 	},
 
 	experimental: {
@@ -59,7 +63,7 @@ export default defineNuxtConfig({
 	},
 
 	build: {
-		transpile: ['firebase', 'swiper', 'tslib'],
+		transpile: ['swiper', 'tslib'],
 	},
 
 	app: {

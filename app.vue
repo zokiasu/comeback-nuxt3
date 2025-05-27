@@ -1,12 +1,48 @@
 <script setup>
-	import { useAuthListener } from '~/composables/useAuthListener'
+	// L'authentification est maintenant gérée automatiquement par useAuth
+	// via les watchers dans le composable
 
-	const { initAuthListener } = useAuthListener()
+	// Logs pour débugger l'authentification
+	const { user, userData, isLogin, isAdmin } = useAuth()
 
-	onMounted(() => {
-		// Initialize the auth listener via the composable
-		initAuthListener()
-	})
+	// Watchers pour voir les changements d'état
+	watch(
+		user,
+		(newUser) => {
+			console.log(
+				'🔍 Utilisateur Supabase:',
+				newUser ? `${newUser.email} (${newUser.id})` : 'Non connecté',
+			)
+		},
+		{ immediate: true },
+	)
+
+	watch(
+		userData,
+		(newUserData) => {
+			console.log(
+				'👤 Données utilisateur:',
+				newUserData ? `${newUserData.name} (${newUserData.role})` : 'Aucune donnée',
+			)
+		},
+		{ immediate: true },
+	)
+
+	watch(
+		isLogin,
+		(newIsLogin) => {
+			console.log('🔐 État de connexion:', newIsLogin ? 'Connecté' : 'Non connecté')
+		},
+		{ immediate: true },
+	)
+
+	watch(
+		isAdmin,
+		(newIsAdmin) => {
+			console.log('👑 Rôle admin:', newIsAdmin ? 'Admin' : 'Utilisateur normal')
+		},
+		{ immediate: true },
+	)
 </script>
 
 <template>

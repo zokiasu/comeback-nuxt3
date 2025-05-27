@@ -1,13 +1,8 @@
 <script setup lang="ts">
-	import { Timestamp, doc, onSnapshot, updateDoc } from 'firebase/firestore'
-
-	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
 	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
 	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'
 
-	const { $firestore: db } = useNuxtApp()
 	const toast = useToast()
-	const { createStyle, createTag } = useFirebaseFunction()
 	const { createMusicStyle, getAllMusicStyles, deleteMusicStyle } =
 		useSupabaseMusicStyles()
 	const { createGeneralTag, getAllGeneralTags, deleteGeneralTag } =

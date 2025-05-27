@@ -1,71 +1,56 @@
 // store/user.ts
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { doc, getDoc, getFirestore } from 'firebase/firestore'
-import type { User } from '~/types/user'
+import type { User } from '~/types/supabase/user'
 
-export const useUserStore = defineStore(
-	'userStore',
-	() => {
-		const firebaseUserStore = ref(null)
-		const isLoginStore = ref<boolean>(false)
-		const isAdminStore = ref<boolean>(false)
-		const userDataStore = ref<User | null>(null)
+export const useUserStore = defineStore('userStore', () => {
+	const supabaseUserStore = ref(null)
+	const isLoginStore = ref<boolean>(false)
+	const isAdminStore = ref<boolean>(false)
+	const userDataStore = ref<User | null>(null)
 
-		const setUserData = (user: any) => {
-			userDataStore.value = user
+	const setUserData = (user: User | null) => {
+		userDataStore.value = user
+		if (user) {
+			setIsAdmin(user.role === 'ADMIN')
+		} else {
+			setIsAdmin(false)
 		}
+	}
 
-		const setFirebaseUser = (user: any) => {
-			firebaseUserStore.value = user
-		}
+	const setSupabaseUser = (user: any) => {
+		supabaseUserStore.value = user
+	}
 
-		const setIsLogin = (isLogin: boolean) => {
-			isLoginStore.value = isLogin
-		}
+	const setIsLogin = (isLogin: boolean) => {
+		isLoginStore.value = isLogin
+	}
 
-		const setIsAdmin = (isAdmin: boolean) => {
-			isAdminStore.value = isAdmin
-		}
+	const setIsAdmin = (isAdmin: boolean) => {
+		isAdminStore.value = isAdmin
+	}
 
-		async function checkUserAuthState() {
-			const { $auth } = useNuxtApp()
-			return new Promise<void>((resolve) => {
-				const unsubscribe = $auth.onAuthStateChanged((user: any) => {
-					if (user) {
-						getDatabaseUser(user)
-					}
-					unsubscribe()
-					resolve()
-				})
-			})
+	const syncUserProfile = async (authUser: any = null, userData: User | null = null) => {
+		if (authUser && userData) {
+			setUserData(userData)
+			setIsLogin(true)
+			setSupabaseUser(authUser)
+		} else {
+			setUserData(null)
+			setIsLogin(false)
+			setSupabaseUser(null)
 		}
+	}
 
-		const getDatabaseUser = async (user: any) => {
-			const uid = user.uid
-			const db = getFirestore()
-			const userRef = doc(db, 'users', uid)
-			const userSnap = await getDoc(userRef)
-			if (userSnap.exists()) {
-				const userData = userSnap.data()
-				setUserData(userData)
-				setIsAdmin(userData.role === 'ADMIN')
-			}
-		}
-
-		return {
-			firebaseUserStore,
-			userDataStore,
-			isLoginStore,
-			isAdminStore,
-			setUserData,
-			setFirebaseUser,
-			setIsLogin,
-			setIsAdmin,
-			checkUserAuthState,
-		}
-	},
-	{
-		persist: true,
-	},
-)
+	return {
+		supabaseUserStore,
+		userDataStore,
+		isLoginStore,
+		isAdminStore,
+		setUserData,
+		setSupabaseUser,
+		setIsLogin,
+		setIsAdmin,
+		syncUserProfile,
+	}
+})

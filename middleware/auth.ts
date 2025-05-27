@@ -1,11 +1,11 @@
-import { useUserStore } from '@/stores/user'
-
 export default defineNuxtRouteMiddleware(async (to) => {
+	const user = useSupabaseUser()
 	const { userDataStore } = useUserStore()
+	const { ensureUserProfile } = useAuth()
 
 	try {
-		if (userDataStore === null) {
-			// En cas d'erreur, rediriger vers la page de connexion
+		// Si pas d'utilisateur Supabase connecté
+		if (!user.value) {
 			return navigateTo({
 				path: '/authentification',
 				query: {
@@ -13,9 +13,23 @@ export default defineNuxtRouteMiddleware(async (to) => {
 				},
 			})
 		}
+
+		// Si utilisateur Supabase connecté mais pas de données dans le store
+		if (!userDataStore) {
+			const success = await ensureUserProfile()
+
+			// Vérifier à nouveau après synchronisation
+			if (!success || !userDataStore) {
+				return navigateTo({
+					path: '/authentification',
+					query: {
+						redirect: to.fullPath,
+					},
+				})
+			}
+		}
 	} catch (error) {
 		console.error("Erreur lors de la vérification de l'état de l'utilisateur:", error)
-		// En cas d'erreur, rediriger vers la page de connexion
 		return navigateTo({
 			path: '/authentification',
 			query: {

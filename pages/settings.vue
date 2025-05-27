@@ -1,11 +1,10 @@
 <script setup>
 	const routeN = useRoute()
 	const menuCollapsable = ref(null)
+	const { logout } = useAuth()
 
 	const signOut = async () => {
-		await signOutApp()
-		const router = useRouter()
-		router.push('/')
+		await logout()
 	}
 </script>
 

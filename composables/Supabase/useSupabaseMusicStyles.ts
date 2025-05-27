@@ -1,10 +1,8 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
-import { useSupabase } from './useSupabase'
 import type { QueryOptions, FilterOptions } from '~/types/supabase'
 import type { MusicStyle } from '~/types/supabase/music_style'
 
 export function useSupabaseMusicStyles() {
-	const { supabase } = useSupabase() as { supabase: SupabaseClient }
+	const supabase = useSupabaseClient()
 	const toast = useToast()
 
 	// Crée un nouveau style

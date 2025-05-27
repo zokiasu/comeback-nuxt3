@@ -1,6 +1,4 @@
 <script setup lang="ts">
-	import { Timestamp } from 'firebase/firestore'
-
 	const {
 		musicName,
 		musicId,
@@ -46,7 +44,7 @@
 			required: true,
 		},
 		musicDate: {
-			type: Timestamp,
+			type: String,
 		},
 		ismv: {
 			type: Boolean,

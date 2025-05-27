@@ -1,6 +1,11 @@
 import type { Release } from './release'
-import type { BaseEntity, ArtistGender, ArtistType } from '.'
-import type { ArtistSocialLink, ArtistPlatformLink } from '.'
+import type {
+	BaseEntity,
+	ArtistGender,
+	ArtistType,
+	ArtistSocialLink,
+	ArtistPlatformLink,
+} from '.'
 
 export interface Artist extends BaseEntity {
 	firebase_id?: string

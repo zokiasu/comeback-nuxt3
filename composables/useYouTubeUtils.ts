@@ -1,4 +1,4 @@
-export function useFirebaseUtils() {
+export function useYouTubeUtils() {
 	// Fetches details of a YouTube video using the YouTube Data API.
 	const getVideoFullDetails = async (videoId: string, apiKey: string) => {
 		const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet,contentDetails,status&key=${apiKey}`

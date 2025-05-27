@@ -87,10 +87,9 @@
 						v-if="isLoginStore"
 						to="/settings/profile"
 						variant="soft"
+						icon="material-symbols:settings-rounded"
 						class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
-					>
-						<UIcon name="material-symbols:settings-rounded" class="size-3" />
-					</UButton>
+					/>
 
 					<UButton
 						v-else

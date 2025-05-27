@@ -1,4 +1,4 @@
-import { Timestamp } from 'firebase/firestore'
+import type { Timestamp } from 'firebase/firestore'
 
 // Déclaration des types pour les résultats d'Algolia
 export interface AlgoliaHit {

@@ -1,5 +1,5 @@
-import { Timestamp } from 'firebase/firestore'
-import { type Release } from './release'
+import type { Timestamp } from 'firebase/firestore'
+import type { Release } from './release'
 
 export interface Artist {
 	id: string

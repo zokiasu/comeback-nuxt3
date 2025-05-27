@@ -3,7 +3,7 @@
 	import type { Artist } from '~/types/supabase/artist'
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 
-	import { deletebyDoc } from '~/composables/useFirestore'
+	// Firebase supprimé - utilisation de Supabase uniquement
 	import type { AlgoliaHit } from '~/types/algolia'
 
 	// Types
@@ -16,7 +16,6 @@
 
 	// État
 	const toast = useToast()
-	const { $firestore: db } = useNuxtApp()
 	const { getArtistsByPage } = useSupabaseArtist()
 
 	const artistFetch = ref<Artist[]>([])
