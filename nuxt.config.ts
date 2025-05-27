@@ -2,13 +2,14 @@
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
+	compatibilityDate: '2025-05-27',
+	
 	modules: [
 		'@pinia/nuxt',
 		'@nuxt/image',
 		'@nuxtjs/algolia',
 		'@nuxt/ui',
 		'@vite-pwa/nuxt',
-		'@nuxtjs/supabase',
 	],
 
 	css: ['~/assets/css/tailwind.css'],
@@ -44,7 +45,6 @@ export default defineNuxtConfig({
 			ALGOLIA_APPLICATION_ID: process.env.ALGOLIA_APPLICATION_ID,
 			ALGOLIA_INDEX_NAME: process.env.ALGOLIA_INDEX_NAME,
 			SUPABASE_URL: process.env.SUPABASE_URL,
-			SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
 			SUPABASE_KEY: process.env.SUPABASE_KEY,
 		},
 	},
@@ -155,8 +155,6 @@ export default defineNuxtConfig({
 			theme: 'algolia',
 		},
 	},
-
-	compatibilityDate: '2025-04-03',
 
 	pwa: {
 		registerType: 'autoUpdate',
