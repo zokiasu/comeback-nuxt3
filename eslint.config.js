@@ -32,6 +32,7 @@ export default [
 				onBeforeUnmount: 'readonly',
 				nextTick: 'readonly',
 				PropType: 'readonly',
+				useTemplateRef: 'readonly',
 				// Nuxt auto-imports
 				useRoute: 'readonly',
 				useRouter: 'readonly',
@@ -132,6 +133,7 @@ export default [
 				onBeforeUnmount: 'readonly',
 				nextTick: 'readonly',
 				PropType: 'readonly',
+				useTemplateRef: 'readonly',
 				// Nuxt auto-imports
 				useRoute: 'readonly',
 				useRouter: 'readonly',

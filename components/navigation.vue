@@ -6,8 +6,8 @@
 	const { isLoginStore, isAdminStore } = storeToRefs(userStore)
 	const route = useRoute()
 
-	const navbar = ref<HTMLElement | null>(null)
-	const algolia = ref<HTMLElement | null>(null)
+	const navbar = useTemplateRef('navbar')
+	const algolia = useTemplateRef('algolia')
 
 	onMounted(async () => {
 		window.addEventListener('scroll', handleScroll)

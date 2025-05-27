@@ -79,11 +79,6 @@
 		return route.params.id === profileData.value.id
 	})
 
-	const deleteRanking = async (id) => {
-		await deleteData(`/rankings/${userDataStore.id}/${id}`)
-		rankings.value = rankings.value.filter((ranking) => ranking.id !== id)
-	}
-
 	onMounted(async () => {
 		profileData.value = await getUserData(route.params.id)
 		const timestamp = new Timestamp(
@@ -95,12 +90,5 @@
 			month: '2-digit',
 			year: 'numeric',
 		})
-		rankings.value = await readData(`/rankings/${profileData.value.id}`)
-		if (rankings.value) {
-			rankings.value = Object.keys(rankings.value).map((key) => ({
-				id: key,
-				...rankings.value[key],
-			}))
-		}
 	})
 </script>

@@ -14,7 +14,7 @@
 	const currentPage = ref(1)
 	const totalPages = ref(1)
 	const totalNews = ref(0)
-	const observerTarget = ref<HTMLElement | null>(null)
+	const observerTarget = useTemplateRef('observerTarget')
 	const hasMore = computed(() => currentPage.value <= totalPages.value)
 
 	const fetchNews = async (firstCall = false) => {

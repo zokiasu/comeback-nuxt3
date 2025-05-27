@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "sbp_7b79ca3f445ea86bfd2850567528183e090dae01"
+      ]
+    },
+		"firebase": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["-y", "firebase-tools@latest", "experimental:mcp"]
+		}
+  }
+}

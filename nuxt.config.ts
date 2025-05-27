@@ -8,6 +8,7 @@ export default defineNuxtConfig({
 		'@nuxtjs/algolia',
 		'@nuxt/ui',
 		'@vite-pwa/nuxt',
+		'@nuxtjs/supabase',
 	],
 
 	css: ['~/assets/css/tailwind.css'],
@@ -35,16 +36,16 @@ export default defineNuxtConfig({
 			FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
 			FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
 			FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
-			FIREBASE_MESSAGIN_SENDER_ID: process.env.FIREBASE_MESSAGIN_SENDER_ID,
+			FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
 			FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
 			FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
-			FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL,
 			YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
 			ALGOLIA_API_KEY: process.env.ALGOLIA_API_KEY,
 			ALGOLIA_APPLICATION_ID: process.env.ALGOLIA_APPLICATION_ID,
 			ALGOLIA_INDEX_NAME: process.env.ALGOLIA_INDEX_NAME,
-			supabaseUrl: process.env.SUPABASE_URL,
-			supabaseKey: process.env.SUPABASE_KEY,
+			SUPABASE_URL: process.env.SUPABASE_URL,
+			SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+			SUPABASE_KEY: process.env.SUPABASE_KEY,
 		},
 	},
 
@@ -58,7 +59,7 @@ export default defineNuxtConfig({
 	},
 
 	build: {
-		transpile: ['firebase', 'swiper', 'vuedraggable', 'tslib'],
+		transpile: ['firebase', 'swiper', 'tslib'],
 	},
 
 	app: {

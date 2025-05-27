@@ -5,7 +5,7 @@
 	const { getReleasesByMonthAndYear } = useSupabaseRelease()
 
 	const releases = ref<Release[]>([])
-	const backTop = ref<HTMLElement | null>(null)
+	const backTop = useTemplateRef('backTop')
 	const yearList = ref<number[]>([])
 	const monthList = [
 		{ minify: 'Jan', original: 'January' },

@@ -1,7 +1,7 @@
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '~/stores/user'
 // middleware/auth.ts
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware(() => {
 	const userStore = useUserStore()
 	const { firebaseUserStore, isAdminStore } = storeToRefs(userStore)
 

@@ -27,7 +27,7 @@
 	const totalPages = ref(1)
 	const totalArtists = ref(0)
 
-	const scrollContainer = ref<HTMLElement | null>(null)
+	const scrollContainer = useTemplateRef('scrollContainer')
 	const sort = ref<keyof Artist>('created_at')
 	const limitFetch = ref(48)
 	const typeFilter = ref<Artist['type'] | ''>('')
@@ -48,7 +48,7 @@
 	})
 
 	// Computed
-	const observerTarget = ref<HTMLElement | null>(null)
+	const observerTarget = useTemplateRef('observerTarget')
 	const hasMore = computed(() => currentPage.value <= totalPages.value)
 
 	// Fonctions
@@ -56,32 +56,11 @@
 	 * Supprime un artiste de la base de données et de la liste locale
 	 */
 	const deleteArtist = async (id: string): Promise<void> => {
-		const artist = artistFetch.value.find((artist) => artist.id === id)
-		if (artist) {
-			const index = artistFetch.value.indexOf(artist)
-			try {
-				await deletebyDoc('artists', id)
-				artistFetch.value.splice(index, 1)
-				toast.add({
-					title: 'Artiste supprimé',
-					description: "L'artiste a été supprimé avec succès",
-					color: 'success',
-				})
-			} catch (error) {
-				console.error('Erreur lors de la suppression du document: ', error)
-				toast.add({
-					title: "Erreur lors de la suppression de l'artiste",
-					description: "Une erreur est survenue lors de la suppression de l'artiste",
-					color: 'error',
-				})
-			}
-		} else {
-			toast.add({
-				title: 'Artiste non trouvé',
-				description: "L'artiste n'a pas été trouvé",
-				color: 'error',
-			})
-		}
+		toast.add({
+			title: 'TODO: Delete Artist',
+			description: 'TODO: Delete Artist',
+			color: 'warning',
+		})
 	}
 
 	/**
