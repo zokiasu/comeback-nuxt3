@@ -9,7 +9,6 @@ export default defineNuxtConfig({
 		'@nuxt/image',
 		'@nuxtjs/algolia',
 		'@nuxt/ui',
-		'@vite-pwa/nuxt',
 		'@nuxtjs/supabase',
 		'@nuxt/eslint',
 	],
@@ -157,82 +156,6 @@ export default defineNuxtConfig({
 		lite: true,
 		instantSearch: {
 			theme: 'algolia',
-		},
-	},
-
-	pwa: {
-		registerType: 'autoUpdate',
-		// Désactiver PWA en production pour éviter les erreurs
-		disable: process.env.NODE_ENV === 'production',
-		manifest: {
-			name: 'Comeback',
-			short_name: 'Comeback',
-			description:
-				'Ne manquez aucun Comeback. Suivez chaque prochaine sortie de vos artistes préférés.',
-			theme_color: '#9E0102',
-			background_color: '#ffffff',
-			display: 'standalone',
-			scope: '/',
-			start_url: '/',
-			icons: [
-				{
-					src: '/icons/icon-48x48.png',
-					sizes: '48x48',
-					type: 'image/png',
-				},
-				{
-					src: '/icons/icon-72x72.png',
-					sizes: '72x72',
-					type: 'image/png',
-				},
-				{
-					src: '/icons/icon-96x96.png',
-					sizes: '96x96',
-					type: 'image/png',
-				},
-				{
-					src: '/icons/icon-144x144.png',
-					sizes: '144x144',
-					type: 'image/png',
-				},
-				{
-					src: '/icons/icon-192x192.png',
-					sizes: '192x192',
-					type: 'image/png',
-					purpose: 'any',
-				},
-				{
-					src: '/icons/icon-512x512.png',
-					sizes: '512x512',
-					type: 'image/png',
-					purpose: 'maskable',
-				},
-			],
-		},
-		workbox: {
-			navigateFallback: '/',
-			globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
-			// Ajouter une configuration plus robuste
-			runtimeCaching: [
-				{
-					urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-					handler: 'CacheFirst',
-					options: {
-						cacheName: 'google-fonts-cache',
-						expiration: {
-							maxEntries: 10,
-							maxAgeSeconds: 60 * 60 * 24 * 365, // 1 an
-						},
-						cacheableResponse: {
-							statuses: [0, 200],
-						},
-					},
-				},
-			],
-		},
-		devOptions: {
-			enabled: true,
-			type: 'module',
 		},
 	},
 })
