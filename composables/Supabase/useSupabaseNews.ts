@@ -332,7 +332,6 @@ export function useSupabaseNews() {
 			})) || []
 
 		// Appeler le callback avec les données transformées
-		// eslint-disable-next-line n/no-callback-literal
 		callback(transformedData as News[])
 
 		// Mettre en place la souscription en temps réel
@@ -369,7 +368,7 @@ export function useSupabaseNews() {
 									news.artists?.map((artistJunction: any) => artistJunction.artists) ||
 									[],
 							})) || []
-						// eslint-disable-next-line n/no-callback-literal
+
 						callback(transformedUpdatedData as News[])
 					}
 				},

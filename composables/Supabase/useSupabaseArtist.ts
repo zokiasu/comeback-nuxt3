@@ -491,7 +491,6 @@ export function useSupabaseArtist() {
 			throw new Error('Erreur lors de la récupération des derniers artistes')
 		}
 
-		// eslint-disable-next-line n/no-callback-literal
 		callback(data as Artist[])
 	}
 
