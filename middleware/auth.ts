@@ -1,6 +1,8 @@
+import { storeToRefs } from 'pinia'
+
 export default defineNuxtRouteMiddleware(async (to) => {
 	const user = useSupabaseUser()
-	const { userDataStore } = useUserStore()
+	const { userDataStore } = storeToRefs(useUserStore())
 	const { ensureUserProfile } = useAuth()
 
 	try {
@@ -15,11 +17,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
 		}
 
 		// Si utilisateur Supabase connecté mais pas de données dans le store
-		if (!userDataStore) {
+		if (!userDataStore.value) {
 			const success = await ensureUserProfile()
 
 			// Vérifier à nouveau après synchronisation
-			if (!success || !userDataStore) {
+			if (!success || !userDataStore.value) {
 				return navigateTo({
 					path: '/authentification',
 					query: {

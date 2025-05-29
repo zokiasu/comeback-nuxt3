@@ -3,9 +3,9 @@ import { useUserStore } from '~/stores/user'
 // middleware/auth.ts
 export default defineNuxtRouteMiddleware(() => {
 	const userStore = useUserStore()
-	const { firebaseUserStore, isAdminStore } = storeToRefs(userStore)
+	const { supabaseUserStore, isAdminStore } = storeToRefs(userStore)
 
-	if (import.meta.client && firebaseUserStore.value && isAdminStore.value) {
+	if (import.meta.client && supabaseUserStore.value && isAdminStore.value) {
 		// L'utilisateur est connecté et est admin, on le laisse passer
 	} else {
 		// Redirige vers la page d'accueil ou une page d'erreur si l'utilisateur n'est pas admin
