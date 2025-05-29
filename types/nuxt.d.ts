@@ -1,7 +1,8 @@
-import type { Firestore } from 'firebase/firestore'
-
+// Types étendus pour Nuxt
 declare module '#app' {
 	interface NuxtApp {
-		$firestore: Firestore
+		// Propriétés personnalisées pour l'app Nuxt
 	}
 }
+
+export {}

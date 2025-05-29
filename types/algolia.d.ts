@@ -1,4 +1,14 @@
-import type { Timestamp } from 'firebase/firestore'
+// Interface pour remplacer Firebase Timestamp
+interface Timestamp {
+	seconds: number
+	nanoseconds: number
+}
+
+declare global {
+	interface Window {
+		algolia: any
+	}
+}
 
 // Déclaration des types pour les résultats d'Algolia
 export interface AlgoliaHit {
@@ -24,4 +34,28 @@ export interface AlgoliaHit {
 	_snippetResult?: Record<string, any>
 	_rankingInfo?: Record<string, any>
 	_distinctSeqID?: number
+}
+
+export interface AlgoliaArtist {
+	id: string
+	name: string
+	image: string
+	description: string
+	verified: boolean
+	createdAt: Timestamp
+	updatedAt: Timestamp
+	styles: string[]
+	generalTags: string[]
+}
+
+export interface AlgoliaMusic {
+	id: string
+	title: string
+	youtube_id: string
+	youtube_link: string
+	description: string
+	artist: string
+	imageURL: string
+	createdAt: Timestamp
+	updatedAt: Timestamp
 }

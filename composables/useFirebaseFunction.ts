@@ -1,2 +1,5 @@
-// Ce fichier n'est plus utilisé - les fonctions ont été migrées vers Supabase
-// Peut être supprimé en toute sécurité
+// Ce fichier Firebase est obsolète
+// Les fonctions sont maintenant gérées via Supabase
+export const useFirebaseFunction = () => {
+	throw new Error('Ce composable Firebase est obsolète. Utilisez useSupabaseFunction() à la place.')
+}
