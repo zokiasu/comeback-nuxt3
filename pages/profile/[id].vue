@@ -61,11 +61,12 @@
 </template>
 
 <script setup>
+	import { storeToRefs } from 'pinia'
 	import { useUserStore } from '@/stores/user'
 	import { useSupabaseFunction } from '~/composables/useSupabaseFunction'
 
 	const route = useRoute()
-	const { userDataStore } = useUserStore()
+	const { userDataStore } = storeToRefs(useUserStore())
 	const { getUserData } = useSupabaseFunction()
 
 	const createdAt = ref(null)

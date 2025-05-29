@@ -1,10 +1,9 @@
 <script setup lang="ts">
+	import { storeToRefs } from 'pinia'
+	
 	const isPlayingVideo = useIsPlayingVideo()
 	const userStore = useUserStore()
-
-	const userDataStore = computed(() => userStore.userDataStore)
-	const isLoginStore = computed(() => userStore.isLoginStore)
-	const isAdminStore = computed(() => userStore.isAdminStore)
+	const { userDataStore, isLoginStore, isAdminStore } = storeToRefs(userStore)
 
 	const profilePath = computed(() => {
 		if (!userDataStore.value || !userDataStore.value.id) {
