@@ -123,7 +123,7 @@ export default defineNuxtConfig({
 				},
 				{
 					property: 'og:image',
-					content: 'https://nuxt-firebase-auth.vercel.app/ogp.png',
+					content: 'https://come-back.netlify.app/ogp.png',
 				},
 			],
 			title: 'Comeback',
