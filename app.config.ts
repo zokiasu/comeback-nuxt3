@@ -6,6 +6,7 @@ export default defineAppConfig({
 			tertiary: 'cb-tertiary',
 			quaternary: 'cb-quaternary',
 			quinary: 'cb-quinary',
+			neutral: 'cb-quaternary',
 		},
 		button: {
 			slots: {

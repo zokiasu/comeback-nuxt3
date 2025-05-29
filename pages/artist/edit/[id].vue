@@ -348,7 +348,12 @@
 					<div class="space-y-1" :class="{ hidden: artistToEdit.type === 'GROUP' }">
 						<ComebackLabel label="Birthday" />
 						<UPopover>
-							<UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
+							<UButton
+								color="neutral"
+								variant="subtle"
+								icon="i-lucide-calendar"
+								class="w-full"
+							>
 								{{ birthdayToDate ? df.format(birthdayToDate) : 'Select a date' }}
 							</UButton>
 							<template #content>
@@ -373,7 +378,12 @@
 					<div class="space-y-1">
 						<ComebackLabel label="Debut Date" />
 						<UPopover>
-							<UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
+							<UButton
+								color="neutral"
+								variant="subtle"
+								icon="i-lucide-calendar"
+								class="w-full"
+							>
 								{{ debutDateToDate ? df.format(debutDateToDate) : 'Select a date' }}
 							</UButton>
 							<template #content>
