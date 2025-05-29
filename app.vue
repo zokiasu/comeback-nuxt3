@@ -1,48 +1,8 @@
 <script setup>
-	// L'authentification est maintenant gérée automatiquement par useAuth
-	// via les watchers dans le composable
+	// Temporairement désactivé pour diagnostiquer l'erreur 500
+	// const { user, userData, isLogin, isAdmin } = useAuth()
 
-	// Logs pour débugger l'authentification
-	const { user, userData, isLogin, isAdmin } = useAuth()
-
-	// Watchers pour voir les changements d'état
-	watch(
-		user,
-		(newUser) => {
-			console.log(
-				'🔍 Utilisateur Supabase:',
-				newUser ? `${newUser.email} (${newUser.id})` : 'Non connecté',
-			)
-		},
-		{ immediate: true },
-	)
-
-	watch(
-		userData,
-		(newUserData) => {
-			console.log(
-				'👤 Données utilisateur:',
-				newUserData ? `${newUserData.name} (${newUserData.role})` : 'Aucune donnée',
-			)
-		},
-		{ immediate: true },
-	)
-
-	watch(
-		isLogin,
-		(newIsLogin) => {
-			console.log('🔐 État de connexion:', newIsLogin ? 'Connecté' : 'Non connecté')
-		},
-		{ immediate: true },
-	)
-
-	watch(
-		isAdmin,
-		(newIsAdmin) => {
-			console.log('👑 Rôle admin:', newIsAdmin ? 'Admin' : 'Utilisateur normal')
-		},
-		{ immediate: true },
-	)
+	console.log('✅ App.vue chargé sans useAuth')
 </script>
 
 <template>
