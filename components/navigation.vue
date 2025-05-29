@@ -2,8 +2,22 @@
 	import { storeToRefs } from 'pinia'
 	import { useUserStore } from '@/stores/user'
 
-	const userStore = useUserStore()
-	const { isLoginStore, isAdminStore } = storeToRefs(userStore)
+	// Accès sécurisé aux stores
+	let isLoginStore = ref(false)
+	let isAdminStore = ref(false)
+
+	try {
+		const userStore = useUserStore()
+		const storeRefs = storeToRefs(userStore)
+		isLoginStore = storeRefs.isLoginStore
+		isAdminStore = storeRefs.isAdminStore
+	} catch (error) {
+		console.warn('Store not available in navigation:', error)
+		// Valeurs par défaut si le store n'est pas disponible
+		isLoginStore = ref(false)
+		isAdminStore = ref(false)
+	}
+
 	const route = useRoute()
 
 	const navbar = useTemplateRef('navbar')

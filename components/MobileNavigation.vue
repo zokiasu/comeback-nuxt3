@@ -2,8 +2,25 @@
 	import { storeToRefs } from 'pinia'
 	
 	const isPlayingVideo = useIsPlayingVideo()
-	const userStore = useUserStore()
-	const { userDataStore, isLoginStore, isAdminStore } = storeToRefs(userStore)
+	
+	// Accès sécurisé aux stores
+	let userDataStore = ref(null)
+	let isLoginStore = ref(false)
+	let isAdminStore = ref(false)
+
+	try {
+		const userStore = useUserStore()
+		const storeRefs = storeToRefs(userStore)
+		userDataStore = storeRefs.userDataStore
+		isLoginStore = storeRefs.isLoginStore
+		isAdminStore = storeRefs.isAdminStore
+	} catch (error) {
+		console.warn('Store not available in mobile navigation:', error)
+		// Valeurs par défaut si le store n'est pas disponible
+		userDataStore = ref(null)
+		isLoginStore = ref(false)
+		isAdminStore = ref(false)
+	}
 
 	const profilePath = computed(() => {
 		if (!userDataStore.value || !userDataStore.value.id) {
