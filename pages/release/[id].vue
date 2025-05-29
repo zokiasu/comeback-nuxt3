@@ -3,10 +3,10 @@
 	import { storeToRefs } from 'pinia'
 
 	import { useUserStore } from '@/stores/user'
-	import { type Release } from '@/types/supabase/release'
+	import type { Release } from '@/types/supabase/release'
 	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
 	import { useSupabaseMusic } from '~/composables/Supabase/useSupabaseMusic'
-	import { type Music } from '@/types/supabase/music'
+	import type { Music } from '@/types/supabase/music'
 
 	const { getReleaseById, getSuggestedReleases, updateRelease } = useSupabaseRelease()
 	const { updateMusic } = useSupabaseMusic()

@@ -29,7 +29,7 @@
 	const needToBeVerifiedFilter = ref<boolean>(false)
 	const noNeedToBeVerifiedFilter = ref<boolean>(false)
 
-	const observerTarget = ref<HTMLElement | null>(null)
+	const observerTarget = useTemplateRef('observerTarget')
 	const hasMore = computed(() => currentPage.value <= totalPages.value)
 
 	/**

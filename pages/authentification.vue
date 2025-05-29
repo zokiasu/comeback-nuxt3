@@ -8,6 +8,9 @@
 			},
 		],
 	})
+
+	// Log initial
+	console.log('📄 Page authentification chargée')
 </script>
 
 <template>

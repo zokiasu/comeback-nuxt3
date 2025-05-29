@@ -11,7 +11,7 @@ export type ArtistGender = 'MALE' | 'FEMALE' | 'MIXTE' | 'UNKNOWN' | 'OTHER'
 export type ReleaseType = 'ALBUM' | 'SINGLE' | 'EP'
 export type MusicType = 'SONG'
 export type RelationType = 'GROUP' | 'MEMBER'
-export type UserRole = 'ADMIN' | 'MODERATOR' | 'USER'
+export type UserRole = 'ADMIN' | 'CONTRIBUTOR' | 'USER'
 
 export interface Database {
 	public: {
@@ -357,6 +357,35 @@ export interface Database {
 					user_id?: string
 					news_id?: string
 					contribution_type?: string
+				}
+			}
+			users: {
+				Row: {
+					id: string
+					email: string
+					name: string
+					photo_url: string | null
+					role: UserRole
+					created_at: string
+					updated_at: string
+				}
+				Insert: {
+					id: string
+					email: string
+					name: string
+					photo_url?: string | null
+					role?: UserRole
+					created_at?: string
+					updated_at?: string
+				}
+				Update: {
+					id?: string
+					email?: string
+					name?: string
+					photo_url?: string | null
+					role?: UserRole
+					created_at?: string
+					updated_at?: string
 				}
 			}
 			general_tags: {

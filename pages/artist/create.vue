@@ -267,9 +267,10 @@
 						<ComebackLabel label="Birthday" />
 						<UPopover>
 							<UButton
+								color="neutral"
 								variant="subtle"
 								icon="i-lucide-calendar"
-								class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+								class="w-full"
 							>
 								{{ birthdayToDate ? df.format(birthdayToDate) : 'Select a date' }}
 							</UButton>
@@ -297,9 +298,10 @@
 						<ComebackLabel label="Debut Date" />
 						<UPopover>
 							<UButton
+								color="neutral"
 								variant="subtle"
 								icon="i-lucide-calendar"
-								class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+								class="w-full"
 							>
 								{{ debutDateToDate ? df.format(debutDateToDate) : 'Select a date' }}
 							</UButton>
@@ -326,52 +328,107 @@
 			</div>
 		</div>
 
-		<div class="space-y-5">
+		<div class="space-y-5 lg:space-y-10">
 			<!-- Gender & Type & Active Career -->
-			<div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+			<div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
 				<!-- Gender -->
-				<div class="grid grid-cols-1 gap-1">
+				<div class="grid w-full grid-cols-1 gap-1">
 					<div class="flex items-end gap-2">
 						<ComebackLabel label="Gender" />
-						<p class="text-cb-quinary-900 text-sm italic">
-							It's only for stat we don't assume any gender jugement
-						</p>
 					</div>
-					<select
-						v-model="artistGender"
-						class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
-					>
-						<option default value="UNKNOWN" class="text-cb-secondary-950">UNKNOWN</option>
-						<option value="MALE" class="text-cb-secondary-950">MALE</option>
-						<option value="FEMALE" class="text-cb-secondary-950">FEMALE</option>
-						<option value="MIXTE" class="text-cb-secondary-950">MIXTE</option>
-					</select>
+					<div class="flex gap-2">
+						<div
+							v-for="gender in ['MALE', 'FEMALE', 'MIXTE', 'UNKNOWN', 'OTHER']"
+							:key="gender"
+							class="flex w-full items-center gap-2"
+						>
+							<input
+								:id="gender"
+								v-model="artistGender"
+								type="radio"
+								:value="gender"
+								class="hidden"
+							/>
+							<button
+								class="w-full rounded px-3 py-1 text-sm"
+								:class="
+									artistGender === gender
+										? 'bg-cb-primary-900 text-white'
+										: 'bg-cb-quaternary-950'
+								"
+								@click="artistGender = gender"
+							>
+								{{ gender }}
+							</button>
+						</div>
+					</div>
 				</div>
 				<!-- Type -->
-				<div class="grid grid-cols-1 gap-1">
+				<div class="grid w-full grid-cols-1 gap-1">
 					<ComebackLabel label="Type" />
-					<select
-						v-model="artistType"
-						class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
-					>
-						<option value="SOLO" class="text-cb-secondary-950">SOLO</option>
-						<option value="GROUP" class="text-cb-secondary-950">GROUP</option>
-					</select>
+					<div class="flex gap-2">
+						<div
+							v-for="type in ['SOLO', 'GROUP']"
+							:key="type"
+							class="flex w-full items-center gap-2"
+						>
+							<input
+								:id="type"
+								v-model="artistType"
+								type="radio"
+								:value="type"
+								class="hidden"
+							/>
+							<button
+								class="w-full rounded px-3 py-1 text-sm"
+								:class="
+									artistType === type
+										? 'bg-cb-primary-900 text-white'
+										: 'bg-cb-quaternary-950'
+								"
+								@click="artistType = type"
+							>
+								{{ type }}
+							</button>
+						</div>
+					</div>
 				</div>
 				<!-- Active Career -->
-				<div class="grid grid-cols-1 gap-1">
+				<div class="grid w-full grid-cols-1 gap-1">
 					<ComebackLabel label="Active Career" />
-					<select
-						v-model="artistActiveCareer"
-						class="appearance-none border-b bg-transparent hover:cursor-pointer focus:outline-none"
-					>
-						<option :value="true" class="text-cb-secondary-950">Active</option>
-						<option :value="false" class="text-cb-secondary-950">Inactive</option>
-					</select>
+					<div class="flex gap-2">
+						<div
+							v-for="status in [
+								{ value: true, label: 'Active' },
+								{ value: false, label: 'Inactive' },
+							]"
+							:key="status.label"
+							class="flex w-full items-center gap-2"
+						>
+							<input
+								:id="status.label"
+								v-model="artistActiveCareer"
+								type="radio"
+								:value="status.value"
+								class="hidden"
+							/>
+							<button
+								class="w-full rounded px-3 py-1 text-sm"
+								:class="
+									artistActiveCareer === status.value
+										? 'bg-cb-primary-900 text-white'
+										: 'bg-cb-quaternary-950'
+								"
+								@click="artistActiveCareer = status.value"
+							>
+								{{ status.label }}
+							</button>
+						</div>
+					</div>
 				</div>
 			</div>
 			<!-- Styles & General Tags -->
-			<div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+			<div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
 				<!-- Styles -->
 				<div v-if="stylesList" class="flex flex-col gap-1">
 					<div class="flex justify-between gap-3">
@@ -542,7 +599,7 @@
 				/>
 			</div>
 			<!-- Platforms & Socials -->
-			<div class="flex gap-2">
+			<div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
 				<!-- Platforms -->
 				<div class="w-full space-y-2">
 					<ComebackLabel label="Platforms" />

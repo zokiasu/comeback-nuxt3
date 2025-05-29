@@ -1,5 +1,3 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
-import { useSupabase } from './useSupabase'
 import type {
 	QueryOptions,
 	FilterOptions,
@@ -10,7 +8,7 @@ import type {
 import type { Artist } from '~/types/supabase/artist'
 
 export function useSupabaseArtist() {
-	const { supabase } = useSupabase() as { supabase: SupabaseClient }
+	const supabase = useSupabaseClient()
 	const toast = useToast()
 
 	// Vérifie si un artiste existe avec l'ID YouTube Music

@@ -7,7 +7,7 @@
 			class="bg-cb-quaternary-950 relative grid grid-cols-1 gap-5 rounded p-3 lg:grid-cols-2 xl:p-5"
 		>
 			<NuxtImg
-				:src="profileData.picture || 'https://i.ibb.co/wLhbFZx/Frame-255.png'"
+				:src="profileData.photo_url || 'https://i.ibb.co/wLhbFZx/Frame-255.png'"
 				:alt="profileData.name"
 				format="webp"
 				loading="lazy"
@@ -61,15 +61,13 @@
 </template>
 
 <script setup>
-	import { Timestamp } from 'firebase/firestore'
+	import { storeToRefs } from 'pinia'
 	import { useUserStore } from '@/stores/user'
-	import { useFirebaseRealtimeDatabase } from '~/composables/useFirebaseRealtimeDatabase'
-	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
+	import { useSupabaseFunction } from '~/composables/useSupabaseFunction'
 
 	const route = useRoute()
-	const { userDataStore } = useUserStore()
-	const { readData, deleteData } = useFirebaseRealtimeDatabase()
-	const { getUserData } = useFirebaseFunction()
+	const { userDataStore } = storeToRefs(useUserStore())
+	const { getUserData } = useSupabaseFunction()
 
 	const createdAt = ref(null)
 	const rankings = ref(null)
@@ -79,28 +77,17 @@
 		return route.params.id === profileData.value.id
 	})
 
-	const deleteRanking = async (id) => {
-		await deleteData(`/rankings/${userDataStore.id}/${id}`)
-		rankings.value = rankings.value.filter((ranking) => ranking.id !== id)
-	}
-
 	onMounted(async () => {
 		profileData.value = await getUserData(route.params.id)
-		const timestamp = new Timestamp(
-			profileData.value.createdAt.seconds,
-			profileData.value.createdAt.nanoseconds,
-		)
-		createdAt.value = new Date(timestamp.toDate()).toLocaleDateString('fr-FR', {
-			day: '2-digit',
-			month: '2-digit',
-			year: 'numeric',
-		})
-		rankings.value = await readData(`/rankings/${profileData.value.id}`)
-		if (rankings.value) {
-			rankings.value = Object.keys(rankings.value).map((key) => ({
-				id: key,
-				...rankings.value[key],
-			}))
+		if (profileData.value?.created_at) {
+			createdAt.value = new Date(profileData.value.created_at).toLocaleDateString(
+				'fr-FR',
+				{
+					day: '2-digit',
+					month: '2-digit',
+					year: 'numeric',
+				},
+			)
 		}
 	})
 </script>

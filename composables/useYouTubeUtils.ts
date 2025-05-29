@@ -1,46 +1,4 @@
-export function useFirebaseUtils() {
-	const { $firestore: database } = useNuxtApp()
-
-	// Waits for Firestore to be initialized.
-	const waitForFirestore = async () => {
-		if (!database) {
-			await new Promise((resolve) => setTimeout(resolve, 1000))
-			if (!database) {
-				throw new Error('Firebase not initialized')
-			}
-		}
-		return database
-	}
-
-	// Converts a Firestore snapshot into an array of documents.
-	const snapshotResultToArray = (result: any) => {
-		if (!result?.docs) return []
-
-		const docs = Array.from(result.docs)
-			.map((doc: any) => {
-				if (!doc) return null
-				return {
-					id: doc.id,
-					...doc.data(),
-				}
-			})
-			.filter(Boolean)
-
-		return docs
-	}
-
-	// Transforms a DocumentSnapshot into a JavaScript object
-	const documentSnapshotToObject = (docSnap: any) => {
-		if (!docSnap?.exists()) return null
-		try {
-			const data = docSnap.data()
-			return { id: docSnap.id, ...data }
-		} catch (error) {
-			console.error('Erreur lors de la conversion du document:', error)
-			return null
-		}
-	}
-
+export function useYouTubeUtils() {
 	// Fetches details of a YouTube video using the YouTube Data API.
 	const getVideoFullDetails = async (videoId: string, apiKey: string) => {
 		const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet,contentDetails,status&key=${apiKey}`
@@ -82,9 +40,6 @@ export function useFirebaseUtils() {
 	}
 
 	return {
-		waitForFirestore,
-		snapshotResultToArray,
-		documentSnapshotToObject,
 		getVideoFullDetails,
 		getAllVideosFromPlaylist,
 	}

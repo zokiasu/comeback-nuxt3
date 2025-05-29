@@ -1,52 +1,96 @@
-# Comeback
+# 🎵 Comeback
 
-## Description
+## 📋 Description
 
-**Comeback** est une plateforme de suivis de nouveautés musicale développée avec Nuxt 3. Elle permet aux utilisateurs de découvrir de la musique, suivre les actualités des artistes, et gérer les sorties musicales. Les utilisateurs peuvent ajouter des artistes, des informations sur les comebacks et les actualités, et interagir via des commentaires. La partie tableau de bord est réservée aux administrateurs pour la gestion avancée.
+**Comeback** est une application web dédiée à la musique, construite avec des technologies modernes. Elle permet de gérer des artistes, des sorties musicales, et offre une expérience utilisateur complète avec authentification et gestion des données.
 
-## Stack
+## 🛠️ Technologies utilisées
 
-VueJS 3 - NuxtJS 3 - Pinia - TailwindCSS - Firebase (Firestore, Realtime Database, Authentification)
+VueJS 3 - NuxtJS 3 - Pinia - TailwindCSS - Supabase (Database, Auth, Storage)
 
-## Fonctionnalités
+## ⚙️ Fonctionnalités principales
 
-### Pour les Utilisateurs
+### 🎤 Gestion des artistes
+- **Création d'artistes** : Ajouter de nouveaux artistes avec leurs informations détaillées.
+- **Recherche d'artistes** : Utilisation d'Algolia pour une recherche rapide et pertinente.
+- **Profils d'artistes** : Pages dédiées avec informations complètes et liens sociaux.
 
-- **Découverte de musique** : Parcourez et découvrez de nouvelles musiques et artistes.
-- **Suivi des actualités des artistes** : Restez informé des derniers comebacks et actualités de vos artistes préférés.
-- **Ajout d'artistes et d'informations** : Ajoutez de nouveaux artistes et des informations sur leurs comebacks et actualités.
-- **Interaction** : Prochainement, commentez les fiches artistes et les sorties musicales.
+### 🎵 Gestion des sorties musicales
+- **Ajout de nouvelles sorties** : Interface intuitive pour créer des entrées de musique.
+- **Intégration YouTube** : Récupération automatique des métadonnées via l'API YouTube.
+- **Gestion des playlists** : Importation de playlists YouTube complètes.
+- **Stockage des données** : Toutes les informations sont sauvegardées dans Supabase.
 
-### Pour les Administrateurs
+### 🔐 Authentification et sécurité
+- **Authentification Google** : Connexion sécurisée via Supabase Auth.
+- **Gestion des rôles** : Système de permissions avec rôles utilisateur et administrateur.
+- **Middleware de protection** : Routes protégées selon les permissions.
 
-- **Tableau de bord** : Gérez les artistes, les actualités et les sorties musicales.
-- **Gestion des utilisateurs** : Supervisez les contributions des utilisateurs et modérez les contenus.
+## 📦 Installation et utilisation
 
-### Autres Fonctionnalités
+### Prérequis
+- Node.js (version 18 ou supérieure)
+- npm ou yarn
+- Compte Supabase
+- Clé API YouTube Data v3 (optionnel, pour l'intégration YouTube)
 
-- **Authentification** : Connectez-vous avec Google ou Microsoft.
-- **Lecteur YouTube** : Intégrez des vidéos YouTube pour les artistes et les sorties.
-- **Recherche Algolia** : Utilisez la recherche Algolia pour trouver rapidement de la musique et des artistes.
-- **Notifications Toast** : Recevez des notifications utilisateur via `vue-toastification`.
-- **Styling** : Utilisation de Tailwind CSS pour une interface utilisateur moderne et réactive.
+### Installation
 
-## Projet Backend | cb-artist-generator
+```bash
+# Cloner le repository
+git clone https://github.com/votre-username/comeback-nuxt3.git
 
-Le projet **cb-artist-generator** est utilisé pour remplir et mettre à jour la base de données de Comeback. Il s'agit d'un script exécuté quotidiennement via une CRON.
+# Installer les dépendances
+npm install
 
-### Fonctionnalités
+# Configurer les variables d'environnement
+cp .env.example .env.local
+# Remplir les variables Supabase et API keys
 
-- **Récupération des informations d'artistes et de sorties musicales** : Utilisation de l'API YouTube Music pour obtenir des données à jour.
-- **Mise à jour de la base de données Firebase** : Stocke les informations récupérées dans Firebase.
-- **Gestion des actualités** : Mise à jour des actualités des artistes dans la base de données.
+# Lancer en mode développement
+npm run dev
+```
 
-### Dépendances principales
+### Variables d'environnement requises
 
-- **ytmusic-api** : Récupération des données de YouTube Music.
-- **axios** : Requêtes HTTP.
-- **firebase-admin** : Interaction avec Firebase.
-- **dotenv** : Gestion des variables d'environnement.
+```bash
+# Supabase
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
 
-## Licence
+# YouTube API (optionnel)
+YOUTUBE_API_KEY=your_youtube_api_key
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](./LICENSE) pour plus de détails.
+# Algolia (optionnel)
+ALGOLIA_APPLICATION_ID=your_algolia_app_id
+ALGOLIA_ADMIN_API_KEY=your_algolia_admin_key
+```
+
+## 🚀 Déploiement
+
+L'application est optimisée pour Vercel et peut être déployée facilement :
+
+```bash
+npm run build
+```
+
+## 📁 Structure du projet
+
+```
+├── components/          # Composants Vue réutilisables
+├── composables/         # Composables Vue/Nuxt
+├── middleware/          # Middleware de routage
+├── pages/              # Pages de l'application
+├── stores/             # Stores Pinia
+├── types/              # Types TypeScript
+├── public/             # Assets statiques
+└── nuxt.config.ts      # Configuration Nuxt
+```
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir des issues ou proposer des pull requests.
+
+## 📄 Licence
+
+Ce projet est sous licence MIT.

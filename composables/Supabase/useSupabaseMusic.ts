@@ -1,10 +1,8 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
-import { useSupabase } from './useSupabase'
 import type { QueryOptions, FilterOptions, MusicType } from '~/types/supabase'
 import type { Music } from '~/types/supabase/music'
 
 export function useSupabaseMusic() {
-	const { supabase } = useSupabase() as { supabase: SupabaseClient }
+	const supabase = useSupabaseClient()
 	const toast = useToast()
 
 	// Met à jour une musique

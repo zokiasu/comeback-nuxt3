@@ -1,13 +1,13 @@
 <script setup lang="ts">
-	import { useFirebaseFunction } from '~/composables/useFirebaseFunction'
+	import { useSupabaseFunction } from '~/composables/useSupabaseFunction'
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 	import { useUserStore } from '~/stores/user'
-	import type { User } from '~/types/user'
+	import type { User } from '~/types/supabase/user'
 	import type { Artist } from '~/types/supabase/artist'
 
 	const userStore = useUserStore()
 	const toast = useToast()
-	const { updateUserData, getUserData } = useFirebaseFunction()
+	const { updateUserData, getUserData } = useSupabaseFunction()
 	const { getAllArtistsLight } = useSupabaseArtist()
 	const userDetails = ref<User>({} as User)
 	const artistList = ref<Artist[]>([])
@@ -81,8 +81,8 @@
 					<p class="font-semibold uppercase">Created Date</p>
 					<p class="opacity-50">
 						{{
-							userDetails.createdAt
-								? new Date(userDetails.createdAt.toDate()).toLocaleDateString('fr-FR', {
+							userDetails.created_at
+								? new Date(userDetails.created_at).toLocaleDateString('fr-FR', {
 										day: '2-digit',
 										month: '2-digit',
 										year: 'numeric',
@@ -95,8 +95,8 @@
 					<p class="font-semibold uppercase">Last Update</p>
 					<p class="opacity-50">
 						{{
-							userDetails.updatedAt
-								? new Date(userDetails.updatedAt.toDate()).toLocaleDateString('fr-FR', {
+							userDetails.updated_at
+								? new Date(userDetails.updated_at).toLocaleDateString('fr-FR', {
 										day: '2-digit',
 										month: '2-digit',
 										year: 'numeric',
@@ -114,7 +114,7 @@
 				<p class="font-semibold uppercase">Photo</p>
 				<div class="flex flex-1 flex-col gap-5">
 					<NuxtImg
-						:src="userDetails.photoURL ?? 'https://i.ibb.co/wLhbFZx/Frame-255.png'"
+						:src="userDetails.photo_url ?? 'https://i.ibb.co/wLhbFZx/Frame-255.png'"
 						:alt="userDetails.name"
 						class="bg-cb-primary-950 aspect-video h-80 w-full rounded object-cover"
 					/>
@@ -133,7 +133,7 @@
 								v-for="artist in artistFiltered"
 								:key="artist.id"
 								class="group bg-cb-quinary-900 h-fit cursor-pointer space-y-1 rounded p-1 text-center"
-								@click="userDetails.photoURL = artist.image"
+								@click="userDetails.photo_url = artist.image"
 							>
 								<div class="relative">
 									<NuxtImg

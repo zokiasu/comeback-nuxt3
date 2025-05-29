@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import 'animate.css'
 
-	const isPlayingVideo = useIsPlayingVideo()
+	// const isPlayingVideo = useIsPlayingVideo()
 	const route = useRoute()
 
 	const displayingFooter = computed(() => {
@@ -33,10 +33,10 @@
 		</main>
 		<LazyFooter v-if="displayingFooter" />
 		<LazyMobileNavigation class="md:hidden" />
-		<LazyYoutubePlayer
+		<!-- <LazyYoutubePlayer
 			v-if="isPlayingVideo"
 			ref="YTPlayer"
 			class="animate__animated animate__fadeInUp fixed bottom-0"
-		/>
+		/> -->
 	</div>
 </template>

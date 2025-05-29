@@ -1,12 +1,8 @@
 <script setup>
-	import { useAuthListener } from '~/composables/useAuthListener'
+	// Temporairement désactivé pour diagnostiquer l'erreur 500
+	// const { user, userData, isLogin, isAdmin } = useAuth()
 
-	const { initAuthListener } = useAuthListener()
-
-	onMounted(() => {
-		// Initialize the auth listener via the composable
-		initAuthListener()
-	})
+	console.log('✅ App.vue chargé sans useAuth')
 </script>
 
 <template>

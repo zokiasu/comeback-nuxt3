@@ -2,12 +2,26 @@
 	import { storeToRefs } from 'pinia'
 	import { useUserStore } from '@/stores/user'
 
-	const userStore = useUserStore()
-	const { isLoginStore, isAdminStore } = storeToRefs(userStore)
+	// Accès sécurisé aux stores
+	let isLoginStore = ref(false)
+	let isAdminStore = ref(false)
+
+	try {
+		const userStore = useUserStore()
+		const storeRefs = storeToRefs(userStore)
+		isLoginStore = storeRefs.isLoginStore
+		isAdminStore = storeRefs.isAdminStore
+	} catch (error) {
+		console.warn('Store not available in navigation:', error)
+		// Valeurs par défaut si le store n'est pas disponible
+		isLoginStore = ref(false)
+		isAdminStore = ref(false)
+	}
+
 	const route = useRoute()
 
-	const navbar = ref<HTMLElement | null>(null)
-	const algolia = ref<HTMLElement | null>(null)
+	const navbar = useTemplateRef('navbar')
+	const algolia = useTemplateRef('algolia')
 
 	onMounted(async () => {
 		window.addEventListener('scroll', handleScroll)
@@ -87,10 +101,9 @@
 						v-if="isLoginStore"
 						to="/settings/profile"
 						variant="soft"
+						icon="material-symbols:settings-rounded"
 						class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
-					>
-						<UIcon name="material-symbols:settings-rounded" class="size-3" />
-					</UButton>
+					/>
 
 					<UButton
 						v-else

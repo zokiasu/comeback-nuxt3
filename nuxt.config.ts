@@ -2,25 +2,22 @@
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
+	compatibilityDate: '2025-05-27',
+
 	modules: [
 		'@pinia/nuxt',
 		'@nuxt/image',
 		'@nuxtjs/algolia',
 		'@nuxt/ui',
-		'@vite-pwa/nuxt',
+		'@nuxtjs/supabase',
+		'@nuxt/eslint',
 	],
 
 	css: ['~/assets/css/tailwind.css'],
 
-	plugins: ['~/plugins/firebase.client.ts'],
-
-	ssr: true,
+	ssr: false,
 
 	devtools: { enabled: true },
-
-	colorMode: {
-		classSuffix: '',
-	},
 
 	vite: {
 		plugins: [tailwindcss()],
@@ -31,21 +28,28 @@ export default defineNuxtConfig({
 
 	runtimeConfig: {
 		public: {
-			FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
-			FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
-			FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
-			FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
-			FIREBASE_MESSAGIN_SENDER_ID: process.env.FIREBASE_MESSAGIN_SENDER_ID,
-			FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
-			FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
-			FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL,
 			YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
 			ALGOLIA_API_KEY: process.env.ALGOLIA_API_KEY,
 			ALGOLIA_APPLICATION_ID: process.env.ALGOLIA_APPLICATION_ID,
 			ALGOLIA_INDEX_NAME: process.env.ALGOLIA_INDEX_NAME,
-			supabaseUrl: process.env.SUPABASE_URL,
-			supabaseKey: process.env.SUPABASE_KEY,
+			SUPABASE_URL: process.env.SUPABASE_URL,
+			SUPABASE_KEY: process.env.SUPABASE_KEY,
+			SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
 		},
+		SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY,
+	},
+
+	supabase: {
+		url: process.env.SUPABASE_URL,
+		key: process.env.SUPABASE_KEY,
+		serviceKey: process.env.SUPABASE_SERVICE_KEY,
+		redirectOptions: {
+			login: '/authentification',
+			callback: '/auth/callback',
+			exclude: ['/'],
+			saveRedirectToCookie: true,
+		},
+		types: './types/supabase.ts',
 	},
 
 	experimental: {
@@ -58,7 +62,7 @@ export default defineNuxtConfig({
 	},
 
 	build: {
-		transpile: ['firebase', 'swiper', 'vuedraggable', 'tslib'],
+		transpile: ['swiper', 'tslib'],
 	},
 
 	app: {
@@ -119,7 +123,7 @@ export default defineNuxtConfig({
 				},
 				{
 					property: 'og:image',
-					content: 'https://nuxt-firebase-auth.vercel.app/ogp.png',
+					content: 'https://come-back.netlify.app/ogp.png',
 				},
 			],
 			title: 'Comeback',
@@ -152,65 +156,6 @@ export default defineNuxtConfig({
 		lite: true,
 		instantSearch: {
 			theme: 'algolia',
-		},
-	},
-
-	compatibilityDate: '2025-04-03',
-
-	pwa: {
-		registerType: 'autoUpdate',
-		manifest: {
-			name: 'Comeback',
-			short_name: 'Comeback',
-			description:
-				'Ne manquez aucun Comeback. Suivez chaque prochaine sortie de vos artistes préférés.',
-			theme_color: '#9E0102',
-			background_color: '#ffffff',
-			display: 'standalone',
-			scope: '/',
-			start_url: '/',
-			icons: [
-				{
-					src: '/icons/icon-48x48.png',
-					sizes: '48x48',
-					type: 'image/png',
-				},
-				{
-					src: '/icons/icon-72x72.png',
-					sizes: '72x72',
-					type: 'image/png',
-				},
-				{
-					src: '/icons/icon-96x96.png',
-					sizes: '96x96',
-					type: 'image/png',
-				},
-				{
-					src: '/icons/icon-144x144.png',
-					sizes: '144x144',
-					type: 'image/png',
-				},
-				{
-					src: '/icons/icon-192x192.png',
-					sizes: '192x192',
-					type: 'image/png',
-					purpose: 'any',
-				},
-				{
-					src: '/icons/icon-512x512.png',
-					sizes: '512x512',
-					type: 'image/png',
-					purpose: 'maskable',
-				},
-			],
-		},
-		workbox: {
-			navigateFallback: '/',
-			globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
-		},
-		devOptions: {
-			enabled: true,
-			type: 'module',
 		},
 	},
 })

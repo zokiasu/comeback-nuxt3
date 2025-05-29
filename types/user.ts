@@ -1,12 +1,15 @@
-import type { Timestamp } from 'firebase/firestore'
+// Interface pour remplacer Firebase Timestamp
+interface Timestamp {
+	seconds: number
+	nanoseconds: number
+}
 
 export interface User {
 	id: string
-	name: string
-	country?: string
 	email: string
+	name: string
 	photoURL: string
-	role: 'ADMIN' | 'USER' | 'MODERATOR'
+	role: 'USER' | 'ADMIN'
 	createdAt: Timestamp
 	updatedAt: Timestamp
 }

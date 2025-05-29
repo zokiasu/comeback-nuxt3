@@ -1,5 +1,3 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
-import { useSupabase } from './useSupabase'
 import type { News } from '~/types/supabase/news'
 import type { QueryOptions, FilterOptions } from '~/types/supabase'
 
@@ -12,7 +10,7 @@ interface NewsResponse {
 }
 
 export function useSupabaseNews() {
-	const { supabase } = useSupabase() as { supabase: SupabaseClient }
+	const supabase = useSupabaseClient()
 	const toast = useToast()
 
 	// Crée une nouvelle news

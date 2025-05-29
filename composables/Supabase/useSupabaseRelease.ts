@@ -1,11 +1,9 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
-import { useSupabase } from './useSupabase'
 import type { Release } from '~/types/supabase/release'
 import type { QueryOptions, FilterOptions, ReleaseType } from '~/types/supabase'
 import type { Artist } from '~/types/supabase/artist'
 
 export function useSupabaseRelease() {
-	const { supabase } = useSupabase() as { supabase: SupabaseClient }
+	const supabase = useSupabaseClient()
 	const toast = useToast()
 
 	// Met à jour une release

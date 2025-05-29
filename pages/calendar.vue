@@ -1,11 +1,11 @@
 <script setup lang="ts">
-	import { type Release } from '~/types/supabase/release'
+	import type { Release } from '~/types/supabase/release'
 	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
 
 	const { getReleasesByMonthAndYear } = useSupabaseRelease()
 
 	const releases = ref<Release[]>([])
-	const backTop = ref<HTMLElement | null>(null)
+	const backTop = useTemplateRef('backTop')
 	const yearList = ref<number[]>([])
 	const monthList = [
 		{ minify: 'Jan', original: 'January' },

@@ -3,7 +3,7 @@
 	import type { Artist } from '~/types/supabase/artist'
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 
-	import { deletebyDoc } from '~/composables/useFirestore'
+	// Utilisation de Supabase uniquement pour la base de données
 	import type { AlgoliaHit } from '~/types/algolia'
 
 	// Types
@@ -16,7 +16,6 @@
 
 	// État
 	const toast = useToast()
-	const { $firestore: db } = useNuxtApp()
 	const { getArtistsByPage } = useSupabaseArtist()
 
 	const artistFetch = ref<Artist[]>([])
@@ -27,7 +26,7 @@
 	const totalPages = ref(1)
 	const totalArtists = ref(0)
 
-	const scrollContainer = ref<HTMLElement | null>(null)
+	const scrollContainer = useTemplateRef('scrollContainer')
 	const sort = ref<keyof Artist>('created_at')
 	const limitFetch = ref(48)
 	const typeFilter = ref<Artist['type'] | ''>('')
@@ -48,7 +47,7 @@
 	})
 
 	// Computed
-	const observerTarget = ref<HTMLElement | null>(null)
+	const observerTarget = useTemplateRef('observerTarget')
 	const hasMore = computed(() => currentPage.value <= totalPages.value)
 
 	// Fonctions
@@ -56,32 +55,11 @@
 	 * Supprime un artiste de la base de données et de la liste locale
 	 */
 	const deleteArtist = async (id: string): Promise<void> => {
-		const artist = artistFetch.value.find((artist) => artist.id === id)
-		if (artist) {
-			const index = artistFetch.value.indexOf(artist)
-			try {
-				await deletebyDoc('artists', id)
-				artistFetch.value.splice(index, 1)
-				toast.add({
-					title: 'Artiste supprimé',
-					description: "L'artiste a été supprimé avec succès",
-					color: 'success',
-				})
-			} catch (error) {
-				console.error('Erreur lors de la suppression du document: ', error)
-				toast.add({
-					title: "Erreur lors de la suppression de l'artiste",
-					description: "Une erreur est survenue lors de la suppression de l'artiste",
-					color: 'error',
-				})
-			}
-		} else {
-			toast.add({
-				title: 'Artiste non trouvé',
-				description: "L'artiste n'a pas été trouvé",
-				color: 'error',
-			})
-		}
+		toast.add({
+			title: 'TODO: Delete Artist',
+			description: 'TODO: Delete Artist',
+			color: 'warning',
+		})
 	}
 
 	/**
@@ -194,6 +172,31 @@
 	}
 
 	/**
+	 * Bascule entre la recherche Algolia et Supabase
+	 */
+	const toggleSearchMethod = (): void => {
+		useAlgoliaForSearch.value = !useAlgoliaForSearch.value
+		
+		// Refaire la recherche avec la nouvelle méthode
+		if (search.value.length >= 2) {
+			if (useAlgoliaForSearch.value) {
+				performAlgoliaSearch()
+			} else {
+				getArtist(true)
+			}
+		}
+	}
+
+	/**
+	 * Charge tous les artistes restants
+	 */
+	const loadAllArtists = async (): Promise<void> => {
+		while (currentPage.value <= totalPages.value && !isLoading.value) {
+			await getArtist(false)
+		}
+	}
+
+	/**
 	 * Trie la liste des artistes en fonction des critères
 	 */
 	const filteredArtistList = computed(() => {
@@ -228,79 +231,12 @@
 		})
 	})
 
-	/**
-	 * Charge tous les artistes
-	 */
-	const loadAllArtists = async () => {
-		try {
-			const result = await getArtistsByPage(1, totalArtists.value, {
-				search: search.value,
-				type: typeFilter.value || undefined,
-				orderBy: sort.value,
-				orderDirection: invertSort.value ? 'desc' : 'asc',
-			})
-			artistFetch.value = result.artists
-		} catch (error) {
-			console.error('Erreur lors du chargement de tous les artistes:', error)
-			toast.add({
-				title: 'Erreur lors du chargement de tous les artistes',
-				description: 'Une erreur est survenue lors du chargement de tous les artistes',
-				color: 'error',
-			})
-		}
-	}
-
-	/**
-	 * Bascule entre la recherche Algolia et Firebase
-	 */
-	const toggleSearchMethod = () => {
-		useAlgoliaForSearch.value = !useAlgoliaForSearch.value
-		if (!useAlgoliaForSearch.value && search.value) {
-			getArtist(true)
-		} else if (useAlgoliaForSearch.value && search.value) {
-			performAlgoliaSearch()
-		}
-	}
-
-	// Hooks
-	onMounted(() => {
-		// Configuration de l'observateur d'intersection pour le chargement infini
-		const observer = new IntersectionObserver(
-			async ([entry]) => {
-				if (entry.isIntersecting && hasMore.value && !isLoading.value) {
-					await getArtist()
-				}
-			},
-			{
-				rootMargin: '2000px',
-				threshold: 0.01,
-			},
-		)
-
-		if (observerTarget.value) {
-			observer.observe(observerTarget.value)
-		}
-
-		// Observe l'élément cible quand il est disponible
-		watch(observerTarget, (el) => {
-			if (el) {
-				observer.observe(el)
-			}
-		})
-
-		// Nettoyage de l'observateur
-		onBeforeUnmount(() => {
-			if (observerTarget.value) {
-				observer.unobserve(observerTarget.value)
-			}
-			observer.disconnect()
-		})
-
-		// Chargement initial des artistes
-		getArtist(true)
+	// Lifecycle hooks
+	onMounted(async () => {
+		await getArtist(true)
 	})
 
-	// Watchers pour les filtres
+	// Watchers
 	watch(
 		[
 			limitFetch,
@@ -351,12 +287,12 @@
 					class="bg-cb-tertiary-200 text-cb-quinary-900 absolute top-1/2 right-2 -translate-y-1/2 rounded px-2 py-1 text-xs"
 					:title="
 						useAlgoliaForSearch
-							? 'Utiliser Firebase (recherche basique)'
+							? 'Utiliser Supabase (recherche basique)'
 							: 'Utiliser Algolia (recherche avancée)'
 					"
 					@click="toggleSearchMethod"
 				>
-					{{ useAlgoliaForSearch ? 'Algolia' : 'Firebase' }}
+					{{ useAlgoliaForSearch ? 'Algolia' : 'Supabase' }}
 				</button>
 			</div>
 			<div class="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
