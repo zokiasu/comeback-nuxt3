@@ -83,8 +83,6 @@ export const useSupabaseAuth = () => {
 		loginWithGoogle,
 		logout,
 		handleAuthCallback,
-	}
-}
-}
+	
 }
 }
