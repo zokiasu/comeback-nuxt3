@@ -18,7 +18,7 @@ export const useSupabaseAuth = () => {
 			const { data, error: authError } = await supabase.auth.signInWithOAuth({
 				provider: 'google',
 				options: {
-					redirectTo: `${window.location.origin}/auth/callback`,
+					redirectTo: `${useRequestURL().origin}/auth/callback`,
 				},
 			})
 
@@ -84,4 +84,7 @@ export const useSupabaseAuth = () => {
 		logout,
 		handleAuthCallback,
 	}
+}
+}
+}
 }
