@@ -167,7 +167,7 @@
 	// Hooks
 	onMounted(() => {
 		// Configuration de l'observateur d'intersection pour le chargement infini (client-only)
-		if (process.client) {
+		if (import.meta.client) {
 			const observer = new IntersectionObserver(
 				async ([entry]) => {
 					if (

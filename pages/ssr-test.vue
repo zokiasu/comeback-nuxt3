@@ -7,7 +7,7 @@ let isLoginStore = ref(false)
 let isAdminStore = ref(false)
 
 // Gestion sécurisée des stores pour SSR
-if (process.client) {
+if (import.meta.client) {
 	try {
 		const userStore = useUserStore()
 		const storeRefs = storeToRefs(userStore)
@@ -32,11 +32,11 @@ onMounted(() => {
 	console.log('✅ SSR Test: onMounted executed')
 })
 
-// Test process.client
-const isClient = process.client
-const isServer = process.server
+// Test import.meta.client/server
+const isClient = import.meta.client
+const isServer = import.meta.server
 
-console.log('🔍 SSR Test: Rendering on', process.client ? 'client' : 'server')
+console.log('🔍 SSR Test: Rendering on', import.meta.client ? 'client' : 'server')
 </script>
 
 <template>

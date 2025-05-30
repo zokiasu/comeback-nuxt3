@@ -1,6 +1,6 @@
 export default defineNuxtPlugin(async () => {
 	// Plugin client-only pour gérer l'hydratation des stores
-	if (process.client) {
+	if (import.meta.client) {
 		console.log('🔧 Initialisation des stores côté client après SSR')
 		
 		const { $pinia } = useNuxtApp()

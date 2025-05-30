@@ -17,7 +17,7 @@
 	let intervalId = null
 
 	const displayVideo = () => {
-		if (!process.client) return
+		if (!import.meta.client) return
 		
 		const iframe = document.getElementById('globalPlayerContainer')
 		if (iframe) {
@@ -33,7 +33,7 @@
 
 	// Création du lecteur YouTube
 	const createPlayer = () => {
-		if (!process.client) return
+		if (!import.meta.client) return
 		
 		player.value = new window.YT.Player('globalPlayerContainer', {
 			videoId: idYoutubeVideo.value,
@@ -69,7 +69,7 @@
 	}
 
 	const onPlayerStateChange = (event) => {
-		if (!process.client) return
+		if (!import.meta.client) return
 		
 		isPlaying.value = event.data === window.YT.PlayerState.PLAYING
 		if (isPlaying.value) {
@@ -90,7 +90,7 @@
 	}
 
 	const initYTPlayer = () => {
-		if (!process.client) return
+		if (!import.meta.client) return
 		
 		if (window.YT && window.YT.Player) {
 			createPlayer()
@@ -104,7 +104,7 @@
 	}
 
 	const updateCurrentTime = () => {
-		if (!process.client || !player.value || typeof player.value?.getPlayerState !== 'function') return
+		if (!import.meta.client || !player.value || typeof player.value?.getPlayerState !== 'function') return
 		
 		if (player.value?.getPlayerState() === window.YT.PlayerState.PLAYING) {
 			currentTime.value = player.value?.getCurrentTime()
@@ -140,7 +140,7 @@
 	})
 
 	const togglePlayPause = () => {
-		if (!process.client || !player.value) return
+		if (!import.meta.client || !player.value) return
 		
 		if (isPlaying.value) {
 			player.value?.pauseVideo()
@@ -150,7 +150,7 @@
 	}
 
 	const seek = (seconds) => {
-		if (!process.client || !player.value) return
+		if (!import.meta.client || !player.value) return
 		
 		const newTime = player.value?.getCurrentTime() + seconds
 		player.value?.seekTo(newTime)
@@ -158,20 +158,20 @@
 	}
 
 	const seekToTime = () => {
-		if (!process.client || !player.value) return
+		if (!import.meta.client || !player.value) return
 		
 		player.value?.seekTo(currentTime.value)
 	}
 
 	const setVolume = (newVolume) => {
-		if (!process.client || !player.value) return
+		if (!import.meta.client || !player.value) return
 		
 		player.value?.setVolume(newVolume)
 		volume.value = newVolume
 	}
 
 	const muteVolume = () => {
-		if (!process.client || !player.value) return
+		if (!import.meta.client || !player.value) return
 		
 		if (volumeOn.value) {
 			player.value?.mute()
