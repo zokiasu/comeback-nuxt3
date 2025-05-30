@@ -24,11 +24,13 @@
 	const algolia = useTemplateRef('algolia')
 
 	onMounted(async () => {
-		window.addEventListener('scroll', handleScroll)
+		if (import.meta.client) {
+			window.addEventListener('scroll', handleScroll)
+		}
 	})
 
 	function handleScroll() {
-		if (navbar.value === null) return
+		if (navbar.value === null || !import.meta.client) return
 
 		if (window.scrollY > 50) {
 			navbar.value.classList.add(

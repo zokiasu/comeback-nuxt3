@@ -166,40 +166,42 @@
 
 	// Hooks
 	onMounted(() => {
-		// Configuration de l'observateur d'intersection pour le chargement infini
-		const observer = new IntersectionObserver(
-			async ([entry]) => {
-				if (
-					entry.isIntersecting &&
-					hasMore.value &&
-					!isLoading.value &&
-					!useAlgoliaForSearch.value
-				) {
-					await getRelease()
-				}
-			},
-			{
-				rootMargin: '200px',
-				threshold: 0.1,
-			},
-		)
+		// Configuration de l'observateur d'intersection pour le chargement infini (client-only)
+		if (import.meta.client) {
+			const observer = new IntersectionObserver(
+				async ([entry]) => {
+					if (
+						entry.isIntersecting &&
+						hasMore.value &&
+						!isLoading.value &&
+						!useAlgoliaForSearch.value
+					) {
+						await getRelease()
+					}
+				},
+				{
+					rootMargin: '200px',
+					threshold: 0.1,
+				},
+			)
 
-		if (observerTarget.value) {
-			observer.observe(observerTarget.value)
-		}
-
-		watch(observerTarget, (el) => {
-			if (el) {
-				observer.observe(el)
-			}
-		})
-
-		onBeforeUnmount(() => {
 			if (observerTarget.value) {
-				observer.unobserve(observerTarget.value)
+				observer.observe(observerTarget.value)
 			}
-			observer.disconnect()
-		})
+
+			watch(observerTarget, (el) => {
+				if (el) {
+					observer.observe(el)
+				}
+			})
+
+			onBeforeUnmount(() => {
+				if (observerTarget.value) {
+					observer.unobserve(observerTarget.value)
+				}
+				observer.disconnect()
+			})
+		}
 
 		// Chargement initial des releases
 		getRelease(true)
