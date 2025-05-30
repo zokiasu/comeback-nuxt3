@@ -10,7 +10,7 @@ export default defineNuxtConfig({
 		'@nuxtjs/algolia',
 		'@nuxt/ui',
 		'@nuxtjs/supabase',
-		'@nuxt/eslint',
+		// '@nuxt/eslint', // Temporairement commenté pour éviter les conflits
 	],
 
 	css: ['~/assets/css/tailwind.css'],
