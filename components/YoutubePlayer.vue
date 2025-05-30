@@ -17,6 +17,8 @@
 	let intervalId = null
 
 	const displayVideo = () => {
+		if (!process.client) return
+		
 		const iframe = document.getElementById('globalPlayerContainer')
 		if (iframe) {
 			if (isVideoDisplay.value) {
@@ -31,6 +33,8 @@
 
 	// Création du lecteur YouTube
 	const createPlayer = () => {
+		if (!process.client) return
+		
 		player.value = new window.YT.Player('globalPlayerContainer', {
 			videoId: idYoutubeVideo.value,
 			height: '100%',
@@ -65,6 +69,8 @@
 	}
 
 	const onPlayerStateChange = (event) => {
+		if (!process.client) return
+		
 		isPlaying.value = event.data === window.YT.PlayerState.PLAYING
 		if (isPlaying.value) {
 			errorDetected.value = false
@@ -84,6 +90,8 @@
 	}
 
 	const initYTPlayer = () => {
+		if (!process.client) return
+		
 		if (window.YT && window.YT.Player) {
 			createPlayer()
 		} else {
@@ -96,10 +104,10 @@
 	}
 
 	const updateCurrentTime = () => {
-		if (player.value && typeof player.value?.getPlayerState === 'function') {
-			if (player.value?.getPlayerState() === window.YT.PlayerState.PLAYING) {
-				currentTime.value = player.value?.getCurrentTime()
-			}
+		if (!process.client || !player.value || typeof player.value?.getPlayerState !== 'function') return
+		
+		if (player.value?.getPlayerState() === window.YT.PlayerState.PLAYING) {
+			currentTime.value = player.value?.getCurrentTime()
 		}
 	}
 
@@ -132,47 +140,47 @@
 	})
 
 	const togglePlayPause = () => {
-		if (player.value) {
-			if (isPlaying.value) {
-				player.value?.pauseVideo()
-			} else {
-				player.value?.playVideo()
-			}
+		if (!process.client || !player.value) return
+		
+		if (isPlaying.value) {
+			player.value?.pauseVideo()
+		} else {
+			player.value?.playVideo()
 		}
 	}
 
 	const seek = (seconds) => {
-		if (player.value) {
-			const newTime = player.value?.getCurrentTime() + seconds
-			player.value?.seekTo(newTime)
-			currentTime.value = player.value?.getCurrentTime()
-		}
+		if (!process.client || !player.value) return
+		
+		const newTime = player.value?.getCurrentTime() + seconds
+		player.value?.seekTo(newTime)
+		currentTime.value = player.value?.getCurrentTime()
 	}
 
 	const seekToTime = () => {
-		if (player.value) {
-			player.value?.seekTo(currentTime.value)
-		}
+		if (!process.client || !player.value) return
+		
+		player.value?.seekTo(currentTime.value)
 	}
 
 	const setVolume = (newVolume) => {
-		if (player.value) {
-			player.value?.setVolume(newVolume)
-			volume.value = newVolume
-		}
+		if (!process.client || !player.value) return
+		
+		player.value?.setVolume(newVolume)
+		volume.value = newVolume
 	}
 
 	const muteVolume = () => {
-		if (player.value) {
-			if (volumeOn.value) {
-				player.value?.mute()
-				if (isPlaying.value) togglePlayPause()
-			} else {
-				player.value?.unMute()
-				if (!isPlaying.value) togglePlayPause()
-			}
-			volumeOn.value = !volumeOn.value
+		if (!process.client || !player.value) return
+		
+		if (volumeOn.value) {
+			player.value?.mute()
+			if (isPlaying.value) togglePlayPause()
+		} else {
+			player.value?.unMute()
+			if (!isPlaying.value) togglePlayPause()
 		}
+		volumeOn.value = !volumeOn.value
 	}
 
 	const closeYTPlayer = () => {
