@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import type { Release } from '~/types/supabase/release'
+	import type { Release } from '~/types'
 	import type { ReleaseType } from '~/types/supabase'
 	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
 	import type { AlgoliaHit } from '~/types/algolia'

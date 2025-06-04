@@ -5,10 +5,7 @@
 	import { useUserStore } from '~/stores/user'
 
 	// Internal Types
-	import type { Artist } from '~/types/supabase/artist'
-	import type { MusicStyle } from '~/types/supabase/music_style'
-	import type { GeneralTag } from '~/types/supabase/general_tag'
-	import type { ArtistType, ArtistPlatformLink, ArtistSocialLink } from '~/types/supabase'
+	import type { Artist, MusicStyle, GeneralTag, ArtistType, ArtistPlatformLink, ArtistSocialLink } from '~/types'
 
 	// Internal Composables
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'

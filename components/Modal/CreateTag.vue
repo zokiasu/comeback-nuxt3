@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-	import type { GeneralTag } from '~/types/supabase/general_tag'
+	import type { GeneralTag } from '~/types'
 	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'
 
 	const props = defineProps({

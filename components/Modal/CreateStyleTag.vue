@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-	import type { MusicStyle } from '~/types/supabase/music_style'
+	import type { MusicStyle } from '~/types'
 	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
 
 	const props = defineProps({

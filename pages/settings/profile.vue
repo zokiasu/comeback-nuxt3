@@ -2,8 +2,7 @@
 	import { useSupabaseFunction } from '~/composables/useSupabaseFunction'
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 	import { useUserStore } from '~/stores/user'
-	import type { User } from '~/types/supabase/user'
-	import type { Artist } from '~/types/supabase/artist'
+	import type { User, Artist } from '~/types'
 
 	const userStore = useUserStore()
 	const toast = useToast()

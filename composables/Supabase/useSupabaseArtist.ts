@@ -5,7 +5,8 @@ import type {
 	ArtistSocialLink,
 	ArtistPlatformLink,
 } from '~/types/supabase'
-import type { Artist } from '~/types/supabase/artist'
+import type { Artist } from '~/types'
+import { useGeneralFunction } from '@/composables/useGeneralFunction'
 
 export function useSupabaseArtist() {
 	const supabase = useSupabaseClient()

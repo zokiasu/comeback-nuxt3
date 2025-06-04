@@ -4,9 +4,7 @@
 
 	// Internal Types
 	import { storeToRefs } from 'pinia'
-	import type { Artist } from '~/types/supabase/artist'
-	import type { MusicStyle } from '~/types/supabase/music_style'
-	import type { GeneralTag } from '~/types/supabase/general_tag'
+	import type { Artist, MusicStyle, GeneralTag } from '~/types'
 	import type {
 		ArtistGender,
 		ArtistType,

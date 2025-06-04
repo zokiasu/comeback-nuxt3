@@ -1,6 +1,4 @@
-import type { Artist } from '~/types/artist'
-import type { Release } from '~/types/release'
-import type { Music } from '~/types/music'
+import type { Artist, Release, Music } from '~/types'
 
 export function useGeneralFunction() {
 	// TODO: Add comment

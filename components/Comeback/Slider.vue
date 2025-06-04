@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-	import type { Artist } from '~/types/supabase/artist'
+	import type { Artist } from '~/types'
 
 	defineOptions({
 		inheritAttrs: false,

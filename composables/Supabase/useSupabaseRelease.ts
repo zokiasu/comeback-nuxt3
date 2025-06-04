@@ -1,6 +1,4 @@
-import type { Release } from '~/types/supabase/release'
-import type { QueryOptions, FilterOptions, ReleaseType } from '~/types/supabase'
-import type { Artist } from '~/types/supabase/artist'
+import type { Release, QueryOptions, FilterOptions, ReleaseType, Artist } from '~/types'
 
 export function useSupabaseRelease() {
 	const supabase = useSupabaseClient()
@@ -178,15 +176,17 @@ export function useSupabaseRelease() {
 
 			if (artistsError) throw artistsError
 
-			// Récupérer les musiques associées
+			// Récupérer les musiques associées avec l'ordre de track_number
 			const { data: musics, error: musicsError } = await supabase
 				.from('music_releases')
 				.select(
 					`
+          track_number,
           music:musics(*)
         `,
 				)
 				.eq('release_id', id)
+				.order('track_number', { ascending: true })
 
 			if (musicsError) throw musicsError
 

@@ -2,7 +2,7 @@
 	import { CalendarDate } from '@internationalized/date'
 
 	import algoliasearch from 'algoliasearch/lite'
-	import type { News } from '~/types/supabase/news'
+	import type { News } from '~/types'
 	import { useSupabaseNews } from '~/composables/Supabase/useSupabaseNews'
 	import { useDebounce } from '~/composables/useDebounce'
 

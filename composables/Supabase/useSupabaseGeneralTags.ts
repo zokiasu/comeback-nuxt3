@@ -1,5 +1,4 @@
-import type { QueryOptions, FilterOptions } from '~/types/supabase'
-import type { GeneralTag } from '~/types/supabase/general_tag'
+import type { QueryOptions, FilterOptions, GeneralTag } from '~/types'
 
 export function useSupabaseGeneralTags() {
 	const supabase = useSupabaseClient()

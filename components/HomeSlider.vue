@@ -7,7 +7,7 @@
 	import 'swiper/css/autoplay'
 	import 'swiper/css/effect-fade'
 	import 'swiper/css/parallax'
-	import type { News } from '~/types/supabase/news'
+	import type { News } from '~/types'
 
 	const props = defineProps<{
 		newsToday: News[]

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import type { Release } from '~/types/supabase/release'
+	import type { Release } from '~/types'
 	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
 
 	const { getReleasesByMonthAndYear } = useSupabaseRelease()

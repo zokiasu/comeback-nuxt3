@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { useDebounce } from '~/composables/useDebounce'
-	import type { Artist } from '~/types/supabase/artist'
+	import type { Artist } from '~/types'
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 
 	// Utilisation de Supabase uniquement pour la base de données
