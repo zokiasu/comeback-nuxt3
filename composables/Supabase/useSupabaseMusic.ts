@@ -385,6 +385,118 @@ export function useSupabaseMusic() {
 		}
 	}
 
+	// Créer une musique avec relations artistes
+	const createMusic = async (
+		musicData: Partial<Music>,
+		artistIds: string[]
+	): Promise<Music | null> => {
+		try {
+			// 1. Créer la musique
+			const { data: music, error: musicError } = await supabase
+				.from('musics')
+				.insert(musicData)
+				.select()
+				.single()
+
+			if (musicError) {
+				console.error('Erreur lors de la création de la musique:', musicError)
+				toast.add({
+					title: 'Erreur lors de la création de la musique',
+					color: 'error'
+				})
+				throw musicError
+			}
+
+			// 2. Ajouter les relations avec les artistes
+			if (artistIds && artistIds.length > 0) {
+				const { error: artistError } = await supabase
+					.from('music_artists')
+					.insert(
+						artistIds.map((artistId, index) => ({
+							music_id: music.id,
+							artist_id: artistId,
+							is_primary: index === 0 // Le premier artiste est considéré comme principal
+						}))
+					)
+
+				if (artistError) {
+					console.error('Erreur lors de l\'ajout des artistes:', artistError)
+					// On supprime la musique créée si l'ajout des artistes échoue
+					await supabase.from('musics').delete().eq('id', music.id)
+					toast.add({
+						title: 'Erreur lors de l\'ajout des artistes',
+						color: 'error'
+					})
+					throw artistError
+				}
+			}
+
+			return music as Music
+		} catch (error) {
+			console.error('Erreur lors de la création de la musique:', error)
+			return null
+		}
+	}
+
+	// Ajouter une musique à une release
+	const addMusicToRelease = async (
+		musicId: string,
+		releaseId: string,
+		trackNumber: number
+	): Promise<boolean> => {
+		try {
+			const { error } = await supabase
+				.from('music_releases')
+				.insert({
+					music_id: musicId,
+					release_id: releaseId,
+					track_number: trackNumber
+				})
+
+			if (error) {
+				console.error('Erreur lors de l\'ajout de la musique à la release:', error)
+				toast.add({
+					title: 'Erreur lors de l\'ajout à la release',
+					color: 'error'
+				})
+				throw error
+			}
+
+			return true
+		} catch (error) {
+			console.error('Erreur lors de l\'ajout de la musique à la release:', error)
+			return false
+		}
+	}
+
+	// Retirer une musique d'une release
+	const removeMusicFromRelease = async (
+		musicId: string,
+		releaseId: string
+	): Promise<boolean> => {
+		try {
+			const { error } = await supabase
+				.from('music_releases')
+				.delete()
+				.eq('music_id', musicId)
+				.eq('release_id', releaseId)
+
+			if (error) {
+				console.error('Erreur lors de la suppression de la musique de la release:', error)
+				toast.add({
+					title: 'Erreur lors de la suppression',
+					color: 'error'
+				})
+				throw error
+			}
+
+			return true
+		} catch (error) {
+			console.error('Erreur lors de la suppression de la musique de la release:', error)
+			return false
+		}
+	}
+
 	return {
 		updateMusic,
 		updateMusicArtists,
@@ -396,5 +508,8 @@ export function useSupabaseMusic() {
 		getRealtimeLastestMusicsAdded,
 		getRandomMusics,
 		getRandomMusicsByArtistId,
+		createMusic,
+		addMusicToRelease,
+		removeMusicFromRelease,
 	}
 }

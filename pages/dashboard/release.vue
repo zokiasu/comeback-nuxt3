@@ -4,9 +4,11 @@
 	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
 	import type { AlgoliaHit } from '~/types/algolia'
 	import { useDebounce } from '~/composables/useDebounce'
+	import { useUserStore } from '~/stores/user'
 
 	const { deleteRelease: deleteReleaseFunction, getReleasesByPage } = useSupabaseRelease()
 	const toast = useToast()
+	const userStore = useUserStore()
 
 	const releaseFetch = ref<Release[]>([])
 	const search = ref<string>('')
@@ -317,6 +319,17 @@
 			</div>
 			<section class="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
 				<div class="flex space-x-2">
+					<UButton
+						v-if="userStore?.isAdminStore"
+						to="/release/create"
+						icon="i-heroicons-plus"
+						color="primary"
+						variant="solid"
+						size="sm"
+						class="whitespace-nowrap"
+					>
+						Créer une release
+					</UButton>
 					<select
 						v-model="sort"
 						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 hover:bg-cb-tertiary-200 hover:text-cb-quinary-900 w-full rounded border-none p-2 text-xs uppercase drop-shadow-xl transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
