@@ -1,18 +1,21 @@
-// TODO: Add comment
+// Composables YouTube avec persistance
 export const useIdYoutubeVideo = () =>
 	useState<string>('idYoutubeVideo', () => 'L9Ts6kiEAts')
-// TODO: Add comment
+
 export const useMusicNamePlaying = () =>
 	useState<string>('musicNamePlaying', () => 'Music Name')
-// TODO: Add comment
+
 export const useAuthorNamePlaying = () =>
 	useState<string>('authorNamePlaying', () => 'Author Name')
-// TODO: Add comment
-export const useIsPlayingVideo = () => useState<boolean>('isPlayingVideo', () => false)
-// TODO: Add comment
+
+export const useIsPlayingVideo = () => 
+	useState<boolean>('isPlayingVideo', () => false)
+
+// Composables d'authentification (remplacés par le store Pinia)
 export const useIsLogin = () => useState<boolean>('isLogin', () => false)
-// TODO: Add comment
+
 export const useIsAdmin = () => useState<boolean>('isAdmin', () => false)
-// TODO: Add comment
+
+// Autres composables
 export const useLastRoomYouTryToJoined = () =>
 	useState<string>('lastRoomYouTryToJoined', () => '')
