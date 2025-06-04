@@ -10,7 +10,7 @@ export const useAuth = () => {
 		storeToRefs(userStore)
 
 	// Destructurer les actions (pas besoin de storeToRefs pour les fonctions)
-	const { syncUserProfile, setUserData, setIsLogin, setSupabaseUser } = userStore
+	const { syncUserProfile, setUserData, setIsLogin, setSupabaseUser, resetStore } = userStore
 
 	// Fonction pour créer ou mettre à jour un utilisateur (intégrée depuis useSupabaseUserManager)
 	const createOrUpdateUser = async (authUser: any): Promise<any | null> => {
@@ -90,33 +90,40 @@ export const useAuth = () => {
 	const ensureUserProfile = async () => {
 		if (!user.value) {
 			console.log('❌ Aucun utilisateur Supabase connecté')
-			await syncUserProfile(null, null)
+			await resetStore()
 			return false
 		}
 
+		// Si l'utilisateur Supabase existe mais qu'on n'a pas de données dans le store
+		// ou si l'ID ne correspond pas, on re-synchronise
+		if (!userDataStore.value || userDataStore.value.id !== user.value.id) {
+			try {
+				isSyncing.value = true
+				syncError.value = null
+				console.log('🔄 Synchronisation du profil utilisateur...')
+
+				const userData = await createOrUpdateUser(user.value)
+				await syncUserProfile(user.value, userData)
+
+				console.log('✅ Profil synchronisé avec succès')
+				return true
+			} catch (error: any) {
+				console.error('❌ Erreur lors de la synchronisation:', error)
+				syncError.value = error.message || 'Erreur de synchronisation'
+				await resetStore()
+				return false
+			} finally {
+				isSyncing.value = false
+			}
+		}
+
+		// Si tout est déjà synchronisé
 		if (userDataStore.value && isLoginStore.value) {
 			console.log('✅ Profil utilisateur déjà synchronisé')
 			return true
 		}
 
-		try {
-			isSyncing.value = true
-			syncError.value = null
-			console.log('🔄 Synchronisation du profil utilisateur...')
-
-			const userData = await createOrUpdateUser(user.value)
-			await syncUserProfile(user.value, userData)
-
-			console.log('✅ Profil synchronisé avec succès')
-			return true
-		} catch (error: any) {
-			console.error('❌ Erreur lors de la synchronisation:', error)
-			syncError.value = error.message || 'Erreur de synchronisation'
-			await syncUserProfile(null, null)
-			return false
-		} finally {
-			isSyncing.value = false
-		}
+		return false
 	}
 
 	// Fonction de déconnexion
@@ -130,7 +137,7 @@ export const useAuth = () => {
 			}
 
 			// Réinitialiser le store
-			await syncUserProfile(null, null)
+			await resetStore()
 
 			await navigateTo('/authentification')
 		} catch (err: any) {
@@ -138,27 +145,50 @@ export const useAuth = () => {
 		}
 	}
 
-	// Watcher pour synchroniser automatiquement quand l'utilisateur change
-	let hasInitialized = false
+	// Fonction d'initialisation au chargement de l'app
+	const initializeAuth = async () => {
+		console.log('🚀 Initialisation de l\'authentification...')
+		
+		// Si on a un utilisateur Supabase et des données dans le store
+		if (user.value && userDataStore.value && userDataStore.value.id === user.value.id) {
+			console.log('✅ Session restaurée depuis le cache')
+			return true
+		}
+		
+		// Si on a un utilisateur Supabase mais pas de données dans le store
+		if (user.value) {
+			console.log('🔄 Utilisateur Supabase détecté, synchronisation...')
+			return await ensureUserProfile()
+		}
+		
+		// Aucun utilisateur connecté
+		console.log('ℹ️ Aucun utilisateur connecté')
+		await resetStore()
+		return false
+	}
+
+	// Watcher pour surveiller les changements d'utilisateur Supabase
+	let isInitialized = false
 	watch(
 		user,
 		async (newUser, oldUser) => {
-			// Éviter la synchronisation au premier chargement si l'utilisateur est déjà connecté
-			if (!hasInitialized) {
-				hasInitialized = true
-				if (newUser) {
-					await ensureUserProfile()
-				}
+			// Initialisation une seule fois au démarrage
+			if (!isInitialized) {
+				isInitialized = true
+				await initializeAuth()
 				return
 			}
 
-			// Synchroniser seulement lors d'une nouvelle connexion
+			// Gestion des changements d'utilisateur après l'initialisation
 			if (newUser && !oldUser) {
 				console.log('👤 Nouvelle connexion détectée')
 				await ensureUserProfile()
 			} else if (!newUser && oldUser) {
 				console.log('👋 Déconnexion détectée')
-				await syncUserProfile(null, null)
+				await resetStore()
+			} else if (newUser && oldUser && newUser.id !== oldUser.id) {
+				console.log('🔄 Changement d\'utilisateur détecté')
+				await ensureUserProfile()
 			}
 		},
 		{ immediate: true },
@@ -176,6 +206,7 @@ export const useAuth = () => {
 
 		// Actions
 		ensureUserProfile,
+		initializeAuth,
 		logout,
 	}
 }

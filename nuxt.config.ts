@@ -52,7 +52,9 @@ export default defineNuxtConfig({
 		types: './types/supabase.ts',
 		cookieOptions: {
 			secure: true,
-			sameSite: 'lax'
+			sameSite: 'lax',
+			maxAge: 60 * 60 * 24 * 365, // 1 an
+			httpOnly: false, // Permet l'accès côté client
 		}
 	},
 

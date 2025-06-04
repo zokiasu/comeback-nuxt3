@@ -42,6 +42,13 @@ export const useUserStore = defineStore('userStore', () => {
 		}
 	}
 
+	const resetStore = () => {
+		setUserData(null)
+		setIsLogin(false)
+		setSupabaseUser(null)
+		setIsAdmin(false)
+	}
+
 	return {
 		supabaseUserStore,
 		userDataStore,
@@ -52,5 +59,13 @@ export const useUserStore = defineStore('userStore', () => {
 		setIsLogin,
 		setIsAdmin,
 		syncUserProfile,
+		resetStore,
+	}
+}, {
+	persist: {
+		storage: import.meta.client ? localStorage : undefined,
+		paths: ['userDataStore', 'isLoginStore', 'isAdminStore'],
+		// On ne persiste pas supabaseUserStore car il contient des données sensibles
+		// et Supabase gère sa propre persistance via les cookies
 	}
 })
