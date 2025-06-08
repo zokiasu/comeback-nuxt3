@@ -134,7 +134,7 @@
 		<UButton
 			variant="soft"
 			title="New Comeback"
-			class="bg-cb-primary-700/10 lg:bg-cb-primary-900 lg:hover:bg-cb-primary-900/90 w-full items-center justify-center rounded-none px-0 text-white lg:h-full lg:cursor-pointer lg:rounded lg:px-5"
+			class="bg-cb-primary-700/10 lg:bg-cb-primary-900 lg:hover:bg-cb-primary-900/90 w-full items-center justify-center text-white lg:h-full lg:cursor-pointer rounded lg:px-5"
 		>
 			<IconComeback class="mx-auto size-5 lg:hidden" />
 			<p class="hidden lg:block lg:text-nowrap">New Comeback</p>
