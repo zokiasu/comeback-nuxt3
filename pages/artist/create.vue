@@ -152,8 +152,8 @@
 			active_career: artistActiveCareer.value,
 			verified: isAdminStore.value,
 			// Re-convertir CalendarDate en ISO string
-			birth_date: birthdayToDate.value ? birthdayToDate.value.toString() : null,
-			debut_date: debutDateToDate.value ? debutDateToDate.value.toString() : null,
+			birth_date: birthdayToDate.value ? new Date(birthdayToDate.value.toString()).toISOString() : null,
+			debut_date: debutDateToDate.value ? new Date(debutDateToDate.value.toString()).toISOString() : null,
 			styles: artistStyleListName,
 			general_tags: artistTagListName,
 		}
