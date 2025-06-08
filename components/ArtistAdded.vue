@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import type { Artist } from '~/types/supabase/artist'
+	import type { Artist } from '~/types'
 
 	const { artists } = defineProps<{
 		artists: Artist[]

@@ -108,6 +108,14 @@
 		emit('updateRelease')
 		emit('release-verified')
 	}
+
+	const handleReleaseSaved = (updatedRelease) => {
+		// Mettre à jour les données locales si nécessaire
+		emit('updateRelease')
+		if (updatedRelease.verified) {
+			emit('release-verified')
+		}
+	}
 </script>
 
 <template>
@@ -188,6 +196,7 @@
 			</p>
 			<div class="space-x-1">
 				<UModal
+					v-model:open="showModal"
 					:ui="{
 						overlay: 'bg-cb-quinary-950/75',
 						content: 'ring-cb-quinary-950',
@@ -199,19 +208,23 @@
 						class="bg-cb-quinary-900 text-cb-tertiary-300 rounded px-2 py-1 text-xs font-normal uppercase hover:bg-zinc-500"
 					/>
 
-					<template #content>
-						<ModalEditRelease
+					<template #header>
+						<div class="flex items-center justify-between">
+							<h2 class="text-lg font-semibold">Éditer la Release</h2>
+						</div>
+					</template>
+
+					<template #body>
+						<FormEditRelease
 							:id="id"
-							v-model:show-modal="showModal"
 							:name="name"
 							:type="type"
 							:id-youtube-music="idYoutubeMusic"
 							:date="date"
 							:year-released="yearReleased"
 							:need-to-be-verified="needToBeVerified"
-							:artists-name="artistsName"
-							:platform-list="platformList"
-							@verified-release="onReleaseVerified"
+							@saved="handleReleaseSaved"
+							@close="showModal = false"
 						/>
 					</template>
 				</UModal>

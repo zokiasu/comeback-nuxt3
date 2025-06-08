@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import type { News } from '~/types/supabase/news'
+	import type { News } from '~/types'
 
 	const props = defineProps({
 		comebackList: {

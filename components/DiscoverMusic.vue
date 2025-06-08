@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import type { Music } from '~/types/supabase/music'
+	import type { Music } from '~/types'
 
 	const props = defineProps({
 		music: {

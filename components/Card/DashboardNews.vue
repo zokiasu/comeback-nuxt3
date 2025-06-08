@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { CalendarDate } from '@internationalized/date'
 	import algoliasearch from 'algoliasearch/lite'
-	import type { Artist } from '~/types/supabase/artist'
+	import type { Artist } from '~/types'
 	import { useSupabaseNews } from '~/composables/Supabase/useSupabaseNews'
 	import { useDebounce } from '~/composables/useDebounce'
 

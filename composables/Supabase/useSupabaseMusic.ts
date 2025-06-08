@@ -1,5 +1,4 @@
-import type { QueryOptions, FilterOptions, MusicType } from '~/types/supabase'
-import type { Music } from '~/types/supabase/music'
+import type { QueryOptions, FilterOptions, MusicType, Music } from '~/types'
 
 export function useSupabaseMusic() {
 	const supabase = useSupabaseClient()

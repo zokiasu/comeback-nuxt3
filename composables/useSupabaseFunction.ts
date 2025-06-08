@@ -1,4 +1,4 @@
-import type { User } from '~/types/supabase/user'
+import type { User } from '~/types'
 
 export function useSupabaseFunction() {
 	const supabase = useSupabaseClient()

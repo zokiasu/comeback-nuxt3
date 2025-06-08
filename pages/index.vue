@@ -1,8 +1,5 @@
 <script setup lang="ts">
-	import type { Music } from '~/types/supabase/music'
-	import type { Artist } from '~/types/supabase/artist'
-	import type { Release } from '~/types/supabase/release'
-	import type { News } from '~/types/supabase/news'
+	import type { Music, Artist, Release, News } from '~/types'
 	import { useSupabaseNews } from '~/composables/Supabase/useSupabaseNews'
 	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
