@@ -11,7 +11,7 @@ export const useYouTube = () => {
 	// Fonction pour jouer une musique
 	const playMusic = (videoId: string, musicName: string, artistName: string) => {
 		console.log('🎵 Lecture de:', { videoId, musicName, artistName })
-		
+
 		if (!videoId) {
 			console.error('❌ ID vidéo manquant')
 			return false
@@ -23,7 +23,7 @@ export const useYouTube = () => {
 			authorNamePlaying.value = artistName || 'Artiste inconnu'
 			isPlayingVideo.value = true
 			playerError.value = null
-			
+
 			return true
 		} catch (error) {
 			console.error('❌ Erreur lors de la lecture:', error)
@@ -72,4 +72,4 @@ export const useYouTube = () => {
 		toggleMusic,
 		isCurrentlyPlaying,
 	}
-} 
+}

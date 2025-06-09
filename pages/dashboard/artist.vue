@@ -176,7 +176,7 @@
 	 */
 	const toggleSearchMethod = (): void => {
 		useAlgoliaForSearch.value = !useAlgoliaForSearch.value
-		
+
 		// Refaire la recherche avec la nouvelle méthode
 		if (search.value.length >= 2) {
 			if (useAlgoliaForSearch.value) {

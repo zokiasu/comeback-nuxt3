@@ -126,4 +126,4 @@ export interface UseSupabaseReturn<T> {
 	create: (item: any) => Promise<T | null>
 	update: (id: string, updates: any) => Promise<T | null>
 	delete: (id: string) => Promise<boolean>
-} 
+}

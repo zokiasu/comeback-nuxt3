@@ -10,7 +10,8 @@ export const useAuth = () => {
 		storeToRefs(userStore)
 
 	// Destructurer les actions (pas besoin de storeToRefs pour les fonctions)
-	const { syncUserProfile, setUserData, setIsLogin, setSupabaseUser, resetStore } = userStore
+	const { syncUserProfile, setUserData, setIsLogin, setSupabaseUser, resetStore } =
+		userStore
 
 	// Fonction pour créer ou mettre à jour un utilisateur (intégrée depuis useSupabaseUserManager)
 	const createOrUpdateUser = async (authUser: any): Promise<any | null> => {
@@ -147,20 +148,20 @@ export const useAuth = () => {
 
 	// Fonction d'initialisation au chargement de l'app
 	const initializeAuth = async () => {
-		console.log('🚀 Initialisation de l\'authentification...')
-		
+		console.log("🚀 Initialisation de l'authentification...")
+
 		// Si on a un utilisateur Supabase et des données dans le store
 		if (user.value && userDataStore.value && userDataStore.value.id === user.value.id) {
 			console.log('✅ Session restaurée depuis le cache')
 			return true
 		}
-		
+
 		// Si on a un utilisateur Supabase mais pas de données dans le store
 		if (user.value) {
 			console.log('🔄 Utilisateur Supabase détecté, synchronisation...')
 			return await ensureUserProfile()
 		}
-		
+
 		// Aucun utilisateur connecté
 		console.log('ℹ️ Aucun utilisateur connecté')
 		await resetStore()
@@ -187,7 +188,7 @@ export const useAuth = () => {
 				console.log('👋 Déconnexion détectée')
 				await resetStore()
 			} else if (newUser && oldUser && newUser.id !== oldUser.id) {
-				console.log('🔄 Changement d\'utilisateur détecté')
+				console.log("🔄 Changement d'utilisateur détecté")
 				await ensureUserProfile()
 			}
 		},

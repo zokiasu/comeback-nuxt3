@@ -5,7 +5,7 @@ export default defineNuxtPlugin(() => {
 		console.info = () => {}
 		console.debug = () => {}
 		// Garder console.warn et console.error pour les vrais problèmes
-		
+
 		console.warn('🚀 Mode production: console.log désactivés')
 	}
-}) 
+})

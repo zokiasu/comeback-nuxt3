@@ -1,31 +1,40 @@
 // @ts-check
-import withNuxt from './.nuxt/eslint.config.mjs'
+import vue from 'eslint-plugin-vue'
+import tseslint from '@typescript-eslint/eslint-plugin'
+import tsParser from '@typescript-eslint/parser'
+import prettier from 'eslint-config-prettier'
 
-export default withNuxt(
-	// Vos règles personnalisées ici
+export default [
 	{
+		files: ['**/*.ts', '**/*.vue'],
+		languageOptions: {
+			parser: tsParser,
+			parserOptions: {
+				ecmaVersion: 2020,
+				sourceType: 'module',
+				project: ['./tsconfig.json'],
+				extraFileExtensions: ['.vue'],
+			},
+		},
+		plugins: {
+			vue,
+			'@typescript-eslint': tseslint,
+		},
+		extends: [
+			'eslint:recommended',
+			'plugin:vue/vue3-recommended',
+			'plugin:@typescript-eslint/recommended',
+			'plugin:prettier/recommended',
+		],
 		rules: {
-			// Règles Vue
 			'vue/multi-word-component-names': 'off',
-			'vue/require-default-prop': 'off',
-			'vue/no-template-shadow': 'warn',
-			'vue/require-prop-types': 'warn',
-			'vue/no-side-effects-in-computed-properties': 'warn',
-			'vue/require-v-for-key': 'error',
-			'vue/html-self-closing': 'off', // Désactiver pour éviter les conflits avec Prettier
-
-			// Règles générales
-			'no-console': 'off',
-			'no-unused-vars': 'off', // Géré par TypeScript
-			'@typescript-eslint/no-unused-vars': 'warn',
-			'@typescript-eslint/no-explicit-any': 'warn',
-			'require-await': 'off',
-			'no-useless-escape': 'warn',
-			eqeqeq: 'warn',
-			camelcase: 'warn',
-			'array-callback-return': 'warn',
-			'no-dupe-keys': 'error',
-			'no-constant-binary-expression': 'warn',
+			'vue/no-v-html': 'off',
+			'@typescript-eslint/no-explicit-any': 'off',
+			'@typescript-eslint/ban-ts-comment': 'off',
 		},
 	},
-)
+	{
+		files: ['*.js'],
+		extends: ['eslint:recommended', 'plugin:prettier/recommended'],
+	},
+]

@@ -7,20 +7,20 @@ export default defineNuxtPlugin(async () => {
 			console.log('🔐 Page de callback détectée, initialisation différée')
 			return
 		}
-		
-		console.log('🔐 Initialisation de l\'authentification au démarrage...')
-		
+
+		console.log("🔐 Initialisation de l'authentification au démarrage...")
+
 		// Attendre que Nuxt soit prêt
 		await nextTick()
-		
+
 		try {
 			// Initialiser l'authentification
 			const { initializeAuth } = useAuth()
 			await initializeAuth()
-			
+
 			console.log('✅ Authentification initialisée')
 		} catch (error) {
-			console.error('❌ Erreur lors de l\'initialisation de l\'authentification:', error)
+			console.error("❌ Erreur lors de l'initialisation de l'authentification:", error)
 		}
 	}
-}) 
+})

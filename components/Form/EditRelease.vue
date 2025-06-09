@@ -49,11 +49,11 @@
 	// Fonction pour formater la date au format YYYY-MM-DD pour l'input date
 	const formatDateForInput = (dateString: string) => {
 		if (!dateString) return ''
-		
+
 		try {
 			const date = new Date(dateString)
 			if (isNaN(date.getTime())) return ''
-			
+
 			// Formater au format YYYY-MM-DD
 			return date.toISOString().split('T')[0]
 		} catch (error) {
@@ -103,7 +103,7 @@
 					title: 'Release mise à jour avec succès',
 					color: 'success',
 				})
-				
+
 				emit('saved', result)
 				emit('close')
 			} else {
@@ -121,14 +121,18 @@
 	}
 
 	// Watch pour mettre à jour les données du formulaire si les props changent
-	watch(() => props, (newProps) => {
-		formData.name = newProps.name
-		formData.type = newProps.type
-		formData.date = formatDateForInput(newProps.date)
-		formData.year = newProps.yearReleased
-		formData.verified = !newProps.needToBeVerified
-		formData.id_youtube_music = newProps.idYoutubeMusic
-	}, { deep: true })
+	watch(
+		() => props,
+		(newProps) => {
+			formData.name = newProps.name
+			formData.type = newProps.type
+			formData.date = formatDateForInput(newProps.date)
+			formData.year = newProps.yearReleased
+			formData.verified = !newProps.needToBeVerified
+			formData.id_youtube_music = newProps.idYoutubeMusic
+		},
+		{ deep: true },
+	)
 </script>
 
 <template>
@@ -157,12 +161,7 @@
 
 		<!-- Date -->
 		<UFormField label="Date" name="date">
-			<UInput
-				v-model="formData.date"
-				type="date"
-				:disabled="isLoading"
-				class="w-full"
-			/>
+			<UInput v-model="formData.date" type="date" :disabled="isLoading" class="w-full" />
 		</UFormField>
 
 		<!-- Année -->
@@ -197,12 +196,7 @@
 			>
 				Annuler
 			</UButton>
-			<UButton
-				type="submit"
-				:loading="isLoading"
-			>
-				Sauvegarder
-			</UButton>
+			<UButton type="submit" :loading="isLoading">Sauvegarder</UButton>
 		</div>
 	</UForm>
-</template> 
+</template>

@@ -425,6 +425,57 @@ export function useSupabaseRelease() {
 		}
 	}
 
+	// Créer une release avec relations artistes
+	const createReleaseWithDetails = async (
+		releaseData: Partial<Release>,
+		artistIds: string[],
+	): Promise<Release | null> => {
+		try {
+			// 1. Créer la release
+			const { data: release, error: releaseError } = await supabase
+				.from('releases')
+				.insert(releaseData)
+				.select()
+				.single()
+
+			if (releaseError) {
+				console.error('Erreur lors de la création de la release:', releaseError)
+				toast.add({
+					title: 'Erreur lors de la création de la release',
+					color: 'error',
+				})
+				throw releaseError
+			}
+
+			// 2. Ajouter les relations avec les artistes
+			if (artistIds && artistIds.length > 0) {
+				const { error: artistError } = await supabase.from('artist_releases').insert(
+					artistIds.map((artistId, index) => ({
+						release_id: release.id,
+						artist_id: artistId,
+						is_primary: index === 0, // Le premier artiste est considéré comme principal
+					})),
+				)
+
+				if (artistError) {
+					console.error("Erreur lors de l'ajout des artistes:", artistError)
+					// On supprime la release créée si l'ajout des artistes échoue
+					await supabase.from('releases').delete().eq('id', release.id)
+					toast.add({
+						title: "Erreur lors de l'ajout des artistes",
+						color: 'error',
+					})
+					throw artistError
+				}
+			}
+
+			return release as Release
+		} catch (error) {
+			console.error('Erreur lors de la création de la release:', error)
+			return null
+		}
+	}
+
 	return {
 		updateRelease,
 		updateReleaseArtists,
@@ -436,5 +487,6 @@ export function useSupabaseRelease() {
 		getReleasesByMonthAndYear,
 		getSuggestedReleases,
 		getReleasesByPage,
+		createReleaseWithDetails,
 	}
 }

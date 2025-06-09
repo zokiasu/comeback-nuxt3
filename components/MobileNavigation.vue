@@ -1,8 +1,8 @@
 <script setup lang="ts">
 	import { storeToRefs } from 'pinia'
-	
+
 	const isPlayingVideo = useIsPlayingVideo()
-	
+
 	// Accès sécurisé aux stores
 	let userDataStore = ref(null)
 	let isLoginStore = ref(false)

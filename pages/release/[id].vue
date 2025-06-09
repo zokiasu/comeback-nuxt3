@@ -238,7 +238,7 @@
 									/>
 
 									<template #content>
-										<div class="space-y-3">
+										<div class="space-y-3 p-3">
 											<ComebackInput v-model="release.name" label="Name" />
 
 											<div class="grid grid-cols-2 gap-3">

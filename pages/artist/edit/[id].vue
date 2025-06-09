@@ -5,7 +5,14 @@
 	import { useUserStore } from '~/stores/user'
 
 	// Internal Types
-	import type { Artist, MusicStyle, GeneralTag, ArtistType, ArtistPlatformLink, ArtistSocialLink } from '~/types'
+	import type {
+		Artist,
+		MusicStyle,
+		GeneralTag,
+		ArtistType,
+		ArtistPlatformLink,
+		ArtistSocialLink,
+	} from '~/types'
 
 	// Internal Composables
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
@@ -253,9 +260,11 @@
 					? new Date(artist.value.debut_date)
 					: null
 
-				const textarea = document.querySelector('textarea')
-				if (textarea) {
-					adjustTextarea(textarea)
+				if (import.meta.client) {
+					const textarea = document.querySelector('textarea')
+					if (textarea) {
+						adjustTextarea(textarea)
+					}
 				}
 
 				title.value = 'EDIT ARTIST : ' + artist.value.name
