@@ -323,10 +323,9 @@
 						v-if="userStore?.isAdminStore"
 						to="/release/create"
 						icon="i-heroicons-plus"
-						color="primary"
 						variant="solid"
 						size="sm"
-						class="whitespace-nowrap"
+						class="whitespace-nowrap text-white bg-cb-primary-800"
 					>
 						Créer une release
 					</UButton>
