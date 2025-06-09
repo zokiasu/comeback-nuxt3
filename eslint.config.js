@@ -1,5 +1,4 @@
 // @ts-check
-import withNuxt from './.nuxt/eslint.config.mjs'
 import vue from 'eslint-plugin-vue'
 import tseslint from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
