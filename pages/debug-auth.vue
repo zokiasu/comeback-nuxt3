@@ -71,10 +71,11 @@
 		addLog('🚀 Début de la connexion Google...')
 
 		try {
+			const redirectTo = import.meta.client ? `${window.location.origin}/auth/callback` : undefined
 			const { data, error } = await supabase.auth.signInWithOAuth({
 				provider: 'google',
 				options: {
-					redirectTo: `${window.location.origin}/auth/callback`,
+					redirectTo,
 				},
 			})
 

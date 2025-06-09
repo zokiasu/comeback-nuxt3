@@ -253,9 +253,11 @@
 					? new Date(artist.value.debut_date)
 					: null
 
-				const textarea = document.querySelector('textarea')
-				if (textarea) {
-					adjustTextarea(textarea)
+				if (import.meta.client) {
+					const textarea = document.querySelector('textarea')
+					if (textarea) {
+						adjustTextarea(textarea)
+					}
 				}
 
 				title.value = 'EDIT ARTIST : ' + artist.value.name

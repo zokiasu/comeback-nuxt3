@@ -29,7 +29,7 @@
 	const loading = ref<boolean>(true)
 
 	function handleScrollCalendar() {
-		if (backTop.value) {
+		if (import.meta.client) {
 			if (window.scrollY > 50) {
 				backTop.value.classList.remove('hidden')
 			} else {
@@ -90,7 +90,9 @@
 			})
 		})
 
-		window.addEventListener('scroll', handleScrollCalendar)
+		if (import.meta.client) {
+			window.addEventListener('scroll', handleScrollCalendar)
+		}
 	})
 
 	watch([currentYear, currentMonth], async () => {

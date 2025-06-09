@@ -202,12 +202,21 @@ watch(() => props.modelValue, async (newValue) => {
 })
 
 // Cycle de vie
-onMounted(() => {
+if (import.meta.client) {
 	document.addEventListener('click', closeDropdown)
+	document.removeEventListener('click', closeDropdown)
+}
+
+onMounted(() => {
+	if (import.meta.client) {
+		document.addEventListener('click', closeDropdown)
+	}
 })
 
 onUnmounted(() => {
-	document.removeEventListener('click', closeDropdown)
+	if (import.meta.client) {
+		document.removeEventListener('click', closeDropdown)
+	}
 	if (searchTimeout) {
 		clearTimeout(searchTimeout)
 	}
