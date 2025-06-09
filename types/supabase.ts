@@ -48,11 +48,11 @@ export type Database = {
 				}
 				Relationships: [
 					{
-						foreignKeyName: "artist_platform_links_artist_id_fkey"
-						columns: ["artist_id"]
+						foreignKeyName: 'artist_platform_links_artist_id_fkey'
+						columns: ['artist_id']
 						isOneToOne: false
-						referencedRelation: "artists"
-						referencedColumns: ["id"]
+						referencedRelation: 'artists'
+						referencedColumns: ['id']
 					},
 				]
 			}
@@ -61,34 +61,34 @@ export type Database = {
 					created_at: string | null
 					group_id: string
 					member_id: string
-					relation_type: Database["public"]["Enums"]["relation_type"] | null
+					relation_type: Database['public']['Enums']['relation_type'] | null
 				}
 				Insert: {
 					created_at?: string | null
 					group_id: string
 					member_id: string
-					relation_type?: Database["public"]["Enums"]["relation_type"] | null
+					relation_type?: Database['public']['Enums']['relation_type'] | null
 				}
 				Update: {
 					created_at?: string | null
 					group_id?: string
 					member_id?: string
-					relation_type?: Database["public"]["Enums"]["relation_type"] | null
+					relation_type?: Database['public']['Enums']['relation_type'] | null
 				}
 				Relationships: [
 					{
-						foreignKeyName: "artist_relations_group_id_fkey"
-						columns: ["group_id"]
+						foreignKeyName: 'artist_relations_group_id_fkey'
+						columns: ['group_id']
 						isOneToOne: false
-						referencedRelation: "artists"
-						referencedColumns: ["id"]
+						referencedRelation: 'artists'
+						referencedColumns: ['id']
 					},
 					{
-						foreignKeyName: "artist_relations_member_id_fkey"
-						columns: ["member_id"]
+						foreignKeyName: 'artist_relations_member_id_fkey'
+						columns: ['member_id']
 						isOneToOne: false
-						referencedRelation: "artists"
-						referencedColumns: ["id"]
+						referencedRelation: 'artists'
+						referencedColumns: ['id']
 					},
 				]
 			}
@@ -113,18 +113,18 @@ export type Database = {
 				}
 				Relationships: [
 					{
-						foreignKeyName: "artist_releases_artist_id_fkey"
-						columns: ["artist_id"]
+						foreignKeyName: 'artist_releases_artist_id_fkey'
+						columns: ['artist_id']
 						isOneToOne: false
-						referencedRelation: "artists"
-						referencedColumns: ["id"]
+						referencedRelation: 'artists'
+						referencedColumns: ['id']
 					},
 					{
-						foreignKeyName: "artist_releases_release_id_fkey"
-						columns: ["release_id"]
+						foreignKeyName: 'artist_releases_release_id_fkey'
+						columns: ['release_id']
 						isOneToOne: false
-						referencedRelation: "releases"
-						referencedColumns: ["id"]
+						referencedRelation: 'releases'
+						referencedColumns: ['id']
 					},
 				]
 			}
@@ -152,11 +152,11 @@ export type Database = {
 				}
 				Relationships: [
 					{
-						foreignKeyName: "artist_social_links_artist_id_fkey"
-						columns: ["artist_id"]
+						foreignKeyName: 'artist_social_links_artist_id_fkey'
+						columns: ['artist_id']
 						isOneToOne: false
-						referencedRelation: "artists"
-						referencedColumns: ["id"]
+						referencedRelation: 'artists'
+						referencedColumns: ['id']
 					},
 				]
 			}
@@ -167,14 +167,14 @@ export type Database = {
 					created_at: string | null
 					debut_date: string | null
 					description: string | null
-					gender: Database["public"]["Enums"]["gender"] | null
+					gender: Database['public']['Enums']['gender'] | null
 					general_tags: string[] | null
 					id: string
 					id_youtube_music: string | null
 					image: string | null
 					name: string
 					styles: string[] | null
-					type: Database["public"]["Enums"]["artist_type"] | null
+					type: Database['public']['Enums']['artist_type'] | null
 					updated_at: string | null
 					verified: boolean | null
 				}
@@ -184,14 +184,14 @@ export type Database = {
 					created_at?: string | null
 					debut_date?: string | null
 					description?: string | null
-					gender?: Database["public"]["Enums"]["gender"] | null
+					gender?: Database['public']['Enums']['gender'] | null
 					general_tags?: string[] | null
 					id?: string
 					id_youtube_music?: string | null
 					image?: string | null
 					name: string
 					styles?: string[] | null
-					type?: Database["public"]["Enums"]["artist_type"] | null
+					type?: Database['public']['Enums']['artist_type'] | null
 					updated_at?: string | null
 					verified?: boolean | null
 				}
@@ -201,14 +201,14 @@ export type Database = {
 					created_at?: string | null
 					debut_date?: string | null
 					description?: string | null
-					gender?: Database["public"]["Enums"]["gender"] | null
+					gender?: Database['public']['Enums']['gender'] | null
 					general_tags?: string[] | null
 					id?: string
 					id_youtube_music?: string | null
 					image?: string | null
 					name?: string
 					styles?: string[] | null
-					type?: Database["public"]["Enums"]["artist_type"] | null
+					type?: Database['public']['Enums']['artist_type'] | null
 					updated_at?: string | null
 					verified?: boolean | null
 				}
@@ -232,11 +232,11 @@ export type Database = {
 				}
 				Relationships: [
 					{
-						foreignKeyName: "firebase_user_mapping_supabase_id_fkey"
-						columns: ["supabase_id"]
+						foreignKeyName: 'firebase_user_mapping_supabase_id_fkey'
+						columns: ['supabase_id']
 						isOneToOne: false
-						referencedRelation: "users"
-						referencedColumns: ["id"]
+						referencedRelation: 'users'
+						referencedColumns: ['id']
 					},
 				]
 			}
@@ -282,18 +282,18 @@ export type Database = {
 				}
 				Relationships: [
 					{
-						foreignKeyName: "music_artists_artist_id_fkey"
-						columns: ["artist_id"]
+						foreignKeyName: 'music_artists_artist_id_fkey'
+						columns: ['artist_id']
 						isOneToOne: false
-						referencedRelation: "artists"
-						referencedColumns: ["id"]
+						referencedRelation: 'artists'
+						referencedColumns: ['id']
 					},
 					{
-						foreignKeyName: "music_artists_music_id_fkey"
-						columns: ["music_id"]
+						foreignKeyName: 'music_artists_music_id_fkey'
+						columns: ['music_id']
 						isOneToOne: false
-						referencedRelation: "musics"
-						referencedColumns: ["id"]
+						referencedRelation: 'musics'
+						referencedColumns: ['id']
 					},
 				]
 			}
@@ -318,18 +318,18 @@ export type Database = {
 				}
 				Relationships: [
 					{
-						foreignKeyName: "music_releases_music_id_fkey"
-						columns: ["music_id"]
+						foreignKeyName: 'music_releases_music_id_fkey'
+						columns: ['music_id']
 						isOneToOne: false
-						referencedRelation: "musics"
-						referencedColumns: ["id"]
+						referencedRelation: 'musics'
+						referencedColumns: ['id']
 					},
 					{
-						foreignKeyName: "music_releases_release_id_fkey"
-						columns: ["release_id"]
+						foreignKeyName: 'music_releases_release_id_fkey'
+						columns: ['release_id']
 						isOneToOne: false
-						referencedRelation: "releases"
-						referencedColumns: ["id"]
+						referencedRelation: 'releases'
+						referencedColumns: ['id']
 					},
 				]
 			}
@@ -365,7 +365,7 @@ export type Database = {
 					ismv: boolean
 					name: string
 					thumbnails: Json | null
-					type: Database["public"]["Enums"]["music_type"] | null
+					type: Database['public']['Enums']['music_type'] | null
 					updated_at: string | null
 					verified: boolean | null
 				}
@@ -379,7 +379,7 @@ export type Database = {
 					ismv?: boolean
 					name: string
 					thumbnails?: Json | null
-					type?: Database["public"]["Enums"]["music_type"] | null
+					type?: Database['public']['Enums']['music_type'] | null
 					updated_at?: string | null
 					verified?: boolean | null
 				}
@@ -393,7 +393,7 @@ export type Database = {
 					ismv?: boolean
 					name?: string
 					thumbnails?: Json | null
-					type?: Database["public"]["Enums"]["music_type"] | null
+					type?: Database['public']['Enums']['music_type'] | null
 					updated_at?: string | null
 					verified?: boolean | null
 				}
@@ -444,18 +444,18 @@ export type Database = {
 				}
 				Relationships: [
 					{
-						foreignKeyName: "news_artists_junction_artist_id_fkey"
-						columns: ["artist_id"]
+						foreignKeyName: 'news_artists_junction_artist_id_fkey'
+						columns: ['artist_id']
 						isOneToOne: false
-						referencedRelation: "artists"
-						referencedColumns: ["id"]
+						referencedRelation: 'artists'
+						referencedColumns: ['id']
 					},
 					{
-						foreignKeyName: "news_artists_junction_news_id_fkey"
-						columns: ["news_id"]
+						foreignKeyName: 'news_artists_junction_news_id_fkey'
+						columns: ['news_id']
 						isOneToOne: false
-						referencedRelation: "news"
-						referencedColumns: ["id"]
+						referencedRelation: 'news'
+						referencedColumns: ['id']
 					},
 				]
 			}
@@ -468,7 +468,7 @@ export type Database = {
 					id_youtube_music: string | null
 					image: string | null
 					name: string
-					type: Database["public"]["Enums"]["release_type"] | null
+					type: Database['public']['Enums']['release_type'] | null
 					updated_at: string | null
 					verified: boolean | null
 					year: number | null
@@ -481,7 +481,7 @@ export type Database = {
 					id_youtube_music?: string | null
 					image?: string | null
 					name: string
-					type?: Database["public"]["Enums"]["release_type"] | null
+					type?: Database['public']['Enums']['release_type'] | null
 					updated_at?: string | null
 					verified?: boolean | null
 					year?: number | null
@@ -494,7 +494,7 @@ export type Database = {
 					id_youtube_music?: string | null
 					image?: string | null
 					name?: string
-					type?: Database["public"]["Enums"]["release_type"] | null
+					type?: Database['public']['Enums']['release_type'] | null
 					updated_at?: string | null
 					verified?: boolean | null
 					year?: number | null
@@ -504,72 +504,72 @@ export type Database = {
 			user_artist_contributions: {
 				Row: {
 					artist_id: string
-					contribution_type: Database["public"]["Enums"]["contribution_type"]
+					contribution_type: Database['public']['Enums']['contribution_type']
 					created_at: string | null
 					user_id: string
 				}
 				Insert: {
 					artist_id: string
-					contribution_type: Database["public"]["Enums"]["contribution_type"]
+					contribution_type: Database['public']['Enums']['contribution_type']
 					created_at?: string | null
 					user_id: string
 				}
 				Update: {
 					artist_id?: string
-					contribution_type?: Database["public"]["Enums"]["contribution_type"]
+					contribution_type?: Database['public']['Enums']['contribution_type']
 					created_at?: string | null
 					user_id?: string
 				}
 				Relationships: [
 					{
-						foreignKeyName: "user_artist_contributions_artist_id_fkey"
-						columns: ["artist_id"]
+						foreignKeyName: 'user_artist_contributions_artist_id_fkey'
+						columns: ['artist_id']
 						isOneToOne: false
-						referencedRelation: "artists"
-						referencedColumns: ["id"]
+						referencedRelation: 'artists'
+						referencedColumns: ['id']
 					},
 					{
-						foreignKeyName: "user_artist_contributions_user_id_fkey"
-						columns: ["user_id"]
+						foreignKeyName: 'user_artist_contributions_user_id_fkey'
+						columns: ['user_id']
 						isOneToOne: false
-						referencedRelation: "users"
-						referencedColumns: ["id"]
+						referencedRelation: 'users'
+						referencedColumns: ['id']
 					},
 				]
 			}
 			user_news_contributions: {
 				Row: {
-					contribution_type: Database["public"]["Enums"]["contribution_type"]
+					contribution_type: Database['public']['Enums']['contribution_type']
 					created_at: string | null
 					news_id: string
 					user_id: string
 				}
 				Insert: {
-					contribution_type: Database["public"]["Enums"]["contribution_type"]
+					contribution_type: Database['public']['Enums']['contribution_type']
 					created_at?: string | null
 					news_id: string
 					user_id: string
 				}
 				Update: {
-					contribution_type?: Database["public"]["Enums"]["contribution_type"]
+					contribution_type?: Database['public']['Enums']['contribution_type']
 					created_at?: string | null
 					news_id?: string
 					user_id?: string
 				}
 				Relationships: [
 					{
-						foreignKeyName: "user_news_contributions_news_id_fkey"
-						columns: ["news_id"]
+						foreignKeyName: 'user_news_contributions_news_id_fkey'
+						columns: ['news_id']
 						isOneToOne: false
-						referencedRelation: "news"
-						referencedColumns: ["id"]
+						referencedRelation: 'news'
+						referencedColumns: ['id']
 					},
 					{
-						foreignKeyName: "user_news_contributions_user_id_fkey"
-						columns: ["user_id"]
+						foreignKeyName: 'user_news_contributions_user_id_fkey'
+						columns: ['user_id']
 						isOneToOne: false
-						referencedRelation: "users"
-						referencedColumns: ["id"]
+						referencedRelation: 'users'
+						referencedColumns: ['id']
 					},
 				]
 			}
@@ -580,7 +580,7 @@ export type Database = {
 					id: string
 					name: string
 					photo_url: string | null
-					role: Database["public"]["Enums"]["user_role"]
+					role: Database['public']['Enums']['user_role']
 					updated_at: string
 				}
 				Insert: {
@@ -589,7 +589,7 @@ export type Database = {
 					id: string
 					name: string
 					photo_url?: string | null
-					role?: Database["public"]["Enums"]["user_role"]
+					role?: Database['public']['Enums']['user_role']
 					updated_at?: string
 				}
 				Update: {
@@ -598,7 +598,7 @@ export type Database = {
 					id?: string
 					name?: string
 					photo_url?: string | null
-					role?: Database["public"]["Enums"]["user_role"]
+					role?: Database['public']['Enums']['user_role']
 					updated_at?: string
 				}
 				Relationships: []
@@ -641,26 +641,24 @@ export type Database = {
 				}[]
 			}
 			http: {
-				Args: { request: Database["public"]["CompositeTypes"]["http_request"] }
-				Returns: Database["public"]["CompositeTypes"]["http_response"]
+				Args: { request: Database['public']['CompositeTypes']['http_request'] }
+				Returns: Database['public']['CompositeTypes']['http_response']
 			}
 			http_delete: {
-				Args:
-					| { uri: string }
-					| { uri: string; content: string; content_type: string }
-				Returns: Database["public"]["CompositeTypes"]["http_response"]
+				Args: { uri: string } | { uri: string; content: string; content_type: string }
+				Returns: Database['public']['CompositeTypes']['http_response']
 			}
 			http_get: {
 				Args: { uri: string } | { uri: string; data: Json }
-				Returns: Database["public"]["CompositeTypes"]["http_response"]
+				Returns: Database['public']['CompositeTypes']['http_response']
 			}
 			http_head: {
 				Args: { uri: string }
-				Returns: Database["public"]["CompositeTypes"]["http_response"]
+				Returns: Database['public']['CompositeTypes']['http_response']
 			}
 			http_header: {
 				Args: { field: string; value: string }
-				Returns: Database["public"]["CompositeTypes"]["http_header"]
+				Returns: Database['public']['CompositeTypes']['http_header']
 			}
 			http_list_curlopt: {
 				Args: Record<PropertyKey, never>
@@ -671,17 +669,17 @@ export type Database = {
 			}
 			http_patch: {
 				Args: { uri: string; content: string; content_type: string }
-				Returns: Database["public"]["CompositeTypes"]["http_response"]
+				Returns: Database['public']['CompositeTypes']['http_response']
 			}
 			http_post: {
 				Args:
 					| { uri: string; content: string; content_type: string }
 					| { uri: string; data: Json }
-				Returns: Database["public"]["CompositeTypes"]["http_response"]
+				Returns: Database['public']['CompositeTypes']['http_response']
 			}
 			http_put: {
 				Args: { uri: string; content: string; content_type: string }
-				Returns: Database["public"]["CompositeTypes"]["http_response"]
+				Returns: Database['public']['CompositeTypes']['http_response']
 			}
 			http_reset_curlopt: {
 				Args: Record<PropertyKey, never>
@@ -696,9 +694,7 @@ export type Database = {
 				Returns: boolean
 			}
 			set_algolia_config: {
-				Args:
-					| Record<PropertyKey, never>
-					| { p_app_id: string; p_api_key: string }
+				Args: Record<PropertyKey, never> | { p_app_id: string; p_api_key: string }
 				Returns: undefined
 			}
 			sync_all_artists_to_algolia: {
@@ -735,13 +731,13 @@ export type Database = {
 			}
 		}
 		Enums: {
-			artist_type: "SOLO" | "GROUP"
-			contribution_type: "CREATOR" | "EDITOR"
-			gender: "MALE" | "FEMALE" | "MIXTE" | "OTHER" | "UNKNOWN"
-			music_type: "SONG"
-			relation_type: "MEMBER" | "GROUP" | "PRODUCER" | "COMPOSER"
-			release_type: "ALBUM" | "SINGLE" | "EP" | "COMPILATION"
-			user_role: "USER" | "CONTRIBUTOR" | "ADMIN"
+			artist_type: 'SOLO' | 'GROUP'
+			contribution_type: 'CREATOR' | 'EDITOR'
+			gender: 'MALE' | 'FEMALE' | 'MIXTE' | 'OTHER' | 'UNKNOWN'
+			music_type: 'SONG'
+			relation_type: 'MEMBER' | 'GROUP' | 'PRODUCER' | 'COMPOSER'
+			release_type: 'ALBUM' | 'SINGLE' | 'EP' | 'COMPILATION'
+			user_role: 'USER' | 'CONTRIBUTOR' | 'ADMIN'
 		}
 		CompositeTypes: {
 			http_header: {
@@ -751,43 +747,43 @@ export type Database = {
 			http_request: {
 				method: unknown | null
 				uri: string | null
-				headers: Database["public"]["CompositeTypes"]["http_header"][] | null
+				headers: Database['public']['CompositeTypes']['http_header'][] | null
 				content_type: string | null
 				content: string | null
 			}
 			http_response: {
 				status: number | null
 				content_type: string | null
-				headers: Database["public"]["CompositeTypes"]["http_header"][] | null
+				headers: Database['public']['CompositeTypes']['http_header'][] | null
 				content: string | null
 			}
 		}
 	}
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DefaultSchema = Database[Extract<keyof Database, 'public'>]
 
 export type Tables<
 	DefaultSchemaTableNameOrOptions extends
-		| keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+		| keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
 		| { schema: keyof Database },
 	TableName extends DefaultSchemaTableNameOrOptions extends {
 		schema: keyof Database
 	}
-		? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-				Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+		? keyof (Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+				Database[DefaultSchemaTableNameOrOptions['schema']]['Views'])
 		: never = never,
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-	? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-			Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+	? (Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+			Database[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
 			Row: infer R
 		}
 		? R
 		: never
-	: DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-				DefaultSchema["Views"])
-		? (DefaultSchema["Tables"] &
-				DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+	: DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
+				DefaultSchema['Views'])
+		? (DefaultSchema['Tables'] &
+				DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
 				Row: infer R
 			}
 			? R
@@ -796,21 +792,21 @@ export type Tables<
 
 export type TablesInsert<
 	DefaultSchemaTableNameOrOptions extends
-		| keyof DefaultSchema["Tables"]
+		| keyof DefaultSchema['Tables']
 		| { schema: keyof Database },
 	TableName extends DefaultSchemaTableNameOrOptions extends {
 		schema: keyof Database
 	}
-		? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+		? keyof Database[DefaultSchemaTableNameOrOptions['schema']]['Tables']
 		: never = never,
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-	? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+	? Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
 			Insert: infer I
 		}
 		? I
 		: never
-	: DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-		? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+	: DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+		? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
 				Insert: infer I
 			}
 			? I
@@ -819,21 +815,21 @@ export type TablesInsert<
 
 export type TablesUpdate<
 	DefaultSchemaTableNameOrOptions extends
-		| keyof DefaultSchema["Tables"]
+		| keyof DefaultSchema['Tables']
 		| { schema: keyof Database },
 	TableName extends DefaultSchemaTableNameOrOptions extends {
 		schema: keyof Database
 	}
-		? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+		? keyof Database[DefaultSchemaTableNameOrOptions['schema']]['Tables']
 		: never = never,
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-	? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+	? Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
 			Update: infer U
 		}
 		? U
 		: never
-	: DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-		? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+	: DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+		? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
 				Update: infer U
 			}
 			? U
@@ -842,44 +838,44 @@ export type TablesUpdate<
 
 export type Enums<
 	DefaultSchemaEnumNameOrOptions extends
-		| keyof DefaultSchema["Enums"]
+		| keyof DefaultSchema['Enums']
 		| { schema: keyof Database },
 	EnumName extends DefaultSchemaEnumNameOrOptions extends {
 		schema: keyof Database
 	}
-		? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+		? keyof Database[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
 		: never = never,
 > = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-	? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-	: DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-		? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+	? Database[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+	: DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
+		? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
 		: never
 
 export type CompositeTypes<
 	PublicCompositeTypeNameOrOptions extends
-		| keyof DefaultSchema["CompositeTypes"]
+		| keyof DefaultSchema['CompositeTypes']
 		| { schema: keyof Database },
 	CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
 		schema: keyof Database
 	}
-		? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+		? keyof Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
 		: never = never,
 > = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-	? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-	: PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-		? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+	? Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+	: PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
+		? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
 		: never
 
 export const Constants = {
 	public: {
 		Enums: {
-			artist_type: ["SOLO", "GROUP"],
-			contribution_type: ["CREATOR", "EDITOR"],
-			gender: ["MALE", "FEMALE", "MIXTE", "OTHER", "UNKNOWN"],
-			music_type: ["SONG"],
-			relation_type: ["MEMBER", "GROUP", "PRODUCER", "COMPOSER"],
-			release_type: ["ALBUM", "SINGLE", "EP", "COMPILATION"],
-			user_role: ["USER", "CONTRIBUTOR", "ADMIN"],
+			artist_type: ['SOLO', 'GROUP'],
+			contribution_type: ['CREATOR', 'EDITOR'],
+			gender: ['MALE', 'FEMALE', 'MIXTE', 'OTHER', 'UNKNOWN'],
+			music_type: ['SONG'],
+			relation_type: ['MEMBER', 'GROUP', 'PRODUCER', 'COMPOSER'],
+			release_type: ['ALBUM', 'SINGLE', 'EP', 'COMPILATION'],
+			user_role: ['USER', 'CONTRIBUTOR', 'ADMIN'],
 		},
 	},
 } as const

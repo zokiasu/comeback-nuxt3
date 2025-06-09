@@ -325,7 +325,7 @@
 						icon="i-heroicons-plus"
 						variant="solid"
 						size="sm"
-						class="whitespace-nowrap text-white bg-cb-primary-800"
+						class="bg-cb-primary-800 whitespace-nowrap text-white"
 					>
 						Créer une release
 					</UButton>

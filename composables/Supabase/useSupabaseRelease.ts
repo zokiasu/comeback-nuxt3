@@ -428,7 +428,7 @@ export function useSupabaseRelease() {
 	// Créer une release avec relations artistes
 	const createReleaseWithDetails = async (
 		releaseData: Partial<Release>,
-		artistIds: string[]
+		artistIds: string[],
 	): Promise<Release | null> => {
 		try {
 			// 1. Créer la release
@@ -442,30 +442,28 @@ export function useSupabaseRelease() {
 				console.error('Erreur lors de la création de la release:', releaseError)
 				toast.add({
 					title: 'Erreur lors de la création de la release',
-					color: 'error'
+					color: 'error',
 				})
 				throw releaseError
 			}
 
 			// 2. Ajouter les relations avec les artistes
 			if (artistIds && artistIds.length > 0) {
-				const { error: artistError } = await supabase
-					.from('artist_releases')
-					.insert(
-						artistIds.map((artistId, index) => ({
-							release_id: release.id,
-							artist_id: artistId,
-							is_primary: index === 0 // Le premier artiste est considéré comme principal
-						}))
-					)
+				const { error: artistError } = await supabase.from('artist_releases').insert(
+					artistIds.map((artistId, index) => ({
+						release_id: release.id,
+						artist_id: artistId,
+						is_primary: index === 0, // Le premier artiste est considéré comme principal
+					})),
+				)
 
 				if (artistError) {
-					console.error('Erreur lors de l\'ajout des artistes:', artistError)
+					console.error("Erreur lors de l'ajout des artistes:", artistError)
 					// On supprime la release créée si l'ajout des artistes échoue
 					await supabase.from('releases').delete().eq('id', release.id)
 					toast.add({
-						title: 'Erreur lors de l\'ajout des artistes',
-						color: 'error'
+						title: "Erreur lors de l'ajout des artistes",
+						color: 'error',
 					})
 					throw artistError
 				}

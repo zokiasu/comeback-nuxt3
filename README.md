@@ -11,17 +11,20 @@ VueJS 3 - NuxtJS 3 - Pinia - TailwindCSS - Supabase (Database, Auth, Storage)
 ## ⚙️ Fonctionnalités principales
 
 ### 🎤 Gestion des artistes
+
 - **Création d'artistes** : Ajouter de nouveaux artistes avec leurs informations détaillées.
 - **Recherche d'artistes** : Utilisation d'Algolia pour une recherche rapide et pertinente.
 - **Profils d'artistes** : Pages dédiées avec informations complètes et liens sociaux.
 
 ### 🎵 Gestion des sorties musicales
+
 - **Ajout de nouvelles sorties** : Interface intuitive pour créer des entrées de musique.
 - **Intégration YouTube** : Récupération automatique des métadonnées via l'API YouTube.
 - **Gestion des playlists** : Importation de playlists YouTube complètes.
 - **Stockage des données** : Toutes les informations sont sauvegardées dans Supabase.
 
 ### 🔐 Authentification et sécurité
+
 - **Authentification Google** : Connexion sécurisée via Supabase Auth.
 - **Gestion des rôles** : Système de permissions avec rôles utilisateur et administrateur.
 - **Middleware de protection** : Routes protégées selon les permissions.
@@ -29,6 +32,7 @@ VueJS 3 - NuxtJS 3 - Pinia - TailwindCSS - Supabase (Database, Auth, Storage)
 ## 📦 Installation et utilisation
 
 ### Prérequis
+
 - Node.js (version 18 ou supérieure)
 - npm ou yarn
 - Compte Supabase

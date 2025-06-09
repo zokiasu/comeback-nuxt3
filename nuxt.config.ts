@@ -55,7 +55,7 @@ export default defineNuxtConfig({
 			sameSite: 'lax',
 			maxAge: 60 * 60 * 24 * 365, // 1 an
 			httpOnly: false, // Permet l'accès côté client
-		}
+		},
 	},
 
 	experimental: {
@@ -101,7 +101,10 @@ export default defineNuxtConfig({
 				{ name: 'robots', content: 'noindex,nofollow' },
 				{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
 				{ name: 'theme-color', content: '#9E0102' },
-				{ 'http-equiv': 'Cross-Origin-Opener-Policy', content: 'same-origin-allow-popups' },
+				{
+					'http-equiv': 'Cross-Origin-Opener-Policy',
+					content: 'same-origin-allow-popups',
+				},
 				{
 					name: 'description',
 					content:

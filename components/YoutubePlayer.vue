@@ -20,7 +20,7 @@
 
 	const displayVideo = () => {
 		if (!import.meta.client) return
-		
+
 		const iframe = document.getElementById('globalPlayerContainer')
 		if (iframe) {
 			if (isVideoDisplay.value) {
@@ -36,9 +36,9 @@
 	// Création du lecteur YouTube
 	const createPlayer = () => {
 		if (!import.meta.client) return
-		
+
 		console.log('🎵 Création du lecteur YouTube avec vidéo:', idYoutubeVideo.value)
-		
+
 		try {
 			player.value = new window.YT.Player('globalPlayerContainer', {
 				videoId: idYoutubeVideo.value,
@@ -83,14 +83,14 @@
 
 	const onPlayerStateChange = (event) => {
 		if (!import.meta.client) return
-		
+
 		isPlaying.value = event.data === window.YT.PlayerState.PLAYING
 		if (isPlaying.value) {
 			errorDetected.value = false
 			errorMessage.value = ''
 			duration.value = player.value?.getDuration()
 		}
-		
+
 		// Log des changements d'état pour debug
 		const states = {
 			[-1]: 'non démarré',
@@ -98,7 +98,7 @@
 			[1]: 'lecture',
 			[2]: 'pause',
 			[3]: 'mise en mémoire tampon',
-			[5]: 'vidéo mise en file d\'attente'
+			[5]: "vidéo mise en file d'attente",
 		}
 		console.log('🎵 État du lecteur:', states[event.data] || event.data)
 	}
@@ -106,7 +106,7 @@
 	const onPlayerError = (event) => {
 		console.error('❌ Erreur du lecteur YouTube:', event.data)
 		errorDetected.value = true
-		
+
 		switch (event.data) {
 			case 2:
 				errorMessage.value = 'ID de vidéo invalide'
@@ -122,7 +122,8 @@
 				errorMessage.value = 'Vidéo restreinte ou non disponible dans votre région'
 				break
 			default:
-				errorMessage.value = 'Erreur de lecture YouTube. Essayez de désactiver votre bloqueur de publicités.'
+				errorMessage.value =
+					'Erreur de lecture YouTube. Essayez de désactiver votre bloqueur de publicités.'
 		}
 	}
 
@@ -130,9 +131,12 @@
 	if (import.meta.client) {
 		// Filtrer les erreurs postMessage YouTube au niveau global
 		window.addEventListener('error', (event) => {
-			if (event.error && event.error.message && 
-				event.error.message.includes('postMessage') && 
-				event.error.message.includes('youtube.com')) {
+			if (
+				event.error &&
+				event.error.message &&
+				event.error.message.includes('postMessage') &&
+				event.error.message.includes('youtube.com')
+			) {
 				console.log('🎵 Info: Communication YouTube iframe (normal en développement)')
 				event.preventDefault()
 				return false
@@ -154,55 +158,62 @@
 
 	const initYTPlayer = () => {
 		if (!import.meta.client) return
-		
+
 		console.log('🎵 Initialisation du lecteur YouTube...')
-		
+
 		// Vérifier si YouTube est bloqué
-		if (window.navigator && window.navigator.userAgent && 
-			(window.navigator.userAgent.includes('uBlock') || 
-			 window.navigator.userAgent.includes('AdBlock'))) {
+		if (
+			window.navigator &&
+			window.navigator.userAgent &&
+			(window.navigator.userAgent.includes('uBlock') ||
+				window.navigator.userAgent.includes('AdBlock'))
+		) {
 			console.warn('⚠️ Bloqueur de publicités détecté')
 			errorDetected.value = true
-			errorMessage.value = 'Bloqueur de publicités détecté - le lecteur peut ne pas fonctionner'
+			errorMessage.value =
+				'Bloqueur de publicités détecté - le lecteur peut ne pas fonctionner'
 		}
-		
+
 		if (window.YT && window.YT.Player) {
 			console.log('✅ API YouTube déjà chargée')
 			createPlayer()
 		} else {
-			console.log('📥 Chargement de l\'API YouTube...')
-			
+			console.log("📥 Chargement de l'API YouTube...")
+
 			// Vérifier si le script est déjà présent
-			const existingScript = document.querySelector('script[src*="youtube.com/iframe_api"]')
+			const existingScript = document.querySelector(
+				'script[src*="youtube.com/iframe_api"]',
+			)
 			if (existingScript) {
 				console.log('⏳ Script YouTube déjà en cours de chargement...')
 				return
 			}
-			
+
 			const tag = document.createElement('script')
 			tag.src = 'https://www.youtube.com/iframe_api'
 			tag.onload = () => {
 				console.log('✅ Script YouTube chargé')
 			}
 			tag.onerror = (error) => {
-				console.error('❌ Erreur lors du chargement de l\'API YouTube:', error)
+				console.error("❌ Erreur lors du chargement de l'API YouTube:", error)
 				errorDetected.value = true
-				errorMessage.value = 'Impossible de charger YouTube. Vérifiez votre bloqueur de publicités.'
+				errorMessage.value =
+					'Impossible de charger YouTube. Vérifiez votre bloqueur de publicités.'
 			}
-			
+
 			const firstScriptTag = document.getElementsByTagName('script')[0]
 			if (firstScriptTag && firstScriptTag.parentNode) {
 				firstScriptTag.parentNode.insertBefore(tag, firstScriptTag)
 			} else {
 				document.head.appendChild(tag)
 			}
-			
+
 			// Callback global pour l'API YouTube avec timeout
 			window.onYouTubePlayerAPIReady = () => {
 				console.log('✅ API YouTube prête')
 				createPlayer()
 			}
-			
+
 			// Timeout de sécurité
 			setTimeout(() => {
 				if (!window.YT || !window.YT.Player) {
@@ -216,7 +227,7 @@
 
 	const updateCurrentTime = () => {
 		if (!import.meta.client || !player.value || !isPlayerReady.value) return
-		
+
 		try {
 			if (player.value?.getPlayerState() === window.YT.PlayerState.PLAYING) {
 				currentTime.value = player.value?.getCurrentTime()
@@ -254,7 +265,7 @@
 
 	onBeforeUnmount(() => {
 		console.log('🎵 Démontage du composant YoutubePlayer')
-		
+
 		if (intervalId) {
 			clearInterval(intervalId)
 		}
@@ -270,7 +281,7 @@
 
 	const togglePlayPause = () => {
 		if (!import.meta.client || !player.value || !isPlayerReady.value) return
-		
+
 		try {
 			if (isPlaying.value) {
 				player.value?.pauseVideo()
@@ -284,7 +295,7 @@
 
 	const seek = (seconds) => {
 		if (!import.meta.client || !player.value || !isPlayerReady.value) return
-		
+
 		try {
 			const newTime = player.value?.getCurrentTime() + seconds
 			player.value?.seekTo(newTime)
@@ -296,7 +307,7 @@
 
 	const seekToTime = () => {
 		if (!import.meta.client || !player.value || !isPlayerReady.value) return
-		
+
 		try {
 			player.value?.seekTo(currentTime.value)
 		} catch (error) {
@@ -306,7 +317,7 @@
 
 	const setVolume = (newVolume) => {
 		if (!import.meta.client || !player.value || !isPlayerReady.value) return
-		
+
 		try {
 			player.value?.setVolume(newVolume)
 			volume.value = newVolume
@@ -317,7 +328,7 @@
 
 	const muteVolume = () => {
 		if (!import.meta.client || !player.value || !isPlayerReady.value) return
-		
+
 		try {
 			if (volumeOn.value) {
 				player.value?.mute()
@@ -344,7 +355,7 @@
 				console.warn('⚠️ Erreur lors de la fermeture:', error)
 			}
 		}
-		
+
 		// Reset des états
 		isPlayerReady.value = false
 		errorDetected.value = false
@@ -377,8 +388,8 @@
 			class="bg-cb-secondary-950 relative flex w-full items-center justify-between px-5 py-3"
 		>
 			<div class="flex w-full items-center space-x-2 sm:w-fit">
-				<button 
-					class="hover:text-cb-primary-900 disabled:opacity-50" 
+				<button
+					class="hover:text-cb-primary-900 disabled:opacity-50"
 					:disabled="!isPlayerReady"
 					@click="seek(-10)"
 				>
@@ -392,16 +403,16 @@
 				>
 					<IconPause class="h-7 w-7" />
 				</button>
-				<button 
-					v-else 
-					class="hover:text-cb-primary-900 disabled:opacity-50" 
+				<button
+					v-else
+					class="hover:text-cb-primary-900 disabled:opacity-50"
 					:disabled="!isPlayerReady"
 					@click="togglePlayPause"
 				>
 					<IconPlay class="h-7 w-7" />
 				</button>
-				<button 
-					class="hover:text-cb-primary-900 disabled:opacity-50" 
+				<button
+					class="hover:text-cb-primary-900 disabled:opacity-50"
 					:disabled="!isPlayerReady"
 					@click="seek(10)"
 				>
@@ -424,7 +435,7 @@
 				<!-- <button @click="displayVideo" class="p-1 bg-red-500 rounded aspect-square">
           D
         </button> -->
-				<button 
+				<button
 					:disabled="!isPlayerReady"
 					class="disabled:opacity-50"
 					@click="muteVolume"

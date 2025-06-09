@@ -5,7 +5,7 @@
 				class="border-cb-primary-500 mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2"
 			></div>
 			<p class="text-lg">{{ statusMessage }}</p>
-			<p v-if="debugMode" class="text-sm text-gray-500 mt-2">{{ debugInfo }}</p>
+			<p v-if="debugMode" class="mt-2 text-sm text-gray-500">{{ debugInfo }}</p>
 		</div>
 	</div>
 </template>
@@ -14,7 +14,7 @@
 	const statusMessage = ref('Connexion en cours...')
 	const debugInfo = ref('')
 	const debugMode = ref(false) // Activez pour debug
-	
+
 	// Désactiver le middleware auth pour cette page
 	definePageMeta({
 		middleware: [],
@@ -26,14 +26,14 @@
 	const handleAuthCallback = async () => {
 		try {
 			statusMessage.value = 'Vérification de la session...'
-			debugInfo.value = 'Attente de l\'utilisateur Supabase...'
-			
+			debugInfo.value = "Attente de l'utilisateur Supabase..."
+
 			// Attendre que l'utilisateur Supabase soit disponible
 			let attempts = 0
 			const maxAttempts = 30 // 30 secondes max
-			
+
 			while (!user.value && attempts < maxAttempts) {
-				await new Promise(resolve => setTimeout(resolve, 1000))
+				await new Promise((resolve) => setTimeout(resolve, 1000))
 				attempts++
 				debugInfo.value = `Tentative ${attempts}/${maxAttempts}...`
 			}
@@ -55,14 +55,14 @@
 
 			// Synchroniser le profil utilisateur
 			const success = await ensureUserProfile()
-			
+
 			if (success) {
 				statusMessage.value = 'Redirection...'
-				debugInfo.value = 'Connexion réussie, redirection vers l\'accueil'
-				
+				debugInfo.value = "Connexion réussie, redirection vers l'accueil"
+
 				// Petite pause pour que l'utilisateur voie le message de succès
-				await new Promise(resolve => setTimeout(resolve, 500))
-				
+				await new Promise((resolve) => setTimeout(resolve, 500))
+
 				await navigateTo('/')
 			} else {
 				console.error('❌ Erreur lors de la synchronisation du profil')
@@ -80,7 +80,7 @@
 	// Gérer le callback d'authentification au montage du composant
 	onMounted(async () => {
 		// Petite pause pour laisser Supabase s'initialiser
-		await new Promise(resolve => setTimeout(resolve, 500))
+		await new Promise((resolve) => setTimeout(resolve, 500))
 		await handleAuthCallback()
 	})
 </script>

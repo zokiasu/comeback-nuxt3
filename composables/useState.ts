@@ -8,8 +8,7 @@ export const useMusicNamePlaying = () =>
 export const useAuthorNamePlaying = () =>
 	useState<string>('authorNamePlaying', () => 'Author Name')
 
-export const useIsPlayingVideo = () => 
-	useState<boolean>('isPlayingVideo', () => false)
+export const useIsPlayingVideo = () => useState<boolean>('isPlayingVideo', () => false)
 
 // Composables d'authentification (remplacés par le store Pinia)
 export const useIsLogin = () => useState<boolean>('isLogin', () => false)
