@@ -23,23 +23,14 @@
 	const navbar = useTemplateRef('navbar')
 	const algolia = useTemplateRef('algolia')
 
-	onMounted(async () => {
-		if (import.meta.client) {
-			window.addEventListener('scroll', handleScroll)
-			if (window.scrollY > 50) {
-				navbar.value.classList.add(
-					'bg-cb-secondary-950',
-					'border',
-					'border-zinc-700',
-					'shadow',
-					'shadow-zinc-700',
-				)
-			}
-		}
-	})
+	const importMetaClient = import.meta.client
+
+	const routeIsIndex = computed(() => importMetaClient ? route.name === 'index' : false)
+	const routeIsCalendar = computed(() => importMetaClient ? route.name === 'calendar' : false)
+	const routeIsDashboard = computed(() => importMetaClient ? (route.name as string)?.startsWith('dashboard-') : false)
 
 	function handleScroll() {
-		if (navbar.value === null || !import.meta.client) return
+		if (navbar.value === null || !importMetaClient) return
 
 		if (window.scrollY > 50) {
 			navbar.value.classList.add(
@@ -59,13 +50,29 @@
 			)
 		}
 	}
+
+	onMounted(async () => {
+		if (importMetaClient) {
+			window.addEventListener('scroll', handleScroll)
+			if (navbar.value === null) return
+			if (window.scrollY > 50) {
+				navbar.value.classList.add(
+					'bg-cb-secondary-950',
+					'border',
+					'border-zinc-700',
+					'shadow',
+					'shadow-zinc-700',
+				)
+			}
+		}
+	})
 </script>
 
 <template>
 	<div
 		class="sticky top-0 z-50 px-3 py-2 transition-all duration-500 ease-in-out xl:py-3"
 	>
-		<div
+		<nav
 			id="navbar"
 			ref="navbar"
 			class="animate__animated animate__fadeInDown rounded-full px-5 transition-all duration-500 ease-in-out"
@@ -78,35 +85,29 @@
 				<nav class="flex items-center justify-center gap-x-5 text-sm">
 					<NuxtLink
 						:to="`/`"
-						:class="route.name === 'index' ? 'font-semibold text-white' : 'text-zinc-500'"
+						:class="routeIsIndex ? 'font-semibold text-white' : 'text-zinc-500'"
 					>
 						Home
 					</NuxtLink>
 					<NuxtLink
 						:to="`/calendar`"
-						:class="
-							route.name === 'calendar' ? 'font-semibold text-white' : 'text-zinc-500'
-						"
+						:class="routeIsCalendar ? 'font-semibold text-white' : 'text-zinc-500'"
 					>
 						Calendar
 					</NuxtLink>
 					<NuxtLink
 						v-if="isAdminStore"
 						:to="`/dashboard/artist`"
-						:class="
-							(route.name as string)?.startsWith('dashboard-')
-								? 'font-semibold text-white'
-								: 'text-zinc-500'
-						"
+						:class="routeIsDashboard ? 'font-semibold text-white' : 'text-zinc-500'"
 					>
 						Dashboard
 					</NuxtLink>
 				</nav>
 
 				<div class="flex items-center justify-center gap-3">
-					<Algolia ref="algolia" />
+					<Algolia v-if="importMetaClient" ref="algolia" />
 
-					<ModalNewsCreation v-if="isLoginStore" />
+					<ModalNewsCreation v-if="importMetaClient && isLoginStore" />
 
 					<UButton
 						v-if="isLoginStore"
@@ -125,6 +126,6 @@
 					/>
 				</div>
 			</div>
-		</div>
+		</nav>
 	</div>
 </template>

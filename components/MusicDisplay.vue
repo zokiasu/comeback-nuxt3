@@ -85,7 +85,7 @@
 		<button
 			v-if="musicId"
 			:disabled="idYoutubeVideo == musicId"
-			class="bg-cb-quaternary-950 col-span-1 flex w-full items-center gap-2 rounded p-2 px-3"
+			class="bg-cb-quaternary-950 cursor-pointer col-span-1 flex w-full items-center gap-2 rounded p-2 px-3"
 			:class="{
 				'group hover:bg-cb-tertiary-200/10': idYoutubeVideo != musicId,
 				'col-span-4': ismv && horizontalMode,
