@@ -121,55 +121,40 @@
 
 <template>
 	<div
-		class="list-complete-item bg-cb-quaternary-950 relative flex h-full w-full flex-col rounded p-3"
+		class="bg-cb-quaternary-950 rounded h-full w-full flex flex-col justify-between"
 	>
-		<div class="flex flex-grow flex-col space-y-2">
-			<div class="relative">
-				<div
-					ref="skeleton"
-					class="absolute inset-0 z-10 animate-pulse rounded bg-zinc-500 object-cover transition-all duration-1000 ease-in-out"
-				></div>
-				<NuxtImg
-					:src="image"
-					:alt="name"
-					format="webp"
-					loading="lazy"
-					class="aspect-video w-full rounded bg-zinc-500 object-cover"
-					@load="loadingDone"
-				/>
-			</div>
+		<div class="flex justify-between text-xs p-2 border-b border-zinc-500">
+			<NuxtLink
+				:to="'/artist/' + id"
+				target="_blank"
+				class="hover:text-cb-primary-900 font-semibold"
+			>
+				{{ name }}
+			</NuxtLink>
+			<p class="text-xs">[ {{ type }} ]</p>
+		</div>
 
-			<div class="flex w-full items-center justify-between">
-				<div>
-					<p class="space-x-1">
-						<NuxtLink
-							:to="'/artist/' + id"
-							target="_blank"
-							class="hover:text-cb-primary-900 font-semibold"
-						>
-							{{ name }}
-						</NuxtLink>
-						<span class="text-xs">[ {{ type }} ]</span>
-					</p>
-					<p class="text-xs">
-						{{ idYoutubeMusic }}
-					</p>
-				</div>
-				<div class="space-x-1">
-					<NuxtLink
-						:to="'/artist/edit/' + id"
-						target="_blank"
-						class="bg-cb-quinary-900 rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
-					>
-						Edit
-					</NuxtLink>
-					<button
-						class="bg-cb-quinary-900 rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
-						@click="deleteArtist"
-					>
-						Delete
-					</button>
-				</div>
+		<div class="flex flex-col space-y-2 p-3">
+
+			<NuxtImg
+				:src="image"
+				:alt="name"
+				format="webp"
+				loading="lazy"
+				class="aspect-video w-full rounded bg-zinc-500 object-cover"
+				@load="loadingDone"
+			/>
+
+			<div>
+				<p
+					v-if="description"
+					:class="{ collapsed: !showFullDescription }"
+					class="cursor-pointer text-xs"
+					@click="showFullDescription = !showFullDescription"
+				>
+					{{ description }}
+				</p>
+				<p v-else class="text-cb-primary-900 text-xs">No description</p>
 			</div>
 
 			<div v-if="styles.length" class="flex flex-wrap gap-1">
@@ -185,24 +170,12 @@
 				<p class="text-cb-primary-900 text-xs">No styles</p>
 			</div>
 
-			<div>
-				<p
-					v-if="description"
-					:class="{ collapsed: !showFullDescription }"
-					class="cursor-pointer text-xs"
-					@click="showFullDescription = !showFullDescription"
-				>
-					{{ description }}
-				</p>
-				<p v-else class="text-cb-primary-900 text-xs">No description</p>
-			</div>
-
 			<div class="space-y-2">
 				<div
 					class="flex w-full items-center justify-between border-b border-zinc-500 pb-1"
 					@click="showSocialLinks = !showSocialLinks"
 				>
-					<p class="text-sm font-semibold uppercase">
+					<p class="text-xs font-semibold uppercase">
 						Socials
 						<span :class="{ 'text-cb-primary-900': socialList.length === 0 }">
 							({{ socialList.length }})
@@ -253,7 +226,7 @@
 					class="flex w-full items-center justify-between border-b border-zinc-500 pb-1"
 					@click="showPlatformsLinks = !showPlatformsLinks"
 				>
-					<p class="text-sm font-semibold uppercase">
+					<p class="text-xs font-semibold uppercase">
 						Platforms
 						<span :class="{ 'text-cb-primary-900': platformList.length === 0 }">
 							({{ platformList.length }})
@@ -303,10 +276,25 @@
 					</div>
 				</transition>
 			</div>
+
+			<div class="grid grid-cols-2 gap-1">
+				<UButton
+					:to="'/artist/edit/' + id"
+					target="_blank"
+					label="Edit"
+					class="bg-cb-quinary-900 text-white justify-center font-normal rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+				/>
+				<UButton
+					label="Delete"
+					class="bg-cb-quinary-900 text-white justify-center font-normal rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+					@click="deleteArtist"
+				/>
+			</div>
 		</div>
-		<div class="mt-auto flex flex-col justify-between text-xs md:flex-row">
-			<p class="mt-auto">Created at {{ createdAtDate }}</p>
-			<p class="mt-auto">Updated at {{ updatedAtDate }}</p>
+
+		<div class="flex justify-between text-xs p-2 border-t border-zinc-500">
+			<p>Created at {{ createdAtDate }}</p>
+			<p>Updated at {{ updatedAtDate }}</p>
 		</div>
 	</div>
 </template>
