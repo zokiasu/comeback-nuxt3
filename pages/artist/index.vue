@@ -19,29 +19,28 @@
 				:key="artist.id"
 				:artist-id="artist.id"
 				:main-title="artist.name"
-				:sub-title="artist.name"
-				:image="artist.image"
-				:release-date="artist.date"
-				:release-type="artist.type"
+				:image="artist.image || ''"
+				:release-date="artist.debut_date || ''"
+				:release-type="artist.type || ''"
 				:object-link="`/artist/${artist.id}`"
 				date-always-display
 				class="!min-w-full"
 			/>
 		</transition-group>
-		<UPagination
-			v-if="totalPages > 1"
-			v-model="page"
-			:page-count="1"
-			:total="totalPages"
-			:max="7"
-			class="mt-8 flex justify-center"
-		/>
+		<div v-if="isLoading" class="text-center py-4">
+			Chargement...
+		</div>
+		<div v-if="!hasMore && artists.length > 0" class="text-center py-4 text-gray-400">
+			Tous les artistes sont affichés.
+		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import { useSupabaseArtist } from '@/composables/Supabase/useSupabaseArtist';
+import { useInfiniteScroll } from '@vueuse/core';
+import type { Artist } from '~/types';
 
 const { getArtistsByPage } = useSupabaseArtist();
 
@@ -49,25 +48,44 @@ const artists = ref<Artist[]>([]);
 const search = ref('');
 const page = ref(1);
 const limit = ref(48);
-const totalPages = ref(1);
+const isLoading = ref(false);
+const hasMore = ref(true);
 
-const fetchArtists = async () => {
+const fetchArtists = async (reset = false) => {
+	if (isLoading.value || (!hasMore.value && !reset)) return;
+	isLoading.value = true;
 	const result = await getArtistsByPage(page.value, limit.value, { search: search.value });
-	artists.value = result.artists;
-	totalPages.value = result.totalPages;
+	if (reset) {
+		artists.value = result.artists;
+	} else {
+		artists.value = [...artists.value, ...result.artists];
+	}
+	hasMore.value = result.artists.length === limit.value;
+	isLoading.value = false;
 };
 
-let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
-
 watch(search, () => {
-	if (debounceTimeout) clearTimeout(debounceTimeout);
-	debounceTimeout = setTimeout(() => {
-		page.value = 1;
-		fetchArtists();
-	}, 400);
+	page.value = 1;
+	hasMore.value = true;
+	fetchArtists(true);
 });
 
-watch(page, fetchArtists);
+const loadMore = async () => {
+	if (isLoading.value || !hasMore.value) return;
+	page.value++;
+	await fetchArtists();
+};
 
-onMounted(fetchArtists);
+onMounted(() => {
+	fetchArtists(true);
+});
+
+useInfiniteScroll(
+	window,
+	loadMore,
+	{
+		distance: 200,
+		canLoadMore: () => hasMore.value && !isLoading.value,
+	}
+);
 </script>

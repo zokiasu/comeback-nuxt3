@@ -3,7 +3,7 @@
 	import { storeToRefs } from 'pinia'
 
 	import { useUserStore } from '@/stores/user'
-	import type { Release, Music } from '~/types'
+	import type { Release, Music, ReleaseWithRelations, ReleaseWithArtists } from '~/types'
 	import { useSupabaseRelease } from '~/composables/Supabase/useSupabaseRelease'
 	import { useSupabaseMusic } from '~/composables/Supabase/useSupabaseMusic'
 
@@ -17,8 +17,8 @@
 	const title = ref<string>('Release Page')
 	const description = ref<string>('Release')
 
-	const release = ref<Release | null>(null)
-	const suggestedReleases = ref<Release[]>([])
+	const release = ref<ReleaseWithRelations | null>(null)
+	const suggestedReleases = ref<ReleaseWithArtists[]>([])
 	const imageLoaded = ref<boolean>(false)
 	const isLoading = ref<boolean>(true)
 	const musicList = ref<Partial<Music>[]>([])
@@ -108,7 +108,7 @@
 		try {
 			isLoading.value = true
 
-			release.value = await getReleaseById(route.params.id as string)
+			release.value = await getReleaseById(route.params.id as string) as ReleaseWithRelations
 
 			if (release.value && release.value.artists) {
 				title.value =
@@ -130,7 +130,7 @@
 				suggestedReleases.value = await getSuggestedReleases(
 					release.value.artists[0]?.id,
 					release.value.id,
-				)
+				) as ReleaseWithArtists[]
 			}
 		} catch (error: any) {
 			if (error.statusCode === 404) {
@@ -222,7 +222,7 @@
 									<p>-</p>
 									<p>{{ release.type }}</p>
 									<p>-</p>
-									<p>{{ formatDate(release.date) }}</p>
+									<p>{{ formatDate(release.date ?? '') }}</p>
 								</div>
 								<UModal
 									v-if="isAdminStore && isLoginStore"
@@ -277,7 +277,7 @@
 												<div class="space-y-2">
 													<div
 														v-for="music in release.musics"
-														:key="music.id_youtube_music"
+														:key="music.id_youtube_music ?? music.id"
 														class="bg-cb-quinary-900 space-y-1 rounded py-1 pr-1 pl-2"
 													>
 														<div class="flex w-full items-center justify-between gap-2">
@@ -292,6 +292,7 @@
 														<ComebackInput
 															v-if="music.ismv"
 															v-model="music.id_youtube_music"
+															:value="music.id_youtube_music !== null ? String(music.id_youtube_music) : ''"
 														/>
 													</div>
 												</div>
@@ -314,19 +315,19 @@
 
 			<section class="container mx-auto space-y-12 p-5 py-5 md:px-10 xl:px-0">
 				<!-- Musics -->
-				<section v-if="release.musics?.length && release.artists" class="space-y-2">
+				<section v-if="(release.musics?.length || 0) > 0 && release.artists" class="space-y-2">
 					<CardDefault :name="`Tracks (${release.musics?.length})`">
 						<transition-group name="list-complete" tag="div" class="space-y-2">
 							<MusicDisplay
-								v-for="song in release.musics"
+								v-for="song in release.musics || []"
 								:key="song.id"
-								:artist-id="release.artists?.[0]?.id"
-								:artist-name="release.artists?.[0]?.name"
-								:music-id="song.id_youtube_music"
-								:music-name="song.name"
-								:has-mv="song.ismv"
+								:artist-id="release.artists?.[0]?.id ?? ''"
+								:artist-name="release.artists?.[0]?.name ?? ''"
+								:music-id="song.id_youtube_music ?? ''"
+								:music-name="song.name ?? ''"
+								:ismv="song.ismv"
 								:music-image="song.thumbnails?.[2]?.url || ''"
-								:duration="song.duration || 0"
+								:duration="song.duration ?? 0"
 								class="bg-cb-quinary-900 w-full"
 							/>
 						</transition-group>
@@ -340,12 +341,12 @@
 							<CardObject
 								v-for="otherRelease in suggestedReleases"
 								:key="otherRelease.id"
-								:artist-id="otherRelease.artists?.[0]?.id"
-								:main-title="otherRelease.name"
-								:sub-title="otherRelease.artists?.[0]?.name"
-								:image="otherRelease.image"
-								:release-date="otherRelease.date"
-								:release-type="otherRelease.type"
+								:artist-id="otherRelease.artists?.[0]?.id ?? ''"
+								:main-title="otherRelease.name ?? ''"
+								:sub-title="otherRelease.artists?.[0]?.name ?? ''"
+								:image="otherRelease.image ?? ''"
+								:release-date="otherRelease.date ?? ''"
+								:release-type="otherRelease.type ?? ''"
 								:object-link="`/release/${otherRelease.id}`"
 								is-release-display
 							/>

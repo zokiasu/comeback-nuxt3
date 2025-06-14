@@ -8,8 +8,9 @@
 				/>
 				<ArtistAlgoliaSelect v-model="selectedArtist" class="" />
 			</div>
-			<div class="flex justify-between">
-				<div class="flex gap-2">
+
+			<div class="flex flex-col justify-between gap-2 lg:flex-row">
+				<div class="flex flex-col gap-2 lg:flex-row">
 					<UInput
 						v-model="selectedYear"
 						placeholder="Année (ex: 2024)"
@@ -17,6 +18,9 @@
 					/>
 					<UButton @click="loadMusicsByYear" class="cb_button h-full">Rechercher</UButton>
 					<UButton @click="resetFilters" color="secondary" variant="outline">Réinitialiser</UButton>
+					<UButton @click="toggleOrderDirection" color="neutral" variant="outline">
+						<UIcon name="material-symbols-light:sort" class="size-4" :class="orderDirection === 'desc' ? 'rotate-180' : ''" /> Trier par date : {{ orderDirection === 'desc' ? 'Plus récentes' : 'Plus anciennes' }}
+					</UButton>
 				</div>
 				<div v-if="musicData.total > 0" class="flex justify-center">
 					<UPagination
@@ -28,19 +32,28 @@
 					/>
 				</div>
 			</div>
+
 			<UCheckbox
 				v-model="isMv"
 				label="Afficher uniquement les clips (isMv)"
 				class=""
 			/>
 		</div>
-		<div v-if="loading">Chargement...</div>
-		<div v-else class="space-y-2">
-			<p class="text-xs text-cb-tertiary-500">Liste des musiques pour {{ selectedYear ? selectedYear : 'toutes les années' }} ({{ musicData.total }} résultats)</p>
-			<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+		<div class="space-y-2">
+			<div v-if="loading" class="flex items-center gap-2 text-xs text-cb-tertiary-500">
+				<UIcon name="line-md:loading-twotone-loop" class="size-4 animate-spin" />
+				<p>Chargement...</p>
+			</div>
+			<p v-else class="text-xs text-cb-tertiary-500">Liste des musiques pour {{ selectedYear ? selectedYear : 'toutes les années' }} ({{ musicData.total }} résultats)</p>
+
+			<section class="grid grid-cols-1 gap-2">
 				<MusicDisplay
 					v-for="music in musicData.musics"
 					:key="music.id"
+					:artists="music.artists"
+					:releases="music.releases"
+					:album-name="music.releases[0]?.name"
+					:album-id="music.releases[0]?.id"
 					:music-id="music.id_youtube_music"
 					:music-name="music.name"
 					:artist-name="formatArtists(music.artists)"
@@ -50,6 +63,12 @@
 					class="bg-cb-quinary-900 w-full"
 				/>
 			</section>
+
+			<div v-if="loading && musicData.musics.length > 0" class="flex items-center gap-2 text-xs text-cb-tertiary-500">
+				<UIcon name="line-md:loading-twotone-loop" class="size-4 animate-spin" />
+				<p>Chargement...</p>
+			</div>
+			<p v-else class="text-xs text-cb-tertiary-500">Liste des musiques pour {{ selectedYear ? selectedYear : 'toutes les années' }} ({{ musicData.total }} résultats)</p>
 			<!-- <div v-for="music in musicData.musics" :key="music.id" class="mb-4 p-4 border rounded">
 				<h3>{{ music.name }}</h3>
 				<p>Artistes: {{ formatArtists(music.artists) }}</p>
@@ -92,6 +111,7 @@ const musicData = ref<any>({
 	limit: 20,
 	totalPages: 0,
 })
+const orderDirection = ref<'asc' | 'desc'>('desc')
 
 const loadMusicsByYear = async () => {
 	loading.value = true
@@ -100,8 +120,8 @@ const loadMusicsByYear = async () => {
 			search: search.value || undefined,
 			artistId: selectedArtist.value?.objectID || undefined,
 			year: selectedYear.value || undefined,
-			orderBy: 'created_at',
-			orderDirection: 'desc',
+			orderBy: 'date',
+			orderDirection: orderDirection.value,
 			ismv: isMv.value !== undefined ? isMv.value : undefined,
 		})
 		console.log('result', result)
@@ -132,9 +152,16 @@ function resetFilters() {
 	loadMusicsByYear()
 }
 
+function toggleOrderDirection() {
+	orderDirection.value = orderDirection.value === 'desc' ? 'asc' : 'desc'
+	loadMusicsByYear()
+}
+
 // Charger les musiques au montage
 onMounted(() => {
 	currentPage.value = 1
 	loadMusicsByYear()
 })
+
+defineExpose({ orderDirection, toggleOrderDirection })
 </script>

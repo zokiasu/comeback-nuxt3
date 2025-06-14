@@ -127,3 +127,12 @@ export interface UseSupabaseReturn<T> {
 	update: (id: string, updates: any) => Promise<T | null>
 	delete: (id: string) => Promise<boolean>
 }
+
+export type ReleaseWithRelations = Release & {
+	artists: Artist[]
+	musics: Music[]
+}
+
+export type ReleaseWithArtists = Release & {
+	artists: Artist[]
+}

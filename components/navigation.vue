@@ -3,18 +3,15 @@
 	import { useUserStore } from '@/stores/user'
 
 	// Accès sécurisé aux stores
-	let isLoginStore = ref(false)
 	let isAdminStore = ref(false)
 
 	try {
 		const userStore = useUserStore()
 		const storeRefs = storeToRefs(userStore)
-		isLoginStore = storeRefs.isLoginStore
 		isAdminStore = storeRefs.isAdminStore
 	} catch (error) {
 		console.warn('Store not available in navigation:', error)
 		// Valeurs par défaut si le store n'est pas disponible
-		isLoginStore = ref(false)
 		isAdminStore = ref(false)
 	}
 
@@ -23,14 +20,14 @@
 	const navbar = useTemplateRef('navbar')
 	const algolia = useTemplateRef('algolia')
 
-	const importMetaClient = import.meta.client
+	const user = useSupabaseUser()
 
-	const routeIsIndex = computed(() => importMetaClient ? route.name === 'index' : false)
-	const routeIsCalendar = computed(() => importMetaClient ? route.name === 'calendar' : false)
-	const routeIsDashboard = computed(() => importMetaClient ? (route.name as string)?.startsWith('dashboard-') : false)
+	const routeIsIndex = computed(() => route.name === 'index')
+	const routeIsCalendar = computed(() => route.name === 'calendar')
+	const routeIsDashboard = computed(() => (route.name as string)?.startsWith('dashboard-'))
 
 	function handleScroll() {
-		if (navbar.value === null || !importMetaClient) return
+		if (navbar.value === null) return
 
 		if (window.scrollY > 50) {
 			navbar.value.classList.add(
@@ -52,18 +49,15 @@
 	}
 
 	onMounted(async () => {
-		if (importMetaClient) {
-			window.addEventListener('scroll', handleScroll)
-			if (navbar.value === null) return
-			if (window.scrollY > 50) {
-				navbar.value.classList.add(
-					'bg-cb-secondary-950',
-					'border',
-					'border-zinc-700',
-					'shadow',
-					'shadow-zinc-700',
-				)
-			}
+		if (navbar.value === null) return
+		if (window.scrollY > 50) {
+			navbar.value.classList.add(
+				'bg-cb-secondary-950',
+				'border',
+				'border-zinc-700',
+				'shadow',
+				'shadow-zinc-700',
+			)
 		}
 	})
 </script>
@@ -105,18 +99,15 @@
 				</nav>
 
 				<div class="flex items-center justify-center gap-3">
-					<Algolia v-if="importMetaClient" ref="algolia" />
-
-					<ModalNewsCreation v-if="importMetaClient && isLoginStore" />
-
+					<Algolia ref="algolia" />
+					<ModalNewsCreation v-if="user" />
 					<UButton
-						v-if="isLoginStore"
+						v-if="user"
 						to="/settings/profile"
 						variant="soft"
 						icon="material-symbols:settings-rounded"
 						class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
 					/>
-
 					<UButton
 						v-else
 						to="/authentification"
