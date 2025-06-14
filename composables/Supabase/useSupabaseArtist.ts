@@ -527,6 +527,13 @@ export function useSupabaseArtist() {
 				query = query.eq('type', options.type)
 			}
 
+			// Ajout du filtre actif/inactif
+			if (options?.isActive === true) {
+				query = query.eq('active_career', true)
+			} else if (options?.isActive === false) {
+				query = query.or('active_career.is.false,active_career.is.null')
+			}
+
 			// Ajouter le tri
 			if (options?.orderBy) {
 				query = query.order(options.orderBy, {

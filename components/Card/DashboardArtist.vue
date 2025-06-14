@@ -48,6 +48,10 @@
 			type: Array,
 			required: true,
 		},
+		isActive: {
+			type: Boolean,
+			required: true,
+		},
 		createdAt: {
 			type: String,
 			required: true,
@@ -124,13 +128,16 @@
 		class="bg-cb-quaternary-950 rounded h-full w-full flex flex-col justify-between"
 	>
 		<div class="flex justify-between text-xs p-2 border-b border-zinc-500">
-			<NuxtLink
-				:to="'/artist/' + id"
-				target="_blank"
-				class="hover:text-cb-primary-900 font-semibold"
-			>
-				{{ name }}
-			</NuxtLink>
+			<div class="flex items-center gap-1">
+				<p v-if="!isActive" class="text-xs text-red-500">[Inactive]</p>
+				<NuxtLink
+					:to="'/artist/' + id"
+					target="_blank"
+					class="hover:text-cb-primary-900 font-semibold"
+				>
+					{{ name }}
+				</NuxtLink>
+			</div>
 			<p class="text-xs">[ {{ type }} ]</p>
 		</div>
 
