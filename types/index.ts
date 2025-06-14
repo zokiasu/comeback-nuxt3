@@ -6,7 +6,10 @@ export type { Database, Tables, TablesInsert, TablesUpdate }
 
 // Types de base Supabase avec alias plus courts
 export type User = Tables<'users'>
-export type Artist = Tables<'artists'>
+export type Artist = Tables<'artists'> & {
+	social_links?: any[]
+	platform_links?: any[]
+}
 export type Release = Tables<'releases'>
 export type Music = Tables<'musics'>
 export type News = Tables<'news'>

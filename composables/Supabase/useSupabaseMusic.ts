@@ -6,7 +6,10 @@ export function useSupabaseMusic() {
 	const toast = useToast()
 
 	// Met à jour une musique
-	const updateMusic = async (id: string, updates: Partial<Database['public']['Tables']['musics']['Update']>) => {
+	const updateMusic = async (
+		id: string,
+		updates: Partial<Database['public']['Tables']['musics']['Update']>,
+	) => {
 		const { data, error } = await supabase
 			.from('musics')
 			.update(updates)
@@ -52,7 +55,7 @@ export function useSupabaseMusic() {
 					artistIds.map((artistId) => ({
 						music_id: id,
 						artist_id: artistId,
-					})) as Database['public']['Tables']['music_artists']['Insert'][]
+					})) as Database['public']['Tables']['music_artists']['Insert'][],
 				)
 
 				if (insertError) {
@@ -99,7 +102,7 @@ export function useSupabaseMusic() {
 					releaseIds.map((releaseId) => ({
 						music_id: id,
 						release_id: releaseId,
-					})) as Database['public']['Tables']['music_releases']['Insert'][]
+					})) as Database['public']['Tables']['music_releases']['Insert'][],
 				)
 
 				if (insertError) {
@@ -419,13 +422,16 @@ export function useSupabaseMusic() {
 						music_id: (music as any).id,
 						artist_id: artistId,
 						is_primary: index === 0, // Le premier artiste est considéré comme principal
-					})) as Database['public']['Tables']['music_artists']['Insert'][]
+					})) as Database['public']['Tables']['music_artists']['Insert'][],
 				)
 
 				if (artistError) {
 					console.error("Erreur lors de l'ajout des artistes:", artistError)
 					// On supprime la musique créée si l'ajout des artistes échoue
-					await supabase.from('musics').delete().eq('id', (music as any).id)
+					await supabase
+						.from('musics')
+						.delete()
+						.eq('id', (music as any).id)
 					toast.add({
 						title: "Erreur lors de l'ajout des artistes",
 						color: 'error',
@@ -515,10 +521,10 @@ export function useSupabaseMusic() {
 		},
 	) => {
 		try {
-			console.log('Requête musics sans filtre', { page, limit, options });
+			console.log('Requête musics sans filtre', { page, limit, options })
 			// Calculer l'offset
 			const offset = (page - 1) * limit
-	
+
 			// Construire la requête de base avec les relations
 			let query = supabase.from('musics').select(
 				`
@@ -532,25 +538,24 @@ export function useSupabaseMusic() {
 				`,
 				{ count: 'exact' },
 			)
-	
+
 			// Ajouter les filtres si présents
 			if (options?.search) {
 				query = query.ilike('name', `%${options.search}%`)
 			}
-	
+
 			if (options?.artistId) {
-				query = query.in('id',
-					(
-						await supabase
-							.from('music_artists')
-							.select('music_id')
-							.eq('artist_id', options.artistId)
-							.returns<{ music_id: string }[]>()
-							.then(res => res.data?.map(ma => ma.music_id) || [])
-					)
+				query = query.in(
+					'id',
+					await supabase
+						.from('music_artists')
+						.select('music_id')
+						.eq('artist_id', options.artistId)
+						.returns<{ music_id: string }[]>()
+						.then((res) => res.data?.map((ma) => ma.music_id) || []),
 				)
 			}
-	
+
 			if (options?.type) {
 				// Limitation : la colonne 'type' dans Supabase n'accepte que 'SONG'
 				// Cast temporaire car MusicType ne contient pas 'SONG' dans le projet
@@ -558,20 +563,20 @@ export function useSupabaseMusic() {
 					query = query.eq('type', 'SONG')
 				}
 			}
-	
+
 			if (options?.verified !== undefined) {
 				query = query.eq('verified', options.verified)
 			}
-	
+
 			if (options?.ismv !== undefined) {
 				query = query.eq('ismv', options.ismv)
 			}
-	
+
 			// Filtrer par année directement côté SQL
 			if (options?.year !== undefined && options.year !== null) {
 				query = query.eq('release_year', options.year)
 			}
-	
+
 			// Ajouter le tri
 			if (options?.orderBy) {
 				query = query.order(options.orderBy, {
@@ -580,47 +585,49 @@ export function useSupabaseMusic() {
 			} else {
 				query = query.order('name')
 			}
-	
+
 			// Ajouter la pagination
 			query = query.range(offset, offset + limit - 1)
-	
+
 			// Exécuter la requête
 			let { data, error, count } = await query
-			console.log('Résultat musics', { data, error, count });
-	
+			console.log('Résultat musics', { data, error, count })
+
 			if (error) {
 				console.error('Erreur lors de la récupération des musiques:', error)
 				throw new Error('Erreur lors de la récupération des musiques')
 			}
-	
+
 			// Filtrer par nom d'artiste ou de musique si spécifié (post-traitement)
 			if (options?.search && data) {
-				const searchLower = options.search.toLowerCase();
-				data = data.filter((music: any) =>
-					music.name?.toLowerCase().includes(searchLower) ||
-					music.artists?.some((a: any) => a.name?.toLowerCase().includes(searchLower))
-				);
-				count = data.length;
+				const searchLower = options.search.toLowerCase()
+				data = data.filter(
+					(music: any) =>
+						music.name?.toLowerCase().includes(searchLower) ||
+						music.artists?.some((a: any) => a.name?.toLowerCase().includes(searchLower)),
+				)
+				count = data.length
 			}
-	
+
 			// Filtrer par nom d'artiste si spécifié (post-traitement)
 			if (options?.artistName && data) {
 				data = data.filter((music: any) =>
 					music.artists?.some((ma: any) =>
-						ma.artist?.name?.toLowerCase().includes(options.artistName!.toLowerCase())
-					)
+						ma.artist?.name?.toLowerCase().includes(options.artistName!.toLowerCase()),
+					),
 				)
 				// Recalculer le count après filtrage
 				count = data.length
 			}
-	
+
 			// Transformer les données pour correspondre au format attendu
-			const transformedData = data?.map((music: any) => ({
-				...music,
-				artists: music.artists?.map((ma: any) => ma.artist) || [],
-				releases: music.releases?.map((mr: any) => mr.release) || [],
-			})) || []
-	
+			const transformedData =
+				data?.map((music: any) => ({
+					...music,
+					artists: music.artists?.map((ma: any) => ma.artist) || [],
+					releases: music.releases?.map((mr: any) => mr.release) || [],
+				})) || []
+
 			return {
 				musics: transformedData as Music[],
 				total: count || 0,
@@ -633,7 +640,6 @@ export function useSupabaseMusic() {
 			throw error
 		}
 	}
-	
 
 	return {
 		updateMusic,
