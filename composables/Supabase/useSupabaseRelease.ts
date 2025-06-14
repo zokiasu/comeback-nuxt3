@@ -194,7 +194,7 @@ export function useSupabaseRelease() {
 				...release,
 				artists: artists?.map((a) => a.artist) || [],
 				musics: musics?.map((m) => m.music) || [],
-			} as Release
+			} as ReleaseWithRelations
 		} catch (error) {
 			console.error('Erreur lors de la récupération des données de la release:', error)
 			return null

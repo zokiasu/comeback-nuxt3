@@ -1,5 +1,14 @@
 <script setup lang="ts">
 	import 'animate.css'
+	import { useUserStore } from '@/stores/user'
+
+	const user = useSupabaseUser()
+	const userStore = useUserStore()
+
+	watchEffect(() => {
+		userStore.setSupabaseUser(user.value)
+		userStore.setIsLogin(!!user.value)
+	})
 
 	const isPlayingVideo = useIsPlayingVideo()
 	const route = useRoute()

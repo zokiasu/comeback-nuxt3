@@ -68,7 +68,7 @@ html:focus-within {
 }
 
 .cb_button {
-	@apply bg-cb-primary-900 hover:bg-cb-primary-900/90 h-full cursor-pointer items-center justify-center rounded px-5 text-xs text-white;
+	@apply bg-cb-primary-900 hover:bg-cb-primary-900/70 h-full cursor-pointer items-center justify-center rounded px-5 text-white;
 }
 
 .min-h-dvh-wo-nav {

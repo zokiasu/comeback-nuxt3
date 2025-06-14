@@ -3,18 +3,15 @@
 	import { useUserStore } from '@/stores/user'
 
 	// Accès sécurisé aux stores
-	let isLoginStore = ref(false)
 	let isAdminStore = ref(false)
 
 	try {
 		const userStore = useUserStore()
 		const storeRefs = storeToRefs(userStore)
-		isLoginStore = storeRefs.isLoginStore
 		isAdminStore = storeRefs.isAdminStore
 	} catch (error) {
 		console.warn('Store not available in navigation:', error)
 		// Valeurs par défaut si le store n'est pas disponible
-		isLoginStore = ref(false)
 		isAdminStore = ref(false)
 	}
 
@@ -23,23 +20,14 @@
 	const navbar = useTemplateRef('navbar')
 	const algolia = useTemplateRef('algolia')
 
-	onMounted(async () => {
-		if (import.meta.client) {
-			window.addEventListener('scroll', handleScroll)
-			if (window.scrollY > 50) {
-				navbar.value.classList.add(
-					'bg-cb-secondary-950',
-					'border',
-					'border-zinc-700',
-					'shadow',
-					'shadow-zinc-700',
-				)
-			}
-		}
-	})
+	const user = useSupabaseUser()
+
+	const routeIsIndex = computed(() => route.name === 'index')
+	const routeIsCalendar = computed(() => route.name === 'calendar')
+	const routeIsDashboard = computed(() => (route.name as string)?.startsWith('dashboard-'))
 
 	function handleScroll() {
-		if (navbar.value === null || !import.meta.client) return
+		if (navbar.value === null) return
 
 		if (window.scrollY > 50) {
 			navbar.value.classList.add(
@@ -59,13 +47,26 @@
 			)
 		}
 	}
+
+	onMounted(async () => {
+		if (navbar.value === null) return
+		if (window.scrollY > 50) {
+			navbar.value.classList.add(
+				'bg-cb-secondary-950',
+				'border',
+				'border-zinc-700',
+				'shadow',
+				'shadow-zinc-700',
+			)
+		}
+	})
 </script>
 
 <template>
 	<div
 		class="sticky top-0 z-50 px-3 py-2 transition-all duration-500 ease-in-out xl:py-3"
 	>
-		<div
+		<nav
 			id="navbar"
 			ref="navbar"
 			class="animate__animated animate__fadeInDown rounded-full px-5 transition-all duration-500 ease-in-out"
@@ -78,26 +79,20 @@
 				<nav class="flex items-center justify-center gap-x-5 text-sm">
 					<NuxtLink
 						:to="`/`"
-						:class="route.name === 'index' ? 'font-semibold text-white' : 'text-zinc-500'"
+						:class="routeIsIndex ? 'font-semibold text-white' : 'text-zinc-500'"
 					>
 						Home
 					</NuxtLink>
 					<NuxtLink
 						:to="`/calendar`"
-						:class="
-							route.name === 'calendar' ? 'font-semibold text-white' : 'text-zinc-500'
-						"
+						:class="routeIsCalendar ? 'font-semibold text-white' : 'text-zinc-500'"
 					>
 						Calendar
 					</NuxtLink>
 					<NuxtLink
 						v-if="isAdminStore"
 						:to="`/dashboard/artist`"
-						:class="
-							(route.name as string)?.startsWith('dashboard-')
-								? 'font-semibold text-white'
-								: 'text-zinc-500'
-						"
+						:class="routeIsDashboard ? 'font-semibold text-white' : 'text-zinc-500'"
 					>
 						Dashboard
 					</NuxtLink>
@@ -105,17 +100,14 @@
 
 				<div class="flex items-center justify-center gap-3">
 					<Algolia ref="algolia" />
-
-					<ModalNewsCreation v-if="isLoginStore" />
-
+					<ModalNewsCreation v-if="user" />
 					<UButton
-						v-if="isLoginStore"
+						v-if="user"
 						to="/settings/profile"
 						variant="soft"
 						icon="material-symbols:settings-rounded"
 						class="bg-cb-quaternary-950 hover:bg-cb-tertiary-200/20 h-full items-center justify-center text-xs text-white"
 					/>
-
 					<UButton
 						v-else
 						to="/authentification"
@@ -125,6 +117,6 @@
 					/>
 				</div>
 			</div>
-		</div>
+		</nav>
 	</div>
 </template>

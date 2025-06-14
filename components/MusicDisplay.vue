@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Artist, Release } from '~/types'
+
 	const {
 		musicName,
 		musicId,
@@ -12,13 +14,14 @@
 		ismv,
 		horizontalMode,
 	} = defineProps({
-		musicName: {
-			type: String,
-			required: true,
+		artists:{
+			type: Array as PropType<Artist[]>,
+		},
+		releases:{
+			type: Array as PropType<Release[]>,
 		},
 		artistName: {
 			type: String,
-			required: true,
 		},
 		artistId: {
 			type: String,
@@ -34,6 +37,10 @@
 		},
 		artistImage: {
 			type: String,
+		},
+		musicName: {
+			type: String,
+			required: true,
 		},
 		musicImage: {
 			type: String,
@@ -85,14 +92,14 @@
 		<button
 			v-if="musicId"
 			:disabled="idYoutubeVideo == musicId"
-			class="bg-cb-quaternary-950 col-span-1 flex w-full items-center gap-2 rounded p-2 px-3"
+			class="bg-cb-quaternary-950 cursor-pointer col-span-1 flex w-full items-center gap-2 rounded p-2 px-3"
 			:class="{
 				'group hover:bg-cb-tertiary-200/10': idYoutubeVideo != musicId,
 				'col-span-4': ismv && horizontalMode,
 			}"
 			@click="playVideo(musicId)"
 		>
-			<div class="hidden w-10 shrink-0 md:block">
+			<div class="hidden shrink-0 md:block">
 				<NuxtImg
 					v-if="musicImage != null || musicImage != undefined"
 					format="webp"
@@ -101,16 +108,48 @@
 					class="shadow-cb-secondary-950 h-10 w-10 rounded shadow"
 				/>
 			</div>
+
 			<div class="min-w-0 flex-1 overflow-hidden">
-				<div v-if="musicName" class="flex w-full items-center gap-2 text-start">
-					<p class="truncate text-sm font-semibold">
-						{{ musicName }}
+
+				<div v-if="musicName">
+					<p class="flex w-full items-center gap-2 text-start">
+						<span class="truncate text-sm font-semibold">
+							{{ musicName }}
+						</span>
+						<span class="hidden md:block">-</span>
+						<span class="hidden text-right md:block">{{ convertDuration(duration ?? 0) }}</span>
 					</p>
-					<p class="hidden md:block">-</p>
-					<p class="hidden text-right md:block">{{ convertDuration(duration) }}</p>
+					<div class="flex items-center gap-1 text-xs">
+						<template v-if="artists && artists.length > 0">
+							<div v-for="artist in artists" :key="artist.id" class="flex items-center gap-1 text-xs">
+								<NuxtImg
+									v-if="artist.image"
+									format="webp"
+									:alt="artist.name"
+									:src="artist.image"
+									class="shadow-cb-secondary-950 size-3 rounded-full object-cover shadow"
+								/>
+								<NuxtLink :to="`/artist/${artist.id}`" class="whitespace-nowrap hover:underline">
+									{{ artist.name }}
+								</NuxtLink>
+								<p v-if="artists.length > 1" class="text-cb-tertiary-500">-</p>
+							</div>
+						</template>
+						<p v-if="releases && releases.length > 0 && artists && artists.length > 0"> - </p>
+						<template v-if="releases && releases.length > 0" class="flex items-center gap-1">
+							<NuxtLink :to="`/release/${releases[0].id}`" class="hidden md:block whitespace-nowrap hover:underline">
+								{{ releases[0].name }}
+							</NuxtLink>
+							<span class="hidden md:block">-</span>
+							<span class="hidden md:block whitespace-nowrap">
+								{{ releases[0].date ? new Date(releases[0].date).toLocaleDateString('fr-FR') : '' }}
+							</span>
+						</template>
+					</div>
 				</div>
+
 				<div
-					v-if="artistName || albumId"
+					v-else-if="artistName || albumId"
 					class="flex min-w-0 items-center gap-2 overflow-hidden text-xs"
 				>
 					<NuxtImg
@@ -138,9 +177,9 @@
 					>
 						{{ albumName }}
 					</NuxtLink>
-					<!-- <p class="hidden sm:block">1, 054, 258, 031 on Youtube (Music)</p> -->
 				</div>
 			</div>
+
 			<div class="flex w-10 shrink-0 justify-center">
 				<IconPlay
 					v-if="idYoutubeVideo != musicId"
@@ -149,6 +188,7 @@
 				<IconPause v-else class="h-10 w-10 transition-all duration-300 ease-in-out" />
 			</div>
 		</button>
+
 		<button
 			v-if="ismv"
 			class="bg-cb-primary-900 hover:bg-cb-primary-900/50 flex w-full items-center justify-center rounded px-2 py-1 text-xs font-semibold tracking-widest uppercase"
@@ -158,6 +198,7 @@
 			<p class="hidden lg:block">Music Video</p>
 			<p class="lg:hidden">M/V</p>
 		</button>
+
 		<div
 			v-if="displayVideo && ismv"
 			class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-black/80 lg:gap-10"
