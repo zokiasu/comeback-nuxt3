@@ -21,14 +21,14 @@
 
 	const artistFetch = ref<Artist[]>([])
 	const search = ref('')
-	const invertSort = ref(true)
+	const invertSort = ref(false)
 	const page = ref(1)
 	const currentPage = ref(1)
 	const totalPages = ref(1)
 	const totalArtists = ref(0)
 
 	const scrollContainer = useTemplateRef('scrollContainer')
-	const sort = ref<keyof Artist>('created_at')
+	const sort = ref<keyof Artist>('name')
 	const limitFetch = ref(48)
 	const typeFilter = ref<Artist['type'] | ''>('')
 	const isLoading = ref(false)
@@ -312,24 +312,6 @@
 			</div>
 			<div class="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
 				<div class="flex w-fit flex-wrap justify-between gap-2 sm:flex-nowrap">
-					<div
-						class="bg-cb-quinary-900 flex w-full flex-row items-center justify-between gap-2 rounded px-2 py-1 text-xs uppercase sm:w-fit sm:justify-start"
-					>
-						<p class="sm:text-nowrap">Fetch Number</p>
-						<select
-							v-model="limitFetch"
-							class="bg-cb-quinary-900 placeholder-cb-tertiary-200 rounded border-none p-2 text-xs uppercase transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
-						>
-							<option value="10">10</option>
-							<option value="20">20</option>
-							<option value="30">30</option>
-							<option value="40">40</option>
-							<option value="50">50</option>
-							<option value="100">100</option>
-							<option value="200">200</option>
-							<option value="500">500</option>
-						</select>
-					</div>
 					<button
 						class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 lg:text-nowrap"
 						:class="
@@ -397,9 +379,9 @@
 			id="artist-list"
 			name="list-complete"
 			tag="div"
-			class="grid grid-cols-1 items-center justify-center gap-2 transition-all duration-300 ease-in-out md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+			class="grid grid-cols-1 items-center justify-center gap-2 transition-all duration-300 ease-in-out md:grid-cols-2 lg:grid-cols-4"
 		>
-			<LazyCardDashboardArtist
+			<CardDashboardArtist
 				v-for="artist in filteredArtistList"
 				:id="artist.id"
 				:key="artist.id"
