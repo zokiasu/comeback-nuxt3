@@ -24,7 +24,9 @@
 
 	const routeIsIndex = computed(() => route.name === 'index')
 	const routeIsCalendar = computed(() => route.name === 'calendar')
-	const routeIsDashboard = computed(() => (route.name as string)?.startsWith('dashboard-'))
+	const routeIsDashboard = computed(() =>
+		(route.name as string)?.startsWith('dashboard-'),
+	)
 
 	function handleScroll() {
 		if (navbar.value === null) return
@@ -49,14 +51,14 @@
 	}
 
 	onMounted(() => {
-		if (navbar.value === null) return;
-		handleScroll();
-		window.addEventListener('scroll', handleScroll);
-	});
+		if (navbar.value === null) return
+		handleScroll()
+		window.addEventListener('scroll', handleScroll)
+	})
 
 	onUnmounted(() => {
-		window.removeEventListener('scroll', handleScroll);
-	});
+		window.removeEventListener('scroll', handleScroll)
+	})
 </script>
 
 <template>

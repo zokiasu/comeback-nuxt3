@@ -27,65 +27,61 @@
 				class="!min-w-full"
 			/>
 		</transition-group>
-		<div v-if="isLoading" class="text-center py-4">
-			Chargement...
-		</div>
-		<div v-if="!hasMore && artists.length > 0" class="text-center py-4 text-gray-400">
+		<div v-if="isLoading" class="py-4 text-center">Chargement...</div>
+		<div v-if="!hasMore && artists.length > 0" class="py-4 text-center text-gray-400">
 			Tous les artistes sont affichés.
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
-import { useSupabaseArtist } from '@/composables/Supabase/useSupabaseArtist';
-import { useInfiniteScroll } from '@vueuse/core';
-import type { Artist } from '~/types';
+	import { ref, watch, onMounted } from 'vue'
+	import { useSupabaseArtist } from '@/composables/Supabase/useSupabaseArtist'
+	import { useInfiniteScroll } from '@vueuse/core'
+	import type { Artist } from '~/types'
 
-const { getArtistsByPage } = useSupabaseArtist();
+	const { getArtistsByPage } = useSupabaseArtist()
 
-const artists = ref<Artist[]>([]);
-const search = ref('');
-const page = ref(1);
-const limit = ref(48);
-const isLoading = ref(false);
-const hasMore = ref(true);
+	const artists = ref<Artist[]>([])
+	const search = ref('')
+	const page = ref(1)
+	const limit = ref(48)
+	const isLoading = ref(false)
+	const hasMore = ref(true)
 
-const fetchArtists = async (reset = false) => {
-	if (isLoading.value || (!hasMore.value && !reset)) return;
-	isLoading.value = true;
-	const result = await getArtistsByPage(page.value, limit.value, { search: search.value });
-	if (reset) {
-		artists.value = result.artists;
-	} else {
-		artists.value = [...artists.value, ...result.artists];
+	const fetchArtists = async (reset = false) => {
+		if (isLoading.value || (!hasMore.value && !reset)) return
+		isLoading.value = true
+		const result = await getArtistsByPage(page.value, limit.value, {
+			search: search.value,
+		})
+		if (reset) {
+			artists.value = result.artists
+		} else {
+			artists.value = [...artists.value, ...result.artists]
+		}
+		hasMore.value = result.artists.length === limit.value
+		isLoading.value = false
 	}
-	hasMore.value = result.artists.length === limit.value;
-	isLoading.value = false;
-};
 
-watch(search, () => {
-	page.value = 1;
-	hasMore.value = true;
-	fetchArtists(true);
-});
+	watch(search, () => {
+		page.value = 1
+		hasMore.value = true
+		fetchArtists(true)
+	})
 
-const loadMore = async () => {
-	if (isLoading.value || !hasMore.value) return;
-	page.value++;
-	await fetchArtists();
-};
+	const loadMore = async () => {
+		if (isLoading.value || !hasMore.value) return
+		page.value++
+		await fetchArtists()
+	}
 
-onMounted(() => {
-	fetchArtists(true);
-});
+	onMounted(() => {
+		fetchArtists(true)
+	})
 
-useInfiniteScroll(
-	window,
-	loadMore,
-	{
+	useInfiniteScroll(window, loadMore, {
 		distance: 200,
 		canLoadMore: () => hasMore.value && !isLoading.value,
-	}
-);
+	})
 </script>

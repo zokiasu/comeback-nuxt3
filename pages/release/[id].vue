@@ -108,7 +108,9 @@
 		try {
 			isLoading.value = true
 
-			release.value = await getReleaseById(route.params.id as string) as ReleaseWithRelations
+			release.value = (await getReleaseById(
+				route.params.id as string,
+			)) as ReleaseWithRelations
 
 			if (release.value && release.value.artists) {
 				title.value =
@@ -127,10 +129,10 @@
 					})) || []
 
 				// Récupérer les suggestions
-				suggestedReleases.value = await getSuggestedReleases(
+				suggestedReleases.value = (await getSuggestedReleases(
 					release.value.artists[0]?.id,
 					release.value.id,
-				) as ReleaseWithArtists[]
+				)) as ReleaseWithArtists[]
 			}
 		} catch (error: any) {
 			if (error.statusCode === 404) {
@@ -292,7 +294,11 @@
 														<ComebackInput
 															v-if="music.ismv"
 															v-model="music.id_youtube_music"
-															:value="music.id_youtube_music !== null ? String(music.id_youtube_music) : ''"
+															:value="
+																music.id_youtube_music !== null
+																	? String(music.id_youtube_music)
+																	: ''
+															"
 														/>
 													</div>
 												</div>
@@ -315,7 +321,10 @@
 
 			<section class="container mx-auto space-y-12 p-5 py-5 md:px-10 xl:px-0">
 				<!-- Musics -->
-				<section v-if="(release.musics?.length || 0) > 0 && release.artists" class="space-y-2">
+				<section
+					v-if="(release.musics?.length || 0) > 0 && release.artists"
+					class="space-y-2"
+				>
 					<CardDefault :name="`Tracks (${release.musics?.length})`">
 						<transition-group name="list-complete" tag="div" class="space-y-2">
 							<MusicDisplay

@@ -465,7 +465,7 @@
 				@input="seekToTime"
 			/>
 			<button
-				class="bg-cb-primary-900 cursor-pointer absolute -top-6 left-2 rounded-t-lg px-3 py-0.5 text-xs font-semibold uppercase"
+				class="bg-cb-primary-900 absolute -top-6 left-2 cursor-pointer rounded-t-lg px-3 py-0.5 text-xs font-semibold uppercase"
 				@click="closeYTPlayer"
 			>
 				Close

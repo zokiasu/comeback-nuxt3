@@ -2,9 +2,10 @@
 	import { useDebounce } from '~/composables/useDebounce'
 	import type { Artist } from '~/types'
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
+	import { useInfiniteScroll } from '@vueuse/core'
 
 	// Utilisation de Supabase uniquement pour la base de données
-	import type { AlgoliaHit } from '~/types/algolia'
+	import type { AlgoliaHit } from '@/types/algolia'
 
 	// Types
 	interface FilterState {
@@ -212,13 +213,17 @@
 		return [...artistFetch.value].sort((a, b) => {
 			if (sort.value === 'created_at') {
 				return invertSort.value
-					? new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-					: new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+					? new Date(b.created_at ?? '').getTime() -
+							new Date(a.created_at ?? '').getTime()
+					: new Date(a.created_at ?? '').getTime() -
+							new Date(b.created_at ?? '').getTime()
 			}
 			if (sort.value === 'updated_at') {
 				return invertSort.value
-					? new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-					: new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
+					? new Date(b.updated_at ?? '').getTime() -
+							new Date(a.updated_at ?? '').getTime()
+					: new Date(a.updated_at ?? '').getTime() -
+							new Date(b.updated_at ?? '').getTime()
 			}
 			if (sort.value === 'type') {
 				return invertSort.value
@@ -229,6 +234,16 @@
 				? (b.name || '').localeCompare(a.name || '')
 				: (a.name || '').localeCompare(b.name || '')
 		})
+	})
+
+	const loadMore = async () => {
+		if (isLoading.value || currentPage.value > totalPages.value) return
+		await getArtist(false)
+	}
+
+	useInfiniteScroll(scrollContainer, loadMore, {
+		distance: 200,
+		canLoadMore: () => currentPage.value <= totalPages.value && !isLoading.value,
 	})
 
 	// Lifecycle hooks
@@ -388,16 +403,16 @@
 				v-for="artist in filteredArtistList"
 				:id="artist.id"
 				:key="artist.id"
-				:image="artist.image"
+				:image="artist.image ?? undefined"
 				:name="artist.name"
 				:description="artist.description || ''"
-				:type="artist.type"
-				:id-youtube-music="artist.id_youtube_music"
+				:type="artist.type ?? undefined"
+				:id-youtube-music="artist.id_youtube_music ?? undefined"
 				:styles="artist.styles || []"
-				:social-list="artist.social_links"
-				:platform-list="artist.platform_links"
-				:created-at="artist.created_at"
-				:updated-at="artist.updated_at"
+				:social-list="artist.social_links ?? []"
+				:platform-list="artist.platform_links ?? []"
+				:created-at="artist.created_at ?? undefined"
+				:updated-at="artist.updated_at ?? undefined"
 				@delete-artist="deleteArtist"
 			/>
 		</transition-group>
