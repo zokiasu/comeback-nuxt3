@@ -48,18 +48,15 @@
 		}
 	}
 
-	onMounted(async () => {
-		if (navbar.value === null) return
-		if (window.scrollY > 50) {
-			navbar.value.classList.add(
-				'bg-cb-secondary-950',
-				'border',
-				'border-zinc-700',
-				'shadow',
-				'shadow-zinc-700',
-			)
-		}
-	})
+	onMounted(() => {
+		if (navbar.value === null) return;
+		handleScroll();
+		window.addEventListener('scroll', handleScroll);
+	});
+
+	onUnmounted(() => {
+		window.removeEventListener('scroll', handleScroll);
+	});
 </script>
 
 <template>
