@@ -47,6 +47,8 @@
 		onlyWithoutStyles: false,
 	})
 
+	const activeCareerFilter = ref<'all' | 'active' | 'inactive'>('all')
+
 	// Computed
 	const observerTarget = useTemplateRef('observerTarget')
 	const hasMore = computed(() => currentPage.value <= totalPages.value)
@@ -120,32 +122,33 @@
 		isLoading.value = true
 
 		try {
-			// Si c'est le premier appel, réinitialiser la page
 			if (firstCall) {
 				currentPage.value = 1
 				artistFetch.value = []
 			}
 
-			// Récupérer les artistes pour la page courante
 			const result = await getArtistsByPage(currentPage.value, limitFetch.value, {
 				search: search.value,
 				type: typeFilter.value || undefined,
 				orderBy: sort.value,
 				orderDirection: invertSort.value ? 'desc' : 'asc',
+				isActive:
+					activeCareerFilter.value === 'all'
+						? undefined
+						: activeCareerFilter.value === 'active'
+						? true
+						: false,
 			})
 
-			// Mettre à jour les données
 			totalArtists.value = result.total
 			totalPages.value = result.totalPages
 
-			// Ajouter les nouveaux artistes à la liste
 			if (firstCall) {
 				artistFetch.value = result.artists
 			} else {
 				artistFetch.value = [...artistFetch.value, ...result.artists]
 			}
 
-			// Incrémenter la page courante
 			currentPage.value++
 		} catch (error) {
 			console.error('Erreur lors de la récupération des artistes:', error)
@@ -279,6 +282,10 @@
 			getArtist(true)
 		}
 	})
+
+	watch(activeCareerFilter, () => {
+		getArtist(true)
+	})
 </script>
 
 <template>
@@ -348,6 +355,11 @@
 					>
 						No Styles
 					</button>
+					<select v-model="activeCareerFilter" class="bg-cb-quinary-900 placeholder-cb-tertiary-200 rounded border-none p-2 text-xs uppercase transition-all duration-300 ease-in-out focus:outline-none sm:w-fit">
+						<option value="all">Tous</option>
+						<option value="active">Actifs</option>
+						<option value="inactive">Inactifs</option>
+					</select>
 				</div>
 				<div class="flex space-x-2">
 					<select
@@ -393,6 +405,7 @@
 				:styles="artist.styles || []"
 				:social-list="artist.social_links ?? []"
 				:platform-list="artist.platform_links ?? []"
+				:is-active="artist.active_career ?? false"
 				:created-at="artist.created_at ?? undefined"
 				:updated-at="artist.updated_at ?? undefined"
 				@delete-artist="deleteArtist"

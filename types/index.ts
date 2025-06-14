@@ -110,6 +110,7 @@ export interface FilterOptions {
 	active?: boolean
 	type?: string
 	search?: string
+	isActive?: boolean
 }
 
 // ===== TYPES GLOBAUX =====
