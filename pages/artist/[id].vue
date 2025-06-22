@@ -194,7 +194,7 @@
 					name="Streaming Platforms"
 				>
 					<div class="flex flex-wrap gap-2">
-						<LazyComebackExternalLink
+						<ComebackExternalLink
 							v-for="platform in platformLinksList"
 							:key="platform.link"
 							:name="platform.name"

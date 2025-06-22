@@ -320,6 +320,19 @@
 			</section>
 
 			<section class="container mx-auto space-y-12 p-5 py-5 md:px-10 xl:px-0">
+				<CardDefault name="Link">
+					<div class="flex items-center gap-2">
+						<NuxtLink
+							:to="`https://music.youtube.com/browse/${release.id_youtube_music}`"
+							target="_blank"
+							class="bg-cb-quaternary-950 hover:bg-cb-quinary-900 flex items-center gap-2 rounded p-2 text-xs"
+						>
+							<NuxtImg src="/youtube_music.png" alt="Youtube Music" class="size-4" />
+							<p>Youtube Music</p>
+						</NuxtLink>
+					</div>
+				</CardDefault>
+
 				<!-- Musics -->
 				<section
 					v-if="(release.musics?.length || 0) > 0 && release.artists"
