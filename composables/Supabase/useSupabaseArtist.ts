@@ -7,6 +7,7 @@ import type {
 } from '~/types/supabase'
 import type { Artist } from '~/types'
 import { useGeneralFunction } from '@/composables/useGeneralFunction'
+import { useSupabaseClient } from '#imports'
 
 export function useSupabaseArtist() {
 	const supabase = useSupabaseClient()
@@ -502,6 +503,7 @@ export function useSupabaseArtist() {
 			type?: ArtistType
 			orderBy?: keyof Artist
 			orderDirection?: 'asc' | 'desc'
+			general_tags?: string[]
 		},
 	) => {
 		try {
@@ -525,6 +527,11 @@ export function useSupabaseArtist() {
 
 			if (options?.type) {
 				query = query.eq('type', options.type)
+			}
+
+			// Filtrage par tags (OU)
+			if (options?.general_tags && options.general_tags.length > 0) {
+				query = query.overlaps('general_tags', options.general_tags)
 			}
 
 			// Ajout du filtre actif/inactif
