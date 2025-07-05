@@ -124,10 +124,8 @@
 </script>
 
 <template>
-	<div
-		class="bg-cb-quaternary-950 rounded h-full w-full flex flex-col justify-between"
-	>
-		<div class="flex justify-between text-xs p-2 border-b border-zinc-500">
+	<div class="bg-cb-quaternary-950 flex h-full w-full flex-col justify-between rounded">
+		<div class="flex justify-between border-b border-zinc-500 p-2 text-xs">
 			<div class="flex items-center gap-1">
 				<p v-if="!isActive" class="text-xs text-red-500">[Inactive]</p>
 				<NuxtLink
@@ -142,7 +140,6 @@
 		</div>
 
 		<div class="flex flex-col space-y-2 p-3">
-
 			<NuxtImg
 				:src="image"
 				:alt="name"
@@ -289,17 +286,17 @@
 					:to="'/artist/edit/' + id"
 					target="_blank"
 					label="Edit"
-					class="bg-cb-quinary-900 text-white justify-center font-normal rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+					class="bg-cb-quinary-900 justify-center rounded px-2 py-1 text-xs font-normal text-white uppercase hover:bg-zinc-500"
 				/>
 				<UButton
 					label="Delete"
-					class="bg-cb-quinary-900 text-white justify-center font-normal rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500"
+					class="bg-cb-quinary-900 justify-center rounded px-2 py-1 text-xs font-normal text-white uppercase hover:bg-zinc-500"
 					@click="deleteArtist"
 				/>
 			</div>
 		</div>
 
-		<div class="flex justify-between text-xs p-2 border-t border-zinc-500">
+		<div class="flex justify-between border-t border-zinc-500 p-2 text-xs">
 			<p>Created at {{ createdAtDate }}</p>
 			<p>Updated at {{ updatedAtDate }}</p>
 		</div>
