@@ -43,9 +43,7 @@
 			</div>
 			<p v-else class="text-cb-tertiary-500 text-xs">
 				Liste des musiques pour
-				{{ selectedYear ? selectedYear : 'toutes les années' }} ({{
-					musicData.total
-				}}
+				{{ selectedYear ? selectedYear : 'toutes les années' }} ({{ musicData.total }}
 				résultats)
 			</p>
 
@@ -76,9 +74,7 @@
 			</div>
 			<p v-else class="text-cb-tertiary-500 text-xs">
 				Liste des musiques pour
-				{{ selectedYear ? selectedYear : 'toutes les années' }} ({{
-					musicData.total
-				}}
+				{{ selectedYear ? selectedYear : 'toutes les années' }} ({{ musicData.total }}
 				résultats)
 			</p>
 			<!-- <div v-for="music in musicData.musics" :key="music.id" class="mb-4 p-4 border rounded">

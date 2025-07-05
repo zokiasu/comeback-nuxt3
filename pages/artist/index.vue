@@ -5,10 +5,10 @@
 				v-model="search"
 				type="text"
 				placeholder="Search for an artist..."
-				class="w-full mb-2"
+				class="mb-2 w-full"
 			/>
 			<div>
-				<p class="text-white mb-2">Filtrer par tags :</p>
+				<p class="mb-2 text-white">Filtrer par tags :</p>
 				<div v-if="tagsList.length > 0" class="flex flex-wrap gap-2">
 					<button
 						v-for="tag in tagsList"
@@ -16,11 +16,11 @@
 						@click="toggleTag(tag.name)"
 						:disabled="isLoading"
 						:class="[
-							'px-3 py-1 rounded border text-xs font-medium transition text-white cursor-pointer',
+							'cursor-pointer rounded border px-3 py-1 text-xs font-medium text-white transition',
 							selectedTags.includes(tag.name)
 								? 'bg-cb-primary-900 border-cb-primary-900'
 								: 'bg-cb-quinary-900 border-cb-quinary-900 hover:bg-cb-primary-800',
-							isLoading ? 'opacity-50 cursor-not-allowed' : ''
+							isLoading ? 'cursor-not-allowed opacity-50' : '',
 						]"
 						type="button"
 					>
@@ -29,18 +29,18 @@
 				</div>
 			</div>
 			<div>
-				<p class="text-white mb-2">Filtrer par type :</p>
-				<div class="flex flex-wrap gap-2 mb-2">
+				<p class="mb-2 text-white">Filtrer par type :</p>
+				<div class="mb-2 flex flex-wrap gap-2">
 					<button
 						v-for="type in artistTypes"
 						:key="type"
 						@click="selectedType = selectedType === type ? null : type"
 						:class="[
-							'px-3 py-1 rounded border text-xs font-medium transition text-white cursor-pointer',
+							'cursor-pointer rounded border px-3 py-1 text-xs font-medium text-white transition',
 							selectedType === type
 								? 'bg-cb-primary-900 border-cb-primary-900'
 								: 'bg-cb-quinary-900 border-cb-quinary-900 hover:bg-cb-primary-800',
-							isLoading ? 'opacity-50 cursor-not-allowed' : ''
+							isLoading ? 'cursor-not-allowed opacity-50' : '',
 						]"
 						:disabled="isLoading"
 						type="button"
@@ -50,18 +50,18 @@
 				</div>
 			</div>
 			<div>
-				<p class="text-white mb-2">Filtrer par styles :</p>
-				<div v-if="stylesList.length > 0" class="flex flex-wrap gap-2 mb-4">
+				<p class="mb-2 text-white">Filtrer par styles :</p>
+				<div v-if="stylesList.length > 0" class="mb-4 flex flex-wrap gap-2">
 					<button
 						v-for="style in stylesList"
 						:key="style.id"
 						@click="toggleStyle(style.name)"
 						:class="[
-							'px-3 py-1 rounded border text-xs font-medium transition text-white cursor-pointer',
+							'cursor-pointer rounded border px-3 py-1 text-xs font-medium text-white transition',
 							selectedStyles.includes(style.name)
 								? 'bg-cb-primary-900 border-cb-primary-900'
 								: 'bg-cb-quinary-900 border-cb-quinary-900 hover:bg-cb-primary-800',
-							isLoading ? 'opacity-50 cursor-not-allowed' : ''
+							isLoading ? 'cursor-not-allowed opacity-50' : '',
 						]"
 						:disabled="isLoading"
 						type="button"
@@ -71,18 +71,18 @@
 				</div>
 			</div>
 			<div>
-				<p class="text-white mb-2">Filtrer par genre :</p>
-				<div class="flex flex-wrap gap-2 mb-2">
+				<p class="mb-2 text-white">Filtrer par genre :</p>
+				<div class="mb-2 flex flex-wrap gap-2">
 					<button
 						v-for="gender in genderList"
 						:key="gender"
 						@click="toggleGender(gender)"
 						:class="[
-							'px-3 py-1 rounded border text-xs font-medium transition text-white cursor-pointer',
+							'cursor-pointer rounded border px-3 py-1 text-xs font-medium text-white transition',
 							selectedGender === gender
 								? 'bg-cb-primary-900 border-cb-primary-900'
 								: 'bg-cb-quinary-900 border-cb-quinary-900 hover:bg-cb-primary-800',
-							isLoading ? 'opacity-50 cursor-not-allowed' : ''
+							isLoading ? 'cursor-not-allowed opacity-50' : '',
 						]"
 						:disabled="isLoading"
 						type="button"
@@ -168,7 +168,13 @@
 	}
 
 	watch([search, selectedTags, selectedType, selectedStyles, selectedGender], () => {
-		console.log('Watcher déclenché', selectedTags.value, selectedType.value, selectedStyles.value, selectedGender.value)
+		console.log(
+			'Watcher déclenché',
+			selectedTags.value,
+			selectedType.value,
+			selectedStyles.value,
+			selectedGender.value,
+		)
 		page.value = 1
 		hasMore.value = true
 		fetchArtists(true)

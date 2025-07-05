@@ -69,6 +69,11 @@
 		Omit<ArtistSocialLink, 'id' | 'created_at' | 'artist_id'>[]
 	>([])
 
+	const imageFile = ref<File | null>(null)
+	const imagePreview = ref<string | null>(null)
+	const isDragging = ref(false)
+	const fileInput = ref<HTMLInputElement | null>(null)
+
 	// --- Date Formatter ---
 	const df = new DateFormatter('en-US', {
 		dateStyle: 'medium',
@@ -124,6 +129,31 @@
 		} catch (e) {
 			console.error('Failed to parse date:', date, e)
 			return null
+		}
+	}
+
+	function onFileChange(e: Event) {
+		const files = (e.target as HTMLInputElement).files
+		if (files && files[0]) {
+			imageFile.value = files[0]
+			const reader = new FileReader()
+			reader.onload = (ev) => {
+				imagePreview.value = ev.target?.result as string
+			}
+			reader.readAsDataURL(files[0])
+		}
+	}
+
+	function onDrop(e: DragEvent) {
+		isDragging.value = false
+		if (e.dataTransfer?.files?.length) {
+			const file = e.dataTransfer.files[0]
+			imageFile.value = file
+			const reader = new FileReader()
+			reader.onload = (ev) => {
+				imagePreview.value = ev.target?.result as string
+			}
+			reader.readAsDataURL(file)
 		}
 	}
 
@@ -326,6 +356,39 @@
 					loading="lazy"
 					class="w-full rounded object-cover"
 				/>
+				<div v-if="!artistToEdit.id_youtube_music">
+					<UFormField label="Image personnalisée">
+						<div
+							class="border-cb-primary-900 hover:bg-cb-primary-900/10 cursor-pointer rounded border-2 border-dashed p-4 text-center transition"
+							@click="() => fileInput && fileInput.click()"
+							@dragover.prevent="isDragging = true"
+							@dragleave.prevent="isDragging = false"
+							@drop.prevent="onDrop"
+							:class="{ 'bg-cb-primary-900/20': isDragging }"
+						>
+							<input
+								ref="fileInput"
+								type="file"
+								accept="image/*"
+								class="hidden"
+								@change="onFileChange"
+							/>
+							<div v-if="!imagePreview">
+								<span class="block text-sm text-gray-400">
+									Glissez-déposez une image ici ou cliquez pour choisir un fichier
+								</span>
+							</div>
+							<img
+								v-if="imagePreview"
+								:src="imagePreview"
+								class="mx-auto mt-2 h-32 w-32 rounded object-cover"
+							/>
+						</div>
+					</UFormField>
+				</div>
+				<div v-else class="text-xs text-gray-500 italic">
+					L'image sera automatiquement synchronisée depuis YouTube Music.
+				</div>
 			</div>
 			<!-- Name & Id YTM & Birthday & Debut Date -->
 			<div class="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-1">
@@ -341,9 +404,9 @@
 					:placeholder="artist.name"
 				/>
 				<ComebackInput
-					v-model="artistToEdit.id_youtube_music"
 					label="Id Youtube Music"
-					:placeholder="artist.id_youtube_music"
+					:placeholder="artist.id_youtube_music ?? ''"
+					:value="artistToEdit.id_youtube_music ?? ''"
 				/>
 				<!-- Birthday & Debut Date -->
 				<div

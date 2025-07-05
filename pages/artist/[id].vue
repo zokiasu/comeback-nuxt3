@@ -4,6 +4,7 @@
 	import type { Artist, Music, ArtistSocialLink, ArtistPlatformLink } from '~/types'
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 	import { useSupabaseMusic } from '~/composables/Supabase/useSupabaseMusic'
+	import CreateMultipleArtists from '@/components/Modal/CreateMultipleArtists.vue'
 
 	const userStore = useUserStore()
 	const { isLoginStore, isAdminStore } = storeToRefs(userStore)
@@ -20,6 +21,7 @@
 	const imageBackLoaded = ref<boolean>(false)
 	const isFetchingArtist = ref<boolean>(true)
 	const musicDiscover = ref<Music[]>([])
+	const showMultipleArtistModal = ref(false)
 
 	onMounted(async () => {
 		try {
@@ -45,28 +47,32 @@
 
 	const members = computed(
 		() =>
-			artist.value?.members
+			((artist.value && (artist.value as any)['members']) as any[] | undefined)
 				?.filter((member) => member.type === 'SOLO')
 				.sort((a, b) => a.name.localeCompare(b.name)) || [],
 	)
 
 	const subUnitMembers = computed(
 		() =>
-			artist.value?.members
+			((artist.value && (artist.value as any)['members']) as any[] | undefined)
 				?.filter((member) => member.type === 'GROUP')
 				.sort((a, b) => a.name.localeCompare(b.name)) || [],
 	)
 
 	const singleRelease = computed(() => {
 		const singles =
-			artist.value?.releases?.filter((release) => release.type === 'SINGLE') || []
+			((artist.value && (artist.value as any)['releases']) as any[] | undefined)?.filter(
+				(release) => release.type === 'SINGLE',
+			) || []
 		singles.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 		return singles
 	})
 
 	const albumEpRelease = computed(() => {
 		const albums =
-			artist.value?.releases?.filter((release) => release.type !== 'SINGLE') || []
+			((artist.value && (artist.value as any)['releases']) as any[] | undefined)?.filter(
+				(release) => release.type !== 'SINGLE',
+			) || []
 		albums.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 		return albums
 	})
@@ -77,6 +83,13 @@
 		}
 		return '/artist/edit/' + route.params.id
 	})
+
+	function openMultipleArtistModal() {
+		showMultipleArtistModal.value = true
+	}
+	function closeMultipleArtistModal() {
+		showMultipleArtistModal.value = false
+	}
 
 	useHead({
 		title,
@@ -282,7 +295,7 @@
 				</CardDefault>
 			</div>
 
-			<div v-if="members?.length && !isFetchingArtist">
+			<div v-if="!isFetchingArtist && artist.type === 'GROUP'">
 				<CardDefault name="Members">
 					<transition-group
 						name="list-complete"
@@ -291,15 +304,30 @@
 					>
 						<CardObject
 							v-for="soloMember in members"
-							:key="`artistMembers_` + soloMember.id"
+							:key="`artistMembers_` + String(soloMember.id ?? '')"
 							is-artist
-							:artist-id="soloMember.id"
+							:artist-id="String(soloMember.id ?? '')"
 							:main-title="soloMember.name"
 							:image="soloMember.image"
-							:object-link="`/artist/${soloMember.id}`"
+							:object-link="`/artist/${String(soloMember.id ?? '')}`"
 						/>
 					</transition-group>
 				</CardDefault>
+				<div class="mb-2 flex" v-if="artist.type === 'GROUP' && isAdminStore">
+					<UButton
+						icon="i-heroicons-plus"
+						color="primary"
+						variant="soft"
+						@click="openMultipleArtistModal"
+					>
+						Add multiple members
+					</UButton>
+				</div>
+				<CreateMultipleArtists
+					v-model:open="showMultipleArtistModal"
+					:group-id="artist.id"
+					@created="closeMultipleArtistModal"
+				/>
 			</div>
 
 			<div v-if="albumEpRelease.length && !isFetchingArtist">
@@ -357,18 +385,18 @@
 					>
 						<CardObject
 							v-for="groupMember in subUnitMembers"
-							:key="`artistMembers_` + groupMember.id"
+							:key="`artistMembers_` + String(groupMember.id ?? '')"
 							is-artist
-							:artist-id="groupMember.id"
+							:artist-id="String(groupMember.id ?? '')"
 							:main-title="groupMember.name"
 							:image="groupMember.image"
-							:object-link="`/artist/${groupMember.id}`"
+							:object-link="`/artist/${String(groupMember.id ?? '')}`"
 						/>
 					</transition-group>
 				</CardDefault>
 			</div>
 
-			<div v-if="artist.groups?.length && !isFetchingArtist">
+			<div v-if="(artist as any)['groups']?.length && !isFetchingArtist">
 				<CardDefault name="Group">
 					<transition-group
 						name="list-complete"
@@ -376,13 +404,13 @@
 						class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 xl:flex-wrap"
 					>
 						<CardObject
-							v-for="group in artist.groups"
-							:key="`artistMembers_` + group.id"
+							v-for="group in (artist as any)['groups']"
+							:key="`artistMembers_` + String(group.id ?? '')"
 							is-artist
-							:artist-id="group.id"
+							:artist-id="String(group.id ?? '')"
 							:main-title="group.name"
 							:image="group.image"
-							:object-link="`/artist/${group.id}`"
+							:object-link="`/artist/${String(group.id ?? '')}`"
 						/>
 					</transition-group>
 				</CardDefault>

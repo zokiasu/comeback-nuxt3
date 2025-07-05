@@ -136,8 +136,8 @@
 					activeCareerFilter.value === 'all'
 						? undefined
 						: activeCareerFilter.value === 'active'
-						? true
-						: false,
+							? true
+							: false,
 			})
 
 			totalArtists.value = result.total
@@ -355,7 +355,10 @@
 					>
 						No Styles
 					</button>
-					<select v-model="activeCareerFilter" class="bg-cb-quinary-900 placeholder-cb-tertiary-200 rounded border-none p-2 text-xs uppercase transition-all duration-300 ease-in-out focus:outline-none sm:w-fit">
+					<select
+						v-model="activeCareerFilter"
+						class="bg-cb-quinary-900 placeholder-cb-tertiary-200 rounded border-none p-2 text-xs uppercase transition-all duration-300 ease-in-out focus:outline-none sm:w-fit"
+					>
 						<option value="all">Tous</option>
 						<option value="active">Actifs</option>
 						<option value="inactive">Inactifs</option>
