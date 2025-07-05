@@ -504,6 +504,8 @@ export function useSupabaseArtist() {
 			orderBy?: keyof Artist
 			orderDirection?: 'asc' | 'desc'
 			general_tags?: string[]
+			styles?: string[]
+			gender?: string
 		},
 	) => {
 		try {
@@ -529,9 +531,19 @@ export function useSupabaseArtist() {
 				query = query.eq('type', options.type)
 			}
 
+			// Filtrage par gender
+			if (options?.gender) {
+				query = query.eq('gender', options.gender)
+			}
+
 			// Filtrage par tags (OU)
 			if (options?.general_tags && options.general_tags.length > 0) {
 				query = query.overlaps('general_tags', options.general_tags)
+			}
+
+			// Filtrage par styles (OU)
+			if (options?.styles && options.styles.length > 0) {
+				query = query.overlaps('styles', options.styles)
 			}
 
 			// Ajout du filtre actif/inactif
