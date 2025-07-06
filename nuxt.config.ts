@@ -43,12 +43,7 @@ export default defineNuxtConfig({
 		url: process.env.SUPABASE_URL,
 		key: process.env.SUPABASE_KEY,
 		serviceKey: process.env.SUPABASE_SERVICE_KEY,
-		redirectOptions: {
-			login: '/authentification',
-			callback: '/auth/callback',
-			exclude: ['/'],
-			saveRedirectToCookie: true,
-		},
+		redirect: false,
 		types: './types/supabase.ts',
 		cookieOptions: {
 			secure: true,

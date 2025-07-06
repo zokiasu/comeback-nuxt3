@@ -6,6 +6,10 @@
 	const signOut = async () => {
 		await logout()
 	}
+
+	definePageMeta({
+		middleware: ['auth'],
+	})
 </script>
 
 <template>

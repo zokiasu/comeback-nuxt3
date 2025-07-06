@@ -6,6 +6,10 @@
 	const collapseMenuToggle = () => {
 		collapseMenu.value = !collapseMenu.value
 	}
+
+	definePageMeta({
+		middleware: ['admin'],
+	})
 </script>
 
 <template>

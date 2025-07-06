@@ -90,4 +90,8 @@
 			)
 		}
 	})
+
+	definePageMeta({
+		middleware: ['auth'],
+	})
 </script>

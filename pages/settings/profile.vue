@@ -34,6 +34,10 @@
 			userDetails.value = (await getUserData(userStore.userDataStore.id)) as User
 		}
 	})
+
+	definePageMeta({
+		middleware: ['auth'],
+	})
 </script>
 
 <template>

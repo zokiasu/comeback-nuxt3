@@ -1,4 +1,8 @@
 <script setup lang="ts">
+	definePageMeta({
+		middleware: []
+	})
+
 	useHead({
 		title: 'Authentification',
 		meta: [

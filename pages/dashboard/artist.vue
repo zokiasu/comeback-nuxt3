@@ -286,6 +286,10 @@
 	watch(activeCareerFilter, () => {
 		getArtist(true)
 	})
+
+	definePageMeta({
+		middleware: ['admin']
+	})
 </script>
 
 <template>

@@ -172,4 +172,8 @@
 	})
 
 	defineExpose({ orderDirection, toggleOrderDirection })
+
+	definePageMeta({
+		middleware: ['auth'],
+	})
 </script>

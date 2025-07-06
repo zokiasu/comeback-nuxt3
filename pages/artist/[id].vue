@@ -87,6 +87,7 @@
 	function openMultipleArtistModal() {
 		showMultipleArtistModal.value = true
 	}
+	
 	function closeMultipleArtistModal() {
 		showMultipleArtistModal.value = false
 	}
@@ -179,7 +180,7 @@
 							{{ tag }}
 						</p>
 					</div>
-					<div v-if="!isFetchingArtist && isAdminStore" class="flex flex-wrap gap-2">
+					<div v-if="!isFetchingArtist" class="flex flex-wrap gap-2">
 						<NuxtLink
 							:to="editLink"
 							class="bg-cb-secondary-950 px-2 py-1 text-xs font-semibold uppercase"

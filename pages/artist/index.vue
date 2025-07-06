@@ -220,4 +220,8 @@
 			selectedGender.value = gender
 		}
 	}
+
+	definePageMeta({
+		middleware: ['auth'],
+	})
 </script>

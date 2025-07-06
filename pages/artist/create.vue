@@ -206,6 +206,10 @@
 		tagsList.value = await getAllGeneralTags()
 	})
 
+	definePageMeta({
+		middleware: ['admin'],
+	})
+
 	useHead({
 		title,
 		meta: [
