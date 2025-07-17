@@ -21,6 +21,14 @@ export default defineNuxtPlugin(async () => {
 			console.log('✅ Authentification initialisée')
 		} catch (error) {
 			console.error("❌ Erreur lors de l'initialisation de l'authentification:", error)
+			// En production, envoyer l'erreur pour debugging
+			if (process.env.NODE_ENV === 'production') {
+				console.error('Production error details:', {
+					message: error.message,
+					stack: error.stack,
+					timestamp: new Date().toISOString()
+				})
+			}
 		}
 	}
 })
