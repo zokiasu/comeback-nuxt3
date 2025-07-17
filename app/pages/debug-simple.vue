@@ -39,6 +39,17 @@
 </template>
 
 <script setup lang="ts">
+// Vérifier si on est en mode développement
+const isDevelopment = process.env.NODE_ENV === 'development'
+
+// Si on n'est pas en développement, throw une erreur 404
+if (!isDevelopment) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Page Not Found'
+  })
+}
+
 const configLoaded = ref(false)
 const configError = ref('')
 const testResults = ref('')

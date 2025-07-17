@@ -1,6 +1,7 @@
 <template>
   <div class="p-8">
-    <h1 class="text-2xl font-bold mb-4">Debug Information</h1>
+    <div v-if="isDevelopment">
+      <h1 class="text-2xl font-bold mb-4">Debug Information</h1>
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="bg-gray-100 p-4 rounded">
@@ -40,14 +41,31 @@
       </div>
     </div>
 
-    <div v-if="testResults" class="mt-8 bg-gray-100 p-4 rounded">
-      <h2 class="font-semibold mb-2">Test Results</h2>
-      <pre class="text-sm">{{ testResults }}</pre>
+      <div v-if="testResults" class="mt-8 bg-gray-100 p-4 rounded">
+        <h2 class="font-semibold mb-2">Test Results</h2>
+        <pre class="text-sm">{{ testResults }}</pre>
+      </div>
+    </div>
+    
+    <div v-else class="text-center">
+      <h1 class="text-2xl font-bold mb-4">404 - Page Not Found</h1>
+      <p class="text-gray-600">This page is only available in development mode.</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+// Vérifier si on est en mode développement
+const isDevelopment = process.env.NODE_ENV === 'development'
+
+// Si on n'est pas en développement, throw une erreur 404
+if (!isDevelopment) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Page Not Found'
+  })
+}
+
 const { logError, logInfo } = useErrorLogger()
 const authUser = useSupabaseUser()
 const authError = ref(null)
