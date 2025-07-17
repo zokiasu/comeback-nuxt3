@@ -23,9 +23,6 @@ export default defineNuxtConfig({
 		plugins: [tailwindcss()],
 		build: {
 			chunkSizeWarningLimit: 1600,
-		},
-		ssr: {
-			noExternal: ['vue']
 		}
 	},
 
@@ -63,17 +60,6 @@ export default defineNuxtConfig({
 	nitro: {
 		experimental: {
 			wasm: true
-		},
-		esbuild: {
-			options: {
-				target: 'esnext'
-			}
-		},
-		moduleSideEffects: [
-			'vue'
-		],
-		alias: {
-			'vue': 'vue/dist/vue.runtime.esm-bundler.js'
 		}
 	},
 
