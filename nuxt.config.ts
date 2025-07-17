@@ -44,7 +44,7 @@ export default defineNuxtConfig({
 		key: process.env.SUPABASE_KEY,
 		serviceKey: process.env.SUPABASE_SERVICE_KEY,
 		redirect: false,
-		types: './types/supabase.ts',
+		types: './app/types/supabase.ts',
 		cookieOptions: {
 			secure: true,
 			sameSite: 'lax',

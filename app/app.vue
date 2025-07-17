@@ -1,8 +1,5 @@
 <script setup>
-	// Temporairement désactivé pour diagnostiquer l'erreur 500
-	// const { user, userData, isLogin, isAdmin } = useAuth()
-
-	console.log('✅ App.vue chargé sans useAuth')
+	console.log('✅ App.vue chargé')
 </script>
 
 <template>
