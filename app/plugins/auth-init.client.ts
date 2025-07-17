@@ -16,19 +16,18 @@ export default defineNuxtPlugin(async () => {
 		try {
 			// Initialiser l'authentification
 			const { initializeAuth } = useAuth()
+			const { logError, logInfo } = useErrorLogger()
+			
+			logInfo('Starting authentication initialization')
 			await initializeAuth()
+			logInfo('Authentication initialized successfully')
 
 			console.log('✅ Authentification initialisée')
 		} catch (error) {
+			const { logError } = useErrorLogger()
+			logError(error, 'auth-init-plugin')
+			
 			console.error("❌ Erreur lors de l'initialisation de l'authentification:", error)
-			// En production, envoyer l'erreur pour debugging
-			if (process.env.NODE_ENV === 'production') {
-				console.error('Production error details:', {
-					message: error.message,
-					stack: error.stack,
-					timestamp: new Date().toISOString()
-				})
-			}
 		}
 	}
 })
