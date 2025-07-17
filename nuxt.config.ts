@@ -24,6 +24,9 @@ export default defineNuxtConfig({
 		build: {
 			chunkSizeWarningLimit: 1600,
 		},
+		ssr: {
+			noExternal: ['vue']
+		}
 	},
 
 	runtimeConfig: {
@@ -55,6 +58,23 @@ export default defineNuxtConfig({
 
 	experimental: {
 		payloadExtraction: false,
+	},
+
+	nitro: {
+		experimental: {
+			wasm: true
+		},
+		esbuild: {
+			options: {
+				target: 'esnext'
+			}
+		},
+		moduleSideEffects: [
+			'vue'
+		],
+		alias: {
+			'vue': 'vue/dist/vue.runtime.esm-bundler.js'
+		}
 	},
 
 	typescript: {
