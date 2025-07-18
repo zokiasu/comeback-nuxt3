@@ -22,6 +22,13 @@
 	// Crée un type générique qui ajoute 'label' à un type existant T
 	type MenuItem<T> = T & { label: string }
 
+	// Type étendu pour l'artiste avec groupes et membres
+	type ArtistWithRelations = Artist & {
+		groups?: Artist[]
+		members?: Artist[]
+		releases?: any[]
+	}
+
 	const route = useRoute()
 	const router = useRouter()
 	const toast = useToast()
@@ -42,7 +49,7 @@
 
 	const isUploadingEdit = ref<boolean>(false)
 
-	const artist = ref<Artist | null>(null)
+	const artist = ref<ArtistWithRelations | null>(null)
 	const groupList = ref<Artist[]>([]) // Garde les groupes potentiels
 	const membersList = ref<Artist[]>([]) // Garde les membres potentiels (tous les artistes)
 	const artistsList = ref<Artist[]>([]) // Liste complète des artistes
@@ -148,12 +155,14 @@
 		isDragging.value = false
 		if (e.dataTransfer?.files?.length) {
 			const file = e.dataTransfer.files[0]
-			imageFile.value = file
-			const reader = new FileReader()
-			reader.onload = (ev) => {
-				imagePreview.value = ev.target?.result as string
+			if (file) {
+				imageFile.value = file
+				const reader = new FileReader()
+				reader.onload = (ev) => {
+					imagePreview.value = ev.target?.result as string
+				}
+				reader.readAsDataURL(file)
 			}
-			reader.readAsDataURL(file)
 		}
 	}
 
@@ -195,11 +204,11 @@
 				artistPlatformList.value,
 				artistGroups.value.map(({ label, ...rest }) => ({
 					...rest,
-					type: 'GROUP' as ArtistType,
+					type: 'GROUP' as const,
 				})),
 				artistMembers.value.map(({ label, ...rest }) => ({
 					...rest,
-					type: 'SOLO' as ArtistType,
+					type: 'SOLO' as const,
 				})),
 			)
 				.then(() => {
@@ -408,9 +417,14 @@
 					:placeholder="artist.name"
 				/>
 				<ComebackInput
+					:model-value="artistToEdit.id_youtube_music || ''"
 					label="Id Youtube Music"
-					:placeholder="artist.id_youtube_music ?? ''"
-					:value="artistToEdit.id_youtube_music ?? ''"
+					:placeholder="artist.id_youtube_music || ''"
+					@update:model-value="(value: string | number) => {
+						if (artistToEdit) {
+							artistToEdit.id_youtube_music = value ? String(value) : null
+						}
+					}"
 				/>
 				<!-- Birthday & Debut Date -->
 				<div
@@ -767,10 +781,13 @@
 								placeholder="Platform's Name"
 								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
-									(e: Event) =>
-										(artistPlatformList[index].name = (
-											e.target as HTMLInputElement
-										).value)
+									(e: Event) => {
+										if (artistPlatformList[index]) {
+											artistPlatformList[index].name = (
+												e.target as HTMLInputElement
+											).value
+										}
+									}
 								"
 							/>
 							<input
@@ -779,10 +796,13 @@
 								placeholder="Platform's Link"
 								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
-									(e: Event) =>
-										(artistPlatformList[index].link = (
-											e.target as HTMLInputElement
-										).value)
+									(e: Event) => {
+										if (artistPlatformList[index]) {
+											artistPlatformList[index].link = (
+												e.target as HTMLInputElement
+											).value
+										}
+									}
 								"
 							/>
 						</div>
@@ -815,9 +835,12 @@
 								placeholder="Social's Name"
 								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
-									(e: Event) =>
-										(artistSocialList[index].name =
-											(e.target as HTMLInputElement).value || '')
+									(e: Event) => {
+										if (artistSocialList[index]) {
+											artistSocialList[index].name =
+												(e.target as HTMLInputElement).value || ''
+										}
+									}
 								"
 							/>
 							<input
@@ -826,9 +849,12 @@
 								placeholder="Social's Link"
 								class="w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out outline-none"
 								@input="
-									(e: Event) =>
-										(artistSocialList[index].link =
-											(e.target as HTMLInputElement).value || '')
+									(e: Event) => {
+										if (artistSocialList[index]) {
+											artistSocialList[index].link =
+												(e.target as HTMLInputElement).value || ''
+										}
+									}
 								"
 							/>
 						</div>
