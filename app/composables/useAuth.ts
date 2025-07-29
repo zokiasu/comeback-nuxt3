@@ -20,20 +20,20 @@ export const useAuth = () => {
 		try {
 			// Vérifier si l'utilisateur existe déjà
 			let existingUser, fetchError
-			
+
 			if (process.dev) {
 				// Timeout uniquement en développement
 				const timeoutPromise = new Promise((_, reject) => {
 					setTimeout(() => reject(new Error('Dev database timeout')), 2000)
 				})
-				
+
 				const fetchPromise = supabase
 					.from('users')
 					.select('*')
 					.eq('id', authUser.id)
 					.single()
-				
-				const result = await Promise.race([fetchPromise, timeoutPromise]) as any
+
+				const result = (await Promise.race([fetchPromise, timeoutPromise])) as any
 				existingUser = result.data
 				fetchError = result.error
 			} else {
@@ -43,7 +43,7 @@ export const useAuth = () => {
 					.select('*')
 					.eq('id', authUser.id)
 					.single()
-				
+
 				existingUser = result.data
 				fetchError = result.error
 			}

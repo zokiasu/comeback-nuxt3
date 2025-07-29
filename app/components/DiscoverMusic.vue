@@ -10,15 +10,12 @@
 
 	const idYoutubeVideo = useIdYoutubeVideo()
 	const isPlayingVideo = useIsPlayingVideo()
-	const musicNamePlaying = useMusicNamePlaying()
-	const authorNamePlaying = useAuthorNamePlaying()
 	const imageLoaded = ref(false)
 
+	const { addToPlaylist } = useYouTube()
+
 	const playVideo = (videoId: string) => {
-		idYoutubeVideo.value = videoId
-		isPlayingVideo.value = true
-		musicNamePlaying.value = props.music.name
-		authorNamePlaying.value = props.music?.artists?.[0]?.name || ''
+		addToPlaylist(videoId, props.music.name, props.music?.artists?.[0]?.name || '')
 	}
 </script>
 

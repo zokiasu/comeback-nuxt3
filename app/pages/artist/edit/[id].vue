@@ -420,11 +420,13 @@
 					:model-value="artistToEdit.id_youtube_music || ''"
 					label="Id Youtube Music"
 					:placeholder="artist.id_youtube_music || ''"
-					@update:model-value="(value: string | number) => {
-						if (artistToEdit) {
-							artistToEdit.id_youtube_music = value ? String(value) : null
+					@update:model-value="
+						(value: string | number) => {
+							if (artistToEdit) {
+								artistToEdit.id_youtube_music = value ? String(value) : null
+							}
 						}
-					}"
+					"
 				/>
 				<!-- Birthday & Debut Date -->
 				<div

@@ -87,7 +87,7 @@
 	function openMultipleArtistModal() {
 		showMultipleArtistModal.value = true
 	}
-	
+
 	function closeMultipleArtistModal() {
 		showMultipleArtistModal.value = false
 	}
