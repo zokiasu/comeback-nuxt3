@@ -23,19 +23,6 @@
 
 	let intervalId = null
 
-	const displayVideo = () => {
-		if (!import.meta.client) return
-
-		if (globalPlayerContainer.value) {
-			if (isVideoDisplay.value) {
-				globalPlayerContainer.value.classList.remove('hidden')
-				isVideoDisplay.value = false
-			} else {
-				globalPlayerContainer.value.classList.add('hidden')
-				isVideoDisplay.value = true
-			}
-		}
-	}
 
 	// Création du lecteur YouTube
 	const createPlayer = () => {
@@ -279,6 +266,13 @@
 		console.log('🎵 Montage du composant YoutubePlayer')
 		initYTPlayer()
 		intervalId = setInterval(updateCurrentTime, 1000)
+		
+		// Masquer la vidéo par défaut
+		nextTick(() => {
+			if (globalPlayerContainer.value && !isVideoDisplay.value) {
+				globalPlayerContainer.value.style.display = 'none'
+			}
+		})
 	})
 
 	onBeforeUnmount(() => {
@@ -380,6 +374,29 @@
 		}
 	}
 
+	const toggleVideoDisplay = () => {
+		console.log('🎵 Toggle vidéo - avant:', isVideoDisplay.value)
+		isVideoDisplay.value = !isVideoDisplay.value
+		console.log('🎵 Toggle vidéo - après:', isVideoDisplay.value)
+		
+		if (isVideoDisplay.value) {
+			console.log('🎵 Affichage de la vidéo')
+			// Utiliser une méthode plus directe pour réafficher
+			nextTick(() => {
+				if (globalPlayerContainer.value) {
+					globalPlayerContainer.value.style.display = 'block'
+					console.log('🎵 Conteneur vidéo affiché')
+				}
+			})
+		} else {
+			console.log('🎵 Masquage de la vidéo')
+			if (globalPlayerContainer.value) {
+				globalPlayerContainer.value.style.display = 'none'
+				console.log('🎵 Conteneur vidéo masqué')
+			}
+		}
+	}
+
 	const closeYTPlayer = () => {
 		console.log('🎵 Fermeture du lecteur YouTube')
 		isPlayingVideo.value = false
@@ -421,7 +438,7 @@
 		<div
 			id="globalPlayerContainer"
 			ref="globalPlayerContainer"
-			class="hidden aspect-video w-1/4 min-w-[20rem] overflow-hidden rounded-lg px-2 lg:absolute lg:-top-72 lg:right-0 lg:z-50 lg:h-72"
+			class="aspect-video w-1/4 min-w-[20rem] overflow-hidden rounded-lg px-2 lg:absolute lg:-top-72 lg:right-0 lg:z-50 lg:h-72"
 		></div>
 
 		<div
@@ -494,11 +511,7 @@
 				/>
 			</div>
 			<div v-if="!errorDetected" class="flex w-fit items-center gap-2">
-				<NuxtImg
-					src="https://i.ytimg.com/vi/{{ idYoutubeVideo }}/default.jpg"
-					class="size-6 rounded"
-				/>
-				<div class="flex flex-col items-start w-fit">
+				<div class="flex flex-col items-start lg:items-center w-fit">
 					<p class="font-semibold text-nowrap">{{ authorNamePlaying }}</p>
 					<p class="text-xs text-nowrap">{{ musicNamePlaying }}</p>
 				</div>
@@ -535,6 +548,7 @@
 					@update:model-value="setVolume"
 				/>
 			</div>
+
 			<USlider
 				v-model="currentTime"
 				:min="0"
