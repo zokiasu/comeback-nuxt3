@@ -13,14 +13,12 @@ Cette fonctionnalité permet de créer des releases manuellement via une interfa
 ### 🎯 Création de Release
 
 1. **Informations de base**
-
    - Nom de la release (requis)
    - Type : Single, EP, Album, Mixtape, Compilation
    - Date de sortie (optionnel)
    - Année (optionnel)
 
 2. **Artiste principal**
-
    - Recherche d'artiste avec autocomplete
    - Possibilité de créer un nouvel artiste si introuvable
    - Sélection automatique après création

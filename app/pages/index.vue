@@ -105,12 +105,13 @@
 					<div class="grid grid-cols-2 gap-5 xl:grid-cols-4">
 						<LazyDiscoverMusic v-for="music in musics" :key="music.id" :music="music" />
 					</div>
-					<button
-						class="bg-cb-quaternary-950 rounded px-3 py-1"
+					<UButton
+						label="Reload"
+						variant="ghost"
+						class="bg-cb-quaternary-950 rounded px-3 py-1 w-fit mx-auto text-white"
+						icon="i-material-symbols-refresh"
 						@click="reloadDiscoverMusic"
-					>
-						Reload
-					</button>
+					/>
 				</div>
 			</div>
 			<div v-else-if="musicsFetching" class="grid grid-cols-2 gap-5 xl:grid-cols-4">

@@ -126,9 +126,13 @@
 <template>
 	<UModal
 		v-model:open="isOpen"
+		title="Create Comeback"
 		:ui="{
 			overlay: 'bg-cb-quinary-950/75',
 			content: 'ring-cb-quinary-950',
+			body: 'bg-cb-secondary-950',
+			wrapper: 'bg-cb-secondary-950',
+			header: 'bg-cb-secondary-950',
 		}"
 	>
 		<UButton
@@ -140,9 +144,8 @@
 			<p class="hidden lg:block lg:text-nowrap">New Comeback</p>
 		</UButton>
 
-		<template #content>
-			<div class="bg-cb-secondary-950 space-y-5 p-5">
-				<h3 class="text-2xl font-bold">Create Comeback</h3>
+		<template #body>
+			<div class="bg-cb-secondary-950 space-y-3 overflow-y-auto">
 				<div class="relative">
 					<ComebackInput
 						v-model="searchArtist"

@@ -4,10 +4,14 @@
 	const musicNamePlaying = useMusicNamePlaying()
 	const authorNamePlaying = useAuthorNamePlaying()
 
+	const { skipToNext, skipToPrevious, getPlaylistInfo } = usePlaylist()
+	const playlistInfo = computed(() => getPlaylistInfo())
+	const showPlaylist = ref(false)
+
 	const isPlaying = ref(false)
 	const currentTime = ref(0)
 	const duration = ref(0)
-	const globalPlayerContainer = ref(null)
+	const globalPlayerContainer = useTemplateRef('globalPlayerContainer')
 	const player = ref(null)
 	const volumeOn = ref(true)
 	const volume = ref(20)
@@ -15,23 +19,10 @@
 	const errorMessage = ref('')
 	const isVideoDisplay = ref(false)
 	const isPlayerReady = ref(false)
+	const isSeeking = ref(false)
 
 	let intervalId = null
 
-	const displayVideo = () => {
-		if (!import.meta.client) return
-
-		const iframe = document.getElementById('globalPlayerContainer')
-		if (iframe) {
-			if (isVideoDisplay.value) {
-				iframe.classList.remove('hidden')
-				isVideoDisplay.value = false
-			} else {
-				iframe.classList.add('hidden')
-				isVideoDisplay.value = true
-			}
-		}
-	}
 
 	// Création du lecteur YouTube
 	const createPlayer = () => {
@@ -89,6 +80,19 @@
 			errorDetected.value = false
 			errorMessage.value = ''
 			duration.value = player.value?.getDuration()
+		}
+
+		// Gestion de la fin de vidéo pour la playlist
+		if (event.data === window.YT.PlayerState.ENDED) {
+			console.log('🎵 Fin de vidéo - tentative de lecture suivante')
+			const { playNext } = usePlaylist()
+
+			setTimeout(() => {
+				const hasPlayedNext = playNext()
+				if (!hasPlayedNext) {
+					console.log('🎵 Aucune musique suivante - fin de playlist')
+				}
+			}, 500)
 		}
 
 		// Log des changements d'état pour debug
@@ -226,7 +230,8 @@
 	}
 
 	const updateCurrentTime = () => {
-		if (!import.meta.client || !player.value || !isPlayerReady.value) return
+		if (!import.meta.client || !player.value || !isPlayerReady.value || isSeeking.value)
+			return
 
 		try {
 			if (player.value?.getPlayerState() === window.YT.PlayerState.PLAYING) {
@@ -261,6 +266,13 @@
 		console.log('🎵 Montage du composant YoutubePlayer')
 		initYTPlayer()
 		intervalId = setInterval(updateCurrentTime, 1000)
+		
+		// Masquer la vidéo par défaut
+		nextTick(() => {
+			if (globalPlayerContainer.value && !isVideoDisplay.value) {
+				globalPlayerContainer.value.style.display = 'none'
+			}
+		})
 	})
 
 	onBeforeUnmount(() => {
@@ -305,22 +317,41 @@
 		}
 	}
 
-	const seekToTime = () => {
+	const onSeekStart = () => {
+		isSeeking.value = true
+	}
+
+	const onSeekEnd = (newTime) => {
 		if (!import.meta.client || !player.value || !isPlayerReady.value) return
 
+		// Extraire la valeur si c'est un tableau (USlider retourne [value])
+		const timeValue = Array.isArray(newTime) ? newTime[0] : (newTime ?? currentTime.value)
+
 		try {
-			player.value?.seekTo(currentTime.value)
+			player.value?.seekTo(timeValue)
+			currentTime.value = timeValue
 		} catch (error) {
 			console.error('❌ Erreur lors du seekTo:', error)
+		} finally {
+			isSeeking.value = false
 		}
+	}
+
+	const seekToTime = (newTime) => {
+		// Pour l'événement @input, on met juste à jour l'affichage
+		const timeValue = Array.isArray(newTime) ? newTime[0] : (newTime ?? currentTime.value)
+		currentTime.value = timeValue
 	}
 
 	const setVolume = (newVolume) => {
 		if (!import.meta.client || !player.value || !isPlayerReady.value) return
 
+		// Extraire la valeur si c'est un tableau (USlider retourne [value])
+		const volumeValue = Array.isArray(newVolume) ? newVolume[0] : newVolume
+
 		try {
-			player.value?.setVolume(newVolume)
-			volume.value = newVolume
+			player.value?.setVolume(volumeValue)
+			volume.value = volumeValue
 		} catch (error) {
 			console.error('❌ Erreur lors du réglage du volume:', error)
 		}
@@ -340,6 +371,29 @@
 			volumeOn.value = !volumeOn.value
 		} catch (error) {
 			console.error('❌ Erreur lors du mute/unmute:', error)
+		}
+	}
+
+	const toggleVideoDisplay = () => {
+		console.log('🎵 Toggle vidéo - avant:', isVideoDisplay.value)
+		isVideoDisplay.value = !isVideoDisplay.value
+		console.log('🎵 Toggle vidéo - après:', isVideoDisplay.value)
+		
+		if (isVideoDisplay.value) {
+			console.log('🎵 Affichage de la vidéo')
+			// Utiliser une méthode plus directe pour réafficher
+			nextTick(() => {
+				if (globalPlayerContainer.value) {
+					globalPlayerContainer.value.style.display = 'block'
+					console.log('🎵 Conteneur vidéo affiché')
+				}
+			})
+		} else {
+			console.log('🎵 Masquage de la vidéo')
+			if (globalPlayerContainer.value) {
+				globalPlayerContainer.value.style.display = 'none'
+				console.log('🎵 Conteneur vidéo masqué')
+			}
 		}
 	}
 
@@ -379,90 +433,136 @@
 	<div
 		class="fixed bottom-0 z-[1100] flex w-full flex-col items-center justify-center space-y-3 sm:items-end sm:justify-end"
 	>
+		<PlaylistPanel v-model:is-open="showPlaylist" class="lg:mr-3 min-w-80" />
+		
 		<div
 			id="globalPlayerContainer"
 			ref="globalPlayerContainer"
-			class="hidden aspect-video w-1/4 min-w-[20rem] overflow-hidden rounded-lg px-2 lg:absolute lg:-top-72 lg:right-0 lg:z-50 lg:h-72"
+			class="aspect-video w-1/4 min-w-[20rem] overflow-hidden rounded-lg px-2 lg:absolute lg:-top-72 lg:right-0 lg:z-50 lg:h-72"
 		></div>
+
 		<div
-			class="bg-cb-secondary-950 relative flex w-full items-center justify-between px-5 py-3"
+			class="bg-cb-secondary-950 relative flex flex-row-reverse lg:flex-row w-full items-center justify-between px-5 py-3"
 		>
-			<div class="flex w-full items-center space-x-2 sm:w-fit">
-				<button
-					class="hover:text-cb-primary-900 disabled:opacity-50"
+			<div class="flex items-center space-x-2 w-fit">
+				<UButton
+					variant="ghost"
+					class="hidden lg:block"
+					:disabled="!isPlayerReady || !playlistInfo.hasPrevious"
+					@click="skipToPrevious"
+					icon="i-material-symbols-skip-previous"
+					size="lg"
+				/>
+				<UButton
+					variant="ghost"
+					class="hidden lg:block"
 					:disabled="!isPlayerReady"
 					@click="seek(-10)"
-				>
-					<IconBackward10 class="h-7 w-7" />
-				</button>
-				<button
+					icon="i-material-symbols-replay-10"
+					size="lg"
+				/>
+				<UButton
 					v-if="isPlaying"
-					class="hover:text-cb-primary-900 disabled:opacity-50"
+					variant="ghost"
 					:disabled="!isPlayerReady"
 					@click="togglePlayPause"
-				>
-					<IconPause class="h-7 w-7" />
-				</button>
-				<button
+					icon="i-material-symbols-pause"
+					size="lg"
+				/>
+				<UButton
 					v-else
-					class="hover:text-cb-primary-900 disabled:opacity-50"
+					variant="ghost"
 					:disabled="!isPlayerReady"
 					@click="togglePlayPause"
-				>
-					<IconPlay class="h-7 w-7" />
-				</button>
-				<button
-					class="hover:text-cb-primary-900 disabled:opacity-50"
+					icon="i-material-symbols-play-arrow"
+					size="lg"
+				/>
+				<UButton
+					variant="ghost"
+					class="hidden lg:block"
 					:disabled="!isPlayerReady"
 					@click="seek(10)"
-				>
-					<IconForward10 class="h-7 w-7" />
-				</button>
+					icon="i-material-symbols-forward-10"
+					size="lg"
+				/>
+				<UButton
+					variant="ghost"
+					class="hidden lg:block"
+					:disabled="!isPlayerReady || !playlistInfo.hasNext"
+					@click="skipToNext"
+					icon="i-material-symbols-skip-next"
+					size="lg"
+				/>
 				<div class="hidden items-center gap-1 pl-5 text-xs md:flex">
 					<p>{{ convertDuration(currentTime) }}</p>
 					<p>/</p>
 					<p>{{ convertDuration(duration) }}</p>
+					<div v-if="playlistInfo.isActive" class="ml-3 text-xs opacity-75">
+						{{ playlistInfo.current }}/{{ playlistInfo.total }}
+					</div>
 				</div>
+				<UButton
+					variant="ghost"
+					class="sm:hidden"
+					:disabled="!playlistInfo.isActive"
+					@click="showPlaylist = !showPlaylist"
+					icon="i-material-symbols-queue-music"
+					size="sm"
+				/>
 			</div>
-			<div v-if="!errorDetected" class="w-full sm:w-fit xl:flex xl:items-center xl:gap-1">
-				<p class="font-semibold">{{ authorNamePlaying }}</p>
-				<p class="text-xs">{{ musicNamePlaying }}</p>
+			<div v-if="!errorDetected" class="flex w-fit items-center gap-2">
+				<div class="flex flex-col items-start lg:items-center w-fit">
+					<p class="font-semibold text-nowrap">{{ authorNamePlaying }}</p>
+					<p class="text-xs text-nowrap">{{ musicNamePlaying }}</p>
+				</div>
 			</div>
 			<div v-else class="w-full sm:w-fit">
 				<p class="text-cb-primary-900 font-bold">{{ errorMessage }}</p>
 			</div>
 			<div class="hidden items-center gap-2 sm:flex">
-				<!-- <button @click="displayVideo" class="p-1 bg-red-500 rounded aspect-square">
-          D
-        </button> -->
-				<button
+				<UButton
+					variant="ghost"
+					:disabled="!playlistInfo.isActive"
+					@click="showPlaylist = !showPlaylist"
+					icon="i-material-symbols-queue-music"
+					size="lg"
+				/>
+				<UButton
+					variant="ghost"
 					:disabled="!isPlayerReady"
-					class="disabled:opacity-50"
 					@click="muteVolume"
-				>
-					<IconVolumeOn v-if="volumeOn" class="h-7 w-7" />
-					<IconVolumeOff v-else class="h-7 w-7" />
-				</button>
-				<input
-					id="volume"
+					:icon="volumeOn ? 'i-material-symbols-volume-up' : 'i-material-symbols-volume-off'"
+					size="lg"
+				/>
+				<USlider
 					v-model="volume"
-					type="range"
-					min="0"
-					max="100"
+					:min="0"
+					:max="100"
 					:disabled="!isPlayerReady"
-					class="disabled:opacity-50"
-					@input="setVolume(volume)"
+					class="w-20"
+					:ui="{
+						track: 'h-1 rounded-full',
+						thumb: 'h-3 w-3 rounded-full focus:outline-none',
+						progress: 'h-1 rounded-full',
+					}"
+					@update:model-value="setVolume"
 				/>
 			</div>
-			<input
-				id="progressTime"
+
+			<USlider
 				v-model="currentTime"
-				type="range"
-				min="0"
+				:min="0"
 				:max="duration"
 				:disabled="!isPlayerReady"
-				class="absolute -top-1 left-0 h-1 w-full cursor-pointer overflow-hidden disabled:opacity-50"
-				@input="seekToTime"
+				class="absolute -top-1 left-0 w-full"
+				:ui="{
+					track: 'h-1 rounded-full cursor-pointer',
+					thumb: 'h-3 w-3 rounded-full cursor-pointer focus:outline-none',
+					progress: 'h-1 rounded-full',
+				}"
+				@update:model-value="onSeekEnd"
+				@mousedown="onSeekStart"
+				@touchstart="onSeekStart"
 			/>
 			<button
 				class="bg-cb-primary-900 absolute -top-6 left-2 cursor-pointer rounded-t-lg px-3 py-0.5 text-xs font-semibold uppercase"

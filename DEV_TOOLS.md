@@ -7,6 +7,7 @@ Ce fichier décrit les outils de développement et de debugging disponibles dans
 Ces pages ne sont accessibles qu'en mode développement (`NODE_ENV=development`).
 
 ### `/debug`
+
 - **Description**: Page de debug complète avec tests de connexion
 - **Fonctionnalités**:
   - Informations sur l'environnement d'exécution
@@ -16,6 +17,7 @@ Ces pages ne sont accessibles qu'en mode développement (`NODE_ENV=development`)
 - **Utilisation**: Accessible uniquement en développement local
 
 ### `/debug-simple`
+
 - **Description**: Page de debug simplifiée
 - **Fonctionnalités**:
   - Informations environnement de base
@@ -24,6 +26,7 @@ Ces pages ne sont accessibles qu'en mode développement (`NODE_ENV=development`)
 - **Utilisation**: Version allégée pour tests rapides
 
 ### `/test`
+
 - **Description**: Page de test basique
 - **Fonctionnalités**:
   - Validation que le routage fonctionne
@@ -33,6 +36,7 @@ Ces pages ne sont accessibles qu'en mode développement (`NODE_ENV=development`)
 ## 🛠️ Composables utiles
 
 ### `useErrorLogger`
+
 - **Localisation**: `app/composables/useErrorLogger.ts`
 - **Fonctionnalités**:
   - Logging d'erreurs avec contexte
@@ -50,13 +54,15 @@ Ces pages ne sont accessibles qu'en mode développement (`NODE_ENV=development`)
 ## 🔌 Plugins de monitoring
 
 ### `error-handler.client.ts`
+
 - **Fonctionnalité**: Capture les erreurs JavaScript globales côté client
-- **Scope**: 
+- **Scope**:
   - Erreurs JavaScript non capturées
   - Rejets de promesses non gérées
   - Erreurs Vue.js
 
 ### `error-handler.server.ts`
+
 - **Fonctionnalité**: Capture les erreurs côté serveur (SSR)
 - **Scope**:
   - Erreurs Vue.js côté serveur
@@ -65,6 +71,7 @@ Ces pages ne sont accessibles qu'en mode développement (`NODE_ENV=development`)
 ## 🚀 Utilisation
 
 ### En développement
+
 ```bash
 npm run dev
 # Pages disponibles:
@@ -74,6 +81,7 @@ npm run dev
 ```
 
 ### En production
+
 - Pages de debug automatiquement désactivées (404)
 - Logging minimal activé
 - Monitoring d'erreurs actif

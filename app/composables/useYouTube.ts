@@ -8,7 +8,7 @@ export const useYouTube = () => {
 	const isPlayerLoaded = ref(false)
 	const playerError = ref<string | null>(null)
 
-	// Fonction pour jouer une musique
+	// Fonction pour jouer une musique (utilisée maintenant par le système de playlist)
 	const playMusic = (videoId: string, musicName: string, artistName: string) => {
 		console.log('🎵 Lecture de:', { videoId, musicName, artistName })
 
@@ -32,6 +32,12 @@ export const useYouTube = () => {
 		}
 	}
 
+	// Fonction pour ajouter une musique à la playlist (remplace playMusic dans l'interface utilisateur)
+	const addToPlaylist = (videoId: string, musicName: string, artistName: string) => {
+		const { addToPlaylist: addToPlaylistCore } = usePlaylist()
+		return addToPlaylistCore(videoId, musicName, artistName)
+	}
+
 	// Fonction pour arrêter la musique
 	const stopMusic = () => {
 		console.log('🎵 Arrêt de la musique')
@@ -40,6 +46,10 @@ export const useYouTube = () => {
 		musicNamePlaying.value = 'Music Name'
 		authorNamePlaying.value = 'Author Name'
 		playerError.value = null
+
+		// Vider la playlist quand on arrête manuellement
+		const { clearPlaylist } = usePlaylist()
+		clearPlaylist()
 	}
 
 	// Vérifier si une musique spécifique est en cours de lecture
@@ -47,13 +57,13 @@ export const useYouTube = () => {
 		return isPlayingVideo.value && idYoutubeVideo.value === videoId
 	}
 
-	// Basculer la lecture d'une musique
+	// Basculer la lecture d'une musique (utilise maintenant le système de playlist)
 	const toggleMusic = (videoId: string, musicName: string, artistName: string) => {
 		if (isCurrentlyPlaying(videoId)) {
 			stopMusic()
 			return false
 		} else {
-			return playMusic(videoId, musicName, artistName)
+			return addToPlaylist(videoId, musicName, artistName)
 		}
 	}
 
@@ -68,6 +78,7 @@ export const useYouTube = () => {
 
 		// Actions
 		playMusic,
+		addToPlaylist,
 		stopMusic,
 		toggleMusic,
 		isCurrentlyPlaying,

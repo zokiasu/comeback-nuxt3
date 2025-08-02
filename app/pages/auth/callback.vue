@@ -17,7 +17,7 @@
 
 	// Désactiver le middleware auth pour cette page
 	definePageMeta({
-		middleware: []
+		middleware: [],
 	})
 
 	const user = useSupabaseUser()

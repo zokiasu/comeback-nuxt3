@@ -81,11 +81,11 @@
 				<div
 					class="absolute inset-0 z-10 flex flex-col items-center justify-center space-y-1.5 bg-black/60 xl:space-y-5"
 				>
-					<p class="text-[2rem] font-bold sm:text-[6vw] xl:text-7xl">
+					<p class="text-center text-[2rem] font-bold sm:text-[6vw] xl:text-7xl">
 						Don't miss any
 						<span class="text-cb-primary-900">Comeback</span>
 					</p>
-					<p class="text-[3vw] xl:text-3xl">
+					<p class="text-center text-[3vw] xl:text-3xl">
 						Track every next release by your favorite artists
 					</p>
 					<p class="text-cb-primary-900 text-center">No Comeback Reported Today</p>

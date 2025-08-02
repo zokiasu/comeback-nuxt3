@@ -63,16 +63,16 @@
 
 	const idYoutubeVideo = useIdYoutubeVideo()
 	const isPlayingVideo = useIsPlayingVideo()
-	const musicNamePlaying = useMusicNamePlaying()
-	const authorNamePlaying = useAuthorNamePlaying()
 
 	const displayVideo = ref(false)
 
+	const { addToPlaylist } = useYouTube()
+
 	const playVideo = (videoId: any) => {
-		idYoutubeVideo.value = videoId
-		isPlayingVideo.value = true
-		musicNamePlaying.value = musicName
-		authorNamePlaying.value = artistName || ''
+		const mainArtistName =
+			artists && artists.length > 0 ? artists[0].name : artistName || ''
+
+		addToPlaylist(videoId, musicName, mainArtistName)
 	}
 
 	const convertDuration = (duration: string | number) => {

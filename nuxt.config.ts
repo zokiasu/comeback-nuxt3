@@ -23,7 +23,7 @@ export default defineNuxtConfig({
 		plugins: [tailwindcss()],
 		build: {
 			chunkSizeWarningLimit: 1600,
-		}
+		},
 	},
 
 	runtimeConfig: {
@@ -59,8 +59,8 @@ export default defineNuxtConfig({
 
 	nitro: {
 		experimental: {
-			wasm: true
-		}
+			wasm: true,
+		},
 	},
 
 	typescript: {
