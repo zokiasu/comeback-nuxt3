@@ -30,6 +30,20 @@ export const usePlaylist = () => {
 		const isFirstItem = playlist.value.length === 0
 		playlist.value.push(newItem)
 
+		// Afficher la notification de succès
+		const toast = useToast()
+		const musicName = title || 'Titre inconnu'
+		toast.add({
+			title: `${musicName} a été ajouté à la playlist avec succès`,
+			color: 'success',
+			duration: 1000,
+			progress: false,
+			ui: {
+				root: 'bg-cb-secondary-950 rounded-lg',
+				title: 'text-white text-center font-medium',
+			}
+		})
+
 		if (isFirstItem) {
 			console.log('🎵 Première musique - lecture immédiate')
 			currentIndex.value = 0

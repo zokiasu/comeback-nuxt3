@@ -1,3 +1,4 @@
+
 <template>
 	<div class="container mx-auto py-10">
 		<div class="mb-4 flex flex-col gap-4">

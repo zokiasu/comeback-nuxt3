@@ -43,11 +43,10 @@
 <template>
 	<div
 		v-if="isOpen"
-		class="fixed inset-0 z-[1200] flex items-end justify-end bg-black/50"
 		@click="isOpen = false"
 	>
 		<div
-			class="bg-cb-secondary-950 h-full w-full max-w-md overflow-hidden rounded-l-lg shadow-xl sm:h-3/4 sm:max-h-[600px]"
+			class="bg-cb-secondary-950 h-full w-full max-w-md overflow-hidden rounded-lg shadow-xl sm:h-3/4 sm:max-h-[600px]"
 			@click.stop
 		>
 			<!-- Header -->

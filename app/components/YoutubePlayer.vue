@@ -416,6 +416,8 @@
 	<div
 		class="fixed bottom-0 z-[1100] flex w-full flex-col items-center justify-center space-y-3 sm:items-end sm:justify-end"
 	>
+		<PlaylistPanel v-model:is-open="showPlaylist" class="lg:mr-3 min-w-80" />
+		
 		<div
 			id="globalPlayerContainer"
 			ref="globalPlayerContainer"
@@ -423,53 +425,57 @@
 		></div>
 
 		<div
-			class="bg-cb-secondary-950 relative flex w-full items-center justify-between px-5 py-3"
+			class="bg-cb-secondary-950 relative flex flex-row-reverse lg:flex-row w-full items-center justify-between px-5 py-3"
 		>
-			<div class="flex w-full items-center space-x-2 sm:w-fit">
-				<button
-					class="hover:text-cb-primary-900 hidden disabled:opacity-50 lg:block"
+			<div class="flex items-center space-x-2 w-fit">
+				<UButton
+					variant="ghost"
+					class="hidden lg:block"
 					:disabled="!isPlayerReady || !playlistInfo.hasPrevious"
 					@click="skipToPrevious"
-				>
-					<IconBackward class="h-7 w-7" />
-				</button>
-				<button
-					class="hover:text-cb-primary-900 hidden disabled:opacity-50 lg:block"
+					icon="i-material-symbols-skip-previous"
+					size="lg"
+				/>
+				<UButton
+					variant="ghost"
+					class="hidden lg:block"
 					:disabled="!isPlayerReady"
 					@click="seek(-10)"
-				>
-					<IconBackward10 class="h-7 w-7" />
-				</button>
-				<button
+					icon="i-material-symbols-replay-10"
+					size="lg"
+				/>
+				<UButton
 					v-if="isPlaying"
-					class="hover:text-cb-primary-900 disabled:opacity-50"
+					variant="ghost"
 					:disabled="!isPlayerReady"
 					@click="togglePlayPause"
-				>
-					<IconPause class="h-7 w-7" />
-				</button>
-				<button
+					icon="i-material-symbols-pause"
+					size="lg"
+				/>
+				<UButton
 					v-else
-					class="hover:text-cb-primary-900 disabled:opacity-50"
+					variant="ghost"
 					:disabled="!isPlayerReady"
 					@click="togglePlayPause"
-				>
-					<IconPlay class="h-7 w-7" />
-				</button>
-				<button
-					class="hover:text-cb-primary-900 hidden disabled:opacity-50 lg:block"
+					icon="i-material-symbols-play-arrow"
+					size="lg"
+				/>
+				<UButton
+					variant="ghost"
+					class="hidden lg:block"
 					:disabled="!isPlayerReady"
 					@click="seek(10)"
-				>
-					<IconForward10 class="h-7 w-7" />
-				</button>
-				<button
-					class="hover:text-cb-primary-900 hidden disabled:opacity-50 lg:block"
+					icon="i-material-symbols-forward-10"
+					size="lg"
+				/>
+				<UButton
+					variant="ghost"
+					class="hidden lg:block"
 					:disabled="!isPlayerReady || !playlistInfo.hasNext"
 					@click="skipToNext"
-				>
-					<IconForward class="h-7 w-7" />
-				</button>
+					icon="i-material-symbols-skip-next"
+					size="lg"
+				/>
 				<div class="hidden items-center gap-1 pl-5 text-xs md:flex">
 					<p>{{ convertDuration(currentTime) }}</p>
 					<p>/</p>
@@ -478,37 +484,43 @@
 						{{ playlistInfo.current }}/{{ playlistInfo.total }}
 					</div>
 				</div>
-				<button
-					class="hover:text-cb-primary-900 disabled:opacity-50 sm:hidden"
+				<UButton
+					variant="ghost"
+					class="sm:hidden"
 					:disabled="!playlistInfo.isActive"
 					@click="showPlaylist = !showPlaylist"
-				>
-					<IconStyle class="h-6 w-6" />
-				</button>
+					icon="i-material-symbols-queue-music"
+					size="sm"
+				/>
 			</div>
-			<div v-if="!errorDetected" class="w-full sm:w-fit xl:flex xl:items-center xl:gap-1">
-				<p class="font-semibold">{{ authorNamePlaying }}</p>
-				<p class="text-xs">{{ musicNamePlaying }}</p>
+			<div v-if="!errorDetected" class="flex w-fit items-center gap-2">
+				<NuxtImg
+					src="https://i.ytimg.com/vi/{{ idYoutubeVideo }}/default.jpg"
+					class="size-6 rounded"
+				/>
+				<div class="flex flex-col items-start w-fit">
+					<p class="font-semibold text-nowrap">{{ authorNamePlaying }}</p>
+					<p class="text-xs text-nowrap">{{ musicNamePlaying }}</p>
+				</div>
 			</div>
 			<div v-else class="w-full sm:w-fit">
 				<p class="text-cb-primary-900 font-bold">{{ errorMessage }}</p>
 			</div>
 			<div class="hidden items-center gap-2 sm:flex">
-				<button
-					class="hover:text-cb-primary-900 disabled:opacity-50"
+				<UButton
+					variant="ghost"
 					:disabled="!playlistInfo.isActive"
 					@click="showPlaylist = !showPlaylist"
-				>
-					<IconStyle class="h-7 w-7" />
-				</button>
-				<button
+					icon="i-material-symbols-queue-music"
+					size="lg"
+				/>
+				<UButton
+					variant="ghost"
 					:disabled="!isPlayerReady"
-					class="disabled:opacity-50"
 					@click="muteVolume"
-				>
-					<IconVolumeOn v-if="volumeOn" class="h-7 w-7" />
-					<IconVolumeOff v-else class="h-7 w-7" />
-				</button>
+					:icon="volumeOn ? 'i-material-symbols-volume-up' : 'i-material-symbols-volume-off'"
+					size="lg"
+				/>
 				<USlider
 					v-model="volume"
 					:min="0"
@@ -520,7 +532,7 @@
 						thumb: 'h-3 w-3 rounded-full focus:outline-none',
 						progress: 'h-1 rounded-full',
 					}"
-					@change="setVolume"
+					@update:model-value="setVolume"
 				/>
 			</div>
 			<USlider
@@ -534,8 +546,7 @@
 					thumb: 'h-3 w-3 rounded-full cursor-pointer focus:outline-none',
 					progress: 'h-1 rounded-full',
 				}"
-				@input="seekToTime"
-				@change="onSeekEnd"
+				@update:model-value="onSeekEnd"
 				@mousedown="onSeekStart"
 				@touchstart="onSeekStart"
 			/>
@@ -546,8 +557,5 @@
 				Close
 			</button>
 		</div>
-
-		<!-- Playlist Panel -->
-		<PlaylistPanel v-model:is-open="showPlaylist" />
 	</div>
 </template>
