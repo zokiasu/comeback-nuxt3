@@ -17,7 +17,6 @@
 	const volume = ref(20)
 	const errorDetected = ref(false)
 	const errorMessage = ref('')
-	const isVideoDisplay = ref(false)
 	const isPlayerReady = ref(false)
 	const isSeeking = ref(false)
 
@@ -266,13 +265,6 @@
 		console.log('🎵 Montage du composant YoutubePlayer')
 		initYTPlayer()
 		intervalId = setInterval(updateCurrentTime, 1000)
-		
-		// Masquer la vidéo par défaut
-		nextTick(() => {
-			if (globalPlayerContainer.value && !isVideoDisplay.value) {
-				globalPlayerContainer.value.style.display = 'none'
-			}
-		})
 	})
 
 	onBeforeUnmount(() => {
@@ -374,29 +366,6 @@
 		}
 	}
 
-	const toggleVideoDisplay = () => {
-		console.log('🎵 Toggle vidéo - avant:', isVideoDisplay.value)
-		isVideoDisplay.value = !isVideoDisplay.value
-		console.log('🎵 Toggle vidéo - après:', isVideoDisplay.value)
-		
-		if (isVideoDisplay.value) {
-			console.log('🎵 Affichage de la vidéo')
-			// Utiliser une méthode plus directe pour réafficher
-			nextTick(() => {
-				if (globalPlayerContainer.value) {
-					globalPlayerContainer.value.style.display = 'block'
-					console.log('🎵 Conteneur vidéo affiché')
-				}
-			})
-		} else {
-			console.log('🎵 Masquage de la vidéo')
-			if (globalPlayerContainer.value) {
-				globalPlayerContainer.value.style.display = 'none'
-				console.log('🎵 Conteneur vidéo masqué')
-			}
-		}
-	}
-
 	const closeYTPlayer = () => {
 		console.log('🎵 Fermeture du lecteur YouTube')
 		isPlayingVideo.value = false
@@ -438,7 +407,7 @@
 		<div
 			id="globalPlayerContainer"
 			ref="globalPlayerContainer"
-			class="aspect-video w-1/4 min-w-[20rem] overflow-hidden rounded-lg px-2 lg:absolute lg:-top-72 lg:right-0 lg:z-50 lg:h-72"
+			class="hidden aspect-video w-1/4 min-w-[20rem] overflow-hidden rounded-lg px-2 lg:absolute lg:-top-72 lg:right-0 lg:z-50 lg:h-72"
 		></div>
 
 		<div
