@@ -53,16 +53,46 @@
 	const observerTarget = useTemplateRef('observerTarget')
 	const hasMore = computed(() => currentPage.value <= totalPages.value)
 
+	// État pour le modal de confirmation
+	const deleteModal = reactive({
+		isOpen: false,
+		artistId: '',
+		artistName: ''
+	})
+
 	// Fonctions
 	/**
-	 * Supprime un artiste de la base de données et de la liste locale
+	 * Ouvre le modal de confirmation de suppression
 	 */
-	const deleteArtist = async (id: string): Promise<void> => {
-		toast.add({
-			title: 'TODO: Delete Artist',
-			description: 'TODO: Delete Artist',
-			color: 'warning',
-		})
+	const openDeleteModal = (id: string): void => {
+		const artist = artistFetch.value.find(a => a.id === id)
+		if (artist) {
+			deleteModal.artistId = id
+			deleteModal.artistName = artist.name
+			deleteModal.isOpen = true
+		}
+	}
+
+	/**
+	 * Ferme le modal de confirmation
+	 */
+	const closeDeleteModal = (): void => {
+		deleteModal.isOpen = false
+		deleteModal.artistId = ''
+		deleteModal.artistName = ''
+	}
+
+	/**
+	 * Confirme la suppression et met à jour la liste locale
+	 */
+	const confirmDelete = (): void => {
+		// Supprimer l'artiste de la liste locale
+		artistFetch.value = artistFetch.value.filter(a => a.id !== deleteModal.artistId)
+		
+		// Mettre à jour le compteur total
+		totalArtists.value = Math.max(0, totalArtists.value - 1)
+		
+		closeDeleteModal()
 	}
 
 	/**
@@ -415,7 +445,7 @@
 				:is-active="artist.active_career ?? false"
 				:created-at="artist.created_at ?? undefined"
 				:updated-at="artist.updated_at ?? undefined"
-				@delete-artist="deleteArtist"
+				@delete-artist="openDeleteModal"
 			/>
 		</transition-group>
 
@@ -453,5 +483,14 @@
 				Loading...
 			</p>
 		</div>
+
+		<!-- Modal de confirmation de suppression -->
+		<ModalConfirmDeleteArtist
+			:is-open="deleteModal.isOpen"
+			:artist-id="deleteModal.artistId"
+			:artist-name="deleteModal.artistName"
+			@close="closeDeleteModal"
+			@confirm="confirmDelete"
+		/>
 	</div>
 </template>

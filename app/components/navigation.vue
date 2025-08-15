@@ -89,6 +89,12 @@
 						Calendar
 					</NuxtLink>
 					<NuxtLink
+						:to="`/artist`"
+						:class="routeIsCalendar ? 'font-semibold text-white' : 'text-zinc-500'"
+					>
+						Artists
+					</NuxtLink>
+					<NuxtLink
 						v-if="isAdminStore"
 						:to="`/dashboard/artist`"
 						:class="routeIsDashboard ? 'font-semibold text-white' : 'text-zinc-500'"

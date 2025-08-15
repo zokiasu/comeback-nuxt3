@@ -10,7 +10,14 @@
       "Bash(git commit:*)",
       "Bash(mkdir:*)",
       "Bash(mv:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "mcp__supabase__get_project_url",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__apply_migration",
+      "Bash(npx nuxi typecheck)",
+      "Bash(npx tsc:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
   },
