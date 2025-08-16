@@ -34,7 +34,9 @@ export type Database = {
 					is_current: boolean
 					created_at: string | null
 					updated_at: string | null
-					relationship_type: Database['public']['Enums']['company_relationship_type'] | null
+					relationship_type:
+						| Database['public']['Enums']['company_relationship_type']
+						| null
 				}
 				Insert: {
 					artist_id: string
@@ -45,7 +47,9 @@ export type Database = {
 					is_current?: boolean
 					created_at?: string | null
 					updated_at?: string | null
-					relationship_type?: Database['public']['Enums']['company_relationship_type'] | null
+					relationship_type?:
+						| Database['public']['Enums']['company_relationship_type']
+						| null
 				}
 				Update: {
 					artist_id?: string
@@ -56,7 +60,9 @@ export type Database = {
 					is_current?: boolean
 					created_at?: string | null
 					updated_at?: string | null
-					relationship_type?: Database['public']['Enums']['company_relationship_type'] | null
+					relationship_type?:
+						| Database['public']['Enums']['company_relationship_type']
+						| null
 				}
 				Relationships: [
 					{
@@ -828,8 +834,22 @@ export type Database = {
 		}
 		Enums: {
 			artist_type: 'SOLO' | 'GROUP'
-			company_type: 'LABEL' | 'PUBLISHER' | 'DISTRIBUTOR' | 'MANAGER' | 'AGENCY' | 'STUDIO' | 'OTHER'
-			company_relationship_type: 'LABEL' | 'PUBLISHER' | 'DISTRIBUTOR' | 'MANAGER' | 'AGENCY' | 'STUDIO' | 'OTHER'
+			company_type:
+				| 'LABEL'
+				| 'PUBLISHER'
+				| 'DISTRIBUTOR'
+				| 'MANAGER'
+				| 'AGENCY'
+				| 'STUDIO'
+				| 'OTHER'
+			company_relationship_type:
+				| 'LABEL'
+				| 'PUBLISHER'
+				| 'DISTRIBUTOR'
+				| 'MANAGER'
+				| 'AGENCY'
+				| 'STUDIO'
+				| 'OTHER'
 			contribution_type: 'CREATOR' | 'EDITOR'
 			gender: 'MALE' | 'FEMALE' | 'MIXTE' | 'OTHER' | 'UNKNOWN'
 			music_type: 'SONG'
@@ -968,8 +988,24 @@ export const Constants = {
 	public: {
 		Enums: {
 			artist_type: ['SOLO', 'GROUP'],
-			company_type: ['LABEL', 'PUBLISHER', 'DISTRIBUTOR', 'MANAGER', 'AGENCY', 'STUDIO', 'OTHER'],
-			company_relationship_type: ['LABEL', 'PUBLISHER', 'DISTRIBUTOR', 'MANAGER', 'AGENCY', 'STUDIO', 'OTHER'],
+			company_type: [
+				'LABEL',
+				'PUBLISHER',
+				'DISTRIBUTOR',
+				'MANAGER',
+				'AGENCY',
+				'STUDIO',
+				'OTHER',
+			],
+			company_relationship_type: [
+				'LABEL',
+				'PUBLISHER',
+				'DISTRIBUTOR',
+				'MANAGER',
+				'AGENCY',
+				'STUDIO',
+				'OTHER',
+			],
 			contribution_type: ['CREATOR', 'EDITOR'],
 			gender: ['MALE', 'FEMALE', 'MIXTE', 'OTHER', 'UNKNOWN'],
 			music_type: ['SONG'],

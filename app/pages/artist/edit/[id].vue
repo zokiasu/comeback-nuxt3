@@ -62,13 +62,15 @@
 	// Refs pour les v-model des UInputMenu - contiennent les objets sélectionnés
 	const artistStyles = ref<MenuItem<MusicStyle>[]>([])
 	const artistTags = ref<MenuItem<GeneralTag>[]>([])
-	const artistCompanies = ref<{
-		company: Company | null
-		relationship_type: string
-		start_date?: string
-		end_date?: string
-		is_current: boolean
-	}[]>([])
+	const artistCompanies = ref<
+		{
+			company: Company | null
+			relationship_type: string
+			start_date?: string
+			end_date?: string
+			is_current: boolean
+		}[]
+	>([])
 	const artistGroups = ref<MenuItem<Omit<Artist, 'type'>>[]>([])
 	const artistMembers = ref<MenuItem<Omit<Artist, 'type'>>[]>([])
 
@@ -224,7 +226,7 @@
 					relationship_type: relation.relationship_type,
 					start_date: relation.start_date,
 					end_date: relation.end_date,
-					is_current: relation.is_current
+					is_current: relation.is_current,
 				}))
 
 			await updateArtist(
@@ -278,7 +280,7 @@
 		artistCompanies.value.push({
 			company: null,
 			relationship_type: 'LABEL',
-			is_current: true
+			is_current: true,
 		})
 	}
 
@@ -342,9 +344,9 @@
 							return tag ? ({ ...tag, label: tag.name } as MenuItem<GeneralTag>) : null
 						})
 						.filter((item): item is MenuItem<GeneralTag> => item !== null) || []
-				
+
 				// Charger les compagnies liées à l'artiste
-				artistCompanies.value = 
+				artistCompanies.value =
 					artist.value.companies?.map((companyRelation) => ({
 						company: companyRelation.company,
 						relationship_type: companyRelation.relationship_type || 'LABEL',
@@ -734,7 +736,7 @@
 			</div>
 
 			<!-- Companies Relations -->
-			<div class="flex flex-col gap-1 w-full">
+			<div class="flex w-full flex-col gap-1">
 				<div class="flex justify-between gap-3">
 					<ComebackLabel label="Company Relations" />
 					<div class="flex gap-2">
@@ -756,10 +758,12 @@
 									:is-open="true"
 									:company="null"
 									:is-creating="true"
-									@updated="async () => {
-										const companiesResponse = await getAllCompanies()
-										companiesList = companiesResponse.companies
-									}"
+									@updated="
+										async () => {
+											const companiesResponse = await getAllCompanies()
+											companiesList = companiesResponse.companies
+										}
+									"
 								/>
 							</template>
 						</UModal>
@@ -771,19 +775,24 @@
 						/>
 					</div>
 				</div>
-				
+
 				<!-- Liste des relations compagnies -->
-				<div v-if="artistCompanies.length > 0" class="grid grid-cols-1 gap-3 lg:grid-cols-2">
-					<div 
-						v-for="(relation, index) in artistCompanies" 
+				<div
+					v-if="artistCompanies.length > 0"
+					class="grid grid-cols-1 gap-3 lg:grid-cols-2"
+				>
+					<div
+						v-for="(relation, index) in artistCompanies"
 						:key="index"
-						class="bg-cb-quinary-900 rounded p-3 space-y-3"
+						class="bg-cb-quinary-900 space-y-3 rounded p-3"
 					>
-						<div class="flex justify-between items-start">
+						<div class="flex items-start justify-between">
 							<div class="flex-1 space-y-3">
 								<!-- Sélection de la compagnie -->
 								<div>
-									<label class="block text-xs font-medium text-gray-300 mb-1">Company</label>
+									<label class="mb-1 block text-xs font-medium text-gray-300">
+										Company
+									</label>
 									<UInputMenu
 										:model-value="relation.company"
 										:items="companiesForMenu"
@@ -796,48 +805,54 @@
 											content: 'bg-cb-quaternary-950',
 											item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
 										}"
-										@update:model-value="(company: Company) => updateCompanyInRelation(index, company)"
+										@update:model-value="
+											(company: Company) => updateCompanyInRelation(index, company)
+										"
 									/>
 								</div>
-								
+
 								<!-- Type de relation -->
 								<div>
-									<label class="block text-xs font-medium text-gray-300 mb-1">Relationship Type</label>
-									<select 
+									<label class="mb-1 block text-xs font-medium text-gray-300">
+										Relationship Type
+									</label>
+									<select
 										v-model="relation.relationship_type"
-										class="w-full bg-cb-quaternary-950 border-gray-600 rounded px-3 py-2 text-sm"
+										class="bg-cb-quaternary-950 w-full rounded border-gray-600 px-3 py-2 text-sm"
 									>
 										<option v-for="type in relationshipTypes" :key="type" :value="type">
 											{{ type }}
 										</option>
 									</select>
 								</div>
-								
+
 								<!-- Statut actuel -->
 								<div class="flex items-center space-x-2">
-									<input 
+									<input
 										:id="`current-${index}`"
-										v-model="relation.is_current" 
-										type="checkbox" 
+										v-model="relation.is_current"
+										type="checkbox"
 										class="rounded"
 									/>
-									<label :for="`current-${index}`" class="text-xs text-gray-300">Current relationship</label>
+									<label :for="`current-${index}`" class="text-xs text-gray-300">
+										Current relationship
+									</label>
 								</div>
 							</div>
-							
+
 							<!-- Bouton de suppression -->
 							<button
 								@click="removeCompanyRelation(index)"
-								class="ml-3 bg-red-600 hover:bg-red-700 text-white rounded p-2 text-xs"
+								class="ml-3 rounded bg-red-600 p-2 text-xs text-white hover:bg-red-700"
 							>
 								Remove
 							</button>
 						</div>
 					</div>
 				</div>
-				
+
 				<!-- Message si aucune relation -->
-				<div v-else class="text-center py-4 text-gray-400 text-sm">
+				<div v-else class="py-4 text-center text-sm text-gray-400">
 					No company relations added yet. Click "Add Relation" to start.
 				</div>
 			</div>

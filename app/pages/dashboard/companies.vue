@@ -1,322 +1,324 @@
 <script setup lang="ts">
-import { useDebounce } from '~/composables/useDebounce'
-import { useSupabaseCompanies } from '~/composables/Supabase/useSupabaseCompanies'
-import type { Company } from '~/composables/Supabase/useSupabaseCompanies'
-import { useInfiniteScroll } from '@vueuse/core'
+	import { useDebounce } from '~/composables/useDebounce'
+	import { useSupabaseCompanies } from '~/composables/Supabase/useSupabaseCompanies'
+	import type { Company } from '~/composables/Supabase/useSupabaseCompanies'
+	import { useInfiniteScroll } from '@vueuse/core'
 
-// Types
-interface FilterState {
-	onlyUnverified: boolean
-	onlyWithoutWebsite: boolean
-	onlyWithoutLogo: boolean
-	onlyWithoutDescription: boolean
-}
-
-// État
-const toast = useToast()
-const { 
-	getAllCompanies, 
-	deleteCompany, 
-	getCompaniesStats,
-	companyTypes 
-} = useSupabaseCompanies()
-
-const companiesFetch = ref<Company[]>([])
-const search = ref('')
-const invertSort = ref(false)
-const page = ref(1)
-const currentPage = ref(1)
-const totalPages = ref(1)
-const totalCompanies = ref(0)
-
-const scrollContainer = useTemplateRef('scrollContainer')
-const sort = ref<keyof Company>('name')
-const limitFetch = ref(48)
-const typeFilter = ref<Company['type'] | ''>('')
-const verifiedFilter = ref<'all' | 'verified' | 'unverified'>('all')
-const isLoading = ref(false)
-
-// Statistiques
-const stats = ref({
-	total: 0,
-	verified: 0,
-	totalRelations: 0,
-	activeRelations: 0,
-	typeDistribution: {} as Record<string, number>
-})
-
-// Filtres
-const filterState = reactive<FilterState>({
-	onlyUnverified: false,
-	onlyWithoutWebsite: false,
-	onlyWithoutLogo: false,
-	onlyWithoutDescription: false,
-})
-
-// Computed
-const observerTarget = useTemplateRef('observerTarget')
-const hasMore = computed(() => currentPage.value <= totalPages.value)
-
-// État pour le modal de confirmation
-const deleteModal = reactive({
-	isOpen: false,
-	companyId: '',
-	companyName: ''
-})
-
-// État pour le modal de création/édition
-const editModal = reactive({
-	isOpen: false,
-	company: null as Company | null,
-	isCreating: true
-})
-
-// Fonctions
-/**
- * Charge les statistiques
- */
-const loadStats = async () => {
-	try {
-		stats.value = await getCompaniesStats()
-	} catch (error) {
-		console.error('Erreur lors du chargement des statistiques:', error)
+	// Types
+	interface FilterState {
+		onlyUnverified: boolean
+		onlyWithoutWebsite: boolean
+		onlyWithoutLogo: boolean
+		onlyWithoutDescription: boolean
 	}
-}
 
-/**
- * Ouvre le modal de confirmation de suppression
- */
-const openDeleteModal = (id: string): void => {
-	const company = companiesFetch.value.find(c => c.id === id)
-	if (company) {
-		deleteModal.companyId = id
-		deleteModal.companyName = company.name
-		deleteModal.isOpen = true
-	}
-}
+	// État
+	const toast = useToast()
+	const { getAllCompanies, deleteCompany, getCompaniesStats, companyTypes } =
+		useSupabaseCompanies()
 
-/**
- * Ferme le modal de confirmation
- */
-const closeDeleteModal = (): void => {
-	deleteModal.isOpen = false
-	deleteModal.companyId = ''
-	deleteModal.companyName = ''
-}
+	const companiesFetch = ref<Company[]>([])
+	const search = ref('')
+	const invertSort = ref(false)
+	const page = ref(1)
+	const currentPage = ref(1)
+	const totalPages = ref(1)
+	const totalCompanies = ref(0)
 
-/**
- * Confirme la suppression et met à jour la liste locale
- */
-const confirmDelete = async (): Promise<void> => {
-	try {
-		await deleteCompany(deleteModal.companyId)
-		
-		// Supprimer la company de la liste locale
-		companiesFetch.value = companiesFetch.value.filter(c => c.id !== deleteModal.companyId)
-		
-		// Mettre à jour le compteur total
-		totalCompanies.value = Math.max(0, totalCompanies.value - 1)
-		
-		// Recharger les statistiques
-		await loadStats()
-		
-		closeDeleteModal()
-	} catch (error) {
-		console.error('Erreur lors de la suppression:', error)
-	}
-}
+	const scrollContainer = useTemplateRef('scrollContainer')
+	const sort = ref<keyof Company>('name')
+	const limitFetch = ref(48)
+	const typeFilter = ref<Company['type'] | ''>('')
+	const verifiedFilter = ref<'all' | 'verified' | 'unverified'>('all')
+	const isLoading = ref(false)
 
-/**
- * Ouvre le modal de création
- */
-const openCreateModal = (): void => {
-	editModal.company = null
-	editModal.isCreating = true
-	editModal.isOpen = true
-}
-
-/**
- * Ouvre le modal d'édition
- */
-const openEditModal = (company: Company): void => {
-	editModal.company = { ...company }
-	editModal.isCreating = false
-	editModal.isOpen = true
-}
-
-/**
- * Ferme le modal de création/édition
- */
-const closeEditModal = (): void => {
-	editModal.isOpen = false
-	editModal.company = null
-}
-
-/**
- * Callback après création/modification réussie
- */
-const onCompanyUpdated = async (): Promise<void> => {
-	closeEditModal()
-	await getCompanies(true)
-	await loadStats()
-}
-
-/**
- * Récupère les companies depuis Supabase
- */
-const getCompanies = async (firstCall = false): Promise<void> => {
-	if (isLoading.value) return
-	isLoading.value = true
-
-	try {
-		if (firstCall) {
-			currentPage.value = 1
-			companiesFetch.value = []
-		}
-
-		const result = await getAllCompanies({
-			limit: limitFetch.value,
-			offset: firstCall ? 0 : (currentPage.value - 1) * limitFetch.value,
-			search: search.value || undefined,
-			type: typeFilter.value || undefined,
-			verified: verifiedFilter.value === 'all' ? undefined : verifiedFilter.value === 'verified',
-			orderBy: sort.value,
-			orderDirection: invertSort.value ? 'desc' : 'asc',
-		})
-
-		totalCompanies.value = result.total
-		totalPages.value = result.totalPages
-
-		if (firstCall) {
-			companiesFetch.value = result.companies
-		} else {
-			companiesFetch.value = [...companiesFetch.value, ...result.companies]
-		}
-
-		currentPage.value++
-	} catch (error) {
-		console.error('Erreur lors de la récupération des companies:', error)
-		toast.add({
-			title: 'Erreur lors du chargement des companies',
-			description: 'Une erreur est survenue lors du chargement des companies',
-			color: 'error',
-		})
-	} finally {
-		isLoading.value = false
-	}
-}
-
-/**
- * Change l'état des filtres "only without"
- */
-const changeOnlyFilter = (filter: keyof FilterState): void => {
-	// Réinitialise tous les filtres
-	Object.keys(filterState).forEach((key) => {
-		filterState[key as keyof FilterState] = false
+	// Statistiques
+	const stats = ref({
+		total: 0,
+		verified: 0,
+		totalRelations: 0,
+		activeRelations: 0,
+		typeDistribution: {} as Record<string, number>,
 	})
 
-	// Active uniquement le filtre sélectionné
-	filterState[filter] = !filterState[filter]
-}
+	// Filtres
+	const filterState = reactive<FilterState>({
+		onlyUnverified: false,
+		onlyWithoutWebsite: false,
+		onlyWithoutLogo: false,
+		onlyWithoutDescription: false,
+	})
 
-/**
- * Recherche avec debounce
- */
-const performSearch = useDebounce(async () => {
-	await getCompanies(true)
-}, 300)
+	// Computed
+	const observerTarget = useTemplateRef('observerTarget')
+	const hasMore = computed(() => currentPage.value <= totalPages.value)
 
-/**
- * Charge toutes les companies restantes
- */
-const loadAllCompanies = async (): Promise<void> => {
-	while (currentPage.value <= totalPages.value && !isLoading.value) {
+	// État pour le modal de confirmation
+	const deleteModal = reactive({
+		isOpen: false,
+		companyId: '',
+		companyName: '',
+	})
+
+	// État pour le modal de création/édition
+	const editModal = reactive({
+		isOpen: false,
+		company: null as Company | null,
+		isCreating: true,
+	})
+
+	// Fonctions
+	/**
+	 * Charge les statistiques
+	 */
+	const loadStats = async () => {
+		try {
+			stats.value = await getCompaniesStats()
+		} catch (error) {
+			console.error('Erreur lors du chargement des statistiques:', error)
+		}
+	}
+
+	/**
+	 * Ouvre le modal de confirmation de suppression
+	 */
+	const openDeleteModal = (id: string): void => {
+		const company = companiesFetch.value.find((c) => c.id === id)
+		if (company) {
+			deleteModal.companyId = id
+			deleteModal.companyName = company.name
+			deleteModal.isOpen = true
+		}
+	}
+
+	/**
+	 * Ferme le modal de confirmation
+	 */
+	const closeDeleteModal = (): void => {
+		deleteModal.isOpen = false
+		deleteModal.companyId = ''
+		deleteModal.companyName = ''
+	}
+
+	/**
+	 * Confirme la suppression et met à jour la liste locale
+	 */
+	const confirmDelete = async (): Promise<void> => {
+		try {
+			await deleteCompany(deleteModal.companyId)
+
+			// Supprimer la company de la liste locale
+			companiesFetch.value = companiesFetch.value.filter(
+				(c) => c.id !== deleteModal.companyId,
+			)
+
+			// Mettre à jour le compteur total
+			totalCompanies.value = Math.max(0, totalCompanies.value - 1)
+
+			// Recharger les statistiques
+			await loadStats()
+
+			closeDeleteModal()
+		} catch (error) {
+			console.error('Erreur lors de la suppression:', error)
+		}
+	}
+
+	/**
+	 * Ouvre le modal de création
+	 */
+	const openCreateModal = (): void => {
+		editModal.company = null
+		editModal.isCreating = true
+		editModal.isOpen = true
+	}
+
+	/**
+	 * Ouvre le modal d'édition
+	 */
+	const openEditModal = (company: Company): void => {
+		editModal.company = { ...company }
+		editModal.isCreating = false
+		editModal.isOpen = true
+	}
+
+	/**
+	 * Ferme le modal de création/édition
+	 */
+	const closeEditModal = (): void => {
+		editModal.isOpen = false
+		editModal.company = null
+	}
+
+	/**
+	 * Callback après création/modification réussie
+	 */
+	const onCompanyUpdated = async (): Promise<void> => {
+		closeEditModal()
+		await getCompanies(true)
+		await loadStats()
+	}
+
+	/**
+	 * Récupère les companies depuis Supabase
+	 */
+	const getCompanies = async (firstCall = false): Promise<void> => {
+		if (isLoading.value) return
+		isLoading.value = true
+
+		try {
+			if (firstCall) {
+				currentPage.value = 1
+				companiesFetch.value = []
+			}
+
+			const result = await getAllCompanies({
+				limit: limitFetch.value,
+				offset: firstCall ? 0 : (currentPage.value - 1) * limitFetch.value,
+				search: search.value || undefined,
+				type: typeFilter.value || undefined,
+				verified:
+					verifiedFilter.value === 'all'
+						? undefined
+						: verifiedFilter.value === 'verified',
+				orderBy: sort.value,
+				orderDirection: invertSort.value ? 'desc' : 'asc',
+			})
+
+			totalCompanies.value = result.total
+			totalPages.value = result.totalPages
+
+			if (firstCall) {
+				companiesFetch.value = result.companies
+			} else {
+				companiesFetch.value = [...companiesFetch.value, ...result.companies]
+			}
+
+			currentPage.value++
+		} catch (error) {
+			console.error('Erreur lors de la récupération des companies:', error)
+			toast.add({
+				title: 'Erreur lors du chargement des companies',
+				description: 'Une erreur est survenue lors du chargement des companies',
+				color: 'error',
+			})
+		} finally {
+			isLoading.value = false
+		}
+	}
+
+	/**
+	 * Change l'état des filtres "only without"
+	 */
+	const changeOnlyFilter = (filter: keyof FilterState): void => {
+		// Réinitialise tous les filtres
+		Object.keys(filterState).forEach((key) => {
+			filterState[key as keyof FilterState] = false
+		})
+
+		// Active uniquement le filtre sélectionné
+		filterState[filter] = !filterState[filter]
+	}
+
+	/**
+	 * Recherche avec debounce
+	 */
+	const performSearch = useDebounce(async () => {
+		await getCompanies(true)
+	}, 300)
+
+	/**
+	 * Charge toutes les companies restantes
+	 */
+	const loadAllCompanies = async (): Promise<void> => {
+		while (currentPage.value <= totalPages.value && !isLoading.value) {
+			await getCompanies(false)
+		}
+	}
+
+	/**
+	 * Trie la liste des companies en fonction des critères
+	 */
+	const filteredCompaniesList = computed(() => {
+		if (page.value !== 1) page.value = 1
+
+		if (!companiesFetch.value) return companiesFetch.value
+
+		return [...companiesFetch.value].sort((a, b) => {
+			if (sort.value === 'created_at') {
+				return invertSort.value
+					? new Date(b.created_at ?? '').getTime() -
+							new Date(a.created_at ?? '').getTime()
+					: new Date(a.created_at ?? '').getTime() -
+							new Date(b.created_at ?? '').getTime()
+			}
+			if (sort.value === 'updated_at') {
+				return invertSort.value
+					? new Date(b.updated_at ?? '').getTime() -
+							new Date(a.updated_at ?? '').getTime()
+					: new Date(a.updated_at ?? '').getTime() -
+							new Date(b.updated_at ?? '').getTime()
+			}
+			if (sort.value === 'type') {
+				return invertSort.value
+					? (b.type || '').localeCompare(a.type || '')
+					: (a.type || '').localeCompare(b.type || '')
+			}
+			if (sort.value === 'founded_year') {
+				return invertSort.value
+					? (b.founded_year || 0) - (a.founded_year || 0)
+					: (a.founded_year || 0) - (b.founded_year || 0)
+			}
+			return invertSort.value
+				? (b.name || '').localeCompare(a.name || '')
+				: (a.name || '').localeCompare(b.name || '')
+		})
+	})
+
+	const loadMore = async () => {
+		if (isLoading.value || currentPage.value > totalPages.value) return
 		await getCompanies(false)
 	}
-}
 
-/**
- * Trie la liste des companies en fonction des critères
- */
-const filteredCompaniesList = computed(() => {
-	if (page.value !== 1) page.value = 1
-
-	if (!companiesFetch.value) return companiesFetch.value
-
-	return [...companiesFetch.value].sort((a, b) => {
-		if (sort.value === 'created_at') {
-			return invertSort.value
-				? new Date(b.created_at ?? '').getTime() - new Date(a.created_at ?? '').getTime()
-				: new Date(a.created_at ?? '').getTime() - new Date(b.created_at ?? '').getTime()
-		}
-		if (sort.value === 'updated_at') {
-			return invertSort.value
-				? new Date(b.updated_at ?? '').getTime() - new Date(a.updated_at ?? '').getTime()
-				: new Date(a.updated_at ?? '').getTime() - new Date(b.updated_at ?? '').getTime()
-		}
-		if (sort.value === 'type') {
-			return invertSort.value
-				? (b.type || '').localeCompare(a.type || '')
-				: (a.type || '').localeCompare(b.type || '')
-		}
-		if (sort.value === 'founded_year') {
-			return invertSort.value
-				? (b.founded_year || 0) - (a.founded_year || 0)
-				: (a.founded_year || 0) - (b.founded_year || 0)
-		}
-		return invertSort.value
-			? (b.name || '').localeCompare(a.name || '')
-			: (a.name || '').localeCompare(b.name || '')
+	useInfiniteScroll(scrollContainer, loadMore, {
+		distance: 200,
+		canLoadMore: () => currentPage.value <= totalPages.value && !isLoading.value,
 	})
-})
 
-const loadMore = async () => {
-	if (isLoading.value || currentPage.value > totalPages.value) return
-	await getCompanies(false)
-}
+	// Lifecycle hooks
+	onMounted(async () => {
+		await Promise.all([getCompanies(true), loadStats()])
+	})
 
-useInfiniteScroll(scrollContainer, loadMore, {
-	distance: 200,
-	canLoadMore: () => currentPage.value <= totalPages.value && !isLoading.value,
-})
+	// Watchers
+	watch(
+		[
+			limitFetch,
+			typeFilter,
+			verifiedFilter,
+			() => filterState.onlyUnverified,
+			() => filterState.onlyWithoutWebsite,
+			() => filterState.onlyWithoutLogo,
+			() => filterState.onlyWithoutDescription,
+			sort,
+		],
+		async () => {
+			try {
+				await getCompanies(true)
+			} catch (error) {
+				console.error('Erreur dans le watcher:', error)
+			}
+		},
+	)
 
-// Lifecycle hooks
-onMounted(async () => {
-	await Promise.all([
-		getCompanies(true),
-		loadStats()
-	])
-})
+	// Watcher pour la recherche
+	watch(search, () => {
+		performSearch()
+	})
 
-// Watchers
-watch(
-	[
-		limitFetch,
-		typeFilter,
-		verifiedFilter,
-		() => filterState.onlyUnverified,
-		() => filterState.onlyWithoutWebsite,
-		() => filterState.onlyWithoutLogo,
-		() => filterState.onlyWithoutDescription,
-		sort,
-	],
-	async () => {
-		try {
-			await getCompanies(true)
-		} catch (error) {
-			console.error('Erreur dans le watcher:', error)
-		}
-	},
-)
-
-// Watcher pour la recherche
-watch(search, () => {
-	performSearch()
-})
-
-definePageMeta({
-	middleware: ['admin'],
-})
+	definePageMeta({
+		middleware: ['admin'],
+	})
 </script>
 
 <template>
@@ -397,7 +399,9 @@ definePageMeta({
 					<button
 						class="w-full rounded px-2 py-1 text-xs uppercase hover:bg-zinc-500 lg:text-nowrap"
 						:class="
-							filterState.onlyWithoutDescription ? 'bg-cb-primary-900' : 'bg-cb-quinary-900'
+							filterState.onlyWithoutDescription
+								? 'bg-cb-primary-900'
+								: 'bg-cb-quinary-900'
 						"
 						@click="changeOnlyFilter('onlyWithoutDescription')"
 					>

@@ -5,31 +5,37 @@ Ce document explique le nouveau système de suppression intelligente d'artistes 
 ## 🎯 Fonctions disponibles
 
 ### 1. **Suppression sécurisée (recommandée)**
+
 ```typescript
 const { deleteArtist } = useSupabaseArtist()
 await deleteArtist(artistId)
 ```
+
 - ✅ Analyse le contenu avant suppression
 - ✅ Préserve les collaborations avec d'autres artistes
 - ✅ Rapport détaillé de ce qui est supprimé
 - ✅ Transaction atomique
 
 ### 2. **Suppression rapide**
+
 ```typescript
 const { deleteArtistSimple } = useSupabaseArtist()
 await deleteArtistSimple(artistId)
 ```
+
 - ⚡ Plus rapide
 - ⚡ Supprime seulement les relations
 - ⚡ Idéal pour le nettoyage/administration
 
 ### 3. **Suppression avec mode sélectionnable**
+
 ```typescript
 const { deleteArtistWithMode } = useSupabaseArtist()
 await deleteArtistWithMode(artistId, 'safe') // ou 'simple'
 ```
 
 ### 4. **Analyse d'impact**
+
 ```typescript
 const { getArtistDeletionImpact } = useSupabaseArtist()
 const impact = await getArtistDeletionImpact(artistId)
@@ -39,24 +45,26 @@ const impact = await getArtistDeletionImpact(artistId)
 ## 🧩 Composants UI
 
 ### Modal de confirmation standard
+
 ```vue
 <ModalConfirmDeleteArtist
-  :is-open="showModal"
-  :artist-id="artistId"
-  :artist-name="artistName"
-  @close="closeModal"
-  @confirm="onDeleted"
+	:is-open="showModal"
+	:artist-id="artistId"
+	:artist-name="artistName"
+	@close="closeModal"
+	@confirm="onDeleted"
 />
 ```
 
 ### Modal avancé avec choix du mode
+
 ```vue
 <ModalAdvancedDeleteArtist
-  :is-open="showModal"
-  :artist-id="artistId"
-  :artist-name="artistName"
-  @close="closeModal"
-  @confirm="onDeleted"
+	:is-open="showModal"
+	:artist-id="artistId"
+	:artist-name="artistName"
+	@close="closeModal"
+	@confirm="onDeleted"
 />
 ```
 
@@ -73,19 +81,21 @@ console.log(`${impact.exclusiveMusics.length} musiques seront supprimées`)
 // Supprimer avec confirmation
 const result = await deleteArtist('artist-uuid')
 if (result.success) {
-  console.log(result.message)
-  // L'artiste est supprimé, mettre à jour l'UI
+	console.log(result.message)
+	// L'artiste est supprimé, mettre à jour l'UI
 }
 ```
 
 ## 🛡️ Sécurité
 
 ### Contenu préservé automatiquement
+
 - ✅ Musiques avec plusieurs artistes → **Conservées**
 - ✅ Albums avec plusieurs artistes → **Conservés**
 - ✅ News concernant plusieurs artistes → **Conservées**
 
 ### Contenu supprimé
+
 - ❌ Musiques exclusives à l'artiste → **Supprimées**
 - ❌ Albums exclusifs à l'artiste → **Supprimés**
 - ❌ News exclusives à l'artiste → **Supprimées**
@@ -110,6 +120,7 @@ SELECT delete_artist_simple('artist-uuid');
 ## 📊 Retour des fonctions
 
 ### `deleteArtist` (sécurisée)
+
 ```typescript
 {
   success: true,
@@ -125,6 +136,7 @@ SELECT delete_artist_simple('artist-uuid');
 ```
 
 ### `deleteArtistSimple` (rapide)
+
 ```typescript
 {
   success: true,
@@ -136,6 +148,7 @@ SELECT delete_artist_simple('artist-uuid');
 ## 🚨 Gestion d'erreurs
 
 Les fonctions gèrent automatiquement :
+
 - ✅ Transactions atomiques (tout ou rien)
 - ✅ Messages d'erreur explicites
 - ✅ Toasts de notification
@@ -143,10 +156,10 @@ Les fonctions gèrent automatiquement :
 
 ## 🎪 Cas d'usage recommandés
 
-| Situation | Fonction recommandée | Raison |
-|-----------|---------------------|--------|
-| Interface utilisateur | `deleteArtist` | Sécurité maximale |
-| Scripts d'administration | `deleteArtistSimple` | Performance |
-| API publique | `deleteArtist` | Sécurité |
-| Nettoyage de données test | `deleteArtistSimple` | Rapidité |
-| Suppression en masse | `deleteArtistSimple` | Performance |
+| Situation                 | Fonction recommandée | Raison            |
+| ------------------------- | -------------------- | ----------------- |
+| Interface utilisateur     | `deleteArtist`       | Sécurité maximale |
+| Scripts d'administration  | `deleteArtistSimple` | Performance       |
+| API publique              | `deleteArtist`       | Sécurité          |
+| Nettoyage de données test | `deleteArtistSimple` | Rapidité          |
+| Suppression en masse      | `deleteArtistSimple` | Performance       |

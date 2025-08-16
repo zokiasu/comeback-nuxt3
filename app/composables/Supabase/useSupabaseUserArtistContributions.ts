@@ -34,7 +34,7 @@ export function useSupabaseUserArtistContributions() {
 	const addUserArtistContribution = async (
 		userId: string,
 		artistId: string,
-		contributionType: 'CREATOR' | 'EDITOR' = 'EDITOR'
+		contributionType: 'CREATOR' | 'EDITOR' = 'EDITOR',
 	) => {
 		// Vérifier si la contribution existe déjà
 		const { data: existing } = await supabase
@@ -60,7 +60,7 @@ export function useSupabaseUserArtistContributions() {
 					toast.add({
 						title: 'Erreur',
 						description: 'Erreur lors de la mise à jour de la contribution',
-						color: 'error'
+						color: 'error',
 					})
 					throw error
 				}
@@ -76,7 +76,7 @@ export function useSupabaseUserArtistContributions() {
 			.insert({
 				user_id: userId,
 				artist_id: artistId,
-				contribution_type: contributionType
+				contribution_type: contributionType,
 			})
 			.select()
 			.single()
@@ -86,7 +86,7 @@ export function useSupabaseUserArtistContributions() {
 			toast.add({
 				title: 'Erreur',
 				description: 'Erreur lors de la création de la contribution',
-				color: 'error'
+				color: 'error',
 			})
 			throw error
 		}
@@ -107,7 +107,7 @@ export function useSupabaseUserArtistContributions() {
 			toast.add({
 				title: 'Erreur',
 				description: 'Erreur lors de la suppression de la contribution',
-				color: 'error'
+				color: 'error',
 			})
 			throw error
 		}
@@ -117,15 +117,15 @@ export function useSupabaseUserArtistContributions() {
 
 	// Récupérer toutes les contributions avec pagination
 	const getAllContributions = async (
-		options?: QueryOptions & FilterOptions & {
-			userId?: string
-			artistId?: string
-			contributionType?: 'CREATOR' | 'EDITOR'
-		}
+		options?: QueryOptions &
+			FilterOptions & {
+				userId?: string
+				artistId?: string
+				contributionType?: 'CREATOR' | 'EDITOR'
+			},
 	): Promise<ContributionsResponse> => {
-		let query = supabase
-			.from('user_artist_contributions')
-			.select(`
+		let query = supabase.from('user_artist_contributions').select(
+			`
 				*,
 				user:users!user_artist_contributions_user_id_fkey(
 					id,
@@ -138,7 +138,9 @@ export function useSupabaseUserArtistContributions() {
 					name,
 					image
 				)
-			`, { count: 'exact' })
+			`,
+			{ count: 'exact' },
+		)
 
 		// Filtres
 		if (options?.userId) {
@@ -156,7 +158,7 @@ export function useSupabaseUserArtistContributions() {
 		// Tri
 		if (options?.orderBy) {
 			query = query.order(options.orderBy, {
-				ascending: options.orderDirection === 'asc'
+				ascending: options.orderDirection === 'asc',
 			})
 		} else {
 			query = query.order('created_at', { ascending: false })
@@ -180,7 +182,7 @@ export function useSupabaseUserArtistContributions() {
 				total: 0,
 				page: 1,
 				limit: 10,
-				totalPages: 1
+				totalPages: 1,
 			}
 		}
 
@@ -189,7 +191,7 @@ export function useSupabaseUserArtistContributions() {
 			total: count || 0,
 			page: options?.offset ? Math.floor(options.offset / (options.limit || 10)) + 1 : 1,
 			limit: options?.limit || 10,
-			totalPages: Math.ceil((count || 0) / (options?.limit || 10))
+			totalPages: Math.ceil((count || 0) / (options?.limit || 10)),
 		}
 	}
 
@@ -197,7 +199,8 @@ export function useSupabaseUserArtistContributions() {
 	const getUserContributions = async (userId: string) => {
 		const { data, error } = await supabase
 			.from('user_artist_contributions')
-			.select(`
+			.select(
+				`
 				*,
 				artist:artists!user_artist_contributions_artist_id_fkey(
 					id,
@@ -206,12 +209,16 @@ export function useSupabaseUserArtistContributions() {
 					type,
 					verified
 				)
-			`)
+			`,
+			)
 			.eq('user_id', userId)
 			.order('created_at', { ascending: false })
 
 		if (error) {
-			console.error('Erreur lors de la récupération des contributions utilisateur:', error)
+			console.error(
+				'Erreur lors de la récupération des contributions utilisateur:',
+				error,
+			)
 			throw error
 		}
 
@@ -222,7 +229,8 @@ export function useSupabaseUserArtistContributions() {
 	const getArtistContributors = async (artistId: string) => {
 		const { data, error } = await supabase
 			.from('user_artist_contributions')
-			.select(`
+			.select(
+				`
 				*,
 				user:users!user_artist_contributions_user_id_fkey(
 					id,
@@ -231,7 +239,8 @@ export function useSupabaseUserArtistContributions() {
 					photo_url,
 					role
 				)
-			`)
+			`,
+			)
 			.eq('artist_id', artistId)
 			.order('created_at', { ascending: true })
 
@@ -257,8 +266,8 @@ export function useSupabaseUserArtistContributions() {
 
 		const stats = {
 			total: data?.length || 0,
-			created: data?.filter(c => c.contribution_type === 'CREATOR').length || 0,
-			edited: data?.filter(c => c.contribution_type === 'EDITOR').length || 0
+			created: data?.filter((c) => c.contribution_type === 'CREATOR').length || 0,
+			edited: data?.filter((c) => c.contribution_type === 'EDITOR').length || 0,
 		}
 
 		return stats
@@ -267,16 +276,16 @@ export function useSupabaseUserArtistContributions() {
 	// Récupérer les contributeurs les plus actifs
 	const getTopContributors = async (limit: number = 10) => {
 		const { data, error } = await supabase.rpc('get_top_contributors', {
-			contribution_limit: limit
+			contribution_limit: limit,
 		})
 
 		if (error) {
 			console.error('Erreur lors de la récupération des top contributeurs:', error)
-			
+
 			// Fallback: requête manuelle si la fonction RPC n'existe pas
-			const { data: fallbackData, error: fallbackError } = await supabase
-				.from('user_artist_contributions')
-				.select(`
+			const { data: fallbackData, error: fallbackError } = await supabase.from(
+				'user_artist_contributions',
+			).select(`
 					user_id,
 					contribution_type,
 					user:users!user_artist_contributions_user_id_fkey(
@@ -292,14 +301,14 @@ export function useSupabaseUserArtistContributions() {
 
 			// Grouper et compter manuellement
 			const contributorMap = new Map()
-			fallbackData?.forEach(contrib => {
+			fallbackData?.forEach((contrib) => {
 				const userId = contrib.user_id
 				if (!contributorMap.has(userId)) {
 					contributorMap.set(userId, {
 						user: contrib.user,
 						total: 0,
 						created: 0,
-						edited: 0
+						edited: 0,
 					})
 				}
 				const stats = contributorMap.get(userId)
@@ -326,6 +335,6 @@ export function useSupabaseUserArtistContributions() {
 		getUserContributions,
 		getArtistContributors,
 		getUserContributionStats,
-		getTopContributors
+		getTopContributors,
 	}
 }

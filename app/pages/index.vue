@@ -108,7 +108,7 @@
 					<UButton
 						label="Reload"
 						variant="ghost"
-						class="bg-cb-quaternary-950 rounded px-3 py-1 w-fit mx-auto text-white"
+						class="bg-cb-quaternary-950 mx-auto w-fit rounded px-3 py-1 text-white"
 						icon="i-material-symbols-refresh"
 						@click="reloadDiscoverMusic"
 					/>

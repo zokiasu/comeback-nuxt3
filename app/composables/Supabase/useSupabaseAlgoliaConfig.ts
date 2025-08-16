@@ -14,14 +14,12 @@ export function useSupabaseAlgoliaConfig() {
 		ALGOLIA_INDEX_NAME: 'ARTISTS',
 		ALGOLIA_SEARCH_ENABLED: 'true',
 		ALGOLIA_AUTO_SYNC: 'true',
-		ALGOLIA_BATCH_SIZE: '100'
+		ALGOLIA_BATCH_SIZE: '100',
 	}
 
 	// Récupérer toute la configuration Algolia
 	const getAlgoliaConfig = async (): Promise<Record<string, string>> => {
-		const { data, error } = await supabase
-			.from('algolia_config')
-			.select('*')
+		const { data, error } = await supabase.from('algolia_config').select('*')
 
 		if (error) {
 			console.error('Erreur lors de la récupération de la config Algolia:', error)
@@ -30,7 +28,7 @@ export function useSupabaseAlgoliaConfig() {
 
 		// Convertir le tableau en objet
 		const config: Record<string, string> = { ...defaultConfig }
-		data?.forEach(item => {
+		data?.forEach((item) => {
 			config[item.setting_name] = item.setting_value
 		})
 
@@ -43,7 +41,7 @@ export function useSupabaseAlgoliaConfig() {
 			.from('algolia_config')
 			.upsert({
 				setting_name: settingName,
-				setting_value: settingValue
+				setting_value: settingValue,
 			})
 			.select()
 			.single()
@@ -53,7 +51,7 @@ export function useSupabaseAlgoliaConfig() {
 			toast.add({
 				title: 'Erreur',
 				description: `Erreur lors de la mise à jour de ${settingName}`,
-				color: 'error'
+				color: 'error',
 			})
 			throw error
 		}
@@ -61,7 +59,7 @@ export function useSupabaseAlgoliaConfig() {
 		toast.add({
 			title: 'Configuration mise à jour',
 			description: `${settingName} a été mis à jour avec succès`,
-			color: 'success'
+			color: 'success',
 		})
 
 		return data
@@ -69,10 +67,12 @@ export function useSupabaseAlgoliaConfig() {
 
 	// Mettre à jour plusieurs paramètres en une fois
 	const updateAlgoliaConfig = async (config: Record<string, string>) => {
-		const configItems: AlgoliaConfigItem[] = Object.entries(config).map(([key, value]) => ({
-			setting_name: key,
-			setting_value: value
-		}))
+		const configItems: AlgoliaConfigItem[] = Object.entries(config).map(
+			([key, value]) => ({
+				setting_name: key,
+				setting_value: value,
+			}),
+		)
 
 		const { data, error } = await supabase
 			.from('algolia_config')
@@ -84,7 +84,7 @@ export function useSupabaseAlgoliaConfig() {
 			toast.add({
 				title: 'Erreur',
 				description: 'Erreur lors de la mise à jour de la configuration',
-				color: 'error'
+				color: 'error',
 			})
 			throw error
 		}
@@ -92,7 +92,7 @@ export function useSupabaseAlgoliaConfig() {
 		toast.add({
 			title: 'Configuration mise à jour',
 			description: 'La configuration Algolia a été mise à jour avec succès',
-			color: 'success'
+			color: 'success',
 		})
 
 		return data
@@ -110,7 +110,7 @@ export function useSupabaseAlgoliaConfig() {
 			toast.add({
 				title: 'Erreur',
 				description: `Erreur lors de la suppression de ${settingName}`,
-				color: 'error'
+				color: 'error',
 			})
 			throw error
 		}
@@ -118,7 +118,7 @@ export function useSupabaseAlgoliaConfig() {
 		toast.add({
 			title: 'Paramètre supprimé',
 			description: `${settingName} a été supprimé de la configuration`,
-			color: 'success'
+			color: 'success',
 		})
 
 		return true
@@ -138,10 +138,12 @@ export function useSupabaseAlgoliaConfig() {
 		}
 
 		// Insérer la config par défaut
-		const configItems: AlgoliaConfigItem[] = Object.entries(defaultConfig).map(([key, value]) => ({
-			setting_name: key,
-			setting_value: value
-		}))
+		const configItems: AlgoliaConfigItem[] = Object.entries(defaultConfig).map(
+			([key, value]) => ({
+				setting_name: key,
+				setting_value: value,
+			}),
+		)
 
 		const { data, error } = await supabase
 			.from('algolia_config')
@@ -153,7 +155,7 @@ export function useSupabaseAlgoliaConfig() {
 			toast.add({
 				title: 'Erreur',
 				description: 'Erreur lors de la réinitialisation de la configuration',
-				color: 'error'
+				color: 'error',
 			})
 			throw error
 		}
@@ -161,7 +163,7 @@ export function useSupabaseAlgoliaConfig() {
 		toast.add({
 			title: 'Configuration réinitialisée',
 			description: 'La configuration Algolia a été réinitialisée aux valeurs par défaut',
-			color: 'success'
+			color: 'success',
 		})
 
 		return data
@@ -177,17 +179,17 @@ export function useSupabaseAlgoliaConfig() {
 				toast.add({
 					title: 'Test échoué',
 					description: 'Impossible de tester la connexion Algolia',
-					color: 'error'
+					color: 'error',
 				})
 				return { success: false, message: error.message }
 			}
 
 			const isSuccess = data?.includes('success') || data?.includes('OK')
-			
+
 			toast.add({
 				title: isSuccess ? 'Test réussi' : 'Test échoué',
 				description: data || 'Test de connexion terminé',
-				color: isSuccess ? 'success' : 'error'
+				color: isSuccess ? 'success' : 'error',
 			})
 
 			return { success: isSuccess, message: data }
@@ -196,7 +198,7 @@ export function useSupabaseAlgoliaConfig() {
 			toast.add({
 				title: 'Test échoué',
 				description: 'Erreur lors du test de connexion Algolia',
-				color: 'error'
+				color: 'error',
 			})
 			return { success: false, message: error.message }
 		}
@@ -212,7 +214,7 @@ export function useSupabaseAlgoliaConfig() {
 				toast.add({
 					title: 'Synchronisation échouée',
 					description: 'Erreur lors de la synchronisation des artistes',
-					color: 'error'
+					color: 'error',
 				})
 				throw error
 			}
@@ -220,7 +222,7 @@ export function useSupabaseAlgoliaConfig() {
 			toast.add({
 				title: 'Synchronisation réussie',
 				description: data || 'Tous les artistes ont été synchronisés avec Algolia',
-				color: 'success'
+				color: 'success',
 			})
 
 			return data
@@ -240,7 +242,7 @@ export function useSupabaseAlgoliaConfig() {
 				toast.add({
 					title: 'Synchronisation échouée',
 					description: 'Erreur lors de la synchronisation des musiques',
-					color: 'error'
+					color: 'error',
 				})
 				throw error
 			}
@@ -248,7 +250,7 @@ export function useSupabaseAlgoliaConfig() {
 			toast.add({
 				title: 'Synchronisation réussie',
 				description: data || 'Toutes les musiques ont été synchronisées avec Algolia',
-				color: 'success'
+				color: 'success',
 			})
 
 			return data
@@ -268,7 +270,7 @@ export function useSupabaseAlgoliaConfig() {
 				toast.add({
 					title: 'Synchronisation échouée',
 					description: 'Erreur lors de la synchronisation des releases',
-					color: 'error'
+					color: 'error',
 				})
 				throw error
 			}
@@ -276,7 +278,7 @@ export function useSupabaseAlgoliaConfig() {
 			toast.add({
 				title: 'Synchronisation réussie',
 				description: data || 'Toutes les releases ont été synchronisées avec Algolia',
-				color: 'success'
+				color: 'success',
 			})
 
 			return data
@@ -289,9 +291,11 @@ export function useSupabaseAlgoliaConfig() {
 	// Vérifier si Algolia est activé
 	const isAlgoliaEnabled = async (): Promise<boolean> => {
 		const config = await getAlgoliaConfig()
-		return config.ALGOLIA_SEARCH_ENABLED === 'true' && 
-			   config.ALGOLIA_APPLICATION_ID !== '' && 
-			   config.ALGOLIA_API_KEY !== ''
+		return (
+			config.ALGOLIA_SEARCH_ENABLED === 'true' &&
+			config.ALGOLIA_APPLICATION_ID !== '' &&
+			config.ALGOLIA_API_KEY !== ''
+		)
 	}
 
 	// Activer/désactiver Algolia
@@ -307,18 +311,18 @@ export function useSupabaseAlgoliaConfig() {
 		updateAlgoliaConfig,
 		deleteAlgoliaConfigItem,
 		resetAlgoliaConfig,
-		
+
 		// Tests et synchronisation
 		testAlgoliaConnection,
 		syncAllArtistsToAlgolia,
 		syncAllMusicsToAlgolia,
 		syncAllReleasesToAlgolia,
-		
+
 		// Utilitaires
 		isAlgoliaEnabled,
 		toggleAlgolia,
-		
+
 		// Configuration par défaut
-		defaultConfig
+		defaultConfig,
 	}
 }

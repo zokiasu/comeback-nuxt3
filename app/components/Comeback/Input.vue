@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 	const { placeholder, modelValue } = defineProps({
 		label: {
 			type: String,

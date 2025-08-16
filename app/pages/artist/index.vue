@@ -1,4 +1,3 @@
-
 <template>
 	<div class="container mx-auto space-y-6 py-10">
 		<!-- Search bar -->
@@ -11,8 +10,14 @@
 				icon="i-heroicons-magnifying-glass"
 				class="w-full"
 			/>
-			<UButton label="Filters" :trailing-icon="filtersExpanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'" 
-			class="bg-cb-primary-700/10 lg:bg-cb-primary-900 lg:hover:bg-cb-primary-900/90 w-fit items-center justify-center rounded text-white h-full lg:cursor-pointer lg:px-5" @click="toggleFilters" />
+			<UButton
+				label="Filters"
+				:trailing-icon="
+					filtersExpanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'
+				"
+				class="bg-cb-primary-700/10 lg:bg-cb-primary-900 lg:hover:bg-cb-primary-900/90 h-full w-fit items-center justify-center rounded text-white lg:cursor-pointer lg:px-5"
+				@click="toggleFilters"
+			/>
 		</div>
 
 		<!-- Section des filtres -->
@@ -30,7 +35,9 @@
 					<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 						<!-- Artist type -->
 						<div>
-							<label class="mb-3 block text-sm font-medium text-gray-300">Artist type</label>
+							<label class="mb-3 block text-sm font-medium text-gray-300">
+								Artist type
+							</label>
 							<div class="flex flex-wrap gap-2">
 								<UButton
 									v-for="type in artistTypes"
@@ -41,7 +48,6 @@
 									size="sm"
 									:disabled="isLoading"
 									:class="{ 'text-white': selectedType === type }"
-
 								>
 									{{ type === 'SOLO' ? 'Solo' : 'Group' }}
 								</UButton>
@@ -71,12 +77,12 @@
 					<!-- Tags -->
 					<div v-if="tagsList.length > 0">
 						<label class="mb-3 block text-sm font-medium text-gray-300">
-							Tags 
+							Tags
 							<span v-if="selectedTags.length > 0" class="text-xs text-gray-400">
 								({{ selectedTags.length }} selected)
 							</span>
 						</label>
-						<div class="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+						<div class="flex max-h-32 flex-wrap gap-2 overflow-y-auto">
 							<UBadge
 								v-for="tag in tagsList"
 								:key="tag.id"
@@ -84,8 +90,10 @@
 								:variant="selectedTags.includes(tag.name) ? 'solid' : 'soft'"
 								:color="selectedTags.includes(tag.name) ? 'primary' : 'neutral'"
 								class="cursor-pointer transition-all hover:scale-105"
-								:class="{ 'cursor-not-allowed opacity-50': isLoading, 'text-white': selectedTags.includes(tag.name) }"
-
+								:class="{
+									'cursor-not-allowed opacity-50': isLoading,
+									'text-white': selectedTags.includes(tag.name),
+								}"
 							>
 								{{ tag.name }}
 							</UBadge>
@@ -100,7 +108,7 @@
 								({{ selectedStyles.length }} selected)
 							</span>
 						</label>
-						<div class="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+						<div class="flex max-h-32 flex-wrap gap-2 overflow-y-auto">
 							<UBadge
 								v-for="style in stylesList"
 								:key="style.id"
@@ -108,8 +116,10 @@
 								:variant="selectedStyles.includes(style.name) ? 'solid' : 'soft'"
 								:color="selectedStyles.includes(style.name) ? 'primary' : 'neutral'"
 								class="cursor-pointer transition-all hover:scale-105"
-								:class="{ 'cursor-not-allowed opacity-50': isLoading, 'text-white': selectedStyles.includes(style.name) }"
-
+								:class="{
+									'cursor-not-allowed opacity-50': isLoading,
+									'text-white': selectedStyles.includes(style.name),
+								}"
 							>
 								{{ style.name }}
 							</UBadge>
@@ -287,7 +297,7 @@
 			FEMALE: 'Female',
 			MIXTE: 'Mixed',
 			OTHER: 'Other',
-			UNKNOWN: 'Unknown'
+			UNKNOWN: 'Unknown',
 		}
 		return labels[gender] || gender
 	}
@@ -296,8 +306,4 @@
 	const toggleFilters = () => {
 		filtersExpanded.value = !filtersExpanded.value
 	}
-
-	definePageMeta({
-		middleware: ['auth'],
-	})
 </script>

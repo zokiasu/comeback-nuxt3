@@ -18,7 +18,10 @@
       "Bash(npx nuxi typecheck)",
       "Bash(npx tsc:*)",
       "Bash(rm:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "WebSearch",
+      "Bash(find:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   },

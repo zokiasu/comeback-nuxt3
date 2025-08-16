@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 	const routeN = useRoute()
 	const collapseMenu = ref(true)
 	const menuCollapsable = ref(null)
@@ -124,7 +124,8 @@
 				title="Companies"
 				class="flex items-center gap-2 rounded py-3 transition-all duration-300 ease-in-out"
 				:class="{
-					'bg-cb-quinary-900 font-semibold text-white': routeN.name === 'dashboard-companies',
+					'bg-cb-quinary-900 font-semibold text-white':
+						routeN.name === 'dashboard-companies',
 					'hover:bg-cb-quinary-900 text-zinc-500': routeN.name !== 'dashboard-companies',
 					'px-5': !collapseMenu,
 					'flex-col': collapseMenu,

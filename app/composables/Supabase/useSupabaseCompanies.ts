@@ -19,7 +19,14 @@ export interface CompanyArtist {
 	id: string
 	company_id: string
 	artist_id: string
-	relationship_type?: 'LABEL' | 'PUBLISHER' | 'DISTRIBUTOR' | 'MANAGER' | 'AGENCY' | 'STUDIO' | 'OTHER'
+	relationship_type?:
+		| 'LABEL'
+		| 'PUBLISHER'
+		| 'DISTRIBUTOR'
+		| 'MANAGER'
+		| 'AGENCY'
+		| 'STUDIO'
+		| 'OTHER'
 	start_date?: string
 	end_date?: string
 	is_current?: boolean
@@ -50,34 +57,38 @@ export function useSupabaseCompanies() {
 	// Types de companies disponibles
 	const companyTypes = [
 		'LABEL',
-		'PUBLISHER', 
+		'PUBLISHER',
 		'DISTRIBUTOR',
 		'MANAGER',
 		'AGENCY',
 		'STUDIO',
-		'OTHER'
+		'OTHER',
 	] as const
 
 	// Types de relations disponibles
 	const relationshipTypes = [
 		'LABEL',
 		'PUBLISHER',
-		'DISTRIBUTOR', 
+		'DISTRIBUTOR',
 		'MANAGER',
 		'AGENCY',
 		'STUDIO',
-		'OTHER'
+		'OTHER',
 	] as const
 
 	// Créer une nouvelle company
-	const createCompany = async (companyData: Omit<Company, 'id' | 'created_at' | 'updated_at'>) => {
+	const createCompany = async (
+		companyData: Omit<Company, 'id' | 'created_at' | 'updated_at'>,
+	) => {
 		const { data, error } = await supabase
 			.from('companies')
-			.insert([{
-				...companyData,
-				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString()
-			}])
+			.insert([
+				{
+					...companyData,
+					created_at: new Date().toISOString(),
+					updated_at: new Date().toISOString(),
+				},
+			])
 			.select()
 			.single()
 
@@ -86,7 +97,7 @@ export function useSupabaseCompanies() {
 			toast.add({
 				title: 'Erreur',
 				description: 'Erreur lors de la création de la company',
-				color: 'error'
+				color: 'error',
 			})
 			throw createError({
 				statusCode: 400,
@@ -97,7 +108,7 @@ export function useSupabaseCompanies() {
 		toast.add({
 			title: 'Company créée',
 			description: `${companyData.name} a été créée avec succès`,
-			color: 'success'
+			color: 'success',
 		})
 
 		return data
@@ -109,7 +120,7 @@ export function useSupabaseCompanies() {
 			.from('companies')
 			.update({
 				...companyData,
-				updated_at: new Date().toISOString()
+				updated_at: new Date().toISOString(),
 			})
 			.eq('id', companyId)
 			.select()
@@ -120,7 +131,7 @@ export function useSupabaseCompanies() {
 			toast.add({
 				title: 'Erreur',
 				description: 'Erreur lors de la mise à jour de la company',
-				color: 'error'
+				color: 'error',
 			})
 			throw createError({
 				statusCode: 400,
@@ -131,7 +142,7 @@ export function useSupabaseCompanies() {
 		toast.add({
 			title: 'Company mise à jour',
 			description: `${data.name} a été mise à jour avec succès`,
-			color: 'success'
+			color: 'success',
 		})
 
 		return data
@@ -152,17 +163,14 @@ export function useSupabaseCompanies() {
 			})
 		}
 
-		const { error } = await supabase
-			.from('companies')
-			.delete()
-			.eq('id', companyId)
+		const { error } = await supabase.from('companies').delete().eq('id', companyId)
 
 		if (error) {
 			console.error('Erreur lors de la suppression de la company:', error)
 			toast.add({
 				title: 'Erreur',
 				description: 'Erreur lors de la suppression de la company',
-				color: 'error'
+				color: 'error',
 			})
 			throw createError({
 				statusCode: 400,
@@ -173,7 +181,7 @@ export function useSupabaseCompanies() {
 		toast.add({
 			title: 'Company supprimée',
 			description: 'La company a été supprimée avec succès',
-			color: 'success'
+			color: 'success',
 		})
 
 		return true
@@ -181,15 +189,14 @@ export function useSupabaseCompanies() {
 
 	// Récupérer toutes les companies avec pagination et filtres
 	const getAllCompanies = async (
-		options?: QueryOptions & FilterOptions & {
-			type?: string
-			verified?: boolean
-			search?: string
-		}
+		options?: QueryOptions &
+			FilterOptions & {
+				type?: string
+				verified?: boolean
+				search?: string
+			},
 	): Promise<CompaniesResponse> => {
-		let query = supabase
-			.from('companies')
-			.select('*', { count: 'exact' })
+		let query = supabase.from('companies').select('*', { count: 'exact' })
 
 		// Filtres
 		if (options?.type) {
@@ -201,13 +208,15 @@ export function useSupabaseCompanies() {
 		}
 
 		if (options?.search) {
-			query = query.or(`name.ilike.%${options.search}%,description.ilike.%${options.search}%`)
+			query = query.or(
+				`name.ilike.%${options.search}%,description.ilike.%${options.search}%`,
+			)
 		}
 
 		// Tri
 		if (options?.orderBy) {
 			query = query.order(options.orderBy, {
-				ascending: options.orderDirection === 'asc'
+				ascending: options.orderDirection === 'asc',
 			})
 		} else {
 			query = query.order('name', { ascending: true })
@@ -231,7 +240,7 @@ export function useSupabaseCompanies() {
 				total: 0,
 				page: 1,
 				limit: 10,
-				totalPages: 1
+				totalPages: 1,
 			}
 		}
 
@@ -240,7 +249,7 @@ export function useSupabaseCompanies() {
 			total: count || 0,
 			page: options?.offset ? Math.floor(options.offset / (options.limit || 10)) + 1 : 1,
 			limit: options?.limit || 10,
-			totalPages: Math.ceil((count || 0) / (options?.limit || 10))
+			totalPages: Math.ceil((count || 0) / (options?.limit || 10)),
 		}
 	}
 
@@ -265,10 +274,7 @@ export function useSupabaseCompanies() {
 
 	// Vérifier si une company existe par nom
 	const companyExistsByName = async (name: string, excludeId?: string) => {
-		let query = supabase
-			.from('companies')
-			.select('id')
-			.eq('name', name)
+		let query = supabase.from('companies').select('id').eq('name', name)
 
 		if (excludeId) {
 			query = query.neq('id', excludeId)
@@ -295,25 +301,29 @@ export function useSupabaseCompanies() {
 			startDate?: string
 			endDate?: string
 			isCurrent?: boolean
-		}
+		},
 	) => {
 		const { data, error } = await supabase
 			.from('artist_companies')
-			.insert([{
-				company_id: companyId,
-				artist_id: artistId,
-				relationship_type: relationshipType || null,
-				start_date: options?.startDate || null,
-				end_date: options?.endDate || null,
-				is_current: options?.isCurrent ?? true,
-				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString()
-			}])
-			.select(`
+			.insert([
+				{
+					company_id: companyId,
+					artist_id: artistId,
+					relationship_type: relationshipType || null,
+					start_date: options?.startDate || null,
+					end_date: options?.endDate || null,
+					is_current: options?.isCurrent ?? true,
+					created_at: new Date().toISOString(),
+					updated_at: new Date().toISOString(),
+				},
+			])
+			.select(
+				`
 				*,
 				company:companies!artist_companies_company_id_fkey(*),
 				artist:artists!artist_companies_artist_id_fkey(id, name, image, type, verified)
-			`)
+			`,
+			)
 			.single()
 
 		if (error) {
@@ -321,7 +331,7 @@ export function useSupabaseCompanies() {
 			toast.add({
 				title: 'Erreur',
 				description: 'Erreur lors de la liaison company-artiste',
-				color: 'error'
+				color: 'error',
 			})
 			throw createError({
 				statusCode: 400,
@@ -331,17 +341,15 @@ export function useSupabaseCompanies() {
 
 		toast.add({
 			title: 'Relation créée',
-			description: 'La company a été liée à l\'artiste avec succès',
-			color: 'success'
+			description: "La company a été liée à l'artiste avec succès",
+			color: 'success',
 		})
 
 		return data
 	}
 
 	// Supprimer une liaison company-artiste
-	const unlinkCompanyFromArtist = async (
-		relationId: string
-	) => {
+	const unlinkCompanyFromArtist = async (relationId: string) => {
 		const { error } = await supabase
 			.from('artist_companies')
 			.delete()
@@ -352,7 +360,7 @@ export function useSupabaseCompanies() {
 			toast.add({
 				title: 'Erreur',
 				description: 'Erreur lors de la suppression de la liaison',
-				color: 'error'
+				color: 'error',
 			})
 			throw createError({
 				statusCode: 400,
@@ -363,7 +371,7 @@ export function useSupabaseCompanies() {
 		toast.add({
 			title: 'Relation supprimée',
 			description: 'La liaison company-artiste a été supprimée avec succès',
-			color: 'success'
+			color: 'success',
 		})
 
 		return true
@@ -372,20 +380,22 @@ export function useSupabaseCompanies() {
 	// Mettre à jour une relation company-artiste
 	const updateCompanyArtistRelation = async (
 		relationId: string,
-		updates: Partial<CompanyArtist>
+		updates: Partial<CompanyArtist>,
 	) => {
 		const { data, error } = await supabase
 			.from('artist_companies')
 			.update({
 				...updates,
-				updated_at: new Date().toISOString()
+				updated_at: new Date().toISOString(),
 			})
 			.eq('id', relationId)
-			.select(`
+			.select(
+				`
 				*,
 				company:companies!artist_companies_company_id_fkey(*),
 				artist:artists!artist_companies_artist_id_fkey(id, name, image, type, verified)
-			`)
+			`,
+			)
 			.single()
 
 		if (error) {
@@ -393,7 +403,7 @@ export function useSupabaseCompanies() {
 			toast.add({
 				title: 'Erreur',
 				description: 'Erreur lors de la mise à jour de la relation',
-				color: 'error'
+				color: 'error',
 			})
 			throw createError({
 				statusCode: 400,
@@ -404,7 +414,7 @@ export function useSupabaseCompanies() {
 		toast.add({
 			title: 'Relation mise à jour',
 			description: 'La relation company-artiste a été mise à jour avec succès',
-			color: 'success'
+			color: 'success',
 		})
 
 		return data
@@ -414,7 +424,8 @@ export function useSupabaseCompanies() {
 	const getCompanyArtists = async (companyId: string) => {
 		const { data, error } = await supabase
 			.from('artist_companies')
-			.select(`
+			.select(
+				`
 				*,
 				artist:artists!artist_companies_artist_id_fkey(
 					id,
@@ -424,7 +435,8 @@ export function useSupabaseCompanies() {
 					verified,
 					active_career
 				)
-			`)
+			`,
+			)
 			.eq('company_id', companyId)
 			.order('created_at', { ascending: false })
 
@@ -443,15 +455,17 @@ export function useSupabaseCompanies() {
 	const getArtistCompanies = async (artistId: string) => {
 		const { data, error } = await supabase
 			.from('artist_companies')
-			.select(`
+			.select(
+				`
 				*,
 				company:companies!artist_companies_company_id_fkey(*)
-			`)
+			`,
+			)
 			.eq('artist_id', artistId)
 			.order('created_at', { ascending: false })
 
 		if (error) {
-			console.error('Erreur lors de la récupération des companies de l\'artiste:', error)
+			console.error("Erreur lors de la récupération des companies de l'artiste:", error)
 			throw createError({
 				statusCode: 400,
 				message: `Erreur de base de données: ${error.message}`,
@@ -481,23 +495,22 @@ export function useSupabaseCompanies() {
 			.select('company_id', { count: 'exact' })
 			.eq('is_current', true)
 
-		const { data: typeStats } = await supabase
-			.from('companies')
-			.select('type')
+		const { data: typeStats } = await supabase.from('companies').select('type')
 
 		// Compter par type
-		const typeDistribution = typeStats?.reduce((acc: Record<string, number>, company) => {
-			const type = company.type || 'OTHER'
-			acc[type] = (acc[type] || 0) + 1
-			return acc
-		}, {}) || {}
+		const typeDistribution =
+			typeStats?.reduce((acc: Record<string, number>, company) => {
+				const type = company.type || 'OTHER'
+				acc[type] = (acc[type] || 0) + 1
+				return acc
+			}, {}) || {}
 
 		return {
 			total: totalCompanies?.length || 0,
 			verified: verifiedCompanies?.length || 0,
 			totalRelations: totalRelations?.length || 0,
 			activeRelations: activeRelations?.length || 0,
-			typeDistribution
+			typeDistribution,
 		}
 	}
 
@@ -520,6 +533,6 @@ export function useSupabaseCompanies() {
 		// Stats & utils
 		getCompaniesStats,
 		companyTypes,
-		relationshipTypes
+		relationshipTypes,
 	}
 }

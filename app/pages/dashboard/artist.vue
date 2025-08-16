@@ -57,7 +57,7 @@
 	const deleteModal = reactive({
 		isOpen: false,
 		artistId: '',
-		artistName: ''
+		artistName: '',
 	})
 
 	// Fonctions
@@ -65,7 +65,7 @@
 	 * Ouvre le modal de confirmation de suppression
 	 */
 	const openDeleteModal = (id: string): void => {
-		const artist = artistFetch.value.find(a => a.id === id)
+		const artist = artistFetch.value.find((a) => a.id === id)
 		if (artist) {
 			deleteModal.artistId = id
 			deleteModal.artistName = artist.name
@@ -87,11 +87,11 @@
 	 */
 	const confirmDelete = (): void => {
 		// Supprimer l'artiste de la liste locale
-		artistFetch.value = artistFetch.value.filter(a => a.id !== deleteModal.artistId)
-		
+		artistFetch.value = artistFetch.value.filter((a) => a.id !== deleteModal.artistId)
+
 		// Mettre à jour le compteur total
 		totalArtists.value = Math.max(0, totalArtists.value - 1)
-		
+
 		closeDeleteModal()
 	}
 

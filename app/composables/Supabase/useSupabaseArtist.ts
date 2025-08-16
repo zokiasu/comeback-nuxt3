@@ -43,12 +43,12 @@ export function useSupabaseArtist() {
 		artistPlatforms: Omit<ArtistPlatformLink, 'id' | 'created_at' | 'artist_id'>[],
 		artistGroups: Artist[],
 		artistMembers: Artist[],
-		artistCompanies?: { 
-			company_id: string; 
-			relationship_type?: string;
-			start_date?: string;
-			end_date?: string;
-			is_current?: boolean;
+		artistCompanies?: {
+			company_id: string
+			relationship_type?: string
+			start_date?: string
+			end_date?: string
+			is_current?: boolean
 		}[],
 	) => {
 		if (data.id_youtube_music && (await artistExistInSupabase(data.id_youtube_music))) {
@@ -151,7 +151,7 @@ export function useSupabaseArtist() {
 				end_date: company.end_date || null,
 				is_current: company.is_current ?? true,
 				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString()
+				updated_at: new Date().toISOString(),
 			}))
 
 			const { error: companyError } = await supabase
@@ -159,7 +159,10 @@ export function useSupabaseArtist() {
 				.insert(companyRelations)
 
 			if (companyError) {
-				console.error("Erreur lors de l'ajout des relations avec les compagnies:", companyError)
+				console.error(
+					"Erreur lors de l'ajout des relations avec les compagnies:",
+					companyError,
+				)
 			}
 		}
 
@@ -174,12 +177,12 @@ export function useSupabaseArtist() {
 		platformLinks?: Omit<ArtistPlatformLink, 'id' | 'created_at' | 'artist_id'>[],
 		artistGroups?: Artist[],
 		artistMembers?: Artist[],
-		artistCompanies?: { 
-			company_id: string; 
-			relationship_type?: string;
-			start_date?: string;
-			end_date?: string;
-			is_current?: boolean;
+		artistCompanies?: {
+			company_id: string
+			relationship_type?: string
+			start_date?: string
+			end_date?: string
+			is_current?: boolean
 		}[],
 	) => {
 		const { data: artist, error } = await supabase
@@ -273,10 +276,7 @@ export function useSupabaseArtist() {
 		}
 
 		// Supprimer les anciennes relations avec les compagnies
-		await supabase
-			.from('artist_companies')
-			.delete()
-			.eq('artist_id', artist.id)
+		await supabase.from('artist_companies').delete().eq('artist_id', artist.id)
 
 		// Ajouter les nouvelles relations avec les compagnies
 		if (artistCompanies?.length) {
@@ -288,7 +288,7 @@ export function useSupabaseArtist() {
 				end_date: company.end_date || null,
 				is_current: company.is_current ?? true,
 				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString()
+				updated_at: new Date().toISOString(),
 			}))
 
 			const { error: companyError } = await supabase
@@ -296,7 +296,10 @@ export function useSupabaseArtist() {
 				.insert(companyRelations)
 
 			if (companyError) {
-				console.error("Erreur lors de l'ajout des relations avec les compagnies:", companyError)
+				console.error(
+					"Erreur lors de l'ajout des relations avec les compagnies:",
+					companyError,
+				)
 			}
 		}
 
@@ -307,7 +310,7 @@ export function useSupabaseArtist() {
 	const getArtistDeletionImpact = async (id: string) => {
 		try {
 			const { data, error } = await supabase.rpc('analyze_artist_deletion_impact', {
-				artist_id_param: id
+				artist_id_param: id,
 			})
 
 			if (error) {
@@ -318,7 +321,7 @@ export function useSupabaseArtist() {
 			return {
 				exclusiveReleases: data.exclusive_releases || [],
 				exclusiveMusics: data.exclusive_musics || [],
-				exclusiveNews: data.exclusive_news || []
+				exclusiveNews: data.exclusive_news || [],
 			}
 		} catch (error) {
 			console.error("Erreur lors de l'analyse d'impact:", error)
@@ -330,7 +333,7 @@ export function useSupabaseArtist() {
 	const deleteArtist = async (id: string) => {
 		try {
 			const { data, error } = await supabase.rpc('delete_artist_safely', {
-				artist_id_param: id
+				artist_id_param: id,
 			})
 
 			if (error) {
@@ -341,21 +344,21 @@ export function useSupabaseArtist() {
 			toast.add({
 				title: 'Artiste supprimé',
 				description: data.message,
-				color: 'success'
+				color: 'success',
 			})
 
 			return {
 				success: data.success,
 				message: data.message,
 				details: data.details,
-				impact: data.details?.impact_analysis
+				impact: data.details?.impact_analysis,
 			}
 		} catch (error: any) {
 			console.error("Erreur lors de la suppression de l'artiste:", error)
 			toast.add({
 				title: 'Erreur de suppression',
 				description: error.message || 'Une erreur est survenue lors de la suppression',
-				color: 'error'
+				color: 'error',
 			})
 			throw error
 		}
@@ -365,7 +368,7 @@ export function useSupabaseArtist() {
 	const deleteArtistSimple = async (id: string) => {
 		try {
 			const { data, error } = await supabase.rpc('delete_artist_simple', {
-				artist_id_param: id
+				artist_id_param: id,
 			})
 
 			if (error) {
@@ -376,20 +379,20 @@ export function useSupabaseArtist() {
 			toast.add({
 				title: 'Artiste supprimé',
 				description: data.message,
-				color: 'success'
+				color: 'success',
 			})
 
 			return {
 				success: data.success,
 				message: data.message,
-				artist_name: data.artist_name
+				artist_name: data.artist_name,
 			}
 		} catch (error: any) {
 			console.error("Erreur lors de la suppression de l'artiste:", error)
 			toast.add({
 				title: 'Erreur de suppression',
 				description: error.message || 'Une erreur est survenue lors de la suppression',
-				color: 'error'
+				color: 'error',
 			})
 			throw error
 		}
