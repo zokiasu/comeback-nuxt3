@@ -1,98 +1,124 @@
 
 <template>
-	<div class="container mx-auto py-10">
-		<div class="mb-4 flex flex-col gap-4">
+	<div class="container mx-auto space-y-6 py-10">
+		<!-- Search bar -->
+		<div class="flex items-center gap-2">
 			<UInput
 				v-model="search"
 				type="text"
 				placeholder="Search for an artist..."
-				class="mb-2 w-full"
+				size="lg"
+				icon="i-heroicons-magnifying-glass"
+				class="w-full"
 			/>
-			<div>
-				<p class="mb-2 text-white">Filtrer par tags :</p>
-				<div v-if="tagsList.length > 0" class="flex flex-wrap gap-2">
-					<button
-						v-for="tag in tagsList"
-						:key="tag.id"
-						@click="toggleTag(tag.name)"
-						:disabled="isLoading"
-						:class="[
-							'cursor-pointer rounded border px-3 py-1 text-xs font-medium text-white transition',
-							selectedTags.includes(tag.name)
-								? 'bg-cb-primary-900 border-cb-primary-900'
-								: 'bg-cb-quinary-900 border-cb-quinary-900 hover:bg-cb-primary-800',
-							isLoading ? 'cursor-not-allowed opacity-50' : '',
-						]"
-						type="button"
-					>
-						{{ tag.name }}
-					</button>
-				</div>
-			</div>
-			<div>
-				<p class="mb-2 text-white">Filtrer par type :</p>
-				<div class="mb-2 flex flex-wrap gap-2">
-					<button
-						v-for="type in artistTypes"
-						:key="type"
-						@click="selectedType = selectedType === type ? null : type"
-						:class="[
-							'cursor-pointer rounded border px-3 py-1 text-xs font-medium text-white transition',
-							selectedType === type
-								? 'bg-cb-primary-900 border-cb-primary-900'
-								: 'bg-cb-quinary-900 border-cb-quinary-900 hover:bg-cb-primary-800',
-							isLoading ? 'cursor-not-allowed opacity-50' : '',
-						]"
-						:disabled="isLoading"
-						type="button"
-					>
-						{{ type }}
-					</button>
-				</div>
-			</div>
-			<div>
-				<p class="mb-2 text-white">Filtrer par styles :</p>
-				<div v-if="stylesList.length > 0" class="mb-4 flex flex-wrap gap-2">
-					<button
-						v-for="style in stylesList"
-						:key="style.id"
-						@click="toggleStyle(style.name)"
-						:class="[
-							'cursor-pointer rounded border px-3 py-1 text-xs font-medium text-white transition',
-							selectedStyles.includes(style.name)
-								? 'bg-cb-primary-900 border-cb-primary-900'
-								: 'bg-cb-quinary-900 border-cb-quinary-900 hover:bg-cb-primary-800',
-							isLoading ? 'cursor-not-allowed opacity-50' : '',
-						]"
-						:disabled="isLoading"
-						type="button"
-					>
-						{{ style.name }}
-					</button>
-				</div>
-			</div>
-			<div>
-				<p class="mb-2 text-white">Filtrer par genre :</p>
-				<div class="mb-2 flex flex-wrap gap-2">
-					<button
-						v-for="gender in genderList"
-						:key="gender"
-						@click="toggleGender(gender)"
-						:class="[
-							'cursor-pointer rounded border px-3 py-1 text-xs font-medium text-white transition',
-							selectedGender === gender
-								? 'bg-cb-primary-900 border-cb-primary-900'
-								: 'bg-cb-quinary-900 border-cb-quinary-900 hover:bg-cb-primary-800',
-							isLoading ? 'cursor-not-allowed opacity-50' : '',
-						]"
-						:disabled="isLoading"
-						type="button"
-					>
-						{{ gender }}
-					</button>
-				</div>
-			</div>
+			<UButton label="Filters" :trailing-icon="filtersExpanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'" 
+			class="bg-cb-primary-700/10 lg:bg-cb-primary-900 lg:hover:bg-cb-primary-900/90 w-fit items-center justify-center rounded text-white h-full lg:cursor-pointer lg:px-5" @click="toggleFilters" />
 		</div>
+
+		<!-- Section des filtres -->
+		<Transition
+			enter-active-class="transition-all duration-300 ease-out"
+			enter-from-class="opacity-0 max-h-0 overflow-hidden"
+			enter-to-class="opacity-100 max-h-96 overflow-visible"
+			leave-active-class="transition-all duration-300 ease-in"
+			leave-from-class="opacity-100 max-h-96 overflow-visible"
+			leave-to-class="opacity-0 max-h-0 overflow-hidden"
+		>
+			<UCard v-show="filtersExpanded">
+				<div class="space-y-6">
+					<!-- Filters by type and genre on the same line -->
+					<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+						<!-- Artist type -->
+						<div>
+							<label class="mb-3 block text-sm font-medium text-gray-300">Artist type</label>
+							<div class="flex flex-wrap gap-2">
+								<UButton
+									v-for="type in artistTypes"
+									:key="type"
+									@click="selectedType = selectedType === type ? null : type"
+									:variant="selectedType === type ? 'solid' : 'outline'"
+									:color="selectedType === type ? 'primary' : 'neutral'"
+									size="sm"
+									:disabled="isLoading"
+									:class="{ 'text-white': selectedType === type }"
+
+								>
+									{{ type === 'SOLO' ? 'Solo' : 'Group' }}
+								</UButton>
+							</div>
+						</div>
+
+						<!-- Gender -->
+						<div>
+							<label class="mb-3 block text-sm font-medium text-gray-300">Gender</label>
+							<div class="flex flex-wrap gap-2">
+								<UButton
+									v-for="gender in genderList"
+									:key="gender"
+									@click="toggleGender(gender)"
+									:variant="selectedGender === gender ? 'solid' : 'outline'"
+									:color="selectedGender === gender ? 'primary' : 'neutral'"
+									size="sm"
+									:disabled="isLoading"
+									:class="{ 'text-white': selectedGender === gender }"
+								>
+									{{ formatGenderLabel(gender) }}
+								</UButton>
+							</div>
+						</div>
+					</div>
+
+					<!-- Tags -->
+					<div v-if="tagsList.length > 0">
+						<label class="mb-3 block text-sm font-medium text-gray-300">
+							Tags 
+							<span v-if="selectedTags.length > 0" class="text-xs text-gray-400">
+								({{ selectedTags.length }} selected)
+							</span>
+						</label>
+						<div class="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+							<UBadge
+								v-for="tag in tagsList"
+								:key="tag.id"
+								@click="toggleTag(tag.name)"
+								:variant="selectedTags.includes(tag.name) ? 'solid' : 'soft'"
+								:color="selectedTags.includes(tag.name) ? 'primary' : 'neutral'"
+								class="cursor-pointer transition-all hover:scale-105"
+								:class="{ 'cursor-not-allowed opacity-50': isLoading, 'text-white': selectedTags.includes(tag.name) }"
+
+							>
+								{{ tag.name }}
+							</UBadge>
+						</div>
+					</div>
+
+					<!-- Styles musicaux -->
+					<div v-if="stylesList.length > 0">
+						<label class="mb-3 block text-sm font-medium text-gray-300">
+							Music styles
+							<span v-if="selectedStyles.length > 0" class="text-xs text-gray-400">
+								({{ selectedStyles.length }} selected)
+							</span>
+						</label>
+						<div class="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+							<UBadge
+								v-for="style in stylesList"
+								:key="style.id"
+								@click="toggleStyle(style.name)"
+								:variant="selectedStyles.includes(style.name) ? 'solid' : 'soft'"
+								:color="selectedStyles.includes(style.name) ? 'primary' : 'neutral'"
+								class="cursor-pointer transition-all hover:scale-105"
+								:class="{ 'cursor-not-allowed opacity-50': isLoading, 'text-white': selectedStyles.includes(style.name) }"
+
+							>
+								{{ style.name }}
+							</UBadge>
+						</div>
+					</div>
+				</div>
+			</UCard>
+		</Transition>
+
 		<transition-group
 			tag="div"
 			leave-active-class="animate__bounceOut"
@@ -113,15 +139,16 @@
 				class="!min-w-full"
 			/>
 		</transition-group>
-		<div v-if="isLoading" class="py-4 text-center">Chargement...</div>
+
+		<div v-if="isLoading" class="py-4 text-center">Loading...</div>
 		<div v-if="!hasMore && artists.length > 0" class="py-4 text-center text-gray-400">
-			Tous les artistes sont affichés.
+			All artists are displayed.
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-	import { ref, watch, onMounted } from 'vue'
+	import { ref, watch, onMounted, computed } from 'vue'
 	import { useSupabaseArtist } from '@/composables/Supabase/useSupabaseArtist'
 	import { useSupabaseGeneralTags } from '@/composables/Supabase/useSupabaseGeneralTags'
 	import { useSupabaseMusicStyles } from '@/composables/Supabase/useSupabaseMusicStyles'
@@ -148,6 +175,9 @@
 	const genderList = ['MALE', 'FEMALE', 'MIXTE', 'OTHER', 'UNKNOWN']
 	const selectedGender = ref<string | null>(null)
 
+	// State for filter expansion
+	const filtersExpanded = ref(false)
+
 	const fetchArtists = async (reset = false) => {
 		if (isLoading.value || (!hasMore.value && !reset)) return
 		isLoading.value = true
@@ -170,7 +200,7 @@
 
 	watch([search, selectedTags, selectedType, selectedStyles, selectedGender], () => {
 		console.log(
-			'Watcher déclenché',
+			'Watcher triggered',
 			selectedTags.value,
 			selectedType.value,
 			selectedStyles.value,
@@ -220,6 +250,51 @@
 		} else {
 			selectedGender.value = gender
 		}
+	}
+
+	// Computed to check if there are active filters
+	const hasActiveFilters = computed(() => {
+		return (
+			selectedTags.value.length > 0 ||
+			selectedType.value !== null ||
+			selectedStyles.value.length > 0 ||
+			selectedGender.value !== null
+		)
+	})
+
+	// Computed to count the number of active filters
+	const activeFiltersCount = computed(() => {
+		let count = 0
+		if (selectedTags.value.length > 0) count += selectedTags.value.length
+		if (selectedType.value !== null) count++
+		if (selectedStyles.value.length > 0) count += selectedStyles.value.length
+		if (selectedGender.value !== null) count++
+		return count
+	})
+
+	// Function to clear all filters
+	const clearAllFilters = () => {
+		selectedTags.value = []
+		selectedType.value = null
+		selectedStyles.value = []
+		selectedGender.value = null
+	}
+
+	// Function to format gender labels
+	const formatGenderLabel = (gender: string) => {
+		const labels: Record<string, string> = {
+			MALE: 'Male',
+			FEMALE: 'Female',
+			MIXTE: 'Mixed',
+			OTHER: 'Other',
+			UNKNOWN: 'Unknown'
+		}
+		return labels[gender] || gender
+	}
+
+	// Function to toggle filter display
+	const toggleFilters = () => {
+		filtersExpanded.value = !filtersExpanded.value
 	}
 
 	definePageMeta({

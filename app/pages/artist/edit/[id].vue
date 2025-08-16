@@ -13,11 +13,13 @@
 		ArtistPlatformLink,
 		ArtistSocialLink,
 	} from '~/types'
+	import type { Company } from '~/composables/Supabase/useSupabaseCompanies'
 
 	// Internal Composables
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
 	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'
+	import { useSupabaseCompanies } from '~/composables/Supabase/useSupabaseCompanies'
 
 	// Crée un type générique qui ajoute 'label' à un type existant T
 	type MenuItem<T> = T & { label: string }
@@ -43,6 +45,7 @@
 	} = useSupabaseArtist()
 	const { getAllMusicStyles } = useSupabaseMusicStyles()
 	const { getAllGeneralTags } = useSupabaseGeneralTags()
+	const { getAllCompanies, relationshipTypes } = useSupabaseCompanies()
 
 	const title = ref('Edit Artist Page')
 	const description = ref('Edit Artist Page')
@@ -55,9 +58,17 @@
 	const artistsList = ref<Artist[]>([]) // Liste complète des artistes
 	const stylesList = ref<MusicStyle[]>([])
 	const tagsList = ref<GeneralTag[]>([])
+	const companiesList = ref<Company[]>([])
 	// Refs pour les v-model des UInputMenu - contiennent les objets sélectionnés
 	const artistStyles = ref<MenuItem<MusicStyle>[]>([])
 	const artistTags = ref<MenuItem<GeneralTag>[]>([])
+	const artistCompanies = ref<{
+		company: Company | null
+		relationship_type: string
+		start_date?: string
+		end_date?: string
+		is_current: boolean
+	}[]>([])
 	const artistGroups = ref<MenuItem<Omit<Artist, 'type'>>[]>([])
 	const artistMembers = ref<MenuItem<Omit<Artist, 'type'>>[]>([])
 
@@ -101,6 +112,15 @@
 			(tag): MenuItem<GeneralTag> => ({
 				...tag,
 				label: tag.name,
+			}),
+		)
+	})
+
+	const companiesForMenu = computed(() => {
+		return companiesList.value.map(
+			(company): MenuItem<Company> => ({
+				...company,
+				label: company.name,
 			}),
 		)
 	})
@@ -197,6 +217,16 @@
 				general_tags: artistTags.value.map((tag) => tag.name),
 			}
 
+			const selectedCompanies = artistCompanies.value
+				.filter((relation) => relation.company !== null)
+				.map((relation) => ({
+					company_id: relation.company!.id,
+					relationship_type: relation.relationship_type,
+					start_date: relation.start_date,
+					end_date: relation.end_date,
+					is_current: relation.is_current
+				}))
+
 			await updateArtist(
 				artist.value?.id || '',
 				updates,
@@ -210,6 +240,7 @@
 					...rest,
 					type: 'SOLO' as const,
 				})),
+				selectedCompanies,
 			)
 				.then(() => {
 					toast.add({ title: 'Artiste mis à jour avec succès', color: 'success' })
@@ -242,11 +273,32 @@
 		textarea.style.height = `${textarea.scrollHeight}px`
 	}
 
+	// Fonctions pour gérer les relations compagnies
+	const addCompanyRelation = () => {
+		artistCompanies.value.push({
+			company: null,
+			relationship_type: 'LABEL',
+			is_current: true
+		})
+	}
+
+	const removeCompanyRelation = (index: number) => {
+		artistCompanies.value.splice(index, 1)
+	}
+
+	const updateCompanyInRelation = (index: number, company: Company) => {
+		if (artistCompanies.value[index]) {
+			artistCompanies.value[index].company = company
+		}
+	}
+
 	onMounted(async () => {
 		try {
 			artist.value = await getFullArtistById(route.params.id as string)
 			stylesList.value = await getAllMusicStyles()
 			tagsList.value = await getAllGeneralTags()
+			const companiesResponse = await getAllCompanies()
+			companiesList.value = companiesResponse.companies
 
 			if (artist.value) {
 				artistToEdit.value = { ...artist.value }
@@ -290,6 +342,16 @@
 							return tag ? ({ ...tag, label: tag.name } as MenuItem<GeneralTag>) : null
 						})
 						.filter((item): item is MenuItem<GeneralTag> => item !== null) || []
+				
+				// Charger les compagnies liées à l'artiste
+				artistCompanies.value = 
+					artist.value.companies?.map((companyRelation) => ({
+						company: companyRelation.company,
+						relationship_type: companyRelation.relationship_type || 'LABEL',
+						start_date: companyRelation.start_date || undefined,
+						end_date: companyRelation.end_date || undefined,
+						is_current: companyRelation.is_current ?? true,
+					})) || []
 
 				// Initialiser les CalendarDate à partir des dates de l'artiste
 				birthdayToDate.value = artist.value.birth_date
@@ -594,6 +656,7 @@
 					</div>
 				</div>
 			</div>
+
 			<!-- Styles & General Tags -->
 			<div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
 				<!-- Styles -->
@@ -669,6 +732,116 @@
 					/>
 				</div>
 			</div>
+
+			<!-- Companies Relations -->
+			<div class="flex flex-col gap-1 w-full">
+				<div class="flex justify-between gap-3">
+					<ComebackLabel label="Company Relations" />
+					<div class="flex gap-2">
+						<UModal
+							:ui="{
+								overlay: 'bg-cb-quinary-950/75',
+								content: 'ring-cb-quinary-950',
+							}"
+						>
+							<UButton
+								label="Create New Company"
+								variant="soft"
+								size="sm"
+								class="bg-cb-primary-900 hover:bg-cb-primary-900/90 cursor-pointer text-white"
+							/>
+
+							<template #content>
+								<ModalCreateEditCompany
+									:is-open="true"
+									:company="null"
+									:is-creating="true"
+									@updated="async () => {
+										const companiesResponse = await getAllCompanies()
+										companiesList = companiesResponse.companies
+									}"
+								/>
+							</template>
+						</UModal>
+						<UButton
+							label="Add Relation"
+							size="sm"
+							class="bg-cb-primary-900 hover:bg-cb-primary-900/90 cursor-pointer text-white"
+							@click="addCompanyRelation"
+						/>
+					</div>
+				</div>
+				
+				<!-- Liste des relations compagnies -->
+				<div v-if="artistCompanies.length > 0" class="grid grid-cols-1 gap-3 lg:grid-cols-2">
+					<div 
+						v-for="(relation, index) in artistCompanies" 
+						:key="index"
+						class="bg-cb-quinary-900 rounded p-3 space-y-3"
+					>
+						<div class="flex justify-between items-start">
+							<div class="flex-1 space-y-3">
+								<!-- Sélection de la compagnie -->
+								<div>
+									<label class="block text-xs font-medium text-gray-300 mb-1">Company</label>
+									<UInputMenu
+										:model-value="relation.company"
+										:items="companiesForMenu"
+										by="id"
+										placeholder="Select a company"
+										searchable
+										searchable-placeholder="Search company..."
+										class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+										:ui="{
+											content: 'bg-cb-quaternary-950',
+											item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
+										}"
+										@update:model-value="(company: Company) => updateCompanyInRelation(index, company)"
+									/>
+								</div>
+								
+								<!-- Type de relation -->
+								<div>
+									<label class="block text-xs font-medium text-gray-300 mb-1">Relationship Type</label>
+									<select 
+										v-model="relation.relationship_type"
+										class="w-full bg-cb-quaternary-950 border-gray-600 rounded px-3 py-2 text-sm"
+									>
+										<option v-for="type in relationshipTypes" :key="type" :value="type">
+											{{ type }}
+										</option>
+									</select>
+								</div>
+								
+								<!-- Statut actuel -->
+								<div class="flex items-center space-x-2">
+									<input 
+										:id="`current-${index}`"
+										v-model="relation.is_current" 
+										type="checkbox" 
+										class="rounded"
+									/>
+									<label :for="`current-${index}`" class="text-xs text-gray-300">Current relationship</label>
+								</div>
+							</div>
+							
+							<!-- Bouton de suppression -->
+							<button
+								@click="removeCompanyRelation(index)"
+								class="ml-3 bg-red-600 hover:bg-red-700 text-white rounded p-2 text-xs"
+							>
+								Remove
+							</button>
+						</div>
+					</div>
+				</div>
+				
+				<!-- Message si aucune relation -->
+				<div v-else class="text-center py-4 text-gray-400 text-sm">
+					No company relations added yet. Click "Add Relation" to start.
+				</div>
+			</div>
+
 			<!-- Description -->
 			<div class="flex flex-col gap-1">
 				<ComebackLabel label="Description" />
@@ -679,6 +852,7 @@
 					@input="(e: Event) => adjustTextarea(e.target as HTMLTextAreaElement)"
 				/>
 			</div>
+
 			<!-- Group -->
 			<div v-if="groupList" class="flex flex-col gap-1">
 				<div class="flex justify-between gap-3">
@@ -721,6 +895,7 @@
 					}"
 				/>
 			</div>
+
 			<!-- Members -->
 			<div
 				v-if="artistsList && artistToEdit.type === 'GROUP'"
@@ -766,6 +941,7 @@
 					}"
 				/>
 			</div>
+
 			<!-- Platforms & Socials -->
 			<div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
 				<!-- Platforms -->

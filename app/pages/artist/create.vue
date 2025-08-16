@@ -1,3 +1,4 @@
+
 <script setup lang="ts">
 	// Réimporter CalendarDate et getLocalTimeZone
 	import { CalendarDate, DateFormatter } from '@internationalized/date'
@@ -11,11 +12,13 @@
 		ArtistPlatformLink,
 		ArtistSocialLink,
 	} from '~/types/supabase'
+	import type { Company } from '~/composables/Supabase/useSupabaseCompanies'
 
 	// Internal Composables
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
 	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'
+	import { useSupabaseCompanies } from '~/composables/Supabase/useSupabaseCompanies'
 
 	// Internal Stores
 	import { useUserStore } from '~/stores/user'
@@ -30,6 +33,7 @@
 	const { getAllArtists, createArtist } = useSupabaseArtist()
 	const { getAllMusicStyles } = useSupabaseMusicStyles()
 	const { getAllGeneralTags } = useSupabaseGeneralTags()
+	const { getAllCompanies, relationshipTypes } = useSupabaseCompanies()
 
 	const title = ref<string>('Create Artist Page')
 	const description = ref<string>('Create Artist Page')
@@ -40,6 +44,7 @@
 	const tagsList = ref<GeneralTag[]>([])
 	const groupList = ref<Artist[]>([])
 	const artistsList = ref<Artist[]>([])
+	const companiesList = ref<Company[]>([])
 
 	const artistImage = ref<string>('https://i.ibb.co/wLhbFZx/Frame-255.png')
 	const artistName = ref<string>('')
@@ -55,6 +60,13 @@
 
 	const artistStyles = ref<MenuItem<MusicStyle>[]>([])
 	const artistTags = ref<MenuItem<GeneralTag>[]>([])
+	const artistCompanies = ref<{
+		company: Company | null
+		relationship_type: string
+		start_date?: string
+		end_date?: string
+		is_current: boolean
+	}[]>([])
 	const artistDescription = ref<string>('')
 	const artistPlatformList = ref<
 		Omit<ArtistPlatformLink, 'id' | 'created_at' | 'artist_id'>[]
@@ -77,6 +89,15 @@
 			(tag): MenuItem<GeneralTag> => ({
 				...tag,
 				label: tag.name,
+			}),
+		)
+	})
+
+	const companiesForMenu = computed(() => {
+		return companiesList.value.map(
+			(company): MenuItem<Company> => ({
+				...company,
+				label: company.name,
 			}),
 		)
 	})
@@ -135,6 +156,15 @@
 		const selectedMembers = artistMembers.value.map(
 			({ label, ...rest }) => rest as Artist,
 		)
+		const selectedCompanies = artistCompanies.value
+			.filter((relation) => relation.company !== null)
+			.map((relation) => ({
+				company_id: relation.company!.id,
+				relationship_type: relation.relationship_type,
+				start_date: relation.start_date,
+				end_date: relation.end_date,
+				is_current: relation.is_current
+			}))
 
 		const artistStyleListName = artistStyles.value.map((style) => style.name)
 		const artistTagListName = artistTags.value.map((tag) => tag.name)
@@ -168,6 +198,7 @@
 			artistPlatformList.value,
 			selectedGroups,
 			selectedMembers,
+			selectedCompanies,
 		)
 			.then((newArtist) => {
 				isUploadingEdit.value = false
@@ -198,12 +229,33 @@
 		textarea.style.height = `${textarea.scrollHeight}px`
 	}
 
+	// Fonctions pour gérer les relations compagnies
+	const addCompanyRelation = () => {
+		artistCompanies.value.push({
+			company: null,
+			relationship_type: 'LABEL',
+			is_current: true
+		})
+	}
+
+	const removeCompanyRelation = (index: number) => {
+		artistCompanies.value.splice(index, 1)
+	}
+
+	const updateCompanyInRelation = (index: number, company: Company) => {
+		if (artistCompanies.value[index]) {
+			artistCompanies.value[index].company = company
+		}
+	}
+
 	onMounted(async () => {
 		artistsList.value = await getAllArtists()
 		groupList.value = artistsList.value.filter((artist) => artist.type == 'GROUP')
 
 		stylesList.value = await getAllMusicStyles()
 		tagsList.value = await getAllGeneralTags()
+		const companiesResponse = await getAllCompanies()
+		companiesList.value = companiesResponse.companies
 	})
 
 	definePageMeta({
@@ -506,6 +558,114 @@
 							item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
 						}"
 					/>
+				</div>
+			</div>
+			<!-- Companies Relations -->
+			<div class="flex flex-col gap-1 w-full">
+				<div class="flex justify-between gap-3">
+					<ComebackLabel label="Company Relations" />
+					<div class="flex gap-2">
+						<UModal
+							:ui="{
+								overlay: 'bg-cb-quinary-950/75',
+								content: 'ring-cb-quinary-950',
+							}"
+						>
+							<UButton
+								label="Create New Company"
+								variant="soft"
+								size="sm"
+								class="bg-cb-primary-900 hover:bg-cb-primary-900/90 cursor-pointer text-white"
+							/>
+
+							<template #content>
+								<ModalCreateEditCompany
+									:is-open="true"
+									:company="null"
+									:is-creating="true"
+									@updated="async () => {
+										const companiesResponse = await getAllCompanies()
+										companiesList = companiesResponse.companies
+									}"
+								/>
+							</template>
+						</UModal>
+						<UButton
+							label="Add Relation"
+							size="sm"
+							class="bg-cb-primary-900 hover:bg-cb-primary-900/90 cursor-pointer text-white"
+							@click="addCompanyRelation"
+						/>
+					</div>
+				</div>
+				
+				<!-- Liste des relations compagnies -->
+				<div v-if="artistCompanies.length > 0" class="grid grid-cols-1 gap-3 lg:grid-cols-2">
+					<div 
+						v-for="(relation, index) in artistCompanies" 
+						:key="index"
+						class="bg-cb-quinary-900 rounded p-3 space-y-3"
+					>
+						<div class="flex justify-between items-start">
+							<div class="flex-1 space-y-3">
+								<!-- Sélection de la compagnie -->
+								<div>
+									<label class="block text-xs font-medium text-gray-300 mb-1">Company</label>
+									<UInputMenu
+										:model-value="relation.company"
+										:items="companiesForMenu"
+										by="id"
+										placeholder="Select a company"
+										searchable
+										searchable-placeholder="Search company..."
+										class="bg-cb-quaternary-950 text-tertiary w-full cursor-pointer ring-transparent"
+										:ui="{
+											content: 'bg-cb-quaternary-950',
+											item: 'rounded cursor-pointer data-highlighted:before:bg-cb-primary-900/30 hover:bg-cb-primary-900',
+										}"
+										@update:model-value="(company: Company) => updateCompanyInRelation(index, company)"
+									/>
+								</div>
+								
+								<!-- Type de relation -->
+								<div>
+									<label class="block text-xs font-medium text-gray-300 mb-1">Relationship Type</label>
+									<select 
+										v-model="relation.relationship_type"
+										class="w-full bg-cb-quaternary-950 border-gray-600 rounded px-3 py-2 text-sm"
+									>
+										<option v-for="type in relationshipTypes" :key="type" :value="type">
+											{{ type }}
+										</option>
+									</select>
+								</div>
+								
+								<!-- Statut actuel -->
+								<div class="flex items-center space-x-2">
+									<input 
+										:id="`current-${index}`"
+										v-model="relation.is_current" 
+										type="checkbox" 
+										class="rounded"
+									/>
+									<label :for="`current-${index}`" class="text-xs text-gray-300">Current relationship</label>
+								</div>
+							</div>
+							
+							<!-- Bouton de suppression -->
+							<button
+								@click="removeCompanyRelation(index)"
+								class="ml-3 bg-red-600 hover:bg-red-700 text-white rounded p-2 text-xs"
+							>
+								Remove
+							</button>
+						</div>
+					</div>
+				</div>
+				
+				<!-- Message si aucune relation -->
+				<div v-else class="text-center py-4 text-gray-400 text-sm">
+					No company relations added yet. Click "Add Relation" to start.
 				</div>
 			</div>
 			<!-- Description -->

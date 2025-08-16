@@ -43,6 +43,13 @@ export function useSupabaseArtist() {
 		artistPlatforms: Omit<ArtistPlatformLink, 'id' | 'created_at' | 'artist_id'>[],
 		artistGroups: Artist[],
 		artistMembers: Artist[],
+		artistCompanies?: { 
+			company_id: string; 
+			relationship_type?: string;
+			start_date?: string;
+			end_date?: string;
+			is_current?: boolean;
+		}[],
 	) => {
 		if (data.id_youtube_music && (await artistExistInSupabase(data.id_youtube_music))) {
 			toast.add({
@@ -134,6 +141,28 @@ export function useSupabaseArtist() {
 			}
 		}
 
+		// Ajout des relations avec les compagnies
+		if (artistCompanies?.length) {
+			const companyRelations = artistCompanies.map((company) => ({
+				company_id: company.company_id,
+				artist_id: artist.id,
+				relationship_type: company.relationship_type || null,
+				start_date: company.start_date || null,
+				end_date: company.end_date || null,
+				is_current: company.is_current ?? true,
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString()
+			}))
+
+			const { error: companyError } = await supabase
+				.from('artist_companies')
+				.insert(companyRelations)
+
+			if (companyError) {
+				console.error("Erreur lors de l'ajout des relations avec les compagnies:", companyError)
+			}
+		}
+
 		return artist as Artist
 	}
 
@@ -145,6 +174,13 @@ export function useSupabaseArtist() {
 		platformLinks?: Omit<ArtistPlatformLink, 'id' | 'created_at' | 'artist_id'>[],
 		artistGroups?: Artist[],
 		artistMembers?: Artist[],
+		artistCompanies?: { 
+			company_id: string; 
+			relationship_type?: string;
+			start_date?: string;
+			end_date?: string;
+			is_current?: boolean;
+		}[],
 	) => {
 		const { data: artist, error } = await supabase
 			.from('artists')
@@ -233,6 +269,34 @@ export function useSupabaseArtist() {
 
 			if (memberError) {
 				console.error("Erreur lors de l'ajout des relations de membres:", memberError)
+			}
+		}
+
+		// Supprimer les anciennes relations avec les compagnies
+		await supabase
+			.from('artist_companies')
+			.delete()
+			.eq('artist_id', artist.id)
+
+		// Ajouter les nouvelles relations avec les compagnies
+		if (artistCompanies?.length) {
+			const companyRelations = artistCompanies.map((company) => ({
+				company_id: company.company_id,
+				artist_id: artist.id,
+				relationship_type: company.relationship_type || null,
+				start_date: company.start_date || null,
+				end_date: company.end_date || null,
+				is_current: company.is_current ?? true,
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString()
+			}))
+
+			const { error: companyError } = await supabase
+				.from('artist_companies')
+				.insert(companyRelations)
+
+			if (companyError) {
+				console.error("Erreur lors de l'ajout des relations avec les compagnies:", companyError)
 			}
 		}
 
@@ -434,11 +498,25 @@ export function useSupabaseArtist() {
 
 			if (releasesError) throw releasesError
 
+			// Récupérer les compagnies
+			const { data: companies, error: companiesError } = await supabase
+				.from('artist_companies')
+				.select(
+					`
+          *,
+          company:companies(*)
+        `,
+				)
+				.eq('artist_id', id)
+
+			if (companiesError) throw companiesError
+
 			return {
 				...artist,
 				groups: groups?.map((g) => g.group) || [],
 				members: members?.map((m) => m.member) || [],
 				releases: releases?.map((r) => r.release) || [],
+				companies: companies || [],
 			} as Artist
 		} catch (error) {
 			console.error("Erreur lors de la récupération des données de l'artiste:", error)
@@ -525,7 +603,11 @@ export function useSupabaseArtist() {
 				`
 					*,
 					social_links:artist_social_links(*),
-					platform_links:artist_platform_links(*)
+					platform_links:artist_platform_links(*),
+					companies:artist_companies(
+						*,
+						company:companies(*)
+					)
 				`,
 				{ count: 'exact' },
 			)
@@ -586,6 +668,7 @@ export function useSupabaseArtist() {
 				...artist,
 				social_links: artist.social_links || [],
 				platform_links: artist.platform_links || [],
+				companies: artist.companies || [],
 			}))
 
 			return {
