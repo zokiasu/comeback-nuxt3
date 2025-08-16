@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 	// props name not required
 	const { name } = defineProps({
 		name: {

@@ -3,12 +3,9 @@
 </script>
 
 <template>
-	<div
-		v-if="isOpen"
-		class="fixed bottom-20 right-4 z-[1200]"
-	>
+	<div v-if="isOpen" class="fixed right-4 bottom-20 z-[1200]">
 		<div
-			class="bg-cb-secondary-950 aspect-video w-80 min-w-[20rem] max-w-md overflow-hidden rounded-lg shadow-xl lg:h-72"
+			class="bg-cb-secondary-950 aspect-video w-80 max-w-md min-w-[20rem] overflow-hidden rounded-lg shadow-xl lg:h-72"
 		>
 			<!-- Header -->
 			<div class="border-cb-tertiary-700 flex items-center justify-between border-b p-3">
@@ -22,10 +19,7 @@
 			</div>
 
 			<!-- Video Container -->
-			<div
-				id="globalPlayerContainer"
-				class="flex-1 w-full h-full"
-			></div>
+			<div id="globalPlayerContainer" class="h-full w-full flex-1"></div>
 		</div>
 	</div>
 </template>

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 	const routeN = useRoute()
 	const menuCollapsable = ref(null)
 	const { logout } = useAuth()

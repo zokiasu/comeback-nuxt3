@@ -130,3 +130,107 @@ Key tables:
 - **YouTube Integration**: Import playlists and fetch metadata
 - **Admin Dashboard**: Content management interface
 - **Authentication**: Google OAuth with role-based access
+
+### Important Project Structure Notes
+
+#### App Directory Structure
+
+- Uses `app/` directory for Nuxt 3 structure (not root-level directories)
+- `app/components/` - All Vue components
+- `app/composables/` - Reusable composition functions
+- `app/pages/` - File-based routing pages
+- `app/stores/` - Pinia store files
+- `app/types/` - TypeScript type definitions
+
+#### Key Composables Patterns
+
+- Database operations: `composables/Supabase/useSupabase[Table].ts`
+- Authentication: `composables/auth/supabase-auth.composable.ts`
+- Utilities: `useYouTube.ts`, `usePlaylist.ts`, `useDebounce.ts`
+
+#### Component Organization
+
+- `Icon/` - Custom icon components for UI consistency
+- `Card/` - Reusable card components for different data types
+- `Modal/` - Modal dialogs for content creation
+- `Form/` - Form components for data entry
+- `Skeleton/` - Loading state components
+
+### Configuration Details
+
+#### Nuxt Configuration
+
+- SSR enabled by default
+- Tailwind CSS 4 with Vite plugin integration
+- Image optimization configured for external domains
+- Custom compiler options for Swiper components
+- Strict TypeScript with typeCheck disabled for performance
+
+#### Runtime Configuration
+
+- Public config exposes API keys for client-side usage
+- Service keys kept server-side only
+- Supabase configuration includes custom cookie settings
+
+### Development Workflow
+
+#### File Naming Conventions
+
+- Components: PascalCase (e.g., `CreateArtist.vue`)
+- Composables: camelCase with `use` prefix (e.g., `useSupabaseArtist.ts`)
+- Pages: kebab-case following file-based routing
+
+#### Error Handling
+
+- Custom error handlers for both client and server
+- Centralized error logging with `useErrorLogger.ts`
+- Toast notifications for user-facing errors
+
+##### State Management
+
+- User authentication state via Pinia store
+- SSR-compatible store initialization
+- Persistent state for user preferences
+
+### Project Details
+
+#### Language and Localization
+
+- Primary language: French (fr locale configured)
+- Meta descriptions and content are in French
+- Application name: "Comeback" - music tracking platform
+
+#### Deployment and Build
+
+- Optimized for Vercel deployment
+- SSR enabled by default with payload extraction disabled
+- Chunk size warning limit set to 1600kb
+- Custom transpilation for Swiper components
+
+#### External Services Integration
+
+- **YouTube Data API v3**: For playlist import and music metadata
+- **Algolia**: Search service with InstantSearch theme
+- **Google Fonts**: Poppins font family preloaded
+- **Image domains**: Configured for Google user content and i.ibb.co
+
+#### Performance Optimizations
+
+- WASM experimental support enabled
+- Image optimization with WebP/JPEG/PNG formats
+- Multiple screen size breakpoints defined
+- Preconnect hints for Google Fonts
+
+#### Security Configuration
+
+- Cross-Origin-Opener-Policy set to same-origin-allow-popups
+- Secure cookie settings with 1-year expiration
+- HTTP-only disabled for client-side cookie access
+- Robots meta set to noindex,nofollow (development mode)
+
+# important-instruction-reminders
+
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User.

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 	const routeN = useRoute()
 	const collapseMenu = ref(true)
 	const menuCollapsable = ref(null)
@@ -118,6 +118,21 @@
 			>
 				<IconAccount class="h-4 w-4" />
 				<p v-if="!collapseMenu">Users</p>
+			</NuxtLink>
+			<NuxtLink
+				to="/dashboard/companies"
+				title="Companies"
+				class="flex items-center gap-2 rounded py-3 transition-all duration-300 ease-in-out"
+				:class="{
+					'bg-cb-quinary-900 font-semibold text-white':
+						routeN.name === 'dashboard-companies',
+					'hover:bg-cb-quinary-900 text-zinc-500': routeN.name !== 'dashboard-companies',
+					'px-5': !collapseMenu,
+					'flex-col': collapseMenu,
+				}"
+			>
+				<UIcon name="i-heroicons-building-office" class="h-4 w-4" />
+				<p v-if="!collapseMenu">Companies</p>
 			</NuxtLink>
 		</nav>
 		<div class="w-full overflow-hidden">

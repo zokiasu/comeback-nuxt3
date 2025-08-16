@@ -24,6 +24,108 @@ export type Database = {
 				}
 				Relationships: []
 			}
+			artist_companies: {
+				Row: {
+					artist_id: string
+					company_id: string
+					start_date: string | null
+					end_date: string | null
+					id: string
+					is_current: boolean
+					created_at: string | null
+					updated_at: string | null
+					relationship_type:
+						| Database['public']['Enums']['company_relationship_type']
+						| null
+				}
+				Insert: {
+					artist_id: string
+					company_id: string
+					start_date?: string | null
+					end_date?: string | null
+					id?: string
+					is_current?: boolean
+					created_at?: string | null
+					updated_at?: string | null
+					relationship_type?:
+						| Database['public']['Enums']['company_relationship_type']
+						| null
+				}
+				Update: {
+					artist_id?: string
+					company_id?: string
+					start_date?: string | null
+					end_date?: string | null
+					id?: string
+					is_current?: boolean
+					created_at?: string | null
+					updated_at?: string | null
+					relationship_type?:
+						| Database['public']['Enums']['company_relationship_type']
+						| null
+				}
+				Relationships: [
+					{
+						foreignKeyName: 'artist_companies_artist_id_fkey'
+						columns: ['artist_id']
+						isOneToOne: false
+						referencedRelation: 'artists'
+						referencedColumns: ['id']
+					},
+					{
+						foreignKeyName: 'artist_companies_company_id_fkey'
+						columns: ['company_id']
+						isOneToOne: false
+						referencedRelation: 'companies'
+						referencedColumns: ['id']
+					},
+				]
+			}
+			companies: {
+				Row: {
+					name: string
+					country: string | null
+					id: string
+					created_at: string | null
+					updated_at: string | null
+					description: string | null
+					type: Database['public']['Enums']['company_type'] | null
+					website: string | null
+					founded_year: number | null
+					city: string | null
+					logo_url: string | null
+					verified: boolean | null
+				}
+				Insert: {
+					name: string
+					country?: string | null
+					id?: string
+					created_at?: string | null
+					updated_at?: string | null
+					description?: string | null
+					type?: Database['public']['Enums']['company_type'] | null
+					website?: string | null
+					founded_year?: number | null
+					city?: string | null
+					logo_url?: string | null
+					verified?: boolean | null
+				}
+				Update: {
+					name?: string
+					country?: string | null
+					id?: string
+					created_at?: string | null
+					updated_at?: string | null
+					description?: string | null
+					type?: Database['public']['Enums']['company_type'] | null
+					website?: string | null
+					founded_year?: number | null
+					city?: string | null
+					logo_url?: string | null
+					verified?: boolean | null
+				}
+				Relationships: []
+			}
 			artist_platform_links: {
 				Row: {
 					artist_id: string | null
@@ -732,6 +834,22 @@ export type Database = {
 		}
 		Enums: {
 			artist_type: 'SOLO' | 'GROUP'
+			company_type:
+				| 'LABEL'
+				| 'PUBLISHER'
+				| 'DISTRIBUTOR'
+				| 'MANAGER'
+				| 'AGENCY'
+				| 'STUDIO'
+				| 'OTHER'
+			company_relationship_type:
+				| 'LABEL'
+				| 'PUBLISHER'
+				| 'DISTRIBUTOR'
+				| 'MANAGER'
+				| 'AGENCY'
+				| 'STUDIO'
+				| 'OTHER'
 			contribution_type: 'CREATOR' | 'EDITOR'
 			gender: 'MALE' | 'FEMALE' | 'MIXTE' | 'OTHER' | 'UNKNOWN'
 			music_type: 'SONG'
@@ -870,6 +988,24 @@ export const Constants = {
 	public: {
 		Enums: {
 			artist_type: ['SOLO', 'GROUP'],
+			company_type: [
+				'LABEL',
+				'PUBLISHER',
+				'DISTRIBUTOR',
+				'MANAGER',
+				'AGENCY',
+				'STUDIO',
+				'OTHER',
+			],
+			company_relationship_type: [
+				'LABEL',
+				'PUBLISHER',
+				'DISTRIBUTOR',
+				'MANAGER',
+				'AGENCY',
+				'STUDIO',
+				'OTHER',
+			],
 			contribution_type: ['CREATOR', 'EDITOR'],
 			gender: ['MALE', 'FEMALE', 'MIXTE', 'OTHER', 'UNKNOWN'],
 			music_type: ['SONG'],

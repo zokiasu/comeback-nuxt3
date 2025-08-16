@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 	const idYoutubeVideo = useIdYoutubeVideo()
 	const isPlayingVideo = useIsPlayingVideo()
 	const musicNamePlaying = useMusicNamePlaying()
@@ -21,7 +21,6 @@
 	const isSeeking = ref(false)
 
 	let intervalId = null
-
 
 	// Création du lecteur YouTube
 	const createPlayer = () => {
@@ -402,8 +401,8 @@
 	<div
 		class="fixed bottom-0 z-[1100] flex w-full flex-col items-center justify-center space-y-3 sm:items-end sm:justify-end"
 	>
-		<PlaylistPanel v-model:is-open="showPlaylist" class="lg:mr-3 min-w-80" />
-		
+		<PlaylistPanel v-model:is-open="showPlaylist" class="min-w-80 lg:mr-3" />
+
 		<div
 			id="globalPlayerContainer"
 			ref="globalPlayerContainer"
@@ -411,9 +410,9 @@
 		></div>
 
 		<div
-			class="bg-cb-secondary-950 relative flex flex-row-reverse lg:flex-row w-full items-center justify-between px-5 py-3"
+			class="bg-cb-secondary-950 relative flex w-full flex-row-reverse items-center justify-between px-5 py-3 lg:flex-row"
 		>
-			<div class="flex items-center space-x-2 w-fit">
+			<div class="flex w-fit items-center space-x-2">
 				<UButton
 					variant="ghost"
 					class="hidden lg:block"
@@ -480,7 +479,7 @@
 				/>
 			</div>
 			<div v-if="!errorDetected" class="flex w-fit items-center gap-2">
-				<div class="flex flex-col items-start lg:items-center w-fit">
+				<div class="flex w-fit flex-col items-start lg:items-center">
 					<p class="font-semibold text-nowrap">{{ authorNamePlaying }}</p>
 					<p class="text-xs text-nowrap">{{ musicNamePlaying }}</p>
 				</div>
@@ -500,7 +499,9 @@
 					variant="ghost"
 					:disabled="!isPlayerReady"
 					@click="muteVolume"
-					:icon="volumeOn ? 'i-material-symbols-volume-up' : 'i-material-symbols-volume-off'"
+					:icon="
+						volumeOn ? 'i-material-symbols-volume-up' : 'i-material-symbols-volume-off'
+					"
 					size="lg"
 				/>
 				<USlider

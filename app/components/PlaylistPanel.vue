@@ -41,16 +41,15 @@
 </script>
 
 <template>
-	<div
-		v-if="isOpen"
-		@click="isOpen = false"
-	>
+	<div v-if="isOpen" @click="isOpen = false">
 		<div
-			class="bg-cb-secondary-950 flex flex-col h-full w-full max-w-md overflow-hidden rounded-lg shadow-xl sm:h-3/4 sm:max-h-[600px]"
+			class="bg-cb-secondary-950 flex h-full w-full max-w-md flex-col overflow-hidden rounded-lg shadow-xl sm:h-3/4 sm:max-h-[600px]"
 			@click.stop
 		>
 			<!-- Header -->
-			<div class="border-cb-tertiary-700 flex items-center justify-between border-b p-4 flex-shrink-0">
+			<div
+				class="border-cb-tertiary-700 flex flex-shrink-0 items-center justify-between border-b p-4"
+			>
 				<div>
 					<h3 class="text-lg font-semibold">Liste de lecture</h3>
 					<p v-if="playlistInfo.isActive" class="text-cb-tertiary-400 text-sm">
@@ -75,7 +74,7 @@
 			</div>
 
 			<!-- Playlist Content -->
-			<div class="flex flex-1 flex-col min-h-0">
+			<div class="flex min-h-0 flex-1 flex-col">
 				<!-- Empty State -->
 				<div
 					v-if="!playlistInfo.isActive || playlist.length === 0"
@@ -93,7 +92,10 @@
 				</div>
 
 				<!-- Playlist Items -->
-				<div v-else class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-cb-tertiary-600 scrollbar-track-transparent">
+				<div
+					v-else
+					class="scrollbar-thin scrollbar-thumb-cb-tertiary-600 scrollbar-track-transparent flex-1 overflow-y-auto"
+				>
 					<div
 						v-for="(item, index) in playlist"
 						:key="`${item.videoId}-${index}`"
@@ -159,7 +161,7 @@
 				<!-- Footer Info -->
 				<div
 					v-if="playlistInfo.isActive && playlist.length > 0"
-					class="border-cb-tertiary-700 border-t p-3 flex-shrink-0"
+					class="border-cb-tertiary-700 flex-shrink-0 border-t p-3"
 				>
 					<div class="flex items-center justify-between text-sm">
 						<span class="text-cb-tertiary-400">

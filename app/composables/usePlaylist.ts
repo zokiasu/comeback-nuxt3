@@ -41,7 +41,7 @@ export const usePlaylist = () => {
 			ui: {
 				root: 'bg-cb-secondary-950 rounded-lg',
 				title: 'text-white text-center font-medium',
-			}
+			},
 		})
 
 		if (isFirstItem) {

@@ -1,0 +1,110 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Exécute tous les lundis à 9h00 UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Permet l'exécution manuelle
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for dependency updates
+        id: check-updates
+        run: |
+          # Vérifier les mises à jour disponibles
+          npx npm-check-updates --jsonUpgraded > updates.json
+          
+          # Compter le nombre de mises à jour
+          UPDATES_COUNT=$(cat updates.json | jq 'length')
+          echo "updates_count=$UPDATES_COUNT" >> $GITHUB_OUTPUT
+          
+          # Créer un résumé des mises à jour
+          if [ "$UPDATES_COUNT" -gt 0 ]; then
+            echo "updates_available=true" >> $GITHUB_OUTPUT
+            cat updates.json | jq -r 'to_entries[] | "- \(.key): \(.value)"' > update_summary.txt
+          else
+            echo "updates_available=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update dependencies
+        if: steps.check-updates.outputs.updates_available == 'true'
+        run: |
+          # Mettre à jour les dépendances
+          npx npm-check-updates -u
+          npm install
+
+      - name: Run tests after updates
+        if: steps.check-updates.outputs.updates_available == 'true'
+        run: |
+          # Exécuter les vérifications de qualité
+          npm run lint || true
+          npm run build
+
+      - name: Create Pull Request
+        if: steps.check-updates.outputs.updates_available == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: mise à jour des dépendances'
+          title: '🔄 Mise à jour automatique des dépendances'
+          body: |
+            ## 📦 Mise à jour des dépendances
+            
+            Cette PR a été créée automatiquement pour mettre à jour les dépendances du projet.
+            
+            ### Mises à jour incluses:
+            $(cat update_summary.txt)
+            
+            ### ✅ Vérifications effectuées:
+            - [x] Installation des nouvelles dépendances
+            - [x] Exécution du linting
+            - [x] Build de production
+            
+            ### 🔍 À vérifier manuellement:
+            - [ ] Tests unitaires et d'intégration
+            - [ ] Fonctionnalités critiques
+            - [ ] Performance de l'application
+            
+            ---
+            
+            🤖 Cette PR a été générée automatiquement par GitHub Actions.
+          branch: dependency-updates-${{ github.run_number }}
+          delete-branch: true
+          labels: |
+            dependencies
+            automated
+            chore
+
+      - name: Comment on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '❌ Échec de la mise à jour des dépendances',
+              body: '## Problème détecté\n\nLa mise à jour automatique des dépendances a échoué.\n\n**Action requise:** Vérifiez manuellement les dépendances et corrigez les conflits éventuels.\n\n**Workflow:** ' + context.workflow + '\n**Run ID:** ' + context.runId,
+              labels: ['bug', 'dependencies', 'needs-attention']
+            });

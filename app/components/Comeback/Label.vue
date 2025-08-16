@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 	const { label, disabled } = defineProps({
 		label: {
 			type: String,
