@@ -567,7 +567,7 @@ export function useSupabaseArtist() {
 					ascending: options.orderDirection === 'asc',
 				})
 			} else {
-				query = query.order('name')
+				query = query.order('name', { ascending: true })
 			}
 
 			// Ajouter la pagination
