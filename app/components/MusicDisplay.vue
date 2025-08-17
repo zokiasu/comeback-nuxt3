@@ -13,6 +13,8 @@
 		musicImage,
 		ismv,
 		horizontalMode,
+		artists,
+		releases,
 	} = defineProps({
 		artists: {
 			type: Array as PropType<Artist[]>,

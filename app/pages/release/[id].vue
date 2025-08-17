@@ -350,6 +350,8 @@
 								:ismv="song.ismv"
 								:music-image="song.thumbnails?.[2]?.url || ''"
 								:duration="song.duration ?? 0"
+								:artists="song.artists || []"
+								:releases="song.releases || []"
 								class="bg-cb-quinary-900 w-full"
 							/>
 						</transition-group>
