@@ -1,15 +1,15 @@
 <script setup lang="ts">
 	const props = withDefaults(defineProps<{
-		isArtist: boolean
+		isArtist?: boolean
 		artistId: string
 		mainTitle: string
-		subTitle: string
+		subTitle?: string
 		image: string
 		objectLink: string
-		releaseDate: string
-		releaseType: string
-		isReleaseDisplay: boolean
-		dateAlwaysDisplay: boolean
+		releaseDate?: string
+		releaseType?: string
+		isReleaseDisplay?: boolean
+		dateAlwaysDisplay?: boolean
 	}>(), {
 		isArtist: false,
 		artistId: '',
