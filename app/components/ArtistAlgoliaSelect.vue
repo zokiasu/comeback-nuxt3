@@ -1,7 +1,6 @@
 <script setup lang="ts">
 	import { ref, watchEffect } from 'vue'
 	import { useDebounce } from '~/composables/useDebounce'
-	import { useAlgoliaSearch } from '~/composables/useAlgolia'
 	const searchInput = ref('')
 	const suggestions = ref([])
 	const modelValue = defineModel('modelValue', { default: null })
