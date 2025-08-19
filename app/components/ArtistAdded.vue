@@ -1,8 +1,6 @@
 <script setup lang="ts">
-	import type { Artist } from '~/types'
-
-	const { artists } = defineProps<{
-		artists: Artist[]
+	const props = defineProps<{
+		artists: any
 	}>()
 </script>
 
@@ -12,7 +10,7 @@
 			class="scrollBarLight relative flex w-full snap-x snap-mandatory justify-between gap-5 overflow-x-auto pb-5"
 		>
 			<CardObject
-				v-for="artist in artists"
+				v-for="artist in props.artists"
 				:key="artist.id"
 				is-artist
 				:artist-id="artist.id"

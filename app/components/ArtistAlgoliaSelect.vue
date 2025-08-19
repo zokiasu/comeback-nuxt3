@@ -1,12 +1,13 @@
 <script setup lang="ts">
 	import { ref, watchEffect } from 'vue'
 	import { useDebounce } from '~/composables/useDebounce'
+	import { useAlgoliaSearch } from '~/composables/useAlgolia'
 	const searchInput = ref('')
-	const suggestions = ref<any[]>([])
-	const modelValue = defineModel<any | null>('modelValue', { default: null })
+	const suggestions = ref([])
+	const modelValue = defineModel('modelValue', { default: null })
 
 	const { result, search } = useAlgoliaSearch('ARTISTS')
-	const debouncedSearch = useDebounce(async (query: string) => {
+	const debouncedSearch = useDebounce(async (query) => {
 		await useAsyncData('ssr-search-results', () => search({ query }))
 		if (!result.value) return
 		suggestions.value = result.value.hits.slice(0, 10)
@@ -20,7 +21,7 @@
 		}
 	})
 
-	function selectArtist(artist: any) {
+	function selectArtist(artist) {
 		modelValue.value = artist
 		searchInput.value = artist.name
 		suggestions.value = []

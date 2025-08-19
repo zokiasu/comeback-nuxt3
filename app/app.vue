@@ -1,7 +1,3 @@
-<script setup lang="ts">
-	console.log('✅ App.vue chargé')
-</script>
-
 <template>
 	<UApp>
 		<NuxtLayout>

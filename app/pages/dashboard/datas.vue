@@ -8,10 +8,10 @@
 	const { createGeneralTag, getAllGeneralTags, deleteGeneralTag } =
 		useSupabaseGeneralTags()
 
-	const styleFetch = ref([] as any[])
+	const styleFetch = ref<any[]>([])
 	const newStyle = ref('')
 
-	const generalTagFetch = ref([] as any[])
+	const generalTagFetch = ref<any[]>([])
 	const newGeneralTag = ref('')
 
 	onMounted(async () => {

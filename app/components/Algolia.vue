@@ -2,28 +2,9 @@
 	import { ref, watchEffect } from 'vue'
 	import { useDebounce } from '~/composables/useDebounce'
 
-	interface Artist {
-		objectID: string
-		name: string
-		active_career: boolean
-		birth_date: string | null
-		created_at: string
-		debut_date: string | null
-		description: string
-		gender: string
-		image: string
-		type: string
-		updated_at: string
-		verified: boolean
-		_highlightResult?: Record<string, any>
-		_snippetResult?: Record<string, any>
-		_rankingInfo?: Record<string, any>
-		_distinctSeqID?: number
-	}
-
 	// Initialisation des réactifs
 	const searchInput = ref('')
-	const datas = ref<Artist[]>([])
+	const datas = ref([])
 	const isOpen = ref(false)
 
 	// Utilisation de Algolia Search de manière optimisée
@@ -34,7 +15,7 @@
 		await useAsyncData('ssr-search-results', () => search({ query }))
 		if (!result.value) return
 		console.log(result.value.hits)
-		datas.value = result.value.hits.slice(0, 10) as Artist[]
+		datas.value = result.value.hits.slice(0, 10)
 	}, 500) // Attend 500ms après le dernier appel avant d'exécuter la fonction
 
 	watchEffect(() => {

@@ -7,6 +7,11 @@ export type Json =
 	| Json[]
 
 export type Database = {
+	// Allows to automatically instantiate createClient with right options
+	// instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+	__InternalSupabase: {
+		PostgrestVersion: '12.2.3 (519615d)'
+	}
 	public: {
 		Tables: {
 			algolia_config: {
@@ -28,41 +33,35 @@ export type Database = {
 				Row: {
 					artist_id: string
 					company_id: string
-					start_date: string | null
+					created_at: string | null
 					end_date: string | null
 					id: string
 					is_current: boolean
-					created_at: string | null
+					relationship_type: string | null
+					start_date: string | null
 					updated_at: string | null
-					relationship_type:
-						| Database['public']['Enums']['company_relationship_type']
-						| null
 				}
 				Insert: {
 					artist_id: string
 					company_id: string
-					start_date?: string | null
+					created_at?: string | null
 					end_date?: string | null
 					id?: string
 					is_current?: boolean
-					created_at?: string | null
+					relationship_type?: string | null
+					start_date?: string | null
 					updated_at?: string | null
-					relationship_type?:
-						| Database['public']['Enums']['company_relationship_type']
-						| null
 				}
 				Update: {
 					artist_id?: string
 					company_id?: string
-					start_date?: string | null
+					created_at?: string | null
 					end_date?: string | null
 					id?: string
 					is_current?: boolean
-					created_at?: string | null
+					relationship_type?: string | null
+					start_date?: string | null
 					updated_at?: string | null
-					relationship_type?:
-						| Database['public']['Enums']['company_relationship_type']
-						| null
 				}
 				Relationships: [
 					{
@@ -80,51 +79,6 @@ export type Database = {
 						referencedColumns: ['id']
 					},
 				]
-			}
-			companies: {
-				Row: {
-					name: string
-					country: string | null
-					id: string
-					created_at: string | null
-					updated_at: string | null
-					description: string | null
-					type: Database['public']['Enums']['company_type'] | null
-					website: string | null
-					founded_year: number | null
-					city: string | null
-					logo_url: string | null
-					verified: boolean | null
-				}
-				Insert: {
-					name: string
-					country?: string | null
-					id?: string
-					created_at?: string | null
-					updated_at?: string | null
-					description?: string | null
-					type?: Database['public']['Enums']['company_type'] | null
-					website?: string | null
-					founded_year?: number | null
-					city?: string | null
-					logo_url?: string | null
-					verified?: boolean | null
-				}
-				Update: {
-					name?: string
-					country?: string | null
-					id?: string
-					created_at?: string | null
-					updated_at?: string | null
-					description?: string | null
-					type?: Database['public']['Enums']['company_type'] | null
-					website?: string | null
-					founded_year?: number | null
-					city?: string | null
-					logo_url?: string | null
-					verified?: boolean | null
-				}
-				Relationships: []
 			}
 			artist_platform_links: {
 				Row: {
@@ -316,6 +270,51 @@ export type Database = {
 				}
 				Relationships: []
 			}
+			companies: {
+				Row: {
+					city: string | null
+					country: string | null
+					created_at: string | null
+					description: string | null
+					founded_year: number | null
+					id: string
+					logo_url: string | null
+					name: string
+					type: string | null
+					updated_at: string | null
+					verified: boolean | null
+					website: string | null
+				}
+				Insert: {
+					city?: string | null
+					country?: string | null
+					created_at?: string | null
+					description?: string | null
+					founded_year?: number | null
+					id?: string
+					logo_url?: string | null
+					name: string
+					type?: string | null
+					updated_at?: string | null
+					verified?: boolean | null
+					website?: string | null
+				}
+				Update: {
+					city?: string | null
+					country?: string | null
+					created_at?: string | null
+					description?: string | null
+					founded_year?: number | null
+					id?: string
+					logo_url?: string | null
+					name?: string
+					type?: string | null
+					updated_at?: string | null
+					verified?: boolean | null
+					website?: string | null
+				}
+				Relationships: []
+			}
 			firebase_user_mapping: {
 				Row: {
 					created_at: string | null
@@ -466,6 +465,7 @@ export type Database = {
 					id_youtube_music: string | null
 					ismv: boolean
 					name: string
+					release_year: number | null
 					thumbnails: Json | null
 					type: Database['public']['Enums']['music_type'] | null
 					updated_at: string | null
@@ -480,6 +480,7 @@ export type Database = {
 					id_youtube_music?: string | null
 					ismv?: boolean
 					name: string
+					release_year?: number | null
 					thumbnails?: Json | null
 					type?: Database['public']['Enums']['music_type'] | null
 					updated_at?: string | null
@@ -494,6 +495,7 @@ export type Database = {
 					id_youtube_music?: string | null
 					ismv?: boolean
 					name?: string
+					release_year?: number | null
 					thumbnails?: Json | null
 					type?: Database['public']['Enums']['music_type'] | null
 					updated_at?: string | null
@@ -557,6 +559,38 @@ export type Database = {
 						columns: ['news_id']
 						isOneToOne: false
 						referencedRelation: 'news'
+						referencedColumns: ['id']
+					},
+				]
+			}
+			release_platform_links: {
+				Row: {
+					created_at: string | null
+					id: string
+					link: string
+					name: string
+					release_id: string | null
+				}
+				Insert: {
+					created_at?: string | null
+					id?: string
+					link: string
+					name: string
+					release_id?: string | null
+				}
+				Update: {
+					created_at?: string | null
+					id?: string
+					link?: string
+					name?: string
+					release_id?: string | null
+				}
+				Relationships: [
+					{
+						foreignKeyName: 'release_platform_links_release_id_fkey'
+						columns: ['release_id']
+						isOneToOne: false
+						referencedRelation: 'releases'
 						referencedColumns: ['id']
 					},
 				]
@@ -710,6 +744,10 @@ export type Database = {
 			[_ in never]: never
 		}
 		Functions: {
+			analyze_artist_deletion_impact: {
+				Args: { artist_id_param: string }
+				Returns: Json
+			}
 			bytea_to_text: {
 				Args: { data: string }
 				Returns: string
@@ -717,18 +755,34 @@ export type Database = {
 			check_algolia_config: {
 				Args: Record<PropertyKey, never>
 				Returns: {
+					is_set: boolean
 					setting_name: string
 					setting_value: string
-					is_set: boolean
 				}[]
 			}
 			check_array_values_exist: {
 				Args: { arr: string[]; table_name: string }
 				Returns: boolean
 			}
+			cleanup_orphaned_contributions: {
+				Args: Record<PropertyKey, never>
+				Returns: number
+			}
+			delete_artist_safely: {
+				Args: { artist_id_param: string }
+				Returns: Json
+			}
+			delete_artist_simple: {
+				Args: { artist_id_param: string }
+				Returns: Json
+			}
 			firebase_id_to_uuid: {
 				Args: { firebase_id: string }
 				Returns: string
+			}
+			get_contributions_stats: {
+				Args: Record<PropertyKey, never>
+				Returns: Json
 			}
 			get_random_music_ids: {
 				Args: { count_param: number }
@@ -742,16 +796,28 @@ export type Database = {
 					id: string
 				}[]
 			}
+			get_top_contributors: {
+				Args: { contribution_limit?: number }
+				Returns: {
+					created_contributions: number
+					edited_contributions: number
+					total_contributions: number
+					user_email: string
+					user_id: string
+					user_name: string
+					user_photo_url: string
+				}[]
+			}
 			http: {
 				Args: { request: Database['public']['CompositeTypes']['http_request'] }
 				Returns: Database['public']['CompositeTypes']['http_response']
 			}
 			http_delete: {
-				Args: { uri: string } | { uri: string; content: string; content_type: string }
+				Args: { content: string; content_type: string; uri: string } | { uri: string }
 				Returns: Database['public']['CompositeTypes']['http_response']
 			}
 			http_get: {
-				Args: { uri: string } | { uri: string; data: Json }
+				Args: { data: Json; uri: string } | { uri: string }
 				Returns: Database['public']['CompositeTypes']['http_response']
 			}
 			http_head: {
@@ -770,17 +836,17 @@ export type Database = {
 				}[]
 			}
 			http_patch: {
-				Args: { uri: string; content: string; content_type: string }
+				Args: { content: string; content_type: string; uri: string }
 				Returns: Database['public']['CompositeTypes']['http_response']
 			}
 			http_post: {
 				Args:
-					| { uri: string; content: string; content_type: string }
-					| { uri: string; data: Json }
+					| { content: string; content_type: string; uri: string }
+					| { data: Json; uri: string }
 				Returns: Database['public']['CompositeTypes']['http_response']
 			}
 			http_put: {
-				Args: { uri: string; content: string; content_type: string }
+				Args: { content: string; content_type: string; uri: string }
 				Returns: Database['public']['CompositeTypes']['http_response']
 			}
 			http_reset_curlopt: {
@@ -796,7 +862,7 @@ export type Database = {
 				Returns: boolean
 			}
 			set_algolia_config: {
-				Args: Record<PropertyKey, never> | { p_app_id: string; p_api_key: string }
+				Args: Record<PropertyKey, never> | { p_api_key: string; p_app_id: string }
 				Returns: undefined
 			}
 			sync_all_artists_to_algolia: {
@@ -834,22 +900,6 @@ export type Database = {
 		}
 		Enums: {
 			artist_type: 'SOLO' | 'GROUP'
-			company_type:
-				| 'LABEL'
-				| 'PUBLISHER'
-				| 'DISTRIBUTOR'
-				| 'MANAGER'
-				| 'AGENCY'
-				| 'STUDIO'
-				| 'OTHER'
-			company_relationship_type:
-				| 'LABEL'
-				| 'PUBLISHER'
-				| 'DISTRIBUTOR'
-				| 'MANAGER'
-				| 'AGENCY'
-				| 'STUDIO'
-				| 'OTHER'
 			contribution_type: 'CREATOR' | 'EDITOR'
 			gender: 'MALE' | 'FEMALE' | 'MIXTE' | 'OTHER' | 'UNKNOWN'
 			music_type: 'SONG'
@@ -879,21 +929,25 @@ export type Database = {
 	}
 }
 
-type DefaultSchema = Database[Extract<keyof Database, 'public'>]
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
 
 export type Tables<
 	DefaultSchemaTableNameOrOptions extends
 		| keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-		| { schema: keyof Database },
+		| { schema: keyof DatabaseWithoutInternals },
 	TableName extends DefaultSchemaTableNameOrOptions extends {
-		schema: keyof Database
+		schema: keyof DatabaseWithoutInternals
 	}
-		? keyof (Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-				Database[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+		? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+				DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
 		: never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-	? (Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-			Database[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+	schema: keyof DatabaseWithoutInternals
+}
+	? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+			DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
 			Row: infer R
 		}
 		? R
@@ -911,14 +965,16 @@ export type Tables<
 export type TablesInsert<
 	DefaultSchemaTableNameOrOptions extends
 		| keyof DefaultSchema['Tables']
-		| { schema: keyof Database },
+		| { schema: keyof DatabaseWithoutInternals },
 	TableName extends DefaultSchemaTableNameOrOptions extends {
-		schema: keyof Database
+		schema: keyof DatabaseWithoutInternals
 	}
-		? keyof Database[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+		? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
 		: never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-	? Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+	schema: keyof DatabaseWithoutInternals
+}
+	? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
 			Insert: infer I
 		}
 		? I
@@ -934,14 +990,16 @@ export type TablesInsert<
 export type TablesUpdate<
 	DefaultSchemaTableNameOrOptions extends
 		| keyof DefaultSchema['Tables']
-		| { schema: keyof Database },
+		| { schema: keyof DatabaseWithoutInternals },
 	TableName extends DefaultSchemaTableNameOrOptions extends {
-		schema: keyof Database
+		schema: keyof DatabaseWithoutInternals
 	}
-		? keyof Database[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+		? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
 		: never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-	? Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+	schema: keyof DatabaseWithoutInternals
+}
+	? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
 			Update: infer U
 		}
 		? U
@@ -957,14 +1015,16 @@ export type TablesUpdate<
 export type Enums<
 	DefaultSchemaEnumNameOrOptions extends
 		| keyof DefaultSchema['Enums']
-		| { schema: keyof Database },
+		| { schema: keyof DatabaseWithoutInternals },
 	EnumName extends DefaultSchemaEnumNameOrOptions extends {
-		schema: keyof Database
+		schema: keyof DatabaseWithoutInternals
 	}
-		? keyof Database[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+		? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
 		: never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-	? Database[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+	schema: keyof DatabaseWithoutInternals
+}
+	? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
 	: DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
 		? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
 		: never
@@ -972,14 +1032,16 @@ export type Enums<
 export type CompositeTypes<
 	PublicCompositeTypeNameOrOptions extends
 		| keyof DefaultSchema['CompositeTypes']
-		| { schema: keyof Database },
+		| { schema: keyof DatabaseWithoutInternals },
 	CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-		schema: keyof Database
+		schema: keyof DatabaseWithoutInternals
 	}
-		? keyof Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+		? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
 		: never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-	? Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+	schema: keyof DatabaseWithoutInternals
+}
+	? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
 	: PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
 		? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
 		: never
@@ -988,24 +1050,6 @@ export const Constants = {
 	public: {
 		Enums: {
 			artist_type: ['SOLO', 'GROUP'],
-			company_type: [
-				'LABEL',
-				'PUBLISHER',
-				'DISTRIBUTOR',
-				'MANAGER',
-				'AGENCY',
-				'STUDIO',
-				'OTHER',
-			],
-			company_relationship_type: [
-				'LABEL',
-				'PUBLISHER',
-				'DISTRIBUTOR',
-				'MANAGER',
-				'AGENCY',
-				'STUDIO',
-				'OTHER',
-			],
 			contribution_type: ['CREATOR', 'EDITOR'],
 			gender: ['MALE', 'FEMALE', 'MIXTE', 'OTHER', 'UNKNOWN'],
 			music_type: ['SONG'],

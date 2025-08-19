@@ -10,13 +10,16 @@ export type Artist = Tables<'artists'> & {
 	social_links?: any[]
 	platform_links?: any[]
 }
-export type Release = Tables<'releases'>
+export type Release = Tables<'releases'> & {
+	platform_links?: any[]
+}
 export type Music = Tables<'musics'>
 export type News = Tables<'news'>
 export type MusicStyle = Tables<'music_styles'>
 export type GeneralTag = Tables<'general_tags'>
 export type ArtistSocialLink = Tables<'artist_social_links'>
 export type ArtistPlatformLink = Tables<'artist_platform_links'>
+export type ReleasePlatformLink = Tables<'release_platform_links'>
 export type ArtistRelation = Tables<'artist_relations'>
 export type ArtistRelease = Tables<'artist_releases'>
 export type MusicArtist = Tables<'music_artists'>
@@ -135,6 +138,7 @@ export interface UseSupabaseReturn<T> {
 export type ReleaseWithRelations = Release & {
 	artists: Artist[]
 	musics: Music[]
+	platform_links: ReleasePlatformLink[]
 }
 
 export type ReleaseWithArtists = Release & {
