@@ -1,24 +1,13 @@
 <script setup lang="ts">
-	import type { PropType } from 'vue'
+	// import type { PropType } from 'vue'
 
 	// Interface pour la structure d'une plateforme
-	interface Platform {
-		name: string
-		link: string
-	}
+	// type Platform = {
+	//	name: string
+	//	link: string
+	// }
 
-	const {
-		id,
-		artistsName,
-		date,
-		idYoutubeMusic,
-		image,
-		name,
-		needToBeVerified,
-		platformList,
-		type,
-		yearReleased,
-	} = defineProps({
+	const props = defineProps({
 		id: {
 			type: String,
 			required: true,
@@ -72,13 +61,13 @@
 	const showModal = ref(false)
 	const imageLoaded = ref(false)
 	const isDeleting = ref(false)
-	const dateToTestYear = date ? new Date(date) : new Date()
+	const dateToTestYear = props.date ? new Date(props.date) : new Date()
 
 	// COMPUTED
 	const releaseDate = computed(() => {
 		let dateComputed = new Date()
-		if (date) {
-			dateComputed = new Date(date)
+		if (props.date) {
+			dateComputed = new Date(props.date)
 			return `${dateComputed.getDate()}-${dateComputed.getMonth() + 1}-${dateComputed.getFullYear()}`
 		} else {
 			return 'No Date'
@@ -86,7 +75,7 @@
 	})
 
 	const doubleCheckYear = computed(() => {
-		if (yearReleased !== dateToTestYear.getFullYear()) return true
+		if (props.yearReleased !== dateToTestYear.getFullYear()) return true
 		return false
 	})
 
@@ -97,7 +86,7 @@
 
 	const callDeleteRelease = () => {
 		isDeleting.value = true
-		emit('deleteRelease', id)
+		emit('deleteRelease', props.id)
 	}
 
 	const showUpdateVerifiedRelease = () => {
@@ -125,16 +114,16 @@
 		<div class="space-y-1.5">
 			<div class="flex w-full justify-between text-xs">
 				<div class="flex gap-1">
-					<p>[{{ type }}]</p>
-					<p>[{{ yearReleased }}]</p>
+					<p>[{{ props.type }}]</p>
+					<p>[{{ props.yearReleased }}]</p>
 				</div>
 				<p>
-					{{ idYoutubeMusic }}
+					{{ props.idYoutubeMusic }}
 				</p>
 			</div>
 
 			<p
-				v-if="needToBeVerified || doubleCheckYear"
+				v-if="props.needToBeVerified || doubleCheckYear"
 				class="absolute z-50 rounded-full bg-red-500 px-2 text-xs font-semibold"
 			>
 				Need To Be Verified
@@ -144,8 +133,8 @@
 				<NuxtImg
 					v-show="imageLoaded"
 					ref="skeleton"
-					:src="image"
-					:alt="name"
+					:src="props.image"
+					:alt="props.name"
 					format="webp"
 					loading="lazy"
 					class="w-full rounded transition-all duration-1000 ease-in-out"
@@ -155,22 +144,22 @@
 
 			<div>
 				<NuxtLink
-					:to="'/release/' + id"
+					:to="'/release/' + props.id"
 					target="_blank"
 					class="hover:text-cb-primary-900 font-semibold transition-all duration-300 ease-in-out"
 				>
-					{{ name }}
+					{{ props.name }}
 				</NuxtLink>
-				<p class="border-t border-zinc-500">{{ artistsName }}</p>
+				<p class="border-t border-zinc-500">{{ props.artistsName }}</p>
 			</div>
 
 			<div class="space-y-2 pt-2">
 				<p class="border-b border-zinc-500 pb-1 text-xs font-semibold uppercase">
 					Platforms
 				</p>
-				<div v-if="platformList.length" class="flex flex-col space-y-1">
+				<div v-if="props.platformList.length" class="flex flex-col space-y-1">
 					<a
-						v-for="(platform, index) in platformList"
+						v-for="(platform, index) in props.platformList"
 						:key="platform.name + index"
 						:href="platform.link"
 						target="_blank"
@@ -216,13 +205,13 @@
 
 					<template #body>
 						<FormEditRelease
-							:id="id"
-							:name="name"
-							:type="type"
-							:id-youtube-music="idYoutubeMusic"
-							:date="date"
-							:year-released="yearReleased"
-							:need-to-be-verified="needToBeVerified"
+							:id="props.id"
+							:name="props.name"
+							:type="props.type"
+							:id-youtube-music="props.idYoutubeMusic"
+							:date="props.date"
+							:year-released="props.yearReleased"
+							:need-to-be-verified="props.needToBeVerified"
 							@saved="handleReleaseSaved"
 							@close="showModal = false"
 						/>

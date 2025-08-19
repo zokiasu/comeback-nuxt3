@@ -1,11 +1,11 @@
 <script setup lang="ts">
-	interface Props {
+	type Props = {
 		isOpen: boolean
 		companyId: string
 		companyName: string
 	}
 
-	interface Emits {
+	type Emits = {
 		close: []
 		confirm: []
 	}

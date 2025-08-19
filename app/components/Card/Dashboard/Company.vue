@@ -1,26 +1,22 @@
 <script setup lang="ts">
-	interface Props {
+	const props = defineProps<{
 		id: string
 		name: string
 		description: string
-		type?: string
-		website?: string
-		foundedYear?: number
-		country?: string
-		city?: string
-		logoUrl?: string
+		type: string
+		website: string
+		foundedYear: number
+		country: string
+		city: string
+		logoUrl: string
 		verified: boolean
-		createdAt?: string
-		updatedAt?: string
-	}
-
-	interface Emits {
-		editCompany: [company: Props]
+		createdAt: string
+		updatedAt: string
+	}>()
+	const emit = defineEmits<{
+		editCompany: [company: any]
 		deleteCompany: [id: string]
-	}
-
-	const props = defineProps<Props>()
-	const emit = defineEmits<Emits>()
+	}>()
 
 	// Computed
 	const formattedLocation = computed(() => {

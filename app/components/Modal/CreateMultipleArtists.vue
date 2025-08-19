@@ -82,8 +82,9 @@
 <script setup lang="ts">
 	import { ref, reactive, watch, defineEmits, defineProps, toRefs } from 'vue'
 	import { useSupabaseArtist } from '@/composables/Supabase/useSupabaseArtist'
+	import type { ArtistType } from '~/types'
 
-	type MemberType = 'SOLO' | 'GROUP'
+	type MemberType = ArtistType
 
 	const props = defineProps<{ open: boolean; groupId: string }>()
 	const emit = defineEmits(['update:open', 'created'])

@@ -82,17 +82,14 @@
 </template>
 
 <script setup lang="ts">
-	import type { Artist } from '~/types'
+	// import type { Artist } from '~/types'
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 
-	// Props
-	interface Props {
-		modelValue?: string
-		placeholder?: string
-		disabled?: boolean
-	}
-
-	const props = withDefaults(defineProps<Props>(), {
+	const props = withDefaults(defineProps<{
+		modelValue: string
+		placeholder: string
+		disabled: boolean
+	}>(), {
 		placeholder: 'Rechercher un artiste...',
 		disabled: false,
 	})

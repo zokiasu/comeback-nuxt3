@@ -2,21 +2,22 @@ export const useErrorLogger = () => {
 	const isDevelopment = process.env.NODE_ENV === 'development'
 
 	const logError = (error: any, context: string) => {
+		// Simplifier le logging pour éviter les problèmes de sérialisation
+		const errorInfo = {
+			message: error?.message || 'Unknown error',
+			name: error?.name || 'Error',
+			timestamp: new Date().toISOString(),
+		}
+
 		if (isDevelopment) {
 			// Log détaillé en développement
-			console.error(`[${context}] Error:`, {
-				message: error.message,
-				stack: error.stack,
-				timestamp: new Date().toISOString(),
-				url: process.client ? window.location.href : 'SSR',
-				userAgent: process.client ? navigator.userAgent : 'SSR',
-			})
+			console.error(`[${context}]`, errorInfo)
+			if (error?.stack) {
+				console.error(`Stack trace:`, error.stack)
+			}
 		} else {
 			// Log minimal en production
-			console.error(`[${context}] Error:`, error.message)
-
-			// En production, on peut envoyer à un service de logging externe
-			// sendToLoggingService(error, context)
+			console.error(`[${context}] ${errorInfo.message}`)
 		}
 	}
 

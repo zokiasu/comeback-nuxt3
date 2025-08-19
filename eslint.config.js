@@ -116,6 +116,10 @@ export default [
 	{
 		files: ['**/*.vue'],
 		languageOptions: {
+			parserOptions: {
+				ecmaVersion: 'latest',
+				sourceType: 'module',
+			},
 			globals: {
 				// Vue compiler globals
 				defineProps: 'readonly',

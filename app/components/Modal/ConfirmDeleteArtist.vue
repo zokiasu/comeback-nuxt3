@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { useSupabaseArtist } from '~/composables/Supabase/useSupabaseArtist'
 
-	interface DeletionImpact {
+	type DeletionImpact = {
 		exclusiveReleases: { id: string; name: string }[]
 		exclusiveMusics: { id: string; name: string }[]
 		exclusiveNews: { id: string; message: string }[]

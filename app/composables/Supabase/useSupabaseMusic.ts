@@ -590,7 +590,10 @@ export function useSupabaseMusic() {
 			query = query.range(offset, offset + limit - 1)
 
 			// Exécuter la requête
-			let { data, error, count } = await query
+			const result = await query
+			let data = result.data
+			let error = result.error
+			let count = result.count
 			console.log('Résultat musics', { data, error, count })
 
 			if (error) {

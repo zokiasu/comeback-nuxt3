@@ -1,4 +1,12 @@
-import type { Release, QueryOptions, FilterOptions, ReleaseType, Artist } from '~/types'
+import type {
+	Release,
+	QueryOptions,
+	FilterOptions,
+	ReleaseType,
+	Artist,
+	ReleaseWithRelations,
+	ReleasePlatformLink,
+} from '~/types'
 
 export function useSupabaseRelease() {
 	const supabase = useSupabaseClient()
@@ -8,6 +16,7 @@ export function useSupabaseRelease() {
 	const updateRelease = async (
 		id: string,
 		updates: Partial<Release>,
+		platformLinks?: Omit<ReleasePlatformLink, 'id' | 'created_at' | 'release_id'>[],
 	): Promise<Release | null> => {
 		const { data, error } = await supabase
 			.from('releases')
@@ -23,6 +32,28 @@ export function useSupabaseRelease() {
 				color: 'error',
 			})
 			return null
+		}
+
+		// Gestion des liens de plateformes si fournis
+		if (platformLinks !== undefined) {
+			// Supprimer les anciens liens de plateformes
+			await supabase.from('release_platform_links').delete().eq('release_id', id)
+
+			// Ajouter les nouveaux liens de plateformes
+			if (platformLinks?.length) {
+				const platformLinksWithReleaseId = platformLinks.map((link) => ({
+					...link,
+					release_id: id,
+				}))
+
+				const { error: platformError } = await supabase
+					.from('release_platform_links')
+					.insert(platformLinksWithReleaseId)
+
+				if (platformError) {
+					console.error("Erreur lors de l'ajout des liens de plateformes:", platformError)
+				}
+			}
 		}
 
 		return data as Release
@@ -190,10 +221,19 @@ export function useSupabaseRelease() {
 
 			if (musicsError) throw musicsError
 
+			// Récupérer les liens de plateformes
+			const { data: platformLinks, error: platformLinksError } = await supabase
+				.from('release_platform_links')
+				.select('*')
+				.eq('release_id', id)
+
+			if (platformLinksError) throw platformLinksError
+
 			return {
 				...release,
 				artists: artists?.map((a) => a.artist) || [],
 				musics: musics?.map((m) => m.music) || [],
+				platform_links: platformLinks || [],
 			} as ReleaseWithRelations
 		} catch (error) {
 			console.error('Erreur lors de la récupération des données de la release:', error)
@@ -297,6 +337,19 @@ export function useSupabaseRelease() {
 		}
 	}
 
+	const getPlatformLinksByReleaseId = async (id: string) => {
+		const { data: platformLinks, error: platformLinksError } = await supabase
+			.from('release_platform_links')
+			.select('*')
+			.eq('release_id', id)
+
+		if (platformLinksError) throw platformLinksError
+
+		return {
+			platformLinks: platformLinks || [],
+		}
+	}
+
 	// Récupère les suggestions de releases pour un artiste
 	const getSuggestedReleases = async (
 		artistId: string,
@@ -366,7 +419,8 @@ export function useSupabaseRelease() {
 					),
 					musics:music_releases(
 						music:musics(*)
-					)
+					),
+					platform_links:release_platform_links(*)
 				`,
 				{ count: 'exact' },
 			)
@@ -410,6 +464,7 @@ export function useSupabaseRelease() {
 				firebase_id: release.id,
 				artists: release.artists?.map((ar: any) => ar.artist) || [],
 				musics: release.musics?.map((mr: any) => mr.music) || [],
+				platform_links: release.platform_links || [],
 			}))
 
 			return {
@@ -429,6 +484,7 @@ export function useSupabaseRelease() {
 	const createReleaseWithDetails = async (
 		releaseData: Partial<Release>,
 		artistIds: string[],
+		platformLinks?: Omit<ReleasePlatformLink, 'id' | 'created_at' | 'release_id'>[],
 	): Promise<Release | null> => {
 		try {
 			// 1. Créer la release
@@ -469,6 +525,29 @@ export function useSupabaseRelease() {
 				}
 			}
 
+			// 3. Ajouter les liens de plateformes
+			if (platformLinks?.length) {
+				const platformLinksWithReleaseId = platformLinks.map((link) => ({
+					...link,
+					release_id: release.id,
+				}))
+
+				const { error: platformError } = await supabase
+					.from('release_platform_links')
+					.insert(platformLinksWithReleaseId)
+
+				if (platformError) {
+					console.error("Erreur lors de l'ajout des liens de plateformes:", platformError)
+					// On supprime la release créée si l'ajout des liens échoue
+					await supabase.from('releases').delete().eq('id', release.id)
+					toast.add({
+						title: "Erreur lors de l'ajout des liens de plateformes",
+						color: 'error',
+					})
+					throw platformError
+				}
+			}
+
 			return release as Release
 		} catch (error) {
 			console.error('Erreur lors de la création de la release:', error)
@@ -488,5 +567,6 @@ export function useSupabaseRelease() {
 		getSuggestedReleases,
 		getReleasesByPage,
 		createReleaseWithDetails,
+		getPlatformLinksByReleaseId,
 	}
 }

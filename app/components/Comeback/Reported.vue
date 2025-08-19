@@ -1,4 +1,5 @@
 <script setup lang="ts">
+	import type { PropType } from 'vue'
 	import type { News } from '~/types'
 
 	const props = defineProps({

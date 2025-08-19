@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { CalendarDate } from '@internationalized/date'
 	import algoliasearch from 'algoliasearch/lite'
-	import type { Artist } from '~/types'
+	// import type { Artist } from '~/types'
 	import { useSupabaseNews } from '~/composables/Supabase/useSupabaseNews'
 	import { useDebounce } from '~/composables/useDebounce'
 
@@ -14,7 +14,7 @@
 	)
 	const index = client.initIndex('ARTISTS')
 
-	const { id, message, artists, date, user, verified } = defineProps({
+	const props = defineProps({
 		id: {
 			type: String,
 			required: true,
@@ -52,9 +52,9 @@
 
 	// Initialiser les valeurs d'édition avec les valeurs actuelles
 	const initEditForm = () => {
-		editNewsDate.value = date ? new Date(date) : null
-		editNewsMessage.value = message || ''
-		artistListSelected.value = artists.map((artist) => ({
+		editNewsDate.value = props.date ? new Date(props.date) : null
+		editNewsMessage.value = props.message || ''
+		artistListSelected.value = props.artists.map((artist) => ({
 			id: artist.id,
 			name: artist.name,
 			picture: artist.image,
@@ -89,14 +89,14 @@
 		isUpdating.value = true
 		try {
 			// Mise à jour des données de base de la news
-			const updatedNews = await updateNews(id, {
-				date: editNewsDate.value?.toISOString() ?? date,
+			const updatedNews = await updateNews(props.id, {
+				date: editNewsDate.value?.toISOString() ?? props.date,
 				message: editNewsMessage.value,
 			})
 
 			// Mise à jour des relations avec les artistes
 			const artistIds = artistListSelected.value.map((artist) => artist.id)
-			await updateNewsArtistsRelations(id, artistIds)
+			await updateNewsArtistsRelations(props.id, artistIds)
 
 			toast.add({
 				title: 'Succès',
@@ -106,16 +106,16 @@
 
 			// Émettre un événement pour mettre à jour la liste des news
 			emit('updateNews', {
-				id,
+				id: props.id,
 				message: editNewsMessage.value,
-				date: editNewsDate.value?.toISOString() ?? date,
+				date: editNewsDate.value?.toISOString() ?? props.date,
 				artists: artistListSelected.value.map((artist) => ({
 					id: artist.id,
 					name: artist.name,
 					image: artist.picture,
 				})),
-				verified,
-				user,
+				verified: props.verified,
+				user: props.user,
 			})
 
 			closeEditModal()
@@ -186,7 +186,7 @@
 	const emit = defineEmits(['deleteNews', 'updateNews'])
 
 	const deleteNews = () => {
-		emit('deleteNews', id)
+		emit('deleteNews', props.id)
 	}
 </script>
 
@@ -196,7 +196,7 @@
 	>
 		<div class="grid grid-cols-3 gap-2">
 			<div
-				v-for="artistObject in artists"
+				v-for="artistObject in props.artists"
 				:key="artistObject.id"
 				class="bg-cb-quinary-900 flex w-full flex-col items-center justify-center overflow-hidden rounded"
 			>
@@ -214,12 +214,12 @@
 
 		<div>
 			<ComebackLabel label="Message" class="border-b border-zinc-500" />
-			<p>{{ message }}</p>
+			<p>{{ props.message }}</p>
 		</div>
 
 		<div>
 			<ComebackLabel label="Date" class="border-b border-zinc-500" />
-			<p>{{ convertDate(date) }}</p>
+			<p>{{ convertDate(props.date) }}</p>
 		</div>
 
 		<div class="grid grid-cols-2 gap-3">

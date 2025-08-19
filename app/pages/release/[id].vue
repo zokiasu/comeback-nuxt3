@@ -111,7 +111,7 @@
 			release.value = (await getReleaseById(
 				route.params.id as string,
 			)) as ReleaseWithRelations
-
+			console.log('release', release)
 			if (release.value && release.value.artists) {
 				title.value =
 					release.value.name +
