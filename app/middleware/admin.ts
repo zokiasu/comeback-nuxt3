@@ -1,15 +1,12 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-	// Vérifier si l'utilisateur est connecté
+	// D'abord vérifier si l'utilisateur est connecté
 	const user = useSupabaseUser()
 
 	if (!user.value) {
-		throw createError({
-			statusCode: 401,
-			statusMessage: 'Vous devez être connecté pour accéder à cette page',
-		})
+		return navigateTo('/authentification')
 	}
 
-	// Vérifier les permissions admin depuis le store
+	// Ensuite vérifier les permissions admin depuis le store
 	const userStore = useUserStore()
 
 	if (!userStore.isAdminStore) {
