@@ -152,7 +152,7 @@ export function useSupabaseCompanies() {
 	const deleteCompany = async (companyId: string) => {
 		// Vérifier les relations avec les artistes avant suppression
 		const { data: relations } = await supabase
-			.from('company_artists')
+			.from('artist_companies')
 			.select('artist_id')
 			.eq('company_id', companyId)
 
@@ -223,12 +223,12 @@ export function useSupabaseCompanies() {
 		}
 
 		// Pagination
-		if (options?.limit) {
+		if (options?.offset || options?.limit) {
+			const from = options?.offset || 0
+			const to = from + (options?.limit || 10) - 1
+			query = query.range(from, to)
+		} else if (options?.limit) {
 			query = query.limit(options.limit)
-		}
-
-		if (options?.offset) {
-			query = query.range(options.offset, options.offset + (options.limit || 10) - 1)
 		}
 
 		const { data, error, count } = await query
