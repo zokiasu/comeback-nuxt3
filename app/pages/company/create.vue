@@ -10,8 +10,8 @@
 	const { isAdminStore } = storeToRefs(userStore)
 	const { createCompany, companyTypes } = useSupabaseCompanies()
 
-	const title = ref<string>('Create Company Page')
-	const description = ref<string>('Create Company Page')
+	const title = ref<string>('Create Company')
+	const description = ref<string>('Create a new music company')
 
 	const isUploadingEdit = ref<boolean>(false)
 
@@ -30,8 +30,8 @@
 
 		if (companyName.value === '') {
 			toast.add({
-				title: 'Veuillez remplir les champs obligatoires',
-				description: 'Le nom de la compagnie est obligatoire',
+				title: 'Please fill in required fields',
+				description: 'Company name is required',
 				color: 'error',
 			})
 			isUploadingEdit.value = false
@@ -54,8 +54,8 @@
 			const newCompany = await createCompany(company)
 			isUploadingEdit.value = false
 			toast.add({
-				title: 'Compagnie créée avec succès',
-				description: `${companyName.value} a été créée avec succès`,
+				title: 'Company created successfully',
+				description: `${companyName.value} has been created successfully`,
 				color: 'success',
 			})
 			// Rediriger vers la page de la compagnie créée
@@ -63,7 +63,7 @@
 		} catch (error: any) {
 			isUploadingEdit.value = false
 			toast.add({
-				title: 'Échec de la création de la compagnie',
+				title: 'Failed to create company',
 				description: error.message,
 				color: 'error',
 			})
@@ -79,17 +79,17 @@
 	const getCompanyTypeLabel = (type: string) => {
 		const labels = {
 			LABEL: 'Label',
-			PUBLISHER: 'Éditeur',
-			DISTRIBUTOR: 'Distributeur',
+			PUBLISHER: 'Publisher',
+			DISTRIBUTOR: 'Distributor',
 			MANAGER: 'Management',
-			AGENCY: 'Agence',
+			AGENCY: 'Agency',
 			STUDIO: 'Studio',
-			OTHER: 'Autre',
+			OTHER: 'Other',
 		}
 		return labels[type as keyof typeof labels] || type
 	}
 
-	// Années disponibles (de 1800 à l'année courante)
+	// Available years (from 1800 to current year)
 	const currentYear = new Date().getFullYear()
 	const availableYears = Array.from({ length: currentYear - 1799 }, (_, i) => currentYear - i)
 
@@ -120,7 +120,7 @@
 					class="bg-cb-primary-900 w-full rounded px-5 py-3 text-xs font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
 					@click="creationCompany"
 				>
-					{{ isUploadingEdit ? 'Loading' : 'Save' }}
+					{{ isUploadingEdit ? 'Creating...' : 'Save' }}
 				</button>
 			</div>
 		</div>
@@ -204,7 +204,7 @@
 				<ComebackLabel label="Description" />
 				<textarea
 					v-model="companyDescription"
-					placeholder="Description de la compagnie..."
+					placeholder="Company description..."
 					class="focus:bg-cb-tertiary-200 focus:text-cb-secondary-950 min-h-32 w-full appearance-none border-b bg-transparent transition-all duration-150 ease-in-out focus:rounded focus:p-1.5 focus:outline-none"
 					@input="adjustTextarea($event)"
 				/>
@@ -252,7 +252,7 @@
 				class="bg-cb-primary-900 w-full rounded py-3 text-xl font-semibold uppercase transition-all duration-300 ease-in-out hover:scale-105 hover:bg-red-900"
 				@click="creationCompany"
 			>
-				{{ isUploadingEdit ? 'Loading' : 'Create Company' }}
+				{{ isUploadingEdit ? 'Creating...' : 'Create Company' }}
 			</button>
 		</div>
 	</div>

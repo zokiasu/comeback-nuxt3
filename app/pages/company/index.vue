@@ -5,7 +5,7 @@
 			<UInput
 				v-model="search"
 				type="text"
-				placeholder="Rechercher une compagnie..."
+				placeholder="Search for a company..."
 				size="lg"
 				icon="i-heroicons-magnifying-glass"
 				class="w-full"
@@ -16,7 +16,7 @@
 				to="/company/create"
 			/>
 			<UButton
-				label="Filtres"
+				label="Filters"
 				:trailing-icon="
 					filtersExpanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'
 				"
@@ -41,7 +41,7 @@
 						<!-- Company type -->
 						<div>
 							<label class="mb-3 block text-sm font-medium text-gray-300">
-								Type de compagnie
+								Company type
 							</label>
 							<div class="flex flex-wrap gap-2">
 								<UButton
@@ -61,7 +61,7 @@
 
 						<!-- Verification status -->
 						<div>
-							<label class="mb-3 block text-sm font-medium text-gray-300">Statut</label>
+							<label class="mb-3 block text-sm font-medium text-gray-300">Status</label>
 							<div class="flex flex-wrap gap-2">
 								<UButton
 									v-for="status in verificationStatuses"
@@ -82,16 +82,16 @@
 					<!-- Active filters counter and clear button -->
 					<div v-if="hasActiveFilters" class="flex items-center justify-between">
 						<p class="text-sm text-gray-400">
-							{{ activeFiltersCount }} filtre(s) actif(s)
+							{{ activeFiltersCount }} active filter(s)
 						</p>
 						<UButton
 							variant="outline"
 							size="xs"
-							color="red"
+							color="error"
 							:disabled="isLoading"
 							@click="clearAllFilters"
 						>
-							Effacer les filtres
+							Clear filters
 						</UButton>
 					</div>
 				</div>
@@ -101,7 +101,7 @@
 		<!-- Results header -->
 		<div v-if="!isLoading || companies.length > 0" class="flex items-center justify-between">
 			<p class="text-sm text-gray-400">
-				{{ totalCompanies }} compagnie(s) trouvée(s)
+				{{ totalCompanies }} company(ies) found
 			</p>
 		</div>
 
@@ -112,57 +112,12 @@
 			enter-active-class="animate__bounceIn"
 			class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
 		>
-			<div
+			<CardCompany
 				v-for="company in companies"
 				:key="company.id"
-				class="bg-cb-quinary-900 hover:bg-cb-quinary-800 group relative overflow-hidden rounded-lg transition-all duration-300 ease-in-out hover:scale-105"
-			>
-				<NuxtLink :to="`/company/${company.id}`" class="block">
-					<!-- Company logo/image -->
-					<div class="aspect-square w-full overflow-hidden">
-						<NuxtImg
-							v-if="company.logo_url"
-							:src="company.logo_url"
-							:alt="company.name"
-							format="webp"
-							loading="lazy"
-							class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-						/>
-						<div
-							v-else
-							class="bg-cb-quaternary-950 flex h-full w-full items-center justify-center text-4xl font-bold text-gray-400"
-						>
-							{{ company.name.charAt(0).toUpperCase() }}
-						</div>
-					</div>
-					
-					<!-- Company info overlay -->
-					<div class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-transparent to-transparent p-4">
-						<div class="space-y-1">
-							<h3 class="font-semibold text-white line-clamp-2">
-								{{ company.name }}
-							</h3>
-							<div class="flex items-center gap-2">
-								<span class="bg-cb-primary-900 rounded px-2 py-1 text-xs font-medium text-white">
-									{{ getCompanyTypeLabel(company.type) }}
-								</span>
-								<span
-									v-if="company.verified"
-									class="bg-green-600 rounded px-2 py-1 text-xs font-medium text-white"
-								>
-									Vérifiée
-								</span>
-							</div>
-							<p v-if="formatLocation(company.city, company.country)" class="text-xs text-gray-300">
-								{{ formatLocation(company.city, company.country) }}
-							</p>
-							<p v-if="company.founded_year" class="text-xs text-gray-400">
-								Fondée en {{ company.founded_year }}
-							</p>
-						</div>
-					</div>
-				</NuxtLink>
-			</div>
+				:company="company"
+				class="!min-w-full !max-w-full"
+			/>
 		</transition-group>
 
 		<!-- Loading state -->
@@ -178,13 +133,13 @@
 
 		<!-- Load more / End messages -->
 		<div v-if="isLoading && companies.length > 0" class="py-4 text-center">
-			Chargement...
+			Loading...
 		</div>
 		<div v-if="!hasMore && companies.length > 0" class="py-4 text-center text-gray-400">
-			Toutes les compagnies sont affichées.
+			All companies are displayed.
 		</div>
 		<div v-if="!isLoading && companies.length === 0" class="py-8 text-center text-gray-400">
-			Aucune compagnie trouvée.
+			No companies found.
 		</div>
 	</div>
 </template>
@@ -214,8 +169,8 @@
 
 	// Verification status options
 	const verificationStatuses = [
-		{ value: true, label: 'Vérifiées' },
-		{ value: false, label: 'Non vérifiées' }
+		{ value: true, label: 'Verified' },
+		{ value: false, label: 'Not verified' }
 	]
 
 	const fetchCompanies = async (reset = false) => {
@@ -300,14 +255,14 @@
 	const getCompanyTypeLabel = (type: string | undefined) => {
 		const labels = {
 			LABEL: 'Label',
-			PUBLISHER: 'Éditeur',
-			DISTRIBUTOR: 'Distributeur',
+			PUBLISHER: 'Publisher',
+			DISTRIBUTOR: 'Distributor',
 			MANAGER: 'Management',
-			AGENCY: 'Agence',
+			AGENCY: 'Agency',
 			STUDIO: 'Studio',
-			OTHER: 'Autre',
+			OTHER: 'Other',
 		}
-		return labels[type as keyof typeof labels] || type || 'Non spécifié'
+		return labels[type as keyof typeof labels] || type || 'Not specified'
 	}
 
 	// Function to format location
@@ -325,11 +280,11 @@
 
 	// Set page title and meta
 	useHead({
-		title: 'Compagnies - Comeback',
+		title: 'Companies - Comeback',
 		meta: [
 			{
 				name: 'description',
-				content: 'Découvrez toutes les compagnies musicales, labels, éditeurs et distributeurs sur Comeback.',
+				content: 'Discover all music companies, labels, publishers and distributors on Comeback.',
 			},
 		],
 	})

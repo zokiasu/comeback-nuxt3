@@ -49,14 +49,14 @@
 	const getCompanyTypeLabel = (type: string | undefined) => {
 		const labels = {
 			LABEL: 'Label',
-			PUBLISHER: 'Éditeur',
-			DISTRIBUTOR: 'Distributeur',
+			PUBLISHER: 'Publisher',
+			DISTRIBUTOR: 'Distributor',
 			MANAGER: 'Management',
-			AGENCY: 'Agence',
+			AGENCY: 'Agency',
 			STUDIO: 'Studio',
-			OTHER: 'Autre',
+			OTHER: 'Other',
 		}
-		return labels[type as keyof typeof labels] || type || 'Non spécifié'
+		return labels[type as keyof typeof labels] || type || 'Not specified'
 	}
 
 	const formatLocation = (city?: string, country?: string) => {
@@ -128,7 +128,7 @@
 							v-if="company.founded_year"
 							class="bg-cb-quaternary-950 w-fit rounded px-3 py-1 text-xs font-semibold whitespace-nowrap uppercase"
 						>
-							Fondée en {{ company.founded_year }}
+							Founded in {{ company.founded_year }}
 						</p>
 						<p
 							v-if="formatLocation(company.city, company.country)"
@@ -140,7 +140,7 @@
 							v-if="company.verified"
 							class="bg-cb-primary-900 w-fit rounded px-3 py-1 text-xs font-semibold whitespace-nowrap uppercase"
 						>
-							Vérifiée
+							Verified
 						</p>
 					</div>
 					<div v-if="!isFetchingCompany" class="flex flex-wrap gap-2">
@@ -149,7 +149,7 @@
 							:to="editLink"
 							class="bg-cb-secondary-950 px-2 py-1 text-xs font-semibold uppercase"
 						>
-							Modifier la compagnie
+							Edit company
 						</NuxtLink>
 					</div>
 				</div>
@@ -167,10 +167,10 @@
 			</div>
 
 			<div v-else class="space-y-5">
-				<CardDefault v-if="company.website && !isFetchingCompany" name="Site Web">
+				<CardDefault v-if="company.website && !isFetchingCompany" name="Website">
 					<div class="flex flex-wrap gap-2">
 						<ComebackExternalLink
-							name="Site officiel"
+							name="Official website"
 							:link="company.website"
 							class="!px-2.5 !py-1"
 						/>
@@ -185,17 +185,17 @@
 						{{ company.description }}
 					</p>
 					<div v-else>
-						<p class="text-xs md:text-base">Aucune description disponible.</p>
+						<p class="text-xs md:text-base">No description available.</p>
 						<p class="text-xs md:text-base">
-							Ajoutez une description pour partager plus d'informations sur cette compagnie avec notre
-							communauté.
+							Add a description to share more information about this company with our
+							community.
 						</p>
 						<div v-if="isAdminStore" class="pt-2">
 							<NuxtLink
 								:to="editLink"
 								class="bg-cb-quaternary-950 mt-5 px-2 py-1 text-xs font-semibold uppercase"
 							>
-								Ajouter une description
+								Add description
 							</NuxtLink>
 						</div>
 					</div>
@@ -203,7 +203,7 @@
 			</div>
 
 			<div v-if="currentArtists.length && !isFetchingCompany">
-				<CardDefault :name="`Artistes actuels (${currentArtists.length})`">
+				<CardDefault :name="`Current artists (${currentArtists.length})`">
 					<transition-group
 						name="list-complete"
 						tag="div"
@@ -224,7 +224,7 @@
 			</div>
 
 			<div v-if="pastArtists.length && !isFetchingCompany">
-				<CardDefault :name="`Anciens artistes (${pastArtists.length})`">
+				<CardDefault :name="`Past artists (${pastArtists.length})`">
 					<transition-group
 						name="list-complete"
 						tag="div"
@@ -245,8 +245,8 @@
 			</div>
 
 			<div v-if="!currentArtists.length && !pastArtists.length && !isFetchingCompany">
-				<CardDefault name="Artistes">
-					<p class="text-xs md:text-base">Aucun artiste associé à cette compagnie.</p>
+				<CardDefault name="Artists">
+					<p class="text-xs md:text-base">No artists associated with this company.</p>
 				</CardDefault>
 			</div>
 		</section>

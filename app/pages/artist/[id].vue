@@ -78,6 +78,18 @@
 		return albums
 	})
 
+	const currentCompanies = computed(() => {
+		return ((artist.value && (artist.value as any)['companies']) as any[] | undefined)
+			?.filter((relation) => relation.is_current)
+			.sort((a, b) => (a.company?.name || '').localeCompare(b.company?.name || '')) || []
+	})
+
+	const pastCompanies = computed(() => {
+		return ((artist.value && (artist.value as any)['companies']) as any[] | undefined)
+			?.filter((relation) => !relation.is_current)
+			.sort((a, b) => (a.company?.name || '').localeCompare(b.company?.name || '')) || []
+	})
+
 	const editLink = computed(() => {
 		if (!isLoginStore || !isAdminStore) {
 			return '/authentification'
@@ -315,7 +327,7 @@
 						/>
 					</transition-group>
 				</CardDefault>
-				<div class="mb-2 flex" v-if="artist.type === 'GROUP' && isAdminStore">
+				<div v-if="artist.type === 'GROUP' && isAdminStore" class="mb-2 flex">
 					<UButton
 						icon="i-heroicons-plus"
 						color="primary"
@@ -413,6 +425,44 @@
 							:main-title="group.name"
 							:image="group.image"
 							:object-link="`/artist/${String(group.id ?? '')}`"
+						/>
+					</transition-group>
+				</CardDefault>
+			</div>
+
+			<!-- Current companies -->
+			<div v-if="currentCompanies.length && !isFetchingArtist">
+				<CardDefault :name="`Current companies (${currentCompanies.length})`">
+					<transition-group
+						name="list-complete"
+						tag="div"
+						class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 xl:flex-wrap"
+					>
+						<CardCompany
+							v-for="relation in currentCompanies"
+							:key="`current_company_${relation.company?.id}`"
+							:company="relation.company"
+							:relationship-type="relation.relationship_type"
+							:is-past="false"
+						/>
+					</transition-group>
+				</CardDefault>
+			</div>
+
+			<!-- Past companies -->
+			<div v-if="pastCompanies.length && !isFetchingArtist">
+				<CardDefault :name="`Past companies (${pastCompanies.length})`">
+					<transition-group
+						name="list-complete"
+						tag="div"
+						class="scrollBarLight flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 xl:flex-wrap"
+					>
+						<CardCompany
+							v-for="relation in pastCompanies"
+							:key="`past_company_${relation.company?.id}`"
+							:company="relation.company"
+							:relationship-type="relation.relationship_type"
+							:is-past="true"
 						/>
 					</transition-group>
 				</CardDefault>
