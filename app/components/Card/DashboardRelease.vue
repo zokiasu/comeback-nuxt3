@@ -1,11 +1,11 @@
 <script setup lang="ts">
-	// import type { PropType } from 'vue'
+	import type { PropType } from 'vue'
 
 	// Interface pour la structure d'une plateforme
-	// type Platform = {
-	//	name: string
-	//	link: string
-	// }
+	type Platform = {
+		name: string
+		link: string
+	}
 
 	const props = defineProps({
 		id: {

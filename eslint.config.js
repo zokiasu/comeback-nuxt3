@@ -2,6 +2,7 @@
 import vue from 'eslint-plugin-vue'
 import tseslint from 'typescript-eslint'
 import tsParser from '@typescript-eslint/parser'
+import vueParser from 'vue-eslint-parser'
 import prettier from 'eslint-config-prettier'
 import js from '@eslint/js'
 
@@ -112,13 +113,31 @@ export default [
 		},
 	},
 
-	// Vue files - lighter rules
+	// TypeScript rules for Vue files
+	...tseslint.configs.recommended.map((config) => ({
+		...config,
+		files: ['**/*.vue'],
+		languageOptions: {
+			...config.languageOptions,
+			parser: vueParser,
+			parserOptions: {
+				...config.languageOptions?.parserOptions,
+				parser: tsParser,
+				extraFileExtensions: ['.vue'],
+			},
+		},
+	})),
+
+	// Vue files with TypeScript support
 	{
 		files: ['**/*.vue'],
 		languageOptions: {
+			parser: vueParser,
 			parserOptions: {
+				parser: tsParser,
 				ecmaVersion: 'latest',
 				sourceType: 'module',
+				extraFileExtensions: ['.vue'],
 			},
 			globals: {
 				// Vue compiler globals
@@ -136,14 +155,22 @@ export default [
 				useFetch: 'readonly',
 				useHead: 'readonly',
 				navigateTo: 'readonly',
+				createError: 'readonly',
+				definePageMeta: 'readonly',
 
 				// Vue composables
 				ref: 'readonly',
 				reactive: 'readonly',
 				computed: 'readonly',
 				watch: 'readonly',
+				watchEffect: 'readonly',
 				onMounted: 'readonly',
 				onUnmounted: 'readonly',
+				onBeforeMount: 'readonly',
+				onBeforeUnmount: 'readonly',
+				onUpdated: 'readonly',
+				onBeforeUpdate: 'readonly',
+				nextTick: 'readonly',
 
 				// Custom composables
 				useAuth: 'readonly',
@@ -155,6 +182,17 @@ export default [
 				usePlaylist: 'readonly',
 				useIsPlayingVideo: 'readonly',
 				useTemplateRef: 'readonly',
+				useIdYoutubeVideo: 'readonly',
+				useMusicNamePlaying: 'readonly',
+				useAuthorNamePlaying: 'readonly',
+
+				// Types
+				PropType: 'readonly',
+				Ref: 'readonly',
+
+				// Browser globals
+				window: 'readonly',
+				document: 'readonly',
 			},
 		},
 		rules: {
@@ -163,9 +201,14 @@ export default [
 			'vue/no-v-html': 'off',
 			'vue/require-default-prop': 'off',
 
-			// Disable strict rules for Vue files
+			// TypeScript rules for Vue files
+			'@typescript-eslint/no-explicit-any': 'off',
+			'@typescript-eslint/ban-ts-comment': 'off',
+			'@typescript-eslint/no-unused-vars': 'warn',
+
+			// Disable conflicting rules
 			'no-undef': 'off',
-			'no-unused-vars': 'off',
+			'no-unused-vars': 'off', // Use TypeScript version instead
 			'no-console': 'warn',
 		},
 	},

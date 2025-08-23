@@ -234,8 +234,6 @@
 	 * Trie la liste des artistes en fonction des critères
 	 */
 	const filteredArtistList = computed(() => {
-		if (page.value !== 1) page.value = 1
-
 		// Si une recherche est active et Algolia est utilisé, retourner les résultats d'Algolia
 		if (useAlgoliaForSearch.value && search.value.length >= 2) {
 			return algoliaResults.value
@@ -306,6 +304,9 @@
 
 	// Watcher pour la recherche
 	watch(search, () => {
+		// Reset page to 1 when search changes
+		if (page.value !== 1) page.value = 1
+
 		if (useAlgoliaForSearch.value) {
 			performAlgoliaSearch()
 		} else {

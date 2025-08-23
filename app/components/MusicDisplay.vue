@@ -1,4 +1,5 @@
 <script setup lang="ts">
+	import type { PropType } from 'vue'
 	import type { Artist, Release } from '~/types'
 
 	const {
@@ -148,10 +149,7 @@
 						<p v-if="releases && releases.length > 0 && artists && artists.length > 0">
 							-
 						</p>
-						<template
-							v-if="releases && releases.length > 0"
-							class="flex items-center gap-1"
-						>
+						<div v-if="releases && releases.length > 0" class="flex items-center gap-1">
 							<NuxtLink
 								:to="`/release/${releases[0].id}`"
 								class="hidden whitespace-nowrap hover:underline md:block"
@@ -166,7 +164,7 @@
 										: ''
 								}}
 							</span>
-						</template>
+						</div>
 					</div>
 				</div>
 

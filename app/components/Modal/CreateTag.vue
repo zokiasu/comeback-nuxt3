@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+	import type { PropType } from 'vue'
 	import type { GeneralTag } from '~/types'
 	import { useSupabaseGeneralTags } from '~/composables/Supabase/useSupabaseGeneralTags'
 

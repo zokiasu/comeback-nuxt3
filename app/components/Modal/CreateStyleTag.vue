@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+	import type { PropType } from 'vue'
 	import type { MusicStyle } from '~/types'
 	import { useSupabaseMusicStyles } from '~/composables/Supabase/useSupabaseMusicStyles'
 

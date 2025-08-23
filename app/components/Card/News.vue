@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import type { Artist } from '~/types/artist'
+	import type { Artist } from '~/types'
 
 	const props = defineProps<{
 		message: string

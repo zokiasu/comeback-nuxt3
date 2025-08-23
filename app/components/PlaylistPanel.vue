@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { usePlaylist } from '~/composables/usePlaylist'
-	
+
 	const {
 		playlist,
 		currentIndex,

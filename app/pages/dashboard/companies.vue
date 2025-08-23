@@ -240,8 +240,6 @@
 	 * Trie la liste des companies en fonction des critères
 	 */
 	const filteredCompaniesList = computed(() => {
-		if (page.value !== 1) page.value = 1
-
 		if (!companiesFetch.value) return companiesFetch.value
 
 		return [...companiesFetch.value].sort((a, b) => {
@@ -313,6 +311,8 @@
 
 	// Watcher pour la recherche
 	watch(search, () => {
+		// Reset page to 1 when search changes
+		if (page.value !== 1) page.value = 1
 		performSearch()
 	})
 

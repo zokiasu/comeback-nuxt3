@@ -1,24 +1,27 @@
 <script setup lang="ts">
-	const props = withDefaults(defineProps<{
-		isArtist?: boolean
-		artistId: string
-		mainTitle: string
-		subTitle?: string
-		image: string
-		objectLink: string
-		releaseDate?: string
-		releaseType?: string
-		isReleaseDisplay?: boolean
-		dateAlwaysDisplay?: boolean
-	}>(), {
-		isArtist: false,
-		artistId: '',
-		subTitle: '',
-		releaseDate: '',
-		releaseType: '',
-		isReleaseDisplay: false,
-		dateAlwaysDisplay: false
-	})
+	const props = withDefaults(
+		defineProps<{
+			isArtist?: boolean
+			artistId: string
+			mainTitle: string
+			subTitle?: string
+			image: string
+			objectLink: string
+			releaseDate?: string
+			releaseType?: string
+			isReleaseDisplay?: boolean
+			dateAlwaysDisplay?: boolean
+		}>(),
+		{
+			isArtist: false,
+			artistId: '',
+			subTitle: '',
+			releaseDate: '',
+			releaseType: '',
+			isReleaseDisplay: false,
+			dateAlwaysDisplay: false,
+		},
+	)
 
 	const imageLoaded = ref(false)
 
@@ -72,7 +75,9 @@
 			<p class="font-semibol truncate group-hover:underline">
 				{{ props.mainTitle }}
 			</p>
-			<p v-if="props.isArtist || props.isReleaseDisplay" class="truncate">{{ props.subTitle }}</p>
+			<p v-if="props.isArtist || props.isReleaseDisplay" class="truncate">
+				{{ props.subTitle }}
+			</p>
 			<LazyNuxtLink v-else :to="`/artist/${props.artistId}`" class="hover:underline">
 				<p class="truncate">{{ props.subTitle }}</p>
 			</LazyNuxtLink>
