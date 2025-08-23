@@ -87,8 +87,9 @@
 <template>
 	<div v-if="company">
 		<section
-			class="background-top relative h-[30vh] overflow-hidden bg-cover bg-no-repeat lg:h-[40vh] xl:h-[50vh] 2xl:h-[70vh]"
+			class="background-top relative h-[30vh] overflow-hidden bg-white bg-cover bg-no-repeat lg:h-[40vh] xl:h-[50vh] 2xl:h-[70vh]"
 		>
+			<!-- Image de fond si disponible -->
 			<NuxtImg
 				v-if="imageBackground"
 				:src="imageBackground"
@@ -98,9 +99,15 @@
 				class="absolute inset-0 h-full w-full object-cover"
 				@load="imageBackLoaded = true"
 			/>
+			<!-- Background avec la première lettre si pas d'image -->
+			<div v-else-if="company?.name" class="absolute inset-0 bg-cb-quaternary-950 flex items-center justify-center">
+				<span class="text-9xl font-bold text-gray-400 md:text-[12rem] lg:text-[15rem] xl:text-[18rem] 2xl:text-[20rem] opacity-20">
+					{{ company.name.charAt(0).toUpperCase() }}
+				</span>
+			</div>
 			<div
 				class="absolute inset-0 flex items-end p-5 transition-all duration-500 ease-in-out lg:p-10 xl:p-14 2xl:px-32"
-				:class="imageBackLoaded ? 'bg-cb-secondary-950/60' : 'bg-cb-quinary-900'"
+				:class="imageBackground && imageBackLoaded ? 'bg-cb-secondary-950/60' : 'bg-cb-secondary-950/60'"
 			>
 				<div class="space-y-5 lg:container lg:mx-auto lg:px-5">
 					<SkeletonDefault v-if="isFetchingCompany" class="h-14 w-80 rounded" />
@@ -190,27 +197,6 @@
 							>
 								Ajouter une description
 							</NuxtLink>
-						</div>
-					</div>
-				</CardDefault>
-
-				<CardDefault name="Informations" class="pt-5">
-					<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-						<div v-if="company.type" class="space-y-1">
-							<h4 class="text-sm font-semibold text-gray-300">Type</h4>
-							<p class="text-sm">{{ getCompanyTypeLabel(company.type) }}</p>
-						</div>
-						<div v-if="company.founded_year" class="space-y-1">
-							<h4 class="text-sm font-semibold text-gray-300">Année de fondation</h4>
-							<p class="text-sm">{{ company.founded_year }}</p>
-						</div>
-						<div v-if="formatLocation(company.city, company.country)" class="space-y-1">
-							<h4 class="text-sm font-semibold text-gray-300">Localisation</h4>
-							<p class="text-sm">{{ formatLocation(company.city, company.country) }}</p>
-						</div>
-						<div class="space-y-1">
-							<h4 class="text-sm font-semibold text-gray-300">Statut</h4>
-							<p class="text-sm">{{ company.verified ? 'Vérifiée' : 'Non vérifiée' }}</p>
 						</div>
 					</div>
 				</CardDefault>

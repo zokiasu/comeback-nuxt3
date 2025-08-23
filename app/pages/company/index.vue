@@ -11,6 +11,11 @@
 				class="w-full"
 			/>
 			<UButton
+				label="Create Company"
+				class="bg-cb-primary-700/10 lg:bg-cb-primary-900 lg:hover:bg-cb-primary-900/90 h-full w-fit items-center justify-center rounded text-white lg:cursor-pointer lg:px-5"
+				to="/company/create"
+			/>
+			<UButton
 				label="Filtres"
 				:trailing-icon="
 					filtersExpanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'
@@ -42,12 +47,12 @@
 								<UButton
 									v-for="type in companyTypes"
 									:key="type"
-									@click="selectedType = selectedType === type ? null : type"
 									:variant="selectedType === type ? 'solid' : 'outline'"
 									:color="selectedType === type ? 'primary' : 'neutral'"
 									size="sm"
 									:disabled="isLoading"
 									:class="{ 'text-white': selectedType === type }"
+									@click="selectedType = selectedType === type ? null : type"
 								>
 									{{ getCompanyTypeLabel(type) }}
 								</UButton>
@@ -61,12 +66,12 @@
 								<UButton
 									v-for="status in verificationStatuses"
 									:key="status.value"
-									@click="selectedVerified = selectedVerified === status.value ? null : status.value"
 									:variant="selectedVerified === status.value ? 'solid' : 'outline'"
 									:color="selectedVerified === status.value ? 'primary' : 'neutral'"
 									size="sm"
 									:disabled="isLoading"
 									:class="{ 'text-white': selectedVerified === status.value }"
+									@click="selectedVerified = selectedVerified === status.value ? null : status.value"
 								>
 									{{ status.label }}
 								</UButton>
@@ -80,11 +85,11 @@
 							{{ activeFiltersCount }} filtre(s) actif(s)
 						</p>
 						<UButton
-							@click="clearAllFilters"
 							variant="outline"
 							size="xs"
 							color="red"
 							:disabled="isLoading"
+							@click="clearAllFilters"
 						>
 							Effacer les filtres
 						</UButton>
@@ -112,7 +117,7 @@
 				:key="company.id"
 				class="bg-cb-quinary-900 hover:bg-cb-quinary-800 group relative overflow-hidden rounded-lg transition-all duration-300 ease-in-out hover:scale-105"
 			>
-				<NuxtLink :to="`/companie/${company.id}`" class="block">
+				<NuxtLink :to="`/company/${company.id}`" class="block">
 					<!-- Company logo/image -->
 					<div class="aspect-square w-full overflow-hidden">
 						<NuxtImg
