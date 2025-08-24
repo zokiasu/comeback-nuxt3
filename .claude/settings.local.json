@@ -25,7 +25,8 @@
       "mcp__supabase__generate_typescript_types",
       "Bash(git push:*)",
       "Bash(gh issue list:*)",
-      "Bash(npx npm-check-updates:*)"
+      "Bash(npx npm-check-updates:*)",
+      "Bash(git cherry-pick:*)"
     ],
     "deny": []
   },
