@@ -71,7 +71,7 @@ jobs:
         if: steps.audit.outputs.security_issues == 'true'
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
           commit-message: 'security: correction automatique des vulnérabilités'
           title: '🔒 Corrections de sécurité automatiques'
           body: |
