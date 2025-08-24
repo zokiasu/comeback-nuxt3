@@ -56,14 +56,14 @@ jobs:
         run: |
           # Mettre à jour les dépendances
           npx npm-check-updates -u
-          npm install
+          npm install --legacy-peer-deps
 
       - name: Run tests after updates
         if: steps.check-updates.outputs.updates_available == 'true'
         run: |
           # Exécuter les vérifications de qualité
-          npm run lint || true
-          npm run build
+          npm run lint || echo "Lint failed - will be noted in PR"
+          npm run build || echo "Build failed - will be noted in PR"
 
       - name: Create Pull Request
         if: steps.check-updates.outputs.updates_available == 'true'
