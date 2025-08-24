@@ -42,64 +42,89 @@ jobs:
           UPDATES_COUNT=$(cat updates.json | jq '. | length')
           echo "updates_count=$UPDATES_COUNT" >> $GITHUB_OUTPUT
           
-          # Créer un résumé des mises à jour
           if [ "$UPDATES_COUNT" -gt 0 ]; then
             echo "updates_available=true" >> $GITHUB_OUTPUT
-            cat updates.json | jq -r 'to_entries[] | "- \(.key): \(.value)"' > update_summary.txt
+            # Créer une liste des packages à mettre à jour
+            cat updates.json | jq -r 'keys[]' > packages_list.txt
           else
             echo "updates_available=false" >> $GITHUB_OUTPUT
-            echo "Aucune mise à jour disponible." > update_summary.txt
           fi
 
-      - name: Update dependencies
+      - name: Create individual PRs for each package
         if: steps.check-updates.outputs.updates_available == 'true'
         run: |
-          # Mettre à jour les dépendances
-          npx npm-check-updates -u
-          npm install --legacy-peer-deps
-
-      - name: Run tests after updates
-        if: steps.check-updates.outputs.updates_available == 'true'
-        run: |
-          # Exécuter les vérifications de qualité
-          npm run lint || echo "Lint failed - will be noted in PR"
-          npm run build || echo "Build failed - will be noted in PR"
-
-      - name: Create Pull Request
-        if: steps.check-updates.outputs.updates_available == 'true'
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'chore: mise à jour des dépendances'
-          title: '🔄 Mise à jour automatique des dépendances'
-          body: |
-            ## 📦 Mise à jour des dépendances
+          # Lire le fichier des packages et créer une PR pour chaque package
+          while IFS= read -r package; do
+            echo "Processing package: $package"
             
-            Cette PR a été créée automatiquement pour mettre à jour les dépendances du projet.
+            # Obtenir la version actuelle et la nouvelle version
+            current_version=$(cat updates.json | jq -r --arg pkg "$package" '.[$pkg]' | sed 's/[\^~]//g')
+            old_version=$(jq -r --arg pkg "$package" '.dependencies[$pkg] // .devDependencies[$pkg]' package.json | sed 's/[\^~]//g')
             
-            ### Mises à jour incluses:
+            # Créer une branche pour ce package
+            branch_name="update-${package//\//-}-${current_version}"
+            git checkout -b "$branch_name"
             
-            $(cat update_summary.txt || echo "Voir les changements dans package.json")
+            # Mettre à jour seulement ce package
+            npx npm-check-updates -u "$package" || continue
             
-            ### ✅ Vérifications effectuées:
-            - [x] Installation des nouvelles dépendances
-            - [x] Exécution du linting
-            - [x] Build de production
+            # Installer et tester
+            npm install --legacy-peer-deps || echo "Install failed for $package"
+            build_result="✅ Succès"
+            lint_result="✅ Succès"
             
-            ### 🔍 À vérifier manuellement:
-            - [ ] Tests unitaires et d'intégration
-            - [ ] Fonctionnalités critiques
-            - [ ] Performance de l'application
+            npm run build || build_result="❌ Échec"
+            npm run lint || lint_result="❌ Échec"
             
-            ---
+            # Créer le commit
+            git add package.json package-lock.json 2>/dev/null || git add package.json
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git commit -m "chore: update $package to $current_version" || continue
             
-            🤖 Cette PR a été générée automatiquement par GitHub Actions.
-          branch: dependency-updates-${{ github.run_number }}
-          delete-branch: true
-          labels: |
-            dependencies
-            automated
-            chore
+            # Pousser la branche
+            git push origin "$branch_name" || continue
+            
+            # Créer la PR via GitHub CLI ou API
+            cat > pr_body.md << EOF
+          ## 📦 Mise à jour de \`$package\`
+          
+          **Version:** \`$old_version\` → \`$current_version\`
+          
+          ### 🧪 Tests automatiques:
+          - **Build:** $build_result
+          - **Lint:** $lint_result
+          
+          ### 📋 À vérifier manuellement:
+          - [ ] Tests unitaires et d'intégration
+          - [ ] Fonctionnalités utilisant ce package
+          - [ ] Pas de breaking changes
+          
+          ### 📚 Changelog:
+          Consultez le changelog du package pour plus de détails sur les changements.
+          
+          ---
+          
+          🤖 PR générée automatiquement par GitHub Actions.
+          EOF
+            
+            # Créer la PR avec l'API GitHub
+            curl -X POST \
+              -H "Accept: application/vnd.github.v3+json" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              https://api.github.com/repos/${{ github.repository }}/pulls \
+              -d "{
+                \"title\": \"🔄 Update $package to $current_version\",
+                \"head\": \"$branch_name\",
+                \"base\": \"main\",
+                \"body\": $(cat pr_body.md | jq -Rs .),
+                \"labels\": [\"dependencies\", \"automated\", \"individual-update\"]
+              }" || echo "Failed to create PR for $package"
+            
+            # Retourner à main pour le prochain package
+            git checkout main
+            
+          done < packages_list.txt
 
       - name: Comment on failure
         if: failure()
