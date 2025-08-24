@@ -14,6 +14,9 @@ permissions:
 jobs:
   update-dependencies:
     runs-on: ubuntu-latest
+    outputs:
+      updates_available: ${{ steps.check-updates.outputs.updates_available }}
+      packages: ${{ steps.matrix.outputs.packages }}
     
     steps:
       - name: Checkout repository
@@ -44,87 +47,106 @@ jobs:
           
           if [ "$UPDATES_COUNT" -gt 0 ]; then
             echo "updates_available=true" >> $GITHUB_OUTPUT
-            # Créer une liste des packages à mettre à jour
-            cat updates.json | jq -r 'keys[]' > packages_list.txt
+            # Créer une liste des packages à mettre à jour (limité à 10 pour éviter trop de PR)
+            cat updates.json | jq -r 'keys[]' | head -10 > packages_list.txt
           else
             echo "updates_available=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create individual PRs for each package
+      - name: Process packages and create matrix
         if: steps.check-updates.outputs.updates_available == 'true'
+        id: matrix
         run: |
-          # Lire le fichier des packages et créer une PR pour chaque package
-          while IFS= read -r package; do
-            echo "Processing package: $package"
-            
-            # Obtenir la version actuelle et la nouvelle version
-            current_version=$(cat updates.json | jq -r --arg pkg "$package" '.[$pkg]' | sed 's/[\^~]//g')
-            old_version=$(jq -r --arg pkg "$package" '.dependencies[$pkg] // .devDependencies[$pkg]' package.json | sed 's/[\^~]//g')
-            
-            # Créer une branche pour ce package
-            branch_name="update-${package//\//-}-${current_version}"
-            git checkout -b "$branch_name"
-            
-            # Mettre à jour seulement ce package
-            npx npm-check-updates -u "$package" || continue
-            
-            # Installer et tester
-            npm install --legacy-peer-deps || echo "Install failed for $package"
-            build_result="✅ Succès"
-            lint_result="✅ Succès"
-            
-            npm run build || build_result="❌ Échec"
-            npm run lint || lint_result="❌ Échec"
-            
-            # Créer le commit
-            git add package.json package-lock.json 2>/dev/null || git add package.json
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git commit -m "chore: update $package to $current_version" || continue
-            
-            # Pousser la branche
-            git push origin "$branch_name" || continue
-            
-            # Créer la PR via GitHub CLI ou API
-            cat > pr_body.md << EOF
-          ## 📦 Mise à jour de \`$package\`
+          # Créer un matrix JSON pour les packages
+          PACKAGES=$(cat packages_list.txt | jq -R -s -c 'split("\n")[:-1]')
+          echo "packages=$PACKAGES" >> $GITHUB_OUTPUT
+
+  create-individual-prs:
+    needs: update-dependencies
+    if: needs.update-dependencies.outputs.updates_available == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.update-dependencies.outputs.packages) }}
+      max-parallel: 3
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Get package versions
+        id: versions
+        run: |
+          # Vérifier les mises à jour disponibles
+          npx npm-check-updates --jsonUpgraded > updates.json
           
-          **Version:** \`$old_version\` → \`$current_version\`
+          current_version=$(cat updates.json | jq -r --arg pkg "${{ matrix.package }}" '.[$pkg]' | sed 's/[\^~]//g')
+          old_version=$(jq -r --arg pkg "${{ matrix.package }}" '.dependencies["${{ matrix.package }}"] // .devDependencies["${{ matrix.package }}"]' package.json | sed 's/[\^~]//g')
           
-          ### 🧪 Tests automatiques:
-          - **Build:** $build_result
-          - **Lint:** $lint_result
+          echo "current_version=$current_version" >> $GITHUB_OUTPUT
+          echo "old_version=$old_version" >> $GITHUB_OUTPUT
+
+      - name: Update single package
+        run: |
+          # Mettre à jour seulement ce package
+          npx npm-check-updates -u "${{ matrix.package }}"
+          npm install --legacy-peer-deps
+
+      - name: Test package update
+        id: test
+        run: |
+          build_result="✅ Succès"
+          lint_result="✅ Succès"
           
-          ### 📋 À vérifier manuellement:
-          - [ ] Tests unitaires et d'intégration
-          - [ ] Fonctionnalités utilisant ce package
-          - [ ] Pas de breaking changes
+          npm run build > /dev/null 2>&1 || build_result="❌ Échec"
+          npm run lint > /dev/null 2>&1 || lint_result="❌ Échec"
           
-          ### 📚 Changelog:
-          Consultez le changelog du package pour plus de détails sur les changements.
-          
-          ---
-          
-          🤖 PR générée automatiquement par GitHub Actions.
-          EOF
+          echo "build_result=$build_result" >> $GITHUB_OUTPUT
+          echo "lint_result=$lint_result" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update ${{ matrix.package }} to ${{ steps.versions.outputs.current_version }}'
+          title: '🔄 Update ${{ matrix.package }} to ${{ steps.versions.outputs.current_version }}'
+          body: |
+            ## 📦 Mise à jour de `${{ matrix.package }}`
             
-            # Créer la PR avec l'API GitHub
-            curl -X POST \
-              -H "Accept: application/vnd.github.v3+json" \
-              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-              https://api.github.com/repos/${{ github.repository }}/pulls \
-              -d "{
-                \"title\": \"🔄 Update $package to $current_version\",
-                \"head\": \"$branch_name\",
-                \"base\": \"main\",
-                \"body\": $(cat pr_body.md | jq -Rs .),
-                \"labels\": [\"dependencies\", \"automated\", \"individual-update\"]
-              }" || echo "Failed to create PR for $package"
+            **Version:** `${{ steps.versions.outputs.old_version }}` → `${{ steps.versions.outputs.current_version }}`
             
-            # Retourner à main pour le prochain package
-            git checkout main
+            ### 🧪 Tests automatiques:
+            - **Build:** ${{ steps.test.outputs.build_result }}
+            - **Lint:** ${{ steps.test.outputs.lint_result }}
             
-          done < packages_list.txt
+            ### 📋 À vérifier manuellement:
+            - [ ] Tests unitaires et d'intégration
+            - [ ] Fonctionnalités utilisant ce package
+            - [ ] Pas de breaking changes
+            
+            ### 📚 Changelog:
+            Consultez le changelog du package pour plus de détails sur les changements.
+            
+            ---
+            
+            🤖 PR générée automatiquement par GitHub Actions.
+          branch: update-${{ matrix.package }}-to-${{ steps.versions.outputs.current_version }}
+          delete-branch: true
+          labels: |
+            dependencies
+            automated
+            individual-update
 
       - name: Comment on failure
         if: failure()
