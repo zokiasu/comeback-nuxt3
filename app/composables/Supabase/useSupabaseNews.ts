@@ -314,7 +314,7 @@ export function useSupabaseNews() {
 			`,
 			)
 			.gte('date', today.toISOString())
-			.order('date', { ascending: true })
+			.order('date', { ascending: false })
 
 		if (error) {
 			console.error('Erreur lors de la récupération des dernières news:', error)
