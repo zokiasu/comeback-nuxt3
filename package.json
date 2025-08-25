@@ -14,9 +14,9 @@
 		"format:check": "prettier --check \"**/*.{js,ts,vue,css,scss,json,md}\""
 	},
 	"devDependencies": {
-		"@iconify-json/material-symbols": "^1.2.32",
-		"@nuxt/devtools": "2.4.0",
-		"@nuxt/image": "^1.10.0",
+		"@nuxt/image": "^1.11.0",
+		"@iconify-json/material-symbols": "^1.2.33",
+		"@nuxt/devtools": "2.6.3",
 		"@types/node": "^22",
 		"@typescript-eslint/eslint-plugin": "^8.39.1",
 		"@typescript-eslint/parser": "^8.39.1",
@@ -33,9 +33,9 @@
 		"vue-tsc": "^2.1.10"
 	},
 	"dependencies": {
-		"@eslint/js": "^9.31.0",
-		"@nuxt/ui": "^3.0.2",
 		"@nuxtjs/algolia": "^1.11.2",
+		"@nuxt/ui": "^3.3.2",
+		"@eslint/js": "^9.34.0",
 		"@nuxtjs/supabase": "^1.5.3",
 		"@pinia/nuxt": "^0.11.1",
 		"@supabase/supabase-js": "^2.49.1",
