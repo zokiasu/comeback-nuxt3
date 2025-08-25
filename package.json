@@ -33,10 +33,10 @@
 		"vue-tsc": "^2.1.10"
 	},
 	"dependencies": {
+		"@nuxtjs/supabase": "^1.6.1",
 		"@nuxtjs/algolia": "^1.11.2",
 		"@nuxt/ui": "^3.3.2",
 		"@eslint/js": "^9.34.0",
-		"@nuxtjs/supabase": "^1.5.3",
 		"@pinia/nuxt": "^0.11.1",
 		"@supabase/supabase-js": "^2.49.1",
 		"@tailwindcss/vite": "^4.1.2",
