@@ -24,6 +24,9 @@
 
 	const routeIsIndex = computed(() => route.name === 'index')
 	const routeIsCalendar = computed(() => route.name === 'calendar')
+	const routeIsArtist = computed(() => route.name === 'artist')
+	const routeIsCompany = computed(() => route.name === 'company')
+
 	const routeIsDashboard = computed(() =>
 		(route.name as string)?.startsWith('dashboard-'),
 	)
@@ -90,9 +93,15 @@
 					</NuxtLink>
 					<NuxtLink
 						:to="`/artist`"
-						:class="routeIsCalendar ? 'font-semibold text-white' : 'text-zinc-500'"
+						:class="routeIsArtist ? 'font-semibold text-white' : 'text-zinc-500'"
 					>
 						Artists
+					</NuxtLink>
+					<NuxtLink
+						:to="`/company`"
+						:class="routeIsCompany ? 'font-semibold text-white' : 'text-zinc-500'"
+					>
+						Companies
 					</NuxtLink>
 					<NuxtLink
 						v-if="isAdminStore"
